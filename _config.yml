@@ -1,14 +1,14 @@
-title:            Site Title
-description:      Describe your website.
+title:           许嘉华的个人主页 
+description:      采微
 # Your site's domain goes here. Leave localhost server or blank when working locally.
-url:              http://localhost:4000
+url:              http://localhost:4000/
 
 # Owner/author information
 owner:
-  name:           Your Name
+  name:          许嘉华 
   avatar:         bio-photo.jpg
-  bio:            "Describe your self."
-  email:          your@email.com
+  bio:            “A programmer”
+  email:          bluexu1989@email.com
   # Social networking links are used in author-bio sidebar. Update and remove as you like.
   twitter:        
   facebook:       
@@ -38,14 +38,13 @@ links:
     url: /about/
   - title: Posts
     url: /posts/
+  - title: Tags
+    url: /tags/
   - title: Theme Setup
     url: /theme-setup/
-  - title: Made Mistakes
-    url: http://mademistakes.com
-    external: true
 
 # http://en.wikipedia.org/wiki/List_of_tz_database_time_zones
-timezone:    America/New_York
+timezone:    Asia/Shanghai
 future:      true
 pygments:    true
 markdown:    kramdown
