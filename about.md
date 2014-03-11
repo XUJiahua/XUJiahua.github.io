@@ -1,5 +1,5 @@
 ---
-layout: page
+layout: pagewithcomments
 permalink: /about/
 title: About me
 tagline: Minimal Mistakes, a Jekyll Theme
