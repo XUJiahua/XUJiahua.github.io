@@ -1,3 +1,16 @@
+# 金鱼脑备注 #
+
+新建文章：    
+
+    rake new_post
+
+不确定是否是新版jekyll不兼容以前生成的blog的原因，本地调试使用：
+
+    bundle exec jekyll serve
+
+
+----------
+
 # Minimal Mistakes
 
 **[Minimal Mistakes](http://mmistakes.github.io/minimal-mistakes)** is a two column responsive Jekyll theme perfect for powering your GitHub hosted blog.
