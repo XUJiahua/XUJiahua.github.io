@@ -41,6 +41,16 @@
 {% endfor %}
 </ul>
 
+
+</div><!-- /#index -->
+
+<div class="footer-wrap">
+  <footer>
+    {% include _footer.html %}
+  </footer>
+</div><!-- /.footer-wrap -->
+
+{% include _scripts.html %}
 <script src="/assets/js/others/jquery.tagcloud.js" type="text/javascript" charset="utf-8"></script> 
 <script language="javascript">
 $.fn.tagcloud.defaults = {
@@ -51,16 +61,6 @@ $.fn.tagcloud.defaults = {
 $(function () {
     $('#tag_cloud a').tagcloud();
 });
-</script>
-</div><!-- /#index -->
-
-<div class="footer-wrap">
-  <footer>
-    {% include _footer.html %}
-  </footer>
-</div><!-- /.footer-wrap -->
-
-{% include _scripts.html %}
-  
+</script>  
 </body>
 </html>
