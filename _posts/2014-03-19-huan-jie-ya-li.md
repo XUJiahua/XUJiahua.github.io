@@ -3,7 +3,7 @@ layout: post
 title: "缓解压力"
 modified: 2014-03-19 21:40:02 +0800
 category: []
-tags: [压力管理,招聘,思维方式]
+tags: [压力管理,招聘,思维]
 image:
   feature: 
   credit: 

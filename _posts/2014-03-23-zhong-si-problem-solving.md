@@ -3,7 +3,7 @@ layout: post
 title: "重思Problem Solving"
 modified: 2014-03-23 22:34:15 +0800
 category: []
-tags: [思考]
+tags: [思考,随想]
 image:
   feature: 
   credit: 

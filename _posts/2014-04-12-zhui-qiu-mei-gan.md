@@ -3,7 +3,7 @@ layout: post
 title: "追求美感？"
 modified: 2014-04-12 09:56:30 +0800
 category: []
-tags: [美感,脾气]
+tags: [美感,随想]
 image:
   feature: 
   credit: 

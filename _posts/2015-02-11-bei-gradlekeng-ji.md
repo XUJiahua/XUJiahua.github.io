@@ -3,7 +3,7 @@ layout: post
 title: "被Gradle坑记"
 modified: 2015-02-11 07:36:01 -0800
 category: []
-tags: [kafka]
+tags: [kafka,IT]
 image:
   feature: 
   credit: 

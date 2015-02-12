@@ -3,7 +3,7 @@ layout: post
 title: "第一篇文章"
 modified: 2014-03-08 22:19:04 +0800
 category: []
-tags: []
+tags: [杂,IT]
 image:
   feature: 
   credit: 

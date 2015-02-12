@@ -3,7 +3,7 @@ layout: post
 title: "什么是管理"
 modified: 2014-03-27 22:23:33 +0800
 category: []
-tags: [管理]
+tags: [管理,IT]
 image:
   feature: 
   credit: 

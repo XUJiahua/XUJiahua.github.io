@@ -3,7 +3,7 @@ layout: post
 title: "闲话副业"
 modified: 2014-03-14 15:36:51 +0800
 category: []
-tags: [副业,技能]
+tags: [副业,技能,个人]
 image:
   feature: 
   credit: 

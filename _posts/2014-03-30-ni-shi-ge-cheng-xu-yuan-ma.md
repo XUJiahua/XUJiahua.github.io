@@ -3,7 +3,7 @@ layout: post
 title: "你是个程序员吗"
 modified: 2014-03-30 13:38:58 +0800
 category: []
-tags: [程序员]
+tags: [IT,随想,职业]
 image:
   feature: 
   credit: 
