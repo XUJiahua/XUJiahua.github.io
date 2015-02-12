@@ -8,7 +8,11 @@
 <style>
 #tag_cloud{margin-bottom: 1em;}
 #tag_cloud a:hover{color:#333333 !important;text-decoration:none;}
-.listing-item,.listing-seperator{list-style-type:none;}
+.listing-item{
+list-style-type:none;
+padding-top: 3px;
+padding-bottom: 3px;
+}
 .listing-item a{padding:.2em 1em;}
 .listing-item time{color:#999999;}
 .listing-seperator{font-weight:bold;}
@@ -37,18 +41,19 @@
 {% endfor %}
 </div>
 
-<ul class="listing">
 {% for tag in site.tags %}
-  <li class="listing-seperator" id="{{ tag[0] }}">{{ tag[0] }}</li>
+<p class="listing-seperator" id="{{ tag[0] }}">{{ tag[0] }}</p>
+
+<ul class="listing">
 {% for post in tag[1] %}
   <li class="listing-item">
   <time datetime="{{ post.date | date:"%Y-%m-%d" }}">{{ post.date | date:"%Y-%m-%d" }}</time>
   <a href="{{ site.url }}{{ post.url }}" title="{{ post.title }}">{{ post.title }}</a>
   </li>
 {% endfor %}
-{% endfor %}
 </ul>
 
+{% endfor %}
 
 </div><!-- /#index -->
 
