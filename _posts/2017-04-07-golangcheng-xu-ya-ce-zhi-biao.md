@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "Golang程序压测指标"
+title: "从一次Golang服务优化，学习下压测指标"
 modified: 2017-04-07 13:28:48 +0800
 category: [Golang]
 tags: [Golang, 压力测试]
@@ -77,10 +77,28 @@ GC暂停时间（1000 goroutines）
 1. 内存占用看不出区别
 1. 注意，1 second = 1e+9 nanoseconds，图中GC暂停最多是240k nanoseconds = 0.00024s。
 
+
+使用htop观测CPU占用率，1000 goroutine火力全开，最多占用了200%CPU（四核系统，相当于占用了两核）
+```
+htop -p <pid>
+```
+
+TODO: CPU usage跟htop读到的CPU占用率怎么联系起来？
+推送为何就占用CPU了？？？
+
+某个时间点CPU占用了0.8s，某个时间点总共就4s么（4核）？
+TODO：使用什么工具看看哪个方法占用CPU多了。
+gom应该就够了啊
+
+socket
+file descriptor
+应该都是server级别的监控啊。
+
+
 ### gom
 https://github.com/rakyll/gom
 
-监控goroutine数量，thread数量，以及CPU、内存占用最多的代码段。（可能是更新了golang的原因，CPU、内存占用的profile gom解析不了了）
+监控goroutine数量，thread数量，以及CPU、内存占用最多的代码段。（TODO：可能是更新了golang的原因，CPU、内存占用的profile gom解析不了了）
 
 ```
 // installation
@@ -100,6 +118,8 @@ gctrace的实时可视化，不修改代码
 gcvis ./app
 
 ```
+
+### pprof
 
 ### golang本身
 
