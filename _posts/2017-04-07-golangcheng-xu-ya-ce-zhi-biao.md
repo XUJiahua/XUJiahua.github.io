@@ -13,19 +13,19 @@ share:
 ---
 
 ## 背景
-&emsp;&emsp;之前版本的APP消息推送服务做得保守了，考虑到同一台主机上还部署了联机交易系统和提供下载报表的平台，同时处理消息推送的goroutine数量设置在10条。一直运行得稳稳的，直到交易量上来了。用户已经能明显感觉到推送的延迟了。
+之前版本的APP消息推送服务做得保守了，考虑到同一台主机上还部署了联机交易系统和提供下载报表的平台，同时处理消息推送的goroutine数量设置在10条。一直运行得稳稳的，直到交易量上来了。用户已经能明显感觉到推送的延迟了。
 
 用户场景：顾客扫完固定码做支付宝、微信交易后，交易成功的消息将推送到商户手机上。
 
 ## 观测
-&emsp;&emsp;代码中加了日志，统计了到渠道的推送占用时间后，观测到：
+代码中加了日志，统计了到渠道的推送占用时间后，观测到：
 1. Android推送（使用友盟和小米）占用时间20ms~250ms；
 1. iOS推送（APNS）占用时间5s~6s；
 1. iOS推送虽然需要5s~6s，实际感受是手机先收到推送，服务器后面再收到推送返回结果；相比下来，Android推送渠道对手机推送的处理应该是异步处理的。
 
 
 ## 推理
-&emsp;&emsp;iOS推送明显太慢了，如果同时要推10台iOS设备，就把10条goroutine占满了，其他消息就得等到5s后继续处理了，对实时性影响很大。
+iOS推送明显太慢了，如果同时要推10台iOS设备，就把10条goroutine占满了，其他消息就得等到5s后继续处理了，对实时性影响很大。
 
 不限制并发数，怕是流量异常把服务器撑坏了，那就提高下并发推消息的goroutine最大数吧。
 
@@ -33,7 +33,7 @@ share:
 
 ## 10x goroutine vs. 1000x goroutine
 
-&emsp;&emsp;监控指标一般如下：
+监控指标一般如下：
 1. CPU
 1. 内存
 1. goroutine使用数量
@@ -91,7 +91,7 @@ go-torch --file "torch.svg" --url http://localhost:7000
 
 ### [debugcharts](https://github.com/mkevac/debugcharts) Web实时显示
 
-&emsp;&emsp;可视化监控CPU使用、内存分配、GC暂停。需要修改代码。但没有goroutine数量的统计。
+可视化监控CPU使用、内存分配、GC暂停。需要修改代码。但没有goroutine数量的统计。
 
 ```
 // installation
@@ -133,7 +133,7 @@ file descriptor
 
 ### [gom](https://github.com/rakyll/gom) 终端实时显示
 
-&emsp;&emsp;监控goroutine数量，thread数量，以及CPU、内存占用最多的代码段。需要修改代码。（TODO：可能是更新了golang的原因，CPU、内存占用的profile gom解析不了了）
+监控goroutine数量，thread数量，以及CPU、内存占用最多的代码段。需要修改代码。（TODO：可能是更新了golang的原因，CPU、内存占用的profile gom解析不了了）
 gom比较直观，goroutine、thread的数量展示，容易查看哪块代码的cpu、heap占用较高，按照使用率从高往低排序
 对一个能用的程序优化，使用gom最简洁，就看cpu、heap占用率，解决高峰值的那几个代码块。
 
@@ -149,7 +149,7 @@ import _ "github.com/rakyll/gom/http"
 
 ### [gcvis](https://github.com/davecheney/gcvis) 监控Golang的垃圾回收
 
-&emsp;&emsp;gctrace的实时可视化，不修改代码。
+gctrace的实时可视化，不修改代码。
 
 ```
 gcvis ./app
@@ -158,7 +158,7 @@ gcvis ./app
 
 ## 反思
 
-&emsp;&emsp;做好服务的一个前提，就是要规范化，规范要求服务上线前做好压力测试，知道瓶颈。服务好坏的一个标准就是，并发量上来，还是稳定。服务的代码逻辑是最没难度的。
+做好服务的一个前提，就是要规范化，规范要求服务上线前做好压力测试，知道瓶颈。服务好坏的一个标准就是，并发量上来，还是稳定。服务的代码逻辑是最没难度的。
 
 
 ## 参考

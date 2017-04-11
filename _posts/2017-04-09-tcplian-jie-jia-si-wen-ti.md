@@ -13,18 +13,18 @@ share:
 ---
 
 ## 故障
-&emsp;&emsp;线上的推送服务不工作了。排除了渠道问题后，定位到使用的队列挤了快60000+的消息没推送。而双活的推送进程一直没挂。
+线上的推送服务不工作了。排除了渠道问题后，定位到使用的队列挤了快60000+的消息没推送。而双活的推送进程一直没挂。
 
 还好打印了日志，从日志上看235应用，4月2日7点07分最后一次从队列获取推送消息；122应用日志，4月2日8点18分最后一次从队列获取推送消息。review了下代码，最可能发生异常的，是从队列获取数据一直是堵塞着。
 
 ## 重现
 
-&emsp;&emsp;日志说明，两个进程是先后一小时停止服务的，排除了队列服务器的故障。可能就是两个进程所在服务器先后一小时有网络瞬断情况（使用的内网连接）。
+日志说明，两个进程是先后一小时停止服务的，排除了队列服务器的故障。可能就是两个进程所在服务器先后一小时有网络瞬断情况（使用的内网连接）。
 
 队列使用的是redis，怀疑是web server到redis server的网络中断后，连接还在，恢复后这个连接仍不可用。造成堵塞了。本地一试，确实如此。
 
 ## dead connection
-&emsp;&emsp;以下是精简化的代码。queue.DequeuePayload堵塞了，归根结底，是client.Cmd("BRPOP", QUEUE_NAME, TIMEOUT)堵塞了，因为dead connection的原因。
+以下是精简化的代码。queue.DequeuePayload堵塞了，归根结底，是client.Cmd("BRPOP", QUEUE_NAME, TIMEOUT)堵塞了，因为dead connection的原因。
 
 StackOverflow上[这个答案](http://stackoverflow.com/questions/41978922/why-many-libraries-does-not-detect-dead-tcp-connections/41993654)的第二种情况很符合现在的场景。redis堵塞读，请求已经发出去了，客户端一直是在等应答状态，服务端keepalive设置为0，这时候实际连接如果是中断的，那么就会一直阻塞的。
 
