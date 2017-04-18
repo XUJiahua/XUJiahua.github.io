@@ -4,7 +4,7 @@
 
     rake new_post
 
-不确定是否是新版jekyll不兼容以前生成的blog的原因，本地调试使用：
+本地调试使用：
 
     bundle exec jekyll serve
 
