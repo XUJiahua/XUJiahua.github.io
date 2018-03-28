@@ -26,8 +26,8 @@ share:
 
 定位TCP连接的外部IP：
 1. 先用htop大概看到了staging用户的进程有点多。
-1. 通过ps命令过滤出staging用户的进程： ps -ef | grep staging
-1. 进一步查看TCP连接： netstat -t
+1. 通过ps命令过滤出staging用户的进程： `ps -ef | grep staging`
+1. 进一步查看TCP连接： `netstat -t`
 ![alt text](/images/180328/0328_4.jpeg)
 
 排查IP：
