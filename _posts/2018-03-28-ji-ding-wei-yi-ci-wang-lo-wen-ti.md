@@ -19,23 +19,23 @@ share:
 
 为什么特别卡：连接数太多了。阿里云机器上装了监控，连接数线性增长！CPU、内存的占用也线性增长了。
 
-![alt text](images/180328/0328_1.png)
-![alt text](images/180328/0328_2.png)
-![alt text](images/180328/0328_3.png)
+![alt text](/images/180328/0328_1.png)
+![alt text](/images/180328/0328_2.png)
+![alt text](/images/180328/0328_3.png)
 
 
 定位TCP连接的外部IP：
 1. 先用htop大概看到了staging用户的进程有点多。
 1. 通过ps命令过滤出staging用户的进程： ps -ef | grep staging
 1. 进一步查看TCP连接： netstat -t
-![alt text](images/180328/0328_4.jpeg)
+![alt text](/images/180328/0328_4.jpeg)
 
 排查IP：
 1. 组员和自己的IP排除在外后
 1. 就剩下这个IP，151.251.82.218.br 前面的IP地址是保加利亚的，有点惊！
 1. 连接这么多，而且只连接不干坏事呢？.br不知道什么意思。无法理解。。。死路了。
 
-![alt text](images/180328/0328_5.png)
+![alt text](/images/180328/0328_5.png)
 
 试着假设151.251.82.218.br是家里IP：
 
@@ -111,4 +111,4 @@ Tunnel created successfully
 
 结论：原来是一直没确认yes才不断重连的。算报错了，导致一直在建隧道，连接越建越多。阿里云小破机器连接数一多就挂了。
 
-![alt text](images/180328/0328_6.png)
+![alt text](/images/180328/0328_6.png)
