@@ -41,10 +41,10 @@ share:
 
 a. 家里电脑敲击命令：
 ```
-➜  ~ netstat -t | grep 118.31.32.201
-tcp        0      0 192.168.1.15:34562      118.31.32.201:ssh       ESTABLISHED
-tcp        0      0 plant:58000             118.31.32.201:ssh       ESTABLISHED
-tcp        0      0 192.168.1.15:34558      118.31.32.201:ssh       ESTABLISHED
+➜  ~ netstat -t | grep 118.31.32.xxx
+tcp        0      0 192.168.1.15:34562      118.31.32.xxx:ssh       ESTABLISHED
+tcp        0      0 plant:58000             118.31.32.xxx:ssh       ESTABLISHED
+tcp        0      0 192.168.1.15:34558      118.31.32.xxx:ssh       ESTABLISHED
 ```
 
 b. 阿里云敲击命令：
