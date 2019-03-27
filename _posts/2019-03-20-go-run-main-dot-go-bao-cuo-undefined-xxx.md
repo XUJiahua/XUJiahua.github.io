@@ -3,7 +3,7 @@ layout: post
 title: "go run main.go 报错 undefined xxx"
 modified: 2019-03-20 20:52:11 +0800
 category: [golang]
-tags: [golang]
+tags: [golang,编程]
 image:
   feature: 
   credit: 
