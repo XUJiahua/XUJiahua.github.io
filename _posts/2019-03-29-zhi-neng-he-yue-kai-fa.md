@@ -3,7 +3,7 @@ layout: post
 title: "使用truffle开发智能合约"
 modified: 2019-03-29 15:37:27 +0800
 category: []
-tags: []
+tags: [blockchain,ethereum]
 image:
   feature: 
   credit: 
