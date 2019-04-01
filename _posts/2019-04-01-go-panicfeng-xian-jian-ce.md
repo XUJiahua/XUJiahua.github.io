@@ -2,8 +2,8 @@
 layout: post
 title: "Go panic风险检测"
 modified: 2019-04-01 14:53:14 +0800
-category: []
-tags: []
+category: [golang]
+tags: [golang,linter]
 image:
   feature: 
   credit: 
