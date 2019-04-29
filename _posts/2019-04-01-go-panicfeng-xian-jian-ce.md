@@ -84,4 +84,20 @@ POC 在 https://github.com/XUJiahua/panic-risk-detector 。
 ### 参考
 
 * Basic AST Traversal in Go https://zupzup.org/go-ast-traversal/
+* 【视频】justforfunc #24: what's the most common identifier in the Go stdlib?
+ https://youtu.be/k23xhJoTbI4 利用了scanner.Scanner。词法分析，解析出所有TOKEN。
+* 【视频】justforfunc #25: deeper program analysis with go/parser
+ https://youtu.be/YRWCa84pykM AST的使用。token真是太基础了，语法树才能激发能量。
+
+https://github.com/yuroyoro/goast-viewer
+
+
+编译器前端：parser，将文本转换为AST。这是一个苦活，不过Go自带了parser库。这个阶段的一般过程：
+
+1. 词法分析（Lexical analysis）：将文本转换为token（可以使用正则表达式来解析）。
+2. 语法分析（Syntactic analysis）：token转化为AST。一些keyword：上下文无关文法，BNF，LL(1) 算法（自顶向下的分析）。
+
+Parser 在编译原理里面是难点但却不是重点，所以在这一部分大家觉得复杂的算法完全可以跳过，不建议浪费太多时间。Parser 都是可以根据正则和 CFG 自动生成的，并不需要自己手写。所以这部分主要目的是学好的是正则和 CFG，那些复杂的算法学起来意义很小。
+
+通过AST静态分析、生成代码。
 
