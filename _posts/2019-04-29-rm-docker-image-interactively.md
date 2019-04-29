@@ -15,7 +15,7 @@ share:
 
 写了个工具交互式删除 docker image（https://github.com/XUJiahua/dockerrmi）。
 
-[demo](https://github.com/XUJiahua/dockerrmi/raw/master/show/show.gif)
+![demo](https://github.com/XUJiahua/dockerrmi/raw/master/show/show.gif)
 
 实在无法忍受先`docker images`，然后`docker rmi`的重复操作。
 还比较原始，刚好够自己目前所需。
