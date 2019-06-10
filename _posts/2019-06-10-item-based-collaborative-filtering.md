@@ -17,8 +17,13 @@ share:
 Item-item collaborative filtering with binary or unary data
 https://medium.com/radon-dev/item-item-collaborative-filtering-with-binary-or-unary-data-e8f0b465b2c3
 
+这篇文章挺好，比较注重implicit data（binary data，是否听了某个artisit），而implicit data是日常工作中最容易收集的数据了。
 
-### item-item similarity matrix
+### Training: item-item similarity matrix
+
+使用用户评分（向量）表示商品。求解商品之间的相似度，就是求解向量之间的相似度。
+
+使用机器学习训练-预测的两阶段划分，求解商品之间的相似度矩阵是一个训练过程。
 
 ![](/media/15601386053473.jpg)
 
@@ -41,11 +46,11 @@ https://medium.com/radon-dev/item-item-collaborative-filtering-with-binary-or-un
 ![](/media/15601432984898.jpg)
 https://en.wikipedia.org/wiki/Feature_scaling
 
-average(x) = 3
-max(x) = 5
-min(x) = 1
+* average(x) = 3
+* max(x) = 5
+* min(x) = 1
 
-这样评分向量变化为：
+这样，评分向量变化为：
 
 1. 用户A对商品的评分：(-0.5, -0.5, -0.5, -0.5, -0.5)
 1. 用户B对商品的评分：(0.5, 0.5, 0.5, 0.5, 0.5)
@@ -61,8 +66,78 @@ min(x) = 1
 ![](/media/15601439981816.jpg)
 
 
+参考文中的归一化方式：
+
+![](/media/15601451777277.jpg)
+![](/media/15601451823717.jpg)
+
+
 
 ### 相似度计算优化
 
+### Prediction: recommendation
 
+给用户商品推荐需要两份数据：
+
+1. 用户的历史行为（商品评分）
+2. 商品相似度矩阵
+
+（没有历史行为，就会有冷启动问题。这是协同过滤的通病。）
+
+具体，某个用户u对某个商品i的评分计算如下：
+
+![](/media/15601458001143.jpg)
+
+* W: 权重矩阵，也就是学习到的商品之间相似度矩阵。
+* Wij：商品i,j之间的相似度。
+* rui: 用户u对商品i的评分（或是，是否点击、参与）。
+
+TopK推荐，就是对每个商品进行评分计算，然后筛选出分数最高的K个。
+
+
+### 推荐计算优化
+
+注意上节的公式，参与计算的，与商品i相似的商品j，来自整个商品集合。复杂度，O(n)。
+
+再加上需要计算每个商品的评分才能计算TopK，所以复杂度，O(n ^ 2)。
+
+其实，只需要挑选商品i的Top K个相似商品参与计算，没必要计算全部。复杂度，O(k)，在大型电商中，K应该是远小于N的。
+
+基于此，计算TopK的方式还能再优化。因为只选取了商品i的k个相似商品，如果用户评分过p个商品，那么最多k * p个商品需要计算评分，还是远少于N的。所以复杂度，O(k * k * p)。计算量上可以简化不少。
+
+
+### 矩阵角度思考
+
+用户商品评分预测用矩阵计算就一行。
+
+```
+score = data_matrix.dot(user_rating_vector).div(data_matrix.sum(axis=1))
+```
+
+data_matrix是商品相似度矩阵。
+
+![](/media/15601482597748.jpg)
+
+user_rating_vector是商品评分表示的用户偏好向量。
+![](/media/15601482880774.jpg)
+
+两者的shape分别是：
+
+![](/media/15601483882690.jpg)
+
+(285, 285) * (285, 1) ./ (285, 1) = (285, 1) 
+
+矩阵计算的结果是(285, 1)的向量，也就是285个商品的评分。
+
+怎么理解矩阵计算呢？我们可以从单个商品评分计算来看这个过程。
+
+
+
+![](/media/15601495555671.jpg)
+
+A商品的行向量，是A商品与其他商品之间的相似度。
+A商品的行向量（1, 0.5, 0.6）乘以，用户的商品偏好表示的列向量 (0, 1, 1)，然后除以A商品行向量的和。是满足这个计算公式的。 
+![](/media/15601458001143.jpg)
+
+一个个商品评分计算stack起来，就成了矩阵计算。
 
