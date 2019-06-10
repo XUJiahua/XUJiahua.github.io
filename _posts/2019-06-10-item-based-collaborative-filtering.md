@@ -12,7 +12,7 @@ comments:
 share: 
 ---
 
-本文的基础是下面这篇文章，本文主要着重讲几个容易忽视的问题。
+本文的基础是下面这篇文章，本文挑重点复述及加了一些自己的感想。
 
 Item-item collaborative filtering with binary or unary data
 https://medium.com/radon-dev/item-item-collaborative-filtering-with-binary-or-unary-data-e8f0b465b2c3
@@ -73,8 +73,32 @@ https://en.wikipedia.org/wiki/Feature_scaling
 
 
 
+### similarity
+
+除了cosine similarity外，相似度公式还有哪些呢？
+
+#### Jaccard coefficient
+
+![](/media/15601535483164.jpg)![](/media/15601535767121.jpg)
+
+https://en.wikipedia.org/wiki/Jaccard_index
+
+交集除以并集。打个比方，A、B是利用用户评分表示的商品向量。
+
+A、B交集：同时评价两个商品的用户集合。
+A、B并集：至少评价一个商品的用户集合。
+
+#### Pearson correlation coefficient
+
+TODO
+
+#### Cosine similarity 上文已提到
+
+#### 其他变种
+
 ### 相似度计算优化
 
+TODO
 ### Prediction: recommendation
 
 给用户商品推荐需要两份数据：
@@ -142,4 +166,33 @@ user_rating_vector是商品评分表示的用户偏好向量。
 ![](/media/15601458001143.jpg)
 
 一个个商品评分计算stack起来，就成了矩阵计算。
+
+### 学好pandas
+
+原文的代码值得学习。
+
+https://gist.github.com/victorkohler/9bdccba269fb74e7e72cd22565b0705a#file-item_item_collaborative-_filtering_full-py
+
+### 加入时间因素的推荐
+
+有极大可能，用户去年的口味可能与今年的口味很不同。比如去年爱好漫画，今年爱好科幻。如果对漫画，科幻两个主题是同等对待，那么推荐是不合用户口味的。
+
+![](/media/15601458001143.jpg)
+可以考虑在用户评分rui上加一个时间权重，`0.99 ^ elapsing days`。时间越久，惩罚越大，造成rui变小，在推荐中起到的作用变小。
+
+这样，推荐结果是比较新鲜的。
+
+### 总结 item-based collaborative filtering
+
+![](/media/15601526749477.jpg)
+image from https://towardsdatascience.com/the-remarkable-world-of-recommender-systems-bff4b9cbe6a7
+
+item-based collaborative filtering从推荐系统分类来看，属于协同过滤中的memory based分支。说不上是机器学习。硬要往上靠的话，那就是最近邻算法KNN了。
+
+特点：
+
+1. 简单：最直观，实现简单。
+1. 可解释性高：推荐商品A，是因为与商品B相似。
+1. 不需要用户、商品特征：这是协同过滤的优点，只利用user-item交互数据。
+1. 大规模计算问题？
 
