@@ -10,14 +10,14 @@
         <meta name="Description" content=""><meta property="og:title" content="许嘉华的博客" />
 <meta property="og:description" content="" />
 <meta property="og:type" content="website" />
-<meta property="og:url" content="http://example.org/" />
+<meta property="og:url" content="http://xujiahua.github.io/" />
 <meta property="og:updated_time" content="2020-03-12T15:17:36+08:00" />
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="许嘉华的博客"/>
 <meta name="twitter:description" content=""/>
 <meta name="theme-color" content="#ffffff">
 <meta name="msapplication-TileColor" content="#da532c">
-<link rel="canonical" href="http://example.org/" />
+<link rel="canonical" href="http://xujiahua.github.io/" />
 <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
 <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
@@ -70,7 +70,7 @@
 </script>
 <main class="main">
                 <div class="container"><div class="page home"><article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
-        <a href="http://example.org/posts/slash-in-url-path/">Go库对URL Path中%2F的处理</a>
+        <a href="http://xujiahua.github.io/posts/slash-in-url-path/">Go库对URL Path中%2F的处理</a>
     </h1><div class="post-meta"><span class="post-author">
             <a class="author" href="/" rel="author" target="_blank">
                 <i class="fas fa-user-circle fa-fw"></i>Author
@@ -80,7 +80,7 @@
         </span></div><div class="content">问题描述  有同事反馈Go项目的接口404了。看了下nginx日志，只有部分请求404了，404请求的显著特征是URL里有%2F，也就是/的转义。 接口定义是这样的：/api/xxx/{mid}/{uid}。mid、uid是URL path的一部分。从现象来看，程序没处理好转义字符，因为多了一个path部分，路由不匹配了，404。 nginx的URL记录是%2F，其实调用方传的是微信ID，比如IEd5W/jqsdF9qpuagQscEg==。调用方在发请求之前对ID已经做好了转义。  Go内置库：不区分%2F和/ An application cannot distinguish between &ldquo;/&rdquo; used as a path segment delimiter and &ldquo;/&rdquo; encoded in a path segment.
 这个问题由来已久了，看着官方也不打算解决了，见这个issue：https://github.com/golang/go/issues/3659
 If your app needs to assign special meaning, the server can reprocess req.RequestURI as it sees fit, and the client can issue requests using &amp;url.URL{Opaque: rawURI}.  reprocess req.RequestURI 就是让你别用内置路由库了。 issue requests using &amp;url.URL{Opaque: rawURI}. 试了，问题没解决。客户端不管怎么做，最终都是以HTTP协议输出的。GET http://www.google.com/index.html HTTP/1.1 服务端代码最终解析的还是中间的那段URL文本。照理就不通啊。  源码角度 url.URL的定义，明确指出Path字段存储的是decode之后的数据，所以%2F在这里已经被转义成了/，跟之前的Path意义完全不同了。</div><div class="post-footer">
-        <a href="http://example.org/posts/slash-in-url-path/">Read More</a><div class="post-tags">&nbsp;<span>
+        <a href="http://xujiahua.github.io/posts/slash-in-url-path/">Read More</a><div class="post-tags">&nbsp;<span>
                         <a href="/tags/go">
                             <i class="fas fa-tag fa-fw"></i>Go
                         </a>
@@ -95,7 +95,7 @@ If your app needs to assign special meaning, the server can reprocess req.Reques
                     </span></div></div>
 </article>
 <article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
-        <a href="http://example.org/posts/github-pages-restart/">Github pages重新开始：使用Hugo、Typora</a>
+        <a href="http://xujiahua.github.io/posts/github-pages-restart/">Github pages重新开始：使用Hugo、Typora</a>
     </h1><div class="post-meta"><span class="post-author">
             <a class="author" href="/" rel="author" target="_blank">
                 <i class="fas fa-user-circle fa-fw"></i>Author
@@ -106,7 +106,7 @@ If your app needs to assign special meaning, the server can reprocess req.Reques
 打算重新开始：
  把我记录在Evernote和Typora中的资料迁移到GitHub pages上。 另外做一些Web形式的小工具，挂载在一个子目录里，方便平时使用。  Hugo + Typora 打算如下：
  Markdown文件还是使用Typora写。用过MWeb、Typora，Typora使用感受更好些（这么好用还不要钱）。 Hugo作为静态网站生成，创建一个博客模板。  Hugo quickstart # 安装hugo（其实是Go编译的二进制文件） brew install hugo # 创建site hugo new site quickstart # 通过git submodule的方式下载主题 git init git submodule -b master add https://github.com/dillonzq/LoveIt themes/LoveIt # 更新config.toml，配置主题参数，见loveit配置 # 创建博客，创建的posts在content目录下。文件格式为：content/&lt;CATEGORY&gt;/&lt;FILE&gt;.&lt;FORMAT&gt; # hugo new 会采用 archetypes/default.md作为模板，把一些共性配置放在这个模板里吧。 hugo new posts/my-first-post.md # 本地看blog效果，-D表示草稿状态的博客也显示 hugo server -D # 生成静态网站到./public/，也可以指定目录 hugo -D 挑选了一个比较实用的主题 https://hugoloveit.com/</div><div class="post-footer">
-        <a href="http://example.org/posts/github-pages-restart/">Read More</a><div class="post-tags">&nbsp;<span>
+        <a href="http://xujiahua.github.io/posts/github-pages-restart/">Read More</a><div class="post-tags">&nbsp;<span>
                         <a href="/tags/github-pages">
                             <i class="fas fa-tag fa-fw"></i>GitHub pages
                         </a>
@@ -121,7 +121,7 @@ If your app needs to assign special meaning, the server can reprocess req.Reques
                     </span></div></div>
 </article>
 <article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
-        <a href="http://example.org/posts/use-hyper-v/">Hyper-V使用体验</a>
+        <a href="http://xujiahua.github.io/posts/use-hyper-v/">Hyper-V使用体验</a>
     </h1><div class="post-meta"><span class="post-author">
             <a class="author" href="/" rel="author" target="_blank">
                 <i class="fas fa-user-circle fa-fw"></i>Author
@@ -137,7 +137,7 @@ VMWare中有三种网络模式，Bridging、NAT、Host-only分别对应Hyper-V�
 Hyper-V Default Switch + VM DHCP 的组合默认有了NAT功能，满足以下：
  虚拟机之间可以互相访问 虚拟机与物理机之间可以互相访问 虚拟机可以访问互联网  但是：
  每次重启，Default Switch的IP都会变，Windows10 物理机上的网卡IPv4配置无法让他不变。 ping baidu.</div><div class="post-footer">
-        <a href="http://example.org/posts/use-hyper-v/">Read More</a><div class="post-tags">&nbsp;<span>
+        <a href="http://xujiahua.github.io/posts/use-hyper-v/">Read More</a><div class="post-tags">&nbsp;<span>
                         <a href="/tags/hyper-v">
                             <i class="fas fa-tag fa-fw"></i>Hyper-V
                         </a>
@@ -148,7 +148,7 @@ Hyper-V Default Switch + VM DHCP 的组合默认有了NAT功能，满足以下�
                     </span></div></div>
 </article>
 <article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
-        <a href="http://example.org/posts/go-modules/">使用Go Modules</a>
+        <a href="http://xujiahua.github.io/posts/go-modules/">使用Go Modules</a>
     </h1><div class="post-meta"><span class="post-author">
             <a class="author" href="/" rel="author" target="_blank">
                 <i class="fas fa-user-circle fa-fw"></i>Author
@@ -157,7 +157,7 @@ Hyper-V Default Switch + VM DHCP 的组合默认有了NAT功能，满足以下�
             published on&nbsp;<time datetime=2020-02-28>2020-02-28</time>
         </span></div><div class="content">Go Modules使用着感觉不错，Go终于有正常点的依赖管理工具了。记录一二。
 使用小结  go.mod, go.sum加入版本管理 Both go.mod and go.sum should be checked into version control. 直接依赖体现在go.mod，间接依赖由直接依赖自己管理，这是个递归的过程 Only direct dependencies are recorded in the go.mod file. go命令自动管理go.mod，这可太方便了 When it encounters an import of a package not provided by any module in go.mod, the go command automatically looks up the module containing that package and adds it to go.mod, using the latest version. 看着比之前的依赖管理好用很多。比如dep。因为网络下载包等问题，最后把依赖包全checkin到vendor目录了。太臃肿。  常用命令  go mod init creates a new module, initializing the go.</div><div class="post-footer">
-        <a href="http://example.org/posts/go-modules/">Read More</a><div class="post-tags">&nbsp;<span>
+        <a href="http://xujiahua.github.io/posts/go-modules/">Read More</a><div class="post-tags">&nbsp;<span>
                         <a href="/tags/go">
                             <i class="fas fa-tag fa-fw"></i>Go
                         </a>
@@ -168,7 +168,7 @@ Hyper-V Default Switch + VM DHCP 的组合默认有了NAT功能，满足以下�
                     </span></div></div>
 </article>
 <article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
-        <a href="http://example.org/posts/5g/">5G认识小结</a>
+        <a href="http://xujiahua.github.io/posts/5g/">5G认识小结</a>
     </h1><div class="post-meta"><span class="post-author">
             <a class="author" href="/" rel="author" target="_blank">
                 <i class="fas fa-user-circle fa-fw"></i>Author
@@ -188,7 +188,7 @@ Hyper-V Default Switch + VM DHCP 的组合默认有了NAT功能，满足以下�
  5G基站厂商。华为为主。 国家层面。5G是国家战略，是政治正确。其一，靠专利技术薅世界羊毛，从国家角度是有利可图的。其二，带动产业发展，拉动GDP。 手机终端厂商。近年来手机上的创新的吸睛能力真不行，消费欲望降低。靠5G这个卖点，能赚一波眼球。 还有众多蹭5G话题流量的：广告公司、创业公司。  利坏：
  三大运营商。基站投入是高成本的，为了发展5G生态，国家也会限制套餐费用，影响其收入。还好是国企。  参考：https://www.zhihu.com/question/342366514/answer/820922564
 杂言 真正有颠覆性的，真正能突破人们想象力的，都在基础科学。比如材料科学，电池技术现在是瓶颈。离我很远。我做的事情真的对人类价值不大，只是个普通人，只能做到赚钱养家对家庭做贡献了。</div><div class="post-footer">
-        <a href="http://example.org/posts/5g/">Read More</a><div class="post-tags">&nbsp;<span>
+        <a href="http://xujiahua.github.io/posts/5g/">Read More</a><div class="post-tags">&nbsp;<span>
                         <a href="/tags/5g">
                             <i class="fas fa-tag fa-fw"></i>5G
                         </a>

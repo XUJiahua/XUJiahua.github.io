@@ -11,7 +11,7 @@
 这个问题由来已久了，看着官方也不打算解决了，见这个issue：https://github.com/golang/go/issues/3659
 If your app needs to assign special meaning, the server can reprocess req.RequestURI as it sees fit, and the client can issue requests using &amp;url.URL{Opaque: rawURI}.  reprocess req.RequestURI 就是让你别用内置路由库了。 issue requests using &amp;url.URL{Opaque: rawURI}. 试了，问题没解决。客户端不管怎么做，最终都是以HTTP协议输出的。GET http://www.google.com/index.html HTTP/1.1 服务端代码最终解析的还是中间的那段URL文本。照理就不通啊。  源码角度 url.URL的定义，明确指出Path字段存储的是decode之后的数据，所以%2F在这里已经被转义成了/，跟之前的Path意义完全不同了。" />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="http://example.org/posts/slash-in-url-path/" />
+<meta property="og:url" content="http://xujiahua.github.io/posts/slash-in-url-path/" />
 <meta property="article:published_time" content="2020-03-12T15:17:36+08:00" />
 <meta property="article:modified_time" content="2020-03-12T15:17:36+08:00" />
 <meta name="twitter:card" content="summary"/>
@@ -21,13 +21,13 @@ If your app needs to assign special meaning, the server can reprocess req.Reques
 If your app needs to assign special meaning, the server can reprocess req.RequestURI as it sees fit, and the client can issue requests using &amp;url.URL{Opaque: rawURI}.  reprocess req.RequestURI 就是让你别用内置路由库了。 issue requests using &amp;url.URL{Opaque: rawURI}. 试了，问题没解决。客户端不管怎么做，最终都是以HTTP协议输出的。GET http://www.google.com/index.html HTTP/1.1 服务端代码最终解析的还是中间的那段URL文本。照理就不通啊。  源码角度 url.URL的定义，明确指出Path字段存储的是decode之后的数据，所以%2F在这里已经被转义成了/，跟之前的Path意义完全不同了。"/>
 <meta name="theme-color" content="#ffffff">
 <meta name="msapplication-TileColor" content="#da532c">
-<link rel="canonical" href="http://example.org/posts/slash-in-url-path/" />
+<link rel="canonical" href="http://xujiahua.github.io/posts/slash-in-url-path/" />
 <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
 <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
 <link rel="manifest" href="/site.webmanifest">
-<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="prev" href="http://example.org/posts/github-pages-restart/" /><link rel="stylesheet" href="/lib/fontawesome-free/all.min.9a680b90260b5106d79f4075491ab31daafa7429eff686453c40b58357309649.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk="><link rel="stylesheet" href="/lib/animate/animate.min.3c770e90f98eb21b0c042fafb49755af93306fbaf42e449524f94fae9fc83295.css" integrity="sha256-PHcOkPmOshsMBC&#43;vtJdVr5Mwb7r0LkSVJPlPrp/IMpU="><link rel="stylesheet" href="/css/style.min.e8ca640cf5b1714eaa34bc21e8e2d0e79ae9cc05a934f6ee78a318487d7c515b.css" integrity="sha256-6MpkDPWxcU6qNLwh6OLQ55rpzAWpNPbueKMYSH18UVs=">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="prev" href="http://xujiahua.github.io/posts/github-pages-restart/" /><link rel="stylesheet" href="/lib/fontawesome-free/all.min.9a680b90260b5106d79f4075491ab31daafa7429eff686453c40b58357309649.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk="><link rel="stylesheet" href="/lib/animate/animate.min.3c770e90f98eb21b0c042fafb49755af93306fbaf42e449524f94fae9fc83295.css" integrity="sha256-PHcOkPmOshsMBC&#43;vtJdVr5Mwb7r0LkSVJPlPrp/IMpU="><link rel="stylesheet" href="/css/style.min.e8ca640cf5b1714eaa34bc21e8e2d0e79ae9cc05a934f6ee78a318487d7c515b.css" integrity="sha256-6MpkDPWxcU6qNLwh6OLQ55rpzAWpNPbueKMYSH18UVs=">
 <script type="application/ld+json">
     {
         "@context": "http://schema.org",
@@ -35,9 +35,9 @@ If your app needs to assign special meaning, the server can reprocess req.Reques
         "headline": "Go库对URL Path中%2F的处理",
         "mainEntityOfPage": {
             "@type": "WebPage",
-            "@id": "http:\/\/example.org\/posts\/slash-in-url-path\/"
+            "@id": "http:\/\/xujiahua.github.io\/posts\/slash-in-url-path\/"
         },"genre": "posts","keywords": "Go, Go router, Bug","wordcount":  144 ,
-        "url": "http:\/\/example.org\/posts\/slash-in-url-path\/","datePublished": "2020-03-12T15:17:36\x2b08:00","dateModified": "2020-03-12T15:17:36\x2b08:00","description": ""
+        "url": "http:\/\/xujiahua.github.io\/posts\/slash-in-url-path\/","datePublished": "2020-03-12T15:17:36\x2b08:00","dateModified": "2020-03-12T15:17:36\x2b08:00","description": ""
     }
     </script></head>
     <body><script>
@@ -276,7 +276,7 @@ func main() {
         </section>
     </div>
 
-    <div class="post-nav"><a href="http://example.org/posts/github-pages-restart/" class="prev" rel="prev" title="Github pages重新开始：使用Hugo、Typora"><i class="fas fa-angle-left fa-fw"></i>Github pages重新开始：使用Hugo、Typora</a></div>
+    <div class="post-nav"><a href="http://xujiahua.github.io/posts/github-pages-restart/" class="prev" rel="prev" title="Github pages重新开始：使用Hugo、Typora"><i class="fas fa-angle-left fa-fw"></i>Github pages重新开始：使用Hugo、Typora</a></div>
 </div>
 <div class="comment"></div>
     </article></div>

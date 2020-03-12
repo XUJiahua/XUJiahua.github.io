@@ -2,21 +2,21 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Posts on 许嘉华的博客</title>
-    <link>http://example.org/posts/</link>
+    <link>http://xujiahua.github.io/posts/</link>
     <description>Recent content in Posts on 许嘉华的博客</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
     <lastBuildDate>Thu, 12 Mar 2020 15:17:36 +0800</lastBuildDate>
     
-	<atom:link href="http://example.org/posts/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="http://xujiahua.github.io/posts/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>Go库对URL Path中%2F的处理</title>
-      <link>http://example.org/posts/slash-in-url-path/</link>
+      <link>http://xujiahua.github.io/posts/slash-in-url-path/</link>
       <pubDate>Thu, 12 Mar 2020 15:17:36 +0800</pubDate>
       
-      <guid>http://example.org/posts/slash-in-url-path/</guid>
+      <guid>http://xujiahua.github.io/posts/slash-in-url-path/</guid>
       <description>问题描述  有同事反馈Go项目的接口404了。看了下nginx日志，只有部分请求404了，404请求的显著特征是URL里有%2F，也就是/的转义。 接口定义是这样的：/api/xxx/{mid}/{uid}。mid、uid是URL path的一部分。从现象来看，程序没处理好转义字符，因为多了一个path部分，路由不匹配了，404。 nginx的URL记录是%2F，其实调用方传的是微信ID，比如IEd5W/jqsdF9qpuagQscEg==。调用方在发请求之前对ID已经做好了转义。  Go内置库：不区分%2F和/ An application cannot distinguish between &amp;ldquo;/&amp;rdquo; used as a path segment delimiter and &amp;ldquo;/&amp;rdquo; encoded in a path segment.
 这个问题由来已久了，看着官方也不打算解决了，见这个issue：https://github.com/golang/go/issues/3659
 If your app needs to assign special meaning, the server can reprocess req.RequestURI as it sees fit, and the client can issue requests using &amp;amp;url.URL{Opaque: rawURI}.  reprocess req.RequestURI 就是让你别用内置路由库了。 issue requests using &amp;amp;url.URL{Opaque: rawURI}. 试了，问题没解决。客户端不管怎么做，最终都是以HTTP协议输出的。GET http://www.google.com/index.html HTTP/1.1 服务端代码最终解析的还是中间的那段URL文本。照理就不通啊。  源码角度 url.URL的定义，明确指出Path字段存储的是decode之后的数据，所以%2F在这里已经被转义成了/，跟之前的Path意义完全不同了。</description>
@@ -24,10 +24,10 @@ If your app needs to assign special meaning, the server can reprocess req.Reques
     
     <item>
       <title>Github pages重新开始：使用Hugo、Typora</title>
-      <link>http://example.org/posts/github-pages-restart/</link>
+      <link>http://xujiahua.github.io/posts/github-pages-restart/</link>
       <pubDate>Tue, 10 Mar 2020 11:24:49 +0800</pubDate>
       
-      <guid>http://example.org/posts/github-pages-restart/</guid>
+      <guid>http://xujiahua.github.io/posts/github-pages-restart/</guid>
       <description>重新开始GitHub pages 曾使用GitHub pages +  jekyll 写过一段时间博客，没啥营养。
 打算重新开始：
  把我记录在Evernote和Typora中的资料迁移到GitHub pages上。 另外做一些Web形式的小工具，挂载在一个子目录里，方便平时使用。  Hugo + Typora 打算如下：
@@ -36,10 +36,10 @@ If your app needs to assign special meaning, the server can reprocess req.Reques
     
     <item>
       <title>Hyper-V使用体验</title>
-      <link>http://example.org/posts/use-hyper-v/</link>
+      <link>http://xujiahua.github.io/posts/use-hyper-v/</link>
       <pubDate>Tue, 03 Mar 2020 22:13:23 +0800</pubDate>
       
-      <guid>http://example.org/posts/use-hyper-v/</guid>
+      <guid>http://xujiahua.github.io/posts/use-hyper-v/</guid>
       <description>Hyper-V 使用体验 Hyper-V是 Windows10 内置的虚拟机软件，没想到我会用到它。
 为什么要用Hyper-V  需要使用虚拟机来模拟Kubernetes环境。 Windows Docker依赖Hyper-V。貌似WSL2也是基于Hyper-V。应该是不会卸载Hyper-V了。 Hyper-V与其他虚拟机软件（VirtualBox, VMWare）冲突，用不了其他的，只能用Hyper-V。 Hyper-V与VirtualBox兼容的方案有没有。可能有，不想过于折腾了，那就不得不用。  Hyper-V好不好用  使用体验太差了，从Mac、从其他虚拟机使用过来，默认配置各种踩坑。 安装VM碰到DHCP超时的问题，反复试验无果，重启Windows后VM的DHCP不超时了。总结下，Windows上，如果怎么搞都搞不定，重启下可能就好了。WTF！ 自带的NAT网络有点残疾，VM配置静态IP，网络就不通了。不像VirtualBox是开箱即用的。 最后借助网络上的零碎信息自定义了下NAT网络，各种神奇配置。 Windows还是很屎，除了打游戏，开发体验跟我之前的体验一样糟。最后搞定花了我一天时间。要是用VMware/VirtualBox，可能在2个小时内就能搞定。总结，不好用。  Hyper-V 创建和克隆VM 创建VM 从*.iso文件创建VM。
  注意，Linux VM，不启用Windows Secure Boot。 更多选项里，设置VM的名称和交换机。 体验不好的地方：左上方的「选择操作系统」区域有长时间的加载过程，即使使用本地镜像文件也得等。  克隆VM 从硬盘文件创建VM。
@@ -53,20 +53,20 @@ Hyper-V Default Switch + VM DHCP 的组合默认有了NAT功能，满足以下�
     
     <item>
       <title>使用Go Modules</title>
-      <link>http://example.org/posts/go-modules/</link>
+      <link>http://xujiahua.github.io/posts/go-modules/</link>
       <pubDate>Fri, 28 Feb 2020 15:05:18 +0800</pubDate>
       
-      <guid>http://example.org/posts/go-modules/</guid>
+      <guid>http://xujiahua.github.io/posts/go-modules/</guid>
       <description>Go Modules使用着感觉不错，Go终于有正常点的依赖管理工具了。记录一二。
 使用小结  go.mod, go.sum加入版本管理 Both go.mod and go.sum should be checked into version control. 直接依赖体现在go.mod，间接依赖由直接依赖自己管理，这是个递归的过程 Only direct dependencies are recorded in the go.mod file. go命令自动管理go.mod，这可太方便了 When it encounters an import of a package not provided by any module in go.mod, the go command automatically looks up the module containing that package and adds it to go.mod, using the latest version. 看着比之前的依赖管理好用很多。比如dep。因为网络下载包等问题，最后把依赖包全checkin到vendor目录了。太臃肿。  常用命令  go mod init creates a new module, initializing the go.</description>
     </item>
     
     <item>
       <title>5G认识小结</title>
-      <link>http://example.org/posts/5g/</link>
+      <link>http://xujiahua.github.io/posts/5g/</link>
       <pubDate>Sat, 22 Feb 2020 23:32:14 +0800</pubDate>
       
-      <guid>http://example.org/posts/5g/</guid>
+      <guid>http://xujiahua.github.io/posts/5g/</guid>
       <description>去年11月尝鲜，买了个三星5G手机。找基站测5G速度成了刚买时候的乐趣。用了几个月，深感5G功能很鸡肋，5G基站太少。
 这两天翻了好多知乎上关于5G的评论，对5G的概念、应用场景有了些厘清。
 基本概念  5G，第五代移动通信技术。也就是5G的边界是移动通信网络。 5G的直接作用是提高了移动设备到基站的下载速率，能达到1G/s，也就是所谓的空口延迟低。 5G下载的速度上限还是光纤的下载速度上限。 5G的流量套餐应该不会便宜，除非国家出政策。为什么套餐不会便宜，这得看成本。5G的基站建设成本远比4G高。5G基站覆盖面积小，需要几倍于4G的基站，5G基站耗电成本也是几倍于4G基站。肥了设备商（华为中兴），苦了运营商（移动联通电信），最后还是消费者买单。 理论速度极可能跑不满。使用者多了，平均到每个终端，带宽就不够。现在我的4G速度好慢，完全没到理论速度。现在的矛盾不是需要更快的网络，而是更多的网络。 木桶效应，一个桶能装多少水由短板决定，以前的移动通信是短板，但是通过3G、4G到现在的5G的改善，已经成为长板了。运营商的承载网等配套也得扩容。不然5G的超高下载速率就是一个理论值。又是运营商的成本。  应用场景 大部分人的共识是，5G的杀手级应用仍在探索中。
