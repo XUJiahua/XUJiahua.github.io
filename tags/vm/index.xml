@@ -2,21 +2,21 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>VM on 许嘉华的博客</title>
-    <link>http://xujiahua.github.io/tags/vm/</link>
+    <link>https://xujiahua.github.io/tags/vm/</link>
     <description>Recent content in VM on 许嘉华的博客</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
     <lastBuildDate>Tue, 03 Mar 2020 22:13:23 +0800</lastBuildDate>
     
-	<atom:link href="http://xujiahua.github.io/tags/vm/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://xujiahua.github.io/tags/vm/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>Hyper-V使用体验</title>
-      <link>http://xujiahua.github.io/posts/use-hyper-v/</link>
+      <link>https://xujiahua.github.io/posts/use-hyper-v/</link>
       <pubDate>Tue, 03 Mar 2020 22:13:23 +0800</pubDate>
       
-      <guid>http://xujiahua.github.io/posts/use-hyper-v/</guid>
+      <guid>https://xujiahua.github.io/posts/use-hyper-v/</guid>
       <description>Hyper-V 使用体验 Hyper-V是 Windows10 内置的虚拟机软件，没想到我会用到它。
 为什么要用Hyper-V  需要使用虚拟机来模拟Kubernetes环境。 Windows Docker依赖Hyper-V。貌似WSL2也是基于Hyper-V。应该是不会卸载Hyper-V了。 Hyper-V与其他虚拟机软件（VirtualBox, VMWare）冲突，用不了其他的，只能用Hyper-V。 Hyper-V与VirtualBox兼容的方案有没有。可能有，不想过于折腾了，那就不得不用。  Hyper-V好不好用  使用体验太差了，从Mac、从其他虚拟机使用过来，默认配置各种踩坑。 安装VM碰到DHCP超时的问题，反复试验无果，重启Windows后VM的DHCP不超时了。总结下，Windows上，如果怎么搞都搞不定，重启下可能就好了。WTF！ 自带的NAT网络有点残疾，VM配置静态IP，网络就不通了。不像VirtualBox是开箱即用的。 最后借助网络上的零碎信息自定义了下NAT网络，各种神奇配置。 Windows还是很屎，除了打游戏，开发体验跟我之前的体验一样糟。最后搞定花了我一天时间。要是用VMware/VirtualBox，可能在2个小时内就能搞定。总结，不好用。  Hyper-V 创建和克隆VM 创建VM 从*.iso文件创建VM。
  注意，Linux VM，不启用Windows Secure Boot。 更多选项里，设置VM的名称和交换机。 体验不好的地方：左上方的「选择操作系统」区域有长时间的加载过程，即使使用本地镜像文件也得等。  克隆VM 从硬盘文件创建VM。
