@@ -137,8 +137,8 @@ issue requests using &amp;url.URL{Opaque: rawURI}.
         class="lazyload"
         src="/svg/loading.min.svg"
         data-sizes="auto"
-        data-srcset="../../_images/image-20200312154454662.png, ../../_images/image-20200312154454662.png 1.5x, ../../_images/image-20200312154454662.png 2x"
-        data-src="../../_images/image-20200312154454662.png"
+        data-srcset="../../images/image-20200312154454662.png, ../../images/image-20200312154454662.png 1.5x, ../../images/image-20200312154454662.png 2x"
+        data-src="../../images/image-20200312154454662.png"
         alt="image-20200312154454662"
         title="image-20200312154454662" /></p>
 <p><code>http.ServeMux</code>也是依赖Path进行路由的。</p>
@@ -146,8 +146,8 @@ issue requests using &amp;url.URL{Opaque: rawURI}.
         class="lazyload"
         src="/svg/loading.min.svg"
         data-sizes="auto"
-        data-srcset="../../_images/image-20200312155554309.png, ../../_images/image-20200312155554309.png 1.5x, ../../_images/image-20200312155554309.png 2x"
-        data-src="../../_images/image-20200312155554309.png"
+        data-srcset="../../images/image-20200312155554309.png, ../../images/image-20200312155554309.png 1.5x, ../../images/image-20200312155554309.png 2x"
+        data-src="../../images/image-20200312155554309.png"
         alt="image-20200312155554309"
         title="image-20200312155554309" /></p>
 <p>而http.Request中的URL字段是怎么从HTTP协议中解析出来的呢，从http.ListenAndServe顺藤摸瓜。</p>
@@ -155,8 +155,8 @@ issue requests using &amp;url.URL{Opaque: rawURI}.
         class="lazyload"
         src="/svg/loading.min.svg"
         data-sizes="auto"
-        data-srcset="../../_images/image-20200312163138455.png, ../../_images/image-20200312163138455.png 1.5x, ../../_images/image-20200312163138455.png 2x"
-        data-src="../../_images/image-20200312163138455.png"
+        data-srcset="../../images/image-20200312163138455.png, ../../images/image-20200312163138455.png 1.5x, ../../images/image-20200312163138455.png 2x"
+        data-src="../../images/image-20200312163138455.png"
         alt="image-20200312163138455"
         title="image-20200312163138455" /></p>
 <p>最后还是在parse rawurl字符串，红框里会做path的转义操作，坑之所在。</p>
@@ -164,8 +164,8 @@ issue requests using &amp;url.URL{Opaque: rawURI}.
         class="lazyload"
         src="/svg/loading.min.svg"
         data-sizes="auto"
-        data-srcset="../../_images/image-20200312164058458.png, ../../_images/image-20200312164058458.png 1.5x, ../../_images/image-20200312164058458.png 2x"
-        data-src="../../_images/image-20200312164058458.png"
+        data-srcset="../../images/image-20200312164058458.png, ../../images/image-20200312164058458.png 1.5x, ../../images/image-20200312164058458.png 2x"
+        data-src="../../images/image-20200312164058458.png"
         alt="image-20200312164058458"
         title="image-20200312164058458" /></p>
 <p>使用Go内置的http路由，代码都写死了：URL解析代码中，Path一定是decode后的数据；路由代码中使用Path来路由。问题得不到解决。</p>
@@ -175,8 +175,8 @@ issue requests using &amp;url.URL{Opaque: rawURI}.
         class="lazyload"
         src="/svg/loading.min.svg"
         data-sizes="auto"
-        data-srcset="../../_images/image-20200312170420310.png, ../../_images/image-20200312170420310.png 1.5x, ../../_images/image-20200312170420310.png 2x"
-        data-src="../../_images/image-20200312170420310.png"
+        data-srcset="../../images/image-20200312170420310.png, ../../images/image-20200312170420310.png 1.5x, ../../images/image-20200312170420310.png 2x"
+        data-src="../../images/image-20200312170420310.png"
         alt="image-20200312170420310"
         title="image-20200312170420310" /></p>
 <p>使用这个方法就可以基于encoded Path进行路由了。例子如下：</p>
@@ -217,8 +217,8 @@ func main() {
         class="lazyload"
         src="/svg/loading.min.svg"
         data-sizes="auto"
-        data-srcset="../../_images/image-20200312171317394.png, ../../_images/image-20200312171317394.png 1.5x, ../../_images/image-20200312171317394.png 2x"
-        data-src="../../_images/image-20200312171317394.png"
+        data-srcset="../../images/image-20200312171317394.png, ../../images/image-20200312171317394.png 1.5x, ../../images/image-20200312171317394.png 2x"
+        data-src="../../images/image-20200312171317394.png"
         alt="image-20200312171317394"
         title="image-20200312171317394" /></p>
 <h2 id="还不完美">还不完美</h2>
@@ -227,8 +227,8 @@ func main() {
         class="lazyload"
         src="/svg/loading.min.svg"
         data-sizes="auto"
-        data-srcset="../../_images/image-20200312173633090.png, ../../_images/image-20200312173633090.png 1.5x, ../../_images/image-20200312173633090.png 2x"
-        data-src="../../_images/image-20200312173633090.png"
+        data-srcset="../../images/image-20200312173633090.png, ../../images/image-20200312173633090.png 1.5x, ../../images/image-20200312173633090.png 2x"
+        data-src="../../images/image-20200312173633090.png"
         alt="image-20200312173633090"
         title="image-20200312173633090" /></p>
 <p>也就是说，即使让请求找到了路由，还是取不到真正的值。还得对URL Path进行手动decode才能用其中的值。让人崩溃，好多地方要改。</p>
@@ -236,8 +236,8 @@ func main() {
         class="lazyload"
         src="/svg/loading.min.svg"
         data-sizes="auto"
-        data-srcset="../../_images/image-20200312174326015.png, ../../_images/image-20200312174326015.png 1.5x, ../../_images/image-20200312174326015.png 2x"
-        data-src="../../_images/image-20200312174326015.png"
+        data-srcset="../../images/image-20200312174326015.png, ../../images/image-20200312174326015.png 1.5x, ../../images/image-20200312174326015.png 2x"
+        data-src="../../images/image-20200312174326015.png"
         alt="image-20200312174326015"
         title="image-20200312174326015" /></p>
 <p>不完美，但至少不需要让调用者改代码了。以后接口设计还是把请求参数放Body里，稳一点。</p>

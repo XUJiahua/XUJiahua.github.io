@@ -38,7 +38,7 @@
         "mainEntityOfPage": {
             "@type": "WebPage",
             "@id": "https:\/\/xujiahua.github.io\/posts\/github-pages-restart\/"
-        },"genre": "posts","keywords": "GitHub pages, Hugo, Typora","wordcount":  134 ,
+        },"genre": "posts","keywords": "GitHub pages, Hugo, Typora","wordcount":  139 ,
         "url": "https:\/\/xujiahua.github.io\/posts\/github-pages-restart\/","datePublished": "2020-03-10T11:24:49\x2b08:00","dateModified": "2020-03-10T11:24:49\x2b08:00","description": ""
     }
     </script></head>
@@ -86,7 +86,7 @@
                     </a>
                 </span></div>
             <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i><time datetime=2020-03-10>2020-03-10</time>&nbsp;
-                <i class="fas fa-pencil-alt fa-fw"></i>about 134 words&nbsp;
+                <i class="fas fa-pencil-alt fa-fw"></i>about 139 words&nbsp;
                 <i class="far fa-clock fa-fw"></i>1 min&nbsp;</div>
         </div><div class="toc" id="toc-auto">
                 <h2 class="toc-title">Contents</h2>
@@ -163,9 +163,9 @@ hugo -D
 <p><code>hugo</code>管理静态资源的方式跟Typora默认是不适配的，需要做些调整。</p>
 <h5 id="长话短说">长话短说</h5>
 <ol>
-<li><code>hugo</code>项目中，创建<code>static/_images</code>文件夹，并且软链接到项目根目录下：</li>
+<li><code>hugo</code>项目中，创建<code>static/images</code>文件夹，并且软链接到项目根目录下：</li>
 </ol>
-<pre><code>mkdir -p static/_images &amp;&amp; ln -s `pwd`/static/_images _images
+<pre><code>mkdir -p static/images &amp;&amp; ln -s `pwd`/static/images images
 </code></pre><ol start="2">
 <li>Typora打开content目录，并做配置如下。之后，像平常那样用Typora写文字吧。</li>
 </ol>
@@ -173,11 +173,11 @@ hugo -D
         class="lazyload"
         src="/svg/loading.min.svg"
         data-sizes="auto"
-        data-srcset="../../_images/image-20200310184153667.png, ../../_images/image-20200310184153667.png 1.5x, ../../_images/image-20200310184153667.png 2x"
-        data-src="../../_images/image-20200310184153667.png"
+        data-srcset="../../images/image-20200310184153667.png, ../../images/image-20200310184153667.png 1.5x, ../../images/image-20200310184153667.png 2x"
+        data-src="../../images/image-20200310184153667.png"
         alt="image-20200310184153667"
         title="image-20200310184153667" /></p>
-<h5 id="在根目录建_images软链接的理由">在根目录建<code>_images</code>软链接的理由</h5>
+<h5 id="在根目录建images软链接的理由">在根目录建<code>images</code>软链接的理由</h5>
 <p>一些信息和思路：</p>
 <ol>
 <li><code>hugo</code>的静态资源放在static目录下。</li>
@@ -186,7 +186,7 @@ hugo -D
 <li>万幸Typora可以用软链接。</li>
 <li>一篇post，在浏览器和文件系统上的目录结构是不同的。以最末层的文件夹为<code>./</code>。浏览器下目录结构如下：</li>
 </ol>
-<pre><code>/ =&gt; ../.. 举例来说，以图片文件夹名称为`_image`为例，`../../_images/*` = `/_images/*`
+<pre><code>/ =&gt; ../.. 举例来说，以图片文件夹名称为`image`为例，`../../images/*` = `/images/*`
 	/posts/ =&gt; ../
 		/posts/post_name/ =&gt; ./
 </code></pre><ol start="6">
@@ -197,12 +197,24 @@ hugo -D
 		posts =&gt; ./
 			post_name
 </code></pre><ol start="7">
-<li>所以为了能让文件系统和浏览器上都显示图像，<code>_images</code>软链接放在项目根目录下比较合适。</li>
+<li>所以为了能让文件系统和浏览器上都显示图像，<code>images</code>软链接放在项目根目录下比较合适。</li>
 </ol>
 <h3 id="github-pages">GitHub pages</h3>
 <p>静态文件输出到xujiahua.github.io上去。</p>
 <pre><code>git submodule add -b master https://github.com/XUJiahua/XUJiahua.github.io.git public
 </code></pre><p>复用这里的deploy脚本。https://gohugo.io/hosting-and-deployment/hosting-on-github/#put-it-into-a-script</p>
+<h4 id="图片资源404的问题">图片资源404的问题</h4>
+<p>_images文件夹下的资源404了。太奇怪了，路径OK，也没大小问题。过了很久还是不见效。</p>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-sizes="auto"
+        data-srcset="../../images/image-20200312190900210.png, ../../images/image-20200312190900210.png 1.5x, ../../images/image-20200312190900210.png 2x"
+        data-src="../../images/image-20200312190900210.png"
+        alt="image-20200312190900210"
+        title="image-20200312190900210" /></p>
+<p>尝试在images文件夹下放了个1.txt，理论上链接应该是 <a href="https://xujiahua.github.io/images/1.txt">https://xujiahua.github.io/images/1.txt</a>，一开始也是404。过了半小时OK了。</p>
+<p>结论是，_images文件夹取名可能有问题。那就改用images。</p>
 <p>参考：</p>
 <ol>
 <li><a href="https://gohugo.io/hosting-and-deployment/hosting-on-github/">https://gohugo.io/hosting-and-deployment/hosting-on-github/</a></li>
