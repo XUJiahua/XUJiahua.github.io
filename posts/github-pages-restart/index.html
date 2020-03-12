@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="robots" content="noodp" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1">
+        <title>Github pages重新开始：使用Hugo、Typora | 许嘉华的博客</title>
+        <meta name="Description" content=""><meta property="og:title" content="Github pages重新开始：使用Hugo、Typora" />
+<meta property="og:description" content="重新开始GitHub pages 曾使用GitHub pages &#43;  jekyll 写过一段时间博客，没啥营养。
+打算重新开始：
+ 把我记录在Evernote和Typora中的资料迁移到GitHub pages上。 另外做一些Web形式的小工具，挂载在一个子目录里，方便平时使用。  Hugo &#43; Typora 打算如下：
+ Markdown文件还是使用Typora写。用过MWeb、Typora，Typora使用感受更好些（这么好用还不要钱）。 Hugo作为静态网站生成，创建一个博客模板。  Hugo quickstart # 安装hugo（其实是Go编译的二进制文件） brew install hugo # 创建site hugo new site quickstart # 通过git submodule的方式下载主题 git init git submodule -b master add https://github.com/dillonzq/LoveIt themes/LoveIt # 更新config.toml，配置主题参数，见loveit配置 # 创建博客，创建的posts在content目录下。文件格式为：content/&lt;CATEGORY&gt;/&lt;FILE&gt;.&lt;FORMAT&gt; # hugo new 会采用 archetypes/default.md作为模板，把一些共性配置放在这个模板里吧。 hugo new posts/my-first-post.md # 本地看blog效果，-D表示草稿状态的博客也显示 hugo server -D # 生成静态网站到./public/，也可以指定目录 hugo -D 挑选了一个比较实用的主题 https://hugoloveit.com/" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://example.org/posts/github-pages-restart/" />
+<meta property="article:published_time" content="2020-03-10T11:24:49+08:00" />
+<meta property="article:modified_time" content="2020-03-10T11:24:49+08:00" />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Github pages重新开始：使用Hugo、Typora"/>
+<meta name="twitter:description" content="重新开始GitHub pages 曾使用GitHub pages &#43;  jekyll 写过一段时间博客，没啥营养。
+打算重新开始：
+ 把我记录在Evernote和Typora中的资料迁移到GitHub pages上。 另外做一些Web形式的小工具，挂载在一个子目录里，方便平时使用。  Hugo &#43; Typora 打算如下：
+ Markdown文件还是使用Typora写。用过MWeb、Typora，Typora使用感受更好些（这么好用还不要钱）。 Hugo作为静态网站生成，创建一个博客模板。  Hugo quickstart # 安装hugo（其实是Go编译的二进制文件） brew install hugo # 创建site hugo new site quickstart # 通过git submodule的方式下载主题 git init git submodule -b master add https://github.com/dillonzq/LoveIt themes/LoveIt # 更新config.toml，配置主题参数，见loveit配置 # 创建博客，创建的posts在content目录下。文件格式为：content/&lt;CATEGORY&gt;/&lt;FILE&gt;.&lt;FORMAT&gt; # hugo new 会采用 archetypes/default.md作为模板，把一些共性配置放在这个模板里吧。 hugo new posts/my-first-post.md # 本地看blog效果，-D表示草稿状态的博客也显示 hugo server -D # 生成静态网站到./public/，也可以指定目录 hugo -D 挑选了一个比较实用的主题 https://hugoloveit.com/"/>
+<meta name="theme-color" content="#ffffff">
+<meta name="msapplication-TileColor" content="#da532c">
+<link rel="canonical" href="http://example.org/posts/github-pages-restart/" />
+<link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="prev" href="http://example.org/posts/use-hyper-v/" /><link rel="next" href="http://example.org/posts/slash-in-url-path/" /><link rel="stylesheet" href="/lib/fontawesome-free/all.min.9a680b90260b5106d79f4075491ab31daafa7429eff686453c40b58357309649.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk="><link rel="stylesheet" href="/lib/animate/animate.min.3c770e90f98eb21b0c042fafb49755af93306fbaf42e449524f94fae9fc83295.css" integrity="sha256-PHcOkPmOshsMBC&#43;vtJdVr5Mwb7r0LkSVJPlPrp/IMpU="><link rel="stylesheet" href="/css/style.min.e8ca640cf5b1714eaa34bc21e8e2d0e79ae9cc05a934f6ee78a318487d7c515b.css" integrity="sha256-6MpkDPWxcU6qNLwh6OLQ55rpzAWpNPbueKMYSH18UVs=">
+<script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "headline": "Github pages重新开始：使用Hugo、Typora",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "http:\/\/example.org\/posts\/github-pages-restart\/"
+        },"genre": "posts","keywords": "GitHub pages, Hugo, Typora","wordcount":  133 ,
+        "url": "http:\/\/example.org\/posts\/github-pages-restart\/","datePublished": "2020-03-10T11:24:49\x2b08:00","dateModified": "2020-03-10T11:24:49\x2b08:00","description": ""
+    }
+    </script></head>
+    <body><script>
+            if (!window.localStorage || !window.localStorage.getItem('theme')) {window.isDark = '' === 'dark';} else {
+                window.isDark = (window.localStorage && window.localStorage.getItem('theme')) === 'dark';
+            }
+            window.isDark && document.body.classList.add('dark-theme');
+        </script><div class="wrapper"><header class="desktop" id="header-desktop">
+    <div class="header-wrapper">
+        <div class="header-title animated bounceIn">
+            <a href="/">许嘉华的博客</a>
+        </div>
+        <div class="menu"><a class="menu-item" href="/posts/">Posts</a><a class="menu-item" href="/tags/">Tags</a><a class="menu-item" href="/categories/">Categories</a><a class="menu-item" href="/about/">About</a><a href="javascript:void(0);" class="theme-switch" title="Switch Theme">
+                <i class="fas fa-adjust fa-rotate-180 fa-fw"></i>
+            </a>
+        </div>
+    </div>
+</header><header class="mobile" id="header-mobile">
+    <div class="header-wrapper">
+        <div class="header-container">
+            <div class="header-title animated bounceIn">
+                <a href="/">许嘉华的博客</a>
+            </div>
+            <div class="menu-toggle" id="menu-toggle-mobile">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="menu" id="menu-mobile"><a class="menu-item" href="/posts/" title="">Posts</a><a class="menu-item" href="/tags/" title="">Tags</a><a class="menu-item" href="/categories/" title="">Categories</a><a class="menu-item" href="/about/" title="">About</a><a href="javascript:void(0);" class="theme-switch" title="Switch Theme">
+                <i class="fas fa-adjust fa-rotate-180 fa-fw"></i>
+            </a>
+        </div>
+    </div>
+</header>
+
+<script>
+    window.desktopHeaderMode =  null ;
+    window.mobileHeaderMode =  null ;
+</script>
+<main class="main">
+                <div class="container"><article class="page single"><h1 class="single-title animated flipInX">Github pages重新开始：使用Hugo、Typora</h1><div class="post-meta">
+            <div class="post-meta-line"><span class="post-author">
+                    <a class="author" href="/" rel="author" target="_blank">
+                        <i class="fas fa-user-circle fa-fw"></i>Author
+                    </a>
+                </span></div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i><time datetime=2020-03-10>2020-03-10</time>&nbsp;
+                <i class="fas fa-pencil-alt fa-fw"></i>about 133 words&nbsp;
+                <i class="far fa-clock fa-fw"></i>1 min&nbsp;</div>
+        </div><div class="toc" id="toc-auto">
+                <h2 class="toc-title">Contents</h2>
+                <div class="toc-content always-active" id="toc-content-auto"></div>
+            </div>
+            <div class="toc" id="toc-static">
+                <details>
+                    <summary>
+                        <div class="toc-title">
+                            <span>Contents</span>
+                            <span><i class="details icon fas fa-angle-down"></i></span>
+                        </div>
+                    </summary>
+                    <div class="toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#重新开始github-pages">重新开始GitHub pages</a></li>
+    <li><a href="#hugo--typora">Hugo + Typora</a>
+      <ul>
+        <li><a href="#hugo-quickstart">Hugo quickstart</a></li>
+        <li><a href="#图片文件夹的配置">图片文件夹的配置</a></li>
+        <li><a href="#github-pages">GitHub pages</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav></div>
+                </details>
+            </div><div class="content" id="content"><h2 id="重新开始github-pages">重新开始GitHub pages</h2>
+<p>曾使用<code>GitHub pages</code> + <code> jekyll</code> 写过一段时间博客，没啥营养。</p>
+<p>打算重新开始：</p>
+<ol>
+<li>把我记录在Evernote和Typora中的资料迁移到<code>GitHub pages</code>上。</li>
+<li>另外做一些Web形式的小工具，挂载在一个子目录里，方便平时使用。</li>
+</ol>
+<h2 id="hugo--typora">Hugo + Typora</h2>
+<p>打算如下：</p>
+<ol>
+<li>Markdown文件还是使用Typora写。用过MWeb、Typora，Typora使用感受更好些（这么好用还不要钱）。</li>
+<li>Hugo作为静态网站生成，创建一个博客模板。</li>
+</ol>
+<h3 id="hugo-quickstart">Hugo quickstart</h3>
+<pre><code># 安装hugo（其实是Go编译的二进制文件）
+brew install hugo
+
+# 创建site
+hugo new site quickstart
+
+# 通过git submodule的方式下载主题
+git init
+git submodule -b master add https://github.com/dillonzq/LoveIt themes/LoveIt
+
+# 更新config.toml，配置主题参数，见loveit配置
+
+# 创建博客，创建的posts在content目录下。文件格式为：content/&lt;CATEGORY&gt;/&lt;FILE&gt;.&lt;FORMAT&gt;
+# hugo new 会采用 archetypes/default.md作为模板，把一些共性配置放在这个模板里吧。
+hugo new posts/my-first-post.md
+
+# 本地看blog效果，-D表示草稿状态的博客也显示
+hugo server -D
+
+# 生成静态网站到./public/，也可以指定目录
+hugo -D
+</code></pre><p>挑选了一个比较实用的主题 <a href="https://hugoloveit.com/">https://hugoloveit.com/</a></p>
+<ol>
+<li>比较基本的posts, tags, categories</li>
+<li>文章页面右边可显示文章的目录表</li>
+</ol>
+<p>参考：</p>
+<ol>
+<li><a href="https://gohugo.io/getting-started/quick-start/">https://gohugo.io/getting-started/quick-start/</a></li>
+<li><a href="https://hugoloveit.com/theme-documentation-basics/">https://hugoloveit.com/theme-documentation-basics/</a></li>
+</ol>
+<h3 id="图片文件夹的配置">图片文件夹的配置</h3>
+<p>Typora的贴图功能很方便：配置好图片文件夹，从剪贴板粘贴图像会自动将图片保存到图片文件夹，并自动命名。</p>
+<p><code>hugo</code>管理静态资源的方式跟Typora默认是不适配的，需要做些调整。</p>
+<h5 id="长话短说">长话短说</h5>
+<ol>
+<li><code>hugo</code>项目中，创建<code>static/_images</code>文件夹，并且软链接到项目根目录下：</li>
+</ol>
+<pre><code>mkdir -p static/_images &amp;&amp; ln -s `pwd`/static/_images _images
+</code></pre><ol start="2">
+<li>Typora打开content目录，并做配置如下。之后，像平常那样用Typora写文字吧。</li>
+</ol>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-sizes="auto"
+        data-srcset="../../_images/image-20200310184153667.png, ../../_images/image-20200310184153667.png 1.5x, ../../_images/image-20200310184153667.png 2x"
+        data-src="../../_images/image-20200310184153667.png"
+        alt="image-20200310184153667"
+        title="image-20200310184153667" /></p>
+<h5 id="在根目录建_images软链接的理由">在根目录建<code>_images</code>软链接的理由</h5>
+<p>一些信息和思路：</p>
+<ol>
+<li><code>hugo</code>的静态资源放在static目录下。</li>
+<li><code>hugo</code>生成静态文件，static目录会将其下的文件、文件夹平移到目标网站目录的根目录，比如<code>static/images/1.png</code>，平移后为<code>images/1.png</code>。html里使用<code>/images/*</code>的方式引用。（可查看public文件夹的目录结构）</li>
+<li>hugo static目录下的资源目录不能是软链接，WTF。Unsupported symlink found <a href="https://github.com/gohugoio/hugo/issues/6225">https://github.com/gohugoio/hugo/issues/6225</a></li>
+<li>万幸Typora可以用软链接。</li>
+<li>一篇post，在浏览器和文件系统上的目录结构是不同的。以最末层的文件夹为<code>./</code>。浏览器下目录结构如下：</li>
+</ol>
+<pre><code>/ =&gt; ../.. 举例来说，以图片文件夹名称为`_image`为例，`../../_images/*` = `/_images/*`
+	/posts/ =&gt; ../
+		/posts/post_name/ =&gt; ./
+</code></pre><ol start="6">
+<li>文件系统下的目录结构：</li>
+</ol>
+<pre><code>hugo-blogger =&gt; ../../
+	content =&gt; ../
+		posts =&gt; ./
+			post_name
+</code></pre><ol start="7">
+<li>所以为了能让文件系统和浏览器上都显示图像，<code>_images</code>软链接放在项目根目录下比较合适。</li>
+</ol>
+<h3 id="github-pages">GitHub pages</h3>
+<p>静态文件输出到xujiahua.github.io上去。</p>
+<pre><code>git submodule add -b master https://github.com/XUJiahua/XUJiahua.github.io.git public
+</code></pre><p>参考：</p>
+<ol>
+<li><a href="https://gohugo.io/hosting-and-deployment/hosting-on-github/">https://gohugo.io/hosting-and-deployment/hosting-on-github/</a></li>
+</ol>
+</div><div class="post-footer" id="post-footer">
+    <div class="post-info">
+        <div class="post-info-line">
+            <div class="post-info-mod">
+                <span>The article was updated on 2020-03-10</span>
+            </div>
+            <div class="post-info-license"></div>
+        </div>
+        <div class="post-info-line">
+            <div class="post-info-md"></div>
+            <div class="post-info-share">
+                <span></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="post-info-more">
+        <section><span>
+                        <a href="/tags/github-pages">
+                            <i class="fas fa-tag fa-fw"></i>GitHub pages
+                        </a>
+                    </span>&nbsp;<span>
+                        <a href="/tags/hugo">
+                            <i class="fas fa-tag fa-fw"></i>Hugo
+                        </a>
+                    </span>&nbsp;<span>
+                        <a href="/tags/typora">
+                            <i class="fas fa-tag fa-fw"></i>Typora
+                        </a>
+                    </span>&nbsp;</section>
+        <section>
+            <span><a href="javascript:window.history.back();">Back</a></span>&nbsp;|&nbsp;<span><a href="/">Home</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav"><a href="http://example.org/posts/use-hyper-v/" class="prev" rel="prev" title="Hyper-V使用体验"><i class="fas fa-angle-left fa-fw"></i>Hyper-V使用体验</a>
+            <a href="http://example.org/posts/slash-in-url-path/" class="next" rel="next" title="Go库对URL Path中%2F的处理">Go库对URL Path中%2F的处理<i class="fas fa-angle-right fa-fw"></i></a></div>
+</div>
+<div class="comment"></div>
+    </article></div>
+            </main><footer class="footer">
+    <div class="copyright"><div class="copyright-line">Powered by <a href="https://gohugo.io/" target="_blank" rel="external nofollow noopener noreffer">Hugo</a> | Theme - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="external nofollow noopener noreffer">LoveIt<i class="far fa-heart fa-fw"></i></a>
+        </div>
+
+        <div class="copyright-line"><i class="far fa-copyright fa-fw"></i><span itemprop="copyrightYear">2020</span></div>
+    </div>
+</footer>
+</div><a href="#" class="dynamic-to-top animated faster" id="dynamic-to-top">
+            <span>&nbsp;</span>
+        </a><script>
+        document.addEventListener('DOMContentLoaded', function () {
+            lightGallery(document.getElementById('content'), {
+                selector: '.lightgallery',
+                speed: 400,
+                hideBarsDelay: 2000,
+                thumbnail: true,
+                exThumbImage: 'data-thumbnail',
+                thumbWidth: 80,
+                thumbContHeight: 80,
+            });
+        });
+    </script><link rel="stylesheet" href="/lib/lightgallery/lightgallery.min.a0f67639490aba5d9a250783c0aa0ed69f83a6f151fb0d7b9fb617c9dbc54565.css" integrity="sha256-oPZ2OUkKul2aJQeDwKoO1p&#43;DpvFR&#43;w17n7YXydvFRWU="><script src="/lib/smooth-scroll/smooth-scroll.polyfills.min.54590077ee163035c3dd38dc034e9f6915ecbe680dd832f449afa21672cab116.js" integrity="sha256-VFkAd&#43;4WMDXD3TjcA06faRXsvmgN2DL0Sa&#43;iFnLKsRY="></script><script src="/lib/sharer/sharer.min.9c88f86c7f0820287113f6236200459832693656e80d7556cc80a93dfbd45813.js" integrity="sha256-nIj4bH8IIChxE/YjYgBFmDJpNlboDXVWzICpPfvUWBM="></script><script src="/lib/lazysizes/lazysizes.min.876b4c12685e991d88378c1b6dd3638fd2da0c88f3c24da1ada950c1f26604e1.js" integrity="sha256-h2tMEmhemR2IN4wbbdNjj9LaDIjzwk2hralQwfJmBOE="></script><script src="/lib/lightgallery/lightgallery.min.7a84c63ab156d68e4a7269487c9c65a4eb34b0c7864f2d3fd2b87f7c664480d3.js" integrity="sha256-eoTGOrFW1o5KcmlIfJxlpOs0sMeGTy0/0rh/fGZEgNM="></script><script src="/lib/lightgallery/lg-thumbnail.min.eab31af8f90835b7ab674b2dd2474841039bc01022aa312f80dde6e22fde58d7.js" integrity="sha256-6rMa&#43;PkINberZ0st0kdIQQObwBAiqjEvgN3m4i/eWNc="></script><script src="/lib/lightgallery/lg-zoom.min.e3a7e6bb4a69f8627654ba9e0ab1252971bcfb400538dbb0605db9a3342ce5b9.js" integrity="sha256-46fmu0pp&#43;GJ2VLqeCrElKXG8&#43;0AFONuwYF25ozQs5bk="></script><script src="/js/theme.min.1482fc67bfa2c3b8cebe476d0037b9321b5b7a8a1525b547b94143948be90e9e.js" integrity="sha256-FIL8Z7&#43;iw7jOvkdtADe5MhtbeooVJbVHuUFDlIvpDp4="></script></body>
+</html>

@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Posts on 许嘉华的博客</title>
+    <link>http://example.org/posts/</link>
+    <description>Recent content in Posts on 许嘉华的博客</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Thu, 12 Mar 2020 15:17:36 +0800</lastBuildDate>
+    
+	<atom:link href="http://example.org/posts/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Go库对URL Path中%2F的处理</title>
+      <link>http://example.org/posts/slash-in-url-path/</link>
+      <pubDate>Thu, 12 Mar 2020 15:17:36 +0800</pubDate>
+      
+      <guid>http://example.org/posts/slash-in-url-path/</guid>
+      <description>问题描述  有同事反馈Go项目的接口404了。看了下nginx日志，只有部分请求404了，404请求的显著特征是URL里有%2F，也就是/的转义。 接口定义是这样的：/api/xxx/{mid}/{uid}。mid、uid是URL path的一部分。从现象来看，程序没处理好转义字符，因为多了一个path部分，路由不匹配了，404。 nginx的URL记录是%2F，其实调用方传的是微信ID，比如IEd5W/jqsdF9qpuagQscEg==。调用方在发请求之前对ID已经做好了转义。  Go内置库：不区分%2F和/ An application cannot distinguish between &amp;ldquo;/&amp;rdquo; used as a path segment delimiter and &amp;ldquo;/&amp;rdquo; encoded in a path segment.
+这个问题由来已久了，看着官方也不打算解决了，见这个issue：https://github.com/golang/go/issues/3659
+If your app needs to assign special meaning, the server can reprocess req.RequestURI as it sees fit, and the client can issue requests using &amp;amp;url.URL{Opaque: rawURI}.  reprocess req.RequestURI 就是让你别用内置路由库了。 issue requests using &amp;amp;url.URL{Opaque: rawURI}. 试了，问题没解决。客户端不管怎么做，最终都是以HTTP协议输出的。GET http://www.google.com/index.html HTTP/1.1 服务端代码最终解析的还是中间的那段URL文本。照理就不通啊。  源码角度 url.URL的定义，明确指出Path字段存储的是decode之后的数据，所以%2F在这里已经被转义成了/，跟之前的Path意义完全不同了。</description>
+    </item>
+    
+    <item>
+      <title>Github pages重新开始：使用Hugo、Typora</title>
+      <link>http://example.org/posts/github-pages-restart/</link>
+      <pubDate>Tue, 10 Mar 2020 11:24:49 +0800</pubDate>
+      
+      <guid>http://example.org/posts/github-pages-restart/</guid>
+      <description>重新开始GitHub pages 曾使用GitHub pages +  jekyll 写过一段时间博客，没啥营养。
+打算重新开始：
+ 把我记录在Evernote和Typora中的资料迁移到GitHub pages上。 另外做一些Web形式的小工具，挂载在一个子目录里，方便平时使用。  Hugo + Typora 打算如下：
+ Markdown文件还是使用Typora写。用过MWeb、Typora，Typora使用感受更好些（这么好用还不要钱）。 Hugo作为静态网站生成，创建一个博客模板。  Hugo quickstart # 安装hugo（其实是Go编译的二进制文件） brew install hugo # 创建site hugo new site quickstart # 通过git submodule的方式下载主题 git init git submodule -b master add https://github.com/dillonzq/LoveIt themes/LoveIt # 更新config.toml，配置主题参数，见loveit配置 # 创建博客，创建的posts在content目录下。文件格式为：content/&amp;lt;CATEGORY&amp;gt;/&amp;lt;FILE&amp;gt;.&amp;lt;FORMAT&amp;gt; # hugo new 会采用 archetypes/default.md作为模板，把一些共性配置放在这个模板里吧。 hugo new posts/my-first-post.md # 本地看blog效果，-D表示草稿状态的博客也显示 hugo server -D # 生成静态网站到./public/，也可以指定目录 hugo -D 挑选了一个比较实用的主题 https://hugoloveit.com/</description>
+    </item>
+    
+    <item>
+      <title>Hyper-V使用体验</title>
+      <link>http://example.org/posts/use-hyper-v/</link>
+      <pubDate>Tue, 03 Mar 2020 22:13:23 +0800</pubDate>
+      
+      <guid>http://example.org/posts/use-hyper-v/</guid>
+      <description>Hyper-V 使用体验 Hyper-V是 Windows10 内置的虚拟机软件，没想到我会用到它。
+为什么要用Hyper-V  需要使用虚拟机来模拟Kubernetes环境。 Windows Docker依赖Hyper-V。貌似WSL2也是基于Hyper-V。应该是不会卸载Hyper-V了。 Hyper-V与其他虚拟机软件（VirtualBox, VMWare）冲突，用不了其他的，只能用Hyper-V。 Hyper-V与VirtualBox兼容的方案有没有。可能有，不想过于折腾了，那就不得不用。  Hyper-V好不好用  使用体验太差了，从Mac、从其他虚拟机使用过来，默认配置各种踩坑。 安装VM碰到DHCP超时的问题，反复试验无果，重启Windows后VM的DHCP不超时了。总结下，Windows上，如果怎么搞都搞不定，重启下可能就好了。WTF！ 自带的NAT网络有点残疾，VM配置静态IP，网络就不通了。不像VirtualBox是开箱即用的。 最后借助网络上的零碎信息自定义了下NAT网络，各种神奇配置。 Windows还是很屎，除了打游戏，开发体验跟我之前的体验一样糟。最后搞定花了我一天时间。要是用VMware/VirtualBox，可能在2个小时内就能搞定。总结，不好用。  Hyper-V 创建和克隆VM 创建VM 从*.iso文件创建VM。
+ 注意，Linux VM，不启用Windows Secure Boot。 更多选项里，设置VM的名称和交换机。 体验不好的地方：左上方的「选择操作系统」区域有长时间的加载过程，即使使用本地镜像文件也得等。  克隆VM 从硬盘文件创建VM。
+ 克隆是为了减少重复配置一些基础环境的工作量。 不像VirtualBox那样有直观的克隆按钮。摸索出的克隆功能是这样的：就是从VM硬盘创建VM。 建议先关机母体VM后，再基于母体VM的硬盘文件克隆。防止母体VM开机状态下一些更新并没有持久化到硬盘文件中。  Hyper-V NAT网络搭建总结 如果使用VMWare/VirtualBox的话，NAT网络是完全自动搭建的。
+VMWare中有三种网络模式，Bridging、NAT、Host-only分别对应Hyper-V下的三种交换机，外部、内部、专用。
+ Bridging：VM使用物理网络。GUEST VM与HOST相当于通过交换机连上一个网络（细节不确定）。 NAT：VM使用虚拟网络，HOST同时连入物理网络和虚拟网络。VM出口流量都会通过HOST，使用HOST IP。 Host-only：在NAT基础上，VM连不上外网，除非有路由设置。  默认的NAT网络 默认交换机支持NAT，但是瑕疵不少，无法满足工作需要。
+Hyper-V Default Switch + VM DHCP 的组合默认有了NAT功能，满足以下：
+ 虚拟机之间可以互相访问 虚拟机与物理机之间可以互相访问 虚拟机可以访问互联网  但是：
+ 每次重启，Default Switch的IP都会变，Windows10 物理机上的网卡IPv4配置无法让他不变。 ping baidu.</description>
+    </item>
+    
+    <item>
+      <title>使用Go Modules</title>
+      <link>http://example.org/posts/go-modules/</link>
+      <pubDate>Fri, 28 Feb 2020 15:05:18 +0800</pubDate>
+      
+      <guid>http://example.org/posts/go-modules/</guid>
+      <description>Go Modules使用着感觉不错，Go终于有正常点的依赖管理工具了。记录一二。
+使用小结  go.mod, go.sum加入版本管理 Both go.mod and go.sum should be checked into version control. 直接依赖体现在go.mod，间接依赖由直接依赖自己管理，这是个递归的过程 Only direct dependencies are recorded in the go.mod file. go命令自动管理go.mod，这可太方便了 When it encounters an import of a package not provided by any module in go.mod, the go command automatically looks up the module containing that package and adds it to go.mod, using the latest version. 看着比之前的依赖管理好用很多。比如dep。因为网络下载包等问题，最后把依赖包全checkin到vendor目录了。太臃肿。  常用命令  go mod init creates a new module, initializing the go.</description>
+    </item>
+    
+    <item>
+      <title>5G认识小结</title>
+      <link>http://example.org/posts/5g/</link>
+      <pubDate>Sat, 22 Feb 2020 23:32:14 +0800</pubDate>
+      
+      <guid>http://example.org/posts/5g/</guid>
+      <description>去年11月尝鲜，买了个三星5G手机。找基站测5G速度成了刚买时候的乐趣。用了几个月，深感5G功能很鸡肋，5G基站太少。
+这两天翻了好多知乎上关于5G的评论，对5G的概念、应用场景有了些厘清。
+基本概念  5G，第五代移动通信技术。也就是5G的边界是移动通信网络。 5G的直接作用是提高了移动设备到基站的下载速率，能达到1G/s，也就是所谓的空口延迟低。 5G下载的速度上限还是光纤的下载速度上限。 5G的流量套餐应该不会便宜，除非国家出政策。为什么套餐不会便宜，这得看成本。5G的基站建设成本远比4G高。5G基站覆盖面积小，需要几倍于4G的基站，5G基站耗电成本也是几倍于4G基站。肥了设备商（华为中兴），苦了运营商（移动联通电信），最后还是消费者买单。 理论速度极可能跑不满。使用者多了，平均到每个终端，带宽就不够。现在我的4G速度好慢，完全没到理论速度。现在的矛盾不是需要更快的网络，而是更多的网络。 木桶效应，一个桶能装多少水由短板决定，以前的移动通信是短板，但是通过3G、4G到现在的5G的改善，已经成为长板了。运营商的承载网等配套也得扩容。不然5G的超高下载速率就是一个理论值。又是运营商的成本。  应用场景 大部分人的共识是，5G的杀手级应用仍在探索中。
+什么样的场景，只有通过5G能够做到，而其他技术不行，这样的场景就是典型的5G应用场景。要找到技术的适用场景，不能生搬硬套。区块链也是这样一个典型。过滤那些“可以使用XXX技术，但是完全没必要”的场景。
+媒体上关于5G的一些应用场景：
+ 远程手术 —— 为什么不用光纤，可靠性更好。如果是边远山区不方便铺光纤，5G可能是好的替代。有总比没有好。 远程挖掘机 —— 微博上看到的，挖掘机通过5G联网，驾驶员在机房操控，安全性更高。 远程办公、远程上课 —— 这些光纤都能做到。对于山村里不方便通光纤的，是好事。但是山村里的困难是超乎我们想象的。看新闻，因为疫情不得不在家上课，几个小孩子共用一个手机，流量又贵，不舍得用。太难了。 AR/VR —— 不看好。光纤，百兆宽带都这么普及了，AR/VR发展不好的根本原因应该是AR/VR本身吧，5G救不了ARVR。 无人驾驶 —— 不看好。移动通信中的延时一直保持很低很困难吧，比如短时间太多人/设备使用基站导致拥挤。可靠性太重要了，毕竟汽车是高速移动的，稍微的疏忽就是惨痛代价。  会不会带来下一个“移动互联网” 之所以大家对5G这么关注，就是在想，5G能否像3/4G一样带动下一个移动互联网（电商、O2O、移动支付、短视频、直播）。
+先来看看移动互联网是怎么发展起来的。
+ 苹果公司发布iPhone，智能手机的火种。 小米等一众国产品牌的低价策略，带来了智能手机的普及。 国务院要求运营商资费下降。大家都用得起流量。 总结就是：智能手机普及 + 运营商资费下降。 其中智能手机，这是从无到有，从0到1的奇迹，颠覆了之前的所有手机。（好久没有让人激动的科技产品了，苹果的创新能力也是在备受质疑，因为大家期望太高了。） 其中运营商资费下降，这是国家权力。（知乎用户：钱都让互联网企业赚走了，通讯行业等同于修路。）  5G目前的作用仅限于加快了与基站之间的通信速度，假如说3G完成了从0到1，4G完成了从1到10，那么5G是从10到100吧。根据边际效应准则，后面的收益会越来越少。
+很难看出能带来什么样的产业革命来。
+5G的利益关系 利好：
+ 5G基站厂商。华为为主。 国家层面。5G是国家战略，是政治正确。其一，靠专利技术薅世界羊毛，从国家角度是有利可图的。其二，带动产业发展，拉动GDP。 手机终端厂商。近年来手机上的创新的吸睛能力真不行，消费欲望降低。靠5G这个卖点，能赚一波眼球。 还有众多蹭5G话题流量的：广告公司、创业公司。  利坏：
+ 三大运营商。基站投入是高成本的，为了发展5G生态，国家也会限制套餐费用，影响其收入。还好是国企。  参考：https://www.zhihu.com/question/342366514/answer/820922564
+杂言 真正有颠覆性的，真正能突破人们想象力的，都在基础科学。比如材料科学，电池技术现在是瓶颈。离我很远。我做的事情真的对人类价值不大，只是个普通人，只能做到赚钱养家对家庭做贡献了。</description>
+    </item>
+    
+  </channel>
+</rss>

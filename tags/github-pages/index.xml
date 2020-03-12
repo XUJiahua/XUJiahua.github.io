@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>GitHub pages on 许嘉华的博客</title>
+    <link>http://example.org/tags/github-pages/</link>
+    <description>Recent content in GitHub pages on 许嘉华的博客</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Tue, 10 Mar 2020 11:24:49 +0800</lastBuildDate>
+    
+	<atom:link href="http://example.org/tags/github-pages/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Github pages重新开始：使用Hugo、Typora</title>
+      <link>http://example.org/posts/github-pages-restart/</link>
+      <pubDate>Tue, 10 Mar 2020 11:24:49 +0800</pubDate>
+      
+      <guid>http://example.org/posts/github-pages-restart/</guid>
+      <description>重新开始GitHub pages 曾使用GitHub pages +  jekyll 写过一段时间博客，没啥营养。
+打算重新开始：
+ 把我记录在Evernote和Typora中的资料迁移到GitHub pages上。 另外做一些Web形式的小工具，挂载在一个子目录里，方便平时使用。  Hugo + Typora 打算如下：
+ Markdown文件还是使用Typora写。用过MWeb、Typora，Typora使用感受更好些（这么好用还不要钱）。 Hugo作为静态网站生成，创建一个博客模板。  Hugo quickstart # 安装hugo（其实是Go编译的二进制文件） brew install hugo # 创建site hugo new site quickstart # 通过git submodule的方式下载主题 git init git submodule -b master add https://github.com/dillonzq/LoveIt themes/LoveIt # 更新config.toml，配置主题参数，见loveit配置 # 创建博客，创建的posts在content目录下。文件格式为：content/&amp;lt;CATEGORY&amp;gt;/&amp;lt;FILE&amp;gt;.&amp;lt;FORMAT&amp;gt; # hugo new 会采用 archetypes/default.md作为模板，把一些共性配置放在这个模板里吧。 hugo new posts/my-first-post.md # 本地看blog效果，-D表示草稿状态的博客也显示 hugo server -D # 生成静态网站到./public/，也可以指定目录 hugo -D 挑选了一个比较实用的主题 https://hugoloveit.com/</description>
+    </item>
+    
+  </channel>
+</rss>

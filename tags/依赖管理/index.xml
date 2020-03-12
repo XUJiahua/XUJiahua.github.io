@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>依赖管理 on 许嘉华的博客</title>
+    <link>http://example.org/tags/%E4%BE%9D%E8%B5%96%E7%AE%A1%E7%90%86/</link>
+    <description>Recent content in 依赖管理 on 许嘉华的博客</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Fri, 28 Feb 2020 15:05:18 +0800</lastBuildDate>
+    
+	<atom:link href="http://example.org/tags/%E4%BE%9D%E8%B5%96%E7%AE%A1%E7%90%86/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>使用Go Modules</title>
+      <link>http://example.org/posts/go-modules/</link>
+      <pubDate>Fri, 28 Feb 2020 15:05:18 +0800</pubDate>
+      
+      <guid>http://example.org/posts/go-modules/</guid>
+      <description>Go Modules使用着感觉不错，Go终于有正常点的依赖管理工具了。记录一二。
+使用小结  go.mod, go.sum加入版本管理 Both go.mod and go.sum should be checked into version control. 直接依赖体现在go.mod，间接依赖由直接依赖自己管理，这是个递归的过程 Only direct dependencies are recorded in the go.mod file. go命令自动管理go.mod，这可太方便了 When it encounters an import of a package not provided by any module in go.mod, the go command automatically looks up the module containing that package and adds it to go.mod, using the latest version. 看着比之前的依赖管理好用很多。比如dep。因为网络下载包等问题，最后把依赖包全checkin到vendor目录了。太臃肿。  常用命令  go mod init creates a new module, initializing the go.</description>
+    </item>
+    
+  </channel>
+</rss>
