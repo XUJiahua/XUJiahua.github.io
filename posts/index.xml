@@ -23,6 +23,25 @@ If your app needs to assign special meaning, the server can reprocess req.Reques
     </item>
     
     <item>
+      <title>专利申请流程小结</title>
+      <link>https://xujiahua.github.io/posts/patent/</link>
+      <pubDate>Wed, 11 Mar 2020 11:25:09 +0800</pubDate>
+      
+      <guid>https://xujiahua.github.io/posts/patent/</guid>
+      <description>去年憋的一篇专利，到申请公布阶段了，算是去年研究区块链的副成果。https://patents.google.com/patent/CN110807211。整理下专利申请流程。
+专利申请流程 主要流程如下图，来自网络。
+技术成果生成 有可以申请专利的点，这个因人而异。基于点子，写个草稿。
+申请专利 找一个专利代理，让他们提供专利稿的修改意见。反复迭代直到专利代理觉得没问题了。
+之后专利代理会出具一份「专利申请受理通知书」，你再交点钱，可能还会有税费减免。
+我遇到了专利代理看不大懂专利的情况，僵持了一段时间，后面换了一家顺畅好多。
+专利申请公布 这个时间点叫做：申请公布日。
+说明初审过了。实用新型和外观发明的话，直接就授权了，而发明还需要实质审查。
+&amp;ldquo;初步审查合格后，实用新型和外观就直接授权了，而发明还要经过实质审查，检索国内外的资料，确认没有相同的才会授权，所以发明的含金量会高很多，因此发明专利审查的时间也会是比较长的，一般从申请到拿证书都需要2-3年，而实用、外观这两项专利一年能拿到。&amp;rdquo;
+专利授权公告 这个时间点叫做：授权公告日。
+说明正式审查完了。这时候才算是真正拥有专利。</description>
+    </item>
+    
+    <item>
       <title>Github pages重新开始：使用Hugo、Typora</title>
       <link>https://xujiahua.github.io/posts/github-pages-restart/</link>
       <pubDate>Tue, 10 Mar 2020 11:24:49 +0800</pubDate>
