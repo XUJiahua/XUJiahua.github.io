@@ -2,13 +2,16 @@
     xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
     xmlns:xhtml="http://www.w3.org/1999/xhtml"
     ><url>
+            <loc>https://xujiahua.github.io/tags/go/</loc><lastmod>2020-03-20T15:24:22&#43;08:00</lastmod></url><url>
+            <loc>https://xujiahua.github.io/posts/go-web-project/</loc><lastmod>2020-03-20T15:24:22&#43;08:00</lastmod></url><url>
+            <loc>https://xujiahua.github.io/tags/golang/</loc><lastmod>2020-03-20T15:24:22&#43;08:00</lastmod></url><url>
+            <loc>https://xujiahua.github.io/posts/</loc><lastmod>2020-03-20T15:24:22&#43;08:00</lastmod></url><url>
+            <loc>https://xujiahua.github.io/tags/</loc><lastmod>2020-03-20T15:24:22&#43;08:00</lastmod></url><url>
+            <loc>https://xujiahua.github.io/tags/web/</loc><lastmod>2020-03-20T15:24:22&#43;08:00</lastmod></url><url>
+            <loc>https://xujiahua.github.io/</loc><lastmod>2020-03-20T15:24:22&#43;08:00</lastmod></url><url>
             <loc>https://xujiahua.github.io/tags/bug/</loc><lastmod>2020-03-12T15:17:36&#43;08:00</lastmod></url><url>
-            <loc>https://xujiahua.github.io/tags/go/</loc><lastmod>2020-03-12T15:17:36&#43;08:00</lastmod></url><url>
             <loc>https://xujiahua.github.io/tags/go-router/</loc><lastmod>2020-03-12T15:17:36&#43;08:00</lastmod></url><url>
             <loc>https://xujiahua.github.io/posts/slash-in-url-path/</loc><lastmod>2020-03-12T15:17:36&#43;08:00</lastmod></url><url>
-            <loc>https://xujiahua.github.io/posts/</loc><lastmod>2020-03-12T15:17:36&#43;08:00</lastmod></url><url>
-            <loc>https://xujiahua.github.io/tags/</loc><lastmod>2020-03-12T15:17:36&#43;08:00</lastmod></url><url>
-            <loc>https://xujiahua.github.io/</loc><lastmod>2020-03-12T15:17:36&#43;08:00</lastmod></url><url>
             <loc>https://xujiahua.github.io/tags/%E4%B8%93%E5%88%A9/</loc><lastmod>2020-03-11T11:25:09&#43;08:00</lastmod></url><url>
             <loc>https://xujiahua.github.io/posts/patent/</loc><lastmod>2020-03-11T11:25:09&#43;08:00</lastmod></url><url>
             <loc>https://xujiahua.github.io/tags/github-pages/</loc><lastmod>2020-03-10T11:24:49&#43;08:00</lastmod></url><url>

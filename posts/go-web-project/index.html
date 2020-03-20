@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="robots" content="noodp" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1">
+        <title>Go Web 项目框架 | 许嘉华的博客</title>
+        <meta name="Description" content=""><meta property="og:title" content="Go Web 项目框架" />
+<meta property="og:description" content="常用开源库 依赖包管理 Go Modules Go Modules。Go 从1.11版本开始支持，Go 1.14被认为是生产可用了。个人用过最方便的Go依赖包管理工具了。
+版本管理中维护 go.mod/go.sum 两个文件。
+参考  Using Go Modules https://blog.golang.org/using-go-modules  命令行框架 Corba Corba。第一次看到，是在翻看 Hyperledger Fabric 的时候。
+ 子命令，嵌套的子命令。 增强版本的flags。 项目模板的生成工具。 生成工具也自动引入了Viper这个包。Corba与Viper由一个作者开发，两个项目配合使用非常方便。  建议使用Cobra命令行工具生成项目模板。
+ ▾ appName/ ▾ cmd/ add.go your.go commands.go here.go main.go 参考  A Commander for modern Go CLI interactions https://github.com/spf13/cobra Cobra Generator https://github.com/spf13/cobra/blob/master/cobra/README.md  配置管理 Viper Viper。常常与Corba搭配使用。抄一段官方简介：
+Viper is a complete configuration solution for Go applications including 12-Factor apps. It is designed to work within an application, and can handle all types of configuration needs and formats." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://xujiahua.github.io/posts/go-web-project/" />
+<meta property="article:published_time" content="2020-03-20T15:24:22+08:00" />
+<meta property="article:modified_time" content="2020-03-20T15:24:22+08:00" />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Go Web 项目框架"/>
+<meta name="twitter:description" content="常用开源库 依赖包管理 Go Modules Go Modules。Go 从1.11版本开始支持，Go 1.14被认为是生产可用了。个人用过最方便的Go依赖包管理工具了。
+版本管理中维护 go.mod/go.sum 两个文件。
+参考  Using Go Modules https://blog.golang.org/using-go-modules  命令行框架 Corba Corba。第一次看到，是在翻看 Hyperledger Fabric 的时候。
+ 子命令，嵌套的子命令。 增强版本的flags。 项目模板的生成工具。 生成工具也自动引入了Viper这个包。Corba与Viper由一个作者开发，两个项目配合使用非常方便。  建议使用Cobra命令行工具生成项目模板。
+ ▾ appName/ ▾ cmd/ add.go your.go commands.go here.go main.go 参考  A Commander for modern Go CLI interactions https://github.com/spf13/cobra Cobra Generator https://github.com/spf13/cobra/blob/master/cobra/README.md  配置管理 Viper Viper。常常与Corba搭配使用。抄一段官方简介：
+Viper is a complete configuration solution for Go applications including 12-Factor apps. It is designed to work within an application, and can handle all types of configuration needs and formats."/>
+<meta name="theme-color" content="#ffffff">
+<meta name="msapplication-TileColor" content="#da532c">
+<link rel="canonical" href="https://xujiahua.github.io/posts/go-web-project/" />
+<link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="prev" href="https://xujiahua.github.io/posts/slash-in-url-path/" /><link rel="stylesheet" href="/lib/fontawesome-free/all.min.9a680b90260b5106d79f4075491ab31daafa7429eff686453c40b58357309649.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk="><link rel="stylesheet" href="/lib/animate/animate.min.3c770e90f98eb21b0c042fafb49755af93306fbaf42e449524f94fae9fc83295.css" integrity="sha256-PHcOkPmOshsMBC&#43;vtJdVr5Mwb7r0LkSVJPlPrp/IMpU="><link rel="stylesheet" href="/css/style.min.e8ca640cf5b1714eaa34bc21e8e2d0e79ae9cc05a934f6ee78a318487d7c515b.css" integrity="sha256-6MpkDPWxcU6qNLwh6OLQ55rpzAWpNPbueKMYSH18UVs=">
+<script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "headline": "Go Web 项目框架",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "https:\/\/xujiahua.github.io\/posts\/go-web-project\/"
+        },"genre": "posts","keywords": "Golang, Web","wordcount":  746 ,
+        "url": "https:\/\/xujiahua.github.io\/posts\/go-web-project\/","datePublished": "2020-03-20T15:24:22\x2b08:00","dateModified": "2020-03-20T15:24:22\x2b08:00","description": ""
+    }
+    </script></head>
+    <body><script>
+            if (!window.localStorage || !window.localStorage.getItem('theme')) {window.isDark = '' === 'dark';} else {
+                window.isDark = (window.localStorage && window.localStorage.getItem('theme')) === 'dark';
+            }
+            window.isDark && document.body.classList.add('dark-theme');
+        </script><div class="wrapper"><header class="desktop" id="header-desktop">
+    <div class="header-wrapper">
+        <div class="header-title animated bounceIn">
+            <a href="/">许嘉华的博客</a>
+        </div>
+        <div class="menu"><a class="menu-item" href="/posts/">Posts</a><a class="menu-item" href="/tags/">Tags</a><a class="menu-item" href="/categories/">Categories</a><a class="menu-item" href="/about/">About</a><a href="javascript:void(0);" class="theme-switch" title="Switch Theme">
+                <i class="fas fa-adjust fa-rotate-180 fa-fw"></i>
+            </a>
+        </div>
+    </div>
+</header><header class="mobile" id="header-mobile">
+    <div class="header-wrapper">
+        <div class="header-container">
+            <div class="header-title animated bounceIn">
+                <a href="/">许嘉华的博客</a>
+            </div>
+            <div class="menu-toggle" id="menu-toggle-mobile">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="menu" id="menu-mobile"><a class="menu-item" href="/posts/" title="">Posts</a><a class="menu-item" href="/tags/" title="">Tags</a><a class="menu-item" href="/categories/" title="">Categories</a><a class="menu-item" href="/about/" title="">About</a><a href="javascript:void(0);" class="theme-switch" title="Switch Theme">
+                <i class="fas fa-adjust fa-rotate-180 fa-fw"></i>
+            </a>
+        </div>
+    </div>
+</header>
+
+<script>
+    window.desktopHeaderMode =  null ;
+    window.mobileHeaderMode =  null ;
+</script>
+<main class="main">
+                <div class="container"><article class="page single"><h1 class="single-title animated flipInX">Go Web 项目框架</h1><div class="post-meta">
+            <div class="post-meta-line"><span class="post-author">
+                    <a class="author" href="/" rel="author" target="_blank">
+                        <i class="fas fa-user-circle fa-fw"></i>Author
+                    </a>
+                </span></div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i><time datetime=2020-03-20>2020-03-20</time>&nbsp;
+                <i class="fas fa-pencil-alt fa-fw"></i>about 746 words&nbsp;
+                <i class="far fa-clock fa-fw"></i>4 min&nbsp;</div>
+        </div><div class="toc" id="toc-auto">
+                <h2 class="toc-title">Contents</h2>
+                <div class="toc-content always-active" id="toc-content-auto"></div>
+            </div>
+            <div class="toc" id="toc-static">
+                <details>
+                    <summary>
+                        <div class="toc-title">
+                            <span>Contents</span>
+                            <span><i class="details icon fas fa-angle-down"></i></span>
+                        </div>
+                    </summary>
+                    <div class="toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#常用开源库">常用开源库</a>
+      <ul>
+        <li><a href="#依赖包管理-go-modules">依赖包管理 Go Modules</a></li>
+        <li><a href="#命令行框架-corba">命令行框架 Corba</a></li>
+        <li><a href="#配置管理-viper">配置管理 Viper</a></li>
+        <li><a href="#日志-logrus">日志 logrus</a></li>
+        <li><a href="#路由库--grollia-mux">路由库  grollia mux</a></li>
+        <li><a href="#orm-gorm">ORM gorm</a></li>
+        <li><a href="#http-client-grequests">HTTP client grequests</a></li>
+        <li><a href="#errors-githubcompkgerrors">Errors github.com/pkg/errors</a></li>
+        <li><a href="#依赖注入框架-wire">依赖注入框架 wire</a></li>
+        <li><a href="#rpc框架-grpc">RPC框架 gRPC</a></li>
+      </ul>
+    </li>
+    <li><a href="#常用工具">常用工具</a>
+      <ul>
+        <li><a href="#makefile">Makefile</a></li>
+        <li><a href="#docker">Docker</a></li>
+        <li><a href="#swagger">Swagger</a></li>
+      </ul>
+    </li>
+    <li><a href="#项目结构">项目结构</a>
+      <ul>
+        <li><a href="#model-database-models">model: database models</a></li>
+        <li><a href="#config">config</a></li>
+        <li><a href="#db-database-operations">db: database operations</a></li>
+        <li><a href="#app-business-logic">app: business logic</a></li>
+        <li><a href="#api-api-controllers">api: api controllers</a></li>
+        <li><a href="#cmd-command-line-methods">cmd: command line methods</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav></div>
+                </details>
+            </div><div class="content" id="content"><h2 id="常用开源库">常用开源库</h2>
+<h3 id="依赖包管理-go-modules">依赖包管理 Go Modules</h3>
+<p>Go Modules。Go 从1.11版本开始支持，Go 1.14被认为是生产可用了。个人用过最方便的Go依赖包管理工具了。</p>
+<p>版本管理中维护 <code>go.mod</code>/<code>go.sum</code> 两个文件。</p>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-sizes="auto"
+        data-srcset="../../images/image-20200320152954581.png, ../../images/image-20200320152954581.png 1.5x, ../../images/image-20200320152954581.png 2x"
+        data-src="../../images/image-20200320152954581.png"
+        alt="image-20200320152954581"
+        title="image-20200320152954581" /></p>
+<h4 id="参考">参考</h4>
+<ol>
+<li>Using Go Modules <a href="https://blog.golang.org/using-go-modules">https://blog.golang.org/using-go-modules</a></li>
+</ol>
+<h3 id="命令行框架-corba">命令行框架 Corba</h3>
+<p>Corba。第一次看到，是在翻看 Hyperledger Fabric 的时候。</p>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-sizes="auto"
+        data-srcset="../../images/ad566232-814f-11e5-9cd0-aa101788c117.png, ../../images/ad566232-814f-11e5-9cd0-aa101788c117.png 1.5x, ../../images/ad566232-814f-11e5-9cd0-aa101788c117.png 2x"
+        data-src="../../images/ad566232-814f-11e5-9cd0-aa101788c117.png"
+        alt="cobra logo"
+        title="cobra logo" /></p>
+<ol>
+<li>子命令，嵌套的子命令。</li>
+<li>增强版本的flags。</li>
+<li>项目模板的生成工具。</li>
+<li>生成工具也自动引入了Viper这个包。Corba与Viper由一个作者开发，两个项目配合使用非常方便。</li>
+</ol>
+<p>建议使用Cobra命令行工具生成项目模板。</p>
+<pre><code>  ▾ appName/
+    ▾ cmd/
+        add.go
+        your.go
+        commands.go
+        here.go
+      main.go
+</code></pre><h4 id="参考-1">参考</h4>
+<ol>
+<li>A Commander for modern Go CLI interactions <a href="https://github.com/spf13/cobra">https://github.com/spf13/cobra</a></li>
+<li>Cobra Generator <a href="https://github.com/spf13/cobra/blob/master/cobra/README.md">https://github.com/spf13/cobra/blob/master/cobra/README.md</a></li>
+</ol>
+<h3 id="配置管理-viper">配置管理 Viper</h3>
+<p>Viper。常常与Corba搭配使用。抄一段官方简介：</p>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-sizes="auto"
+        data-srcset="../../images/998df88a-8151-11e5-9448-4736db51020d.png, ../../images/998df88a-8151-11e5-9448-4736db51020d.png 1.5x, ../../images/998df88a-8151-11e5-9448-4736db51020d.png 2x"
+        data-src="../../images/998df88a-8151-11e5-9448-4736db51020d.png"
+        alt="viper logo"
+        title="viper logo" /></p>
+<p>Viper is a complete configuration solution for Go applications including 12-Factor apps. It is designed to work within an application, and can handle all types of configuration needs and formats. It supports:</p>
+<ul>
+<li>setting defaults</li>
+<li>reading from JSON, TOML, YAML, HCL, envfile and Java properties config files 支持各种配置文件格式，TOML比较合我口味。在使用viper之前的配置文件读取方式，一般都是配置文件对应一个Go的model，通过反序列化读入程序。现在看来非常粗糙。</li>
+<li>live watching and re-reading of config files (optional)</li>
+<li>reading from environment variables 读取环境变量。代码和配置严格分离，配置文件算是一种不错的选择，12-Factor更推荐将应用的配置存储于环境变量中，参考：https://12factor.net/zh_cn/config</li>
+<li>reading from remote config systems (etcd or Consul), and watching changes 读配置中心。</li>
+<li>reading from command line flags</li>
+<li>reading from buffer</li>
+<li>setting explicit values</li>
+</ul>
+<p>Viper can be thought of as a registry for all of your applications configuration needs.</p>
+<h4 id="关于读环境变量">关于读环境变量</h4>
+<p>viper.Get读环境变量的问题。我曾天真的以为能读任何环境变量，其实并没有。摘抄一段：</p>
+<p>AutomaticEnv is a powerful helper especially when combined with SetEnvPrefix. When called, Viper will check for an environment variable any time a viper.Get request is made. <strong>It will apply the following rules. It will check for a environment variable with a name matching the key uppercased</strong> and prefixed with the EnvPrefix if set.</p>
+<p>也就是先有key的存在，才能读到环境变量中的同名环境变量值。而key的存在，一般是读取了配置文件之后的事情。</p>
+<p>那么不match怎么办呢。使用BindEnv，绑定key与环境变量名之间的关系。</p>
+<p><code>BindEnv</code> takes one or two parameters. The first parameter is the key name, the second is the name of the environment variable. The name of the environment variable is case sensitive. If the ENV variable name is not provided, then Viper will automatically assume that the ENV variable matches the following format: prefix + &ldquo;_&rdquo; + the key name in ALL CAPS. When you explicitly provide the ENV variable name (the second parameter), it <strong>does not</strong> automatically add the prefix. For example if the second parameter is &ldquo;id&rdquo;, Viper will look for the ENV variable &ldquo;ID&rdquo;.</p>
+<h4 id="参考-2">参考</h4>
+<ol>
+<li>Go configuration with fangs <a href="https://github.com/spf13/viper">https://github.com/spf13/viper</a></li>
+</ol>
+<h3 id="日志-logrus">日志 logrus</h3>
+<p>Logrus提供的日志功能很丰富。</p>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-sizes="auto"
+        data-srcset="../../images/687474703a2f2f692e696d6775722e636f6d2f68546556776d4a2e706e67.png, ../../images/687474703a2f2f692e696d6775722e636f6d2f68546556776d4a2e706e67.png 1.5x, ../../images/687474703a2f2f692e696d6775722e636f6d2f68546556776d4a2e706e67.png 2x"
+        data-src="../../images/687474703a2f2f692e696d6775722e636f6d2f68546556776d4a2e706e67.png"
+        alt=":walrus:"
+        title=":walrus:" /></p>
+<ol>
+<li>JSON、TEXT格式输出。JSON很方便解析，配合ES存储日志。</li>
+</ol>
+<h4 id="参考-3">参考</h4>
+<ol>
+<li>Structured, pluggable logging for Go. <a href="https://github.com/sirupsen/logrus">https://github.com/sirupsen/logrus</a></li>
+</ol>
+<h3 id="路由库--grollia-mux">路由库  grollia mux</h3>
+<p>摘抄官方：</p>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-sizes="auto"
+        data-srcset="../../images/68747470733a2f2f636c6f75642d63646e2e7175657374696f6e61626c652e73657276696365732f676f72696c6c612d69636f6e2d36342e706e67.png, ../../images/68747470733a2f2f636c6f75642d63646e2e7175657374696f6e61626c652e73657276696365732f676f72696c6c612d69636f6e2d36342e706e67.png 1.5x, ../../images/68747470733a2f2f636c6f75642d63646e2e7175657374696f6e61626c652e73657276696365732f676f72696c6c612d69636f6e2d36342e706e67.png 2x"
+        data-src="../../images/68747470733a2f2f636c6f75642d63646e2e7175657374696f6e61626c652e73657276696365732f676f72696c6c612d69636f6e2d36342e706e67.png"
+        alt="Gorilla Logo"
+        title="Gorilla Logo" /></p>
+<p>Package <code>gorilla/mux</code> implements a request router and dispatcher for matching incoming requests to their respective handler.</p>
+<p>The name mux stands for &ldquo;HTTP request multiplexer&rdquo;. Like the standard <code>http.ServeMux</code>, <code>mux.Router</code> matches incoming requests against a list of registered routes and calls a handler for the route that matches the URL or other conditions. The main features are:</p>
+<ul>
+<li>It implements the <code>http.Handler</code> interface so it is compatible with the standard <code>http.ServeMux</code>. Go 提供的http.Handler 接口太具有扩展性了。</li>
+<li>Requests can be matched based on URL host, path, path prefix, schemes, header and query values, HTTP methods or using custom matchers. 丰富的路由匹配规则，host、path、header、query string都可以。</li>
+<li>URL hosts, paths and query values can have variables with an optional regular expression.</li>
+<li>Registered URLs can be built, or &ldquo;reversed&rdquo;, which helps maintaining references to resources.</li>
+<li>Routes can be used as subrouters: nested routes are only tested if the parent route matches. This is useful to define groups of routes that share common conditions like a host, a path prefix or other repeated attributes. As a bonus, this optimizes request matching. 分组功能，RESTful接口按照实体分组，很实用。</li>
+</ul>
+<p>可以搭配同系列的middleware项目使用：https://github.com/gorilla/handlers。</p>
+<h4 id="参考-4">参考</h4>
+<ol>
+<li>A powerful HTTP router and URL matcher for building Go web servers <a href="https://github.com/gorilla/mux">https://github.com/gorilla/mux</a></li>
+<li>A collection of useful middleware for Go HTTP services &amp; web applications <a href="https://github.com/gorilla/handlers">https://github.com/gorilla/handlers</a></li>
+<li>Web Server Graceful Shutdown <a href="https://github.com/gorilla/mux#graceful-shutdown">https://github.com/gorilla/mux#graceful-shutdown</a></li>
+</ol>
+<h3 id="orm-gorm">ORM gorm</h3>
+<p>文档很丰富。功能很实用。摘抄官方文档：</p>
+<ul>
+<li>Full-Featured ORM (almost)</li>
+<li>Associations (Has One, Has Many, Belongs To, Many To Many, Polymorphism)</li>
+<li>Hooks (Before/After Create/Save/Update/Delete/Find)</li>
+<li>Preloading (eager loading)</li>
+<li>Transactions</li>
+<li>Composite Primary Key</li>
+<li>SQL Builder</li>
+<li>Auto Migrations 自动创建表结构。</li>
+<li>Logger</li>
+<li>Extendable, write Plugins based on GORM callbacks</li>
+<li>Every feature comes with tests</li>
+<li>Developer Friendly</li>
+</ul>
+<h4 id="参考-5">参考</h4>
+<ol>
+<li>GORM Guides <a href="https://gorm.io/docs/">https://gorm.io/docs/</a></li>
+</ol>
+<h3 id="http-client-grequests">HTTP client grequests</h3>
+<p>号称 Python Requests 的Go clone。用着不错。</p>
+<h4 id="参考-6">参考</h4>
+<ol>
+<li>A Go &ldquo;clone&rdquo; of the great and famous Requests library <a href="https://github.com/levigross/grequests">https://github.com/levigross/grequests</a></li>
+</ol>
+<h3 id="errors-githubcompkgerrors">Errors github.com/pkg/errors</h3>
+<p>内置的errors太弱了。返回了error，但是呢，没有返回上下文信息。这个库解决的是这个问题。</p>
+<h4 id="参考-7">参考</h4>
+<ol>
+<li>Simple error handling primitives <a href="https://github.com/pkg/errors">https://github.com/pkg/errors</a></li>
+</ol>
+<h3 id="依赖注入框架-wire">依赖注入框架 wire</h3>
+<p>基于代码生成的依赖注入框架。小项目没必要使用。</p>
+<h3 id="rpc框架-grpc">RPC框架 gRPC</h3>
+<p>跨进程，跨语言通信。</p>
+<h2 id="常用工具">常用工具</h2>
+<h3 id="makefile">Makefile</h3>
+<p>将常用的命令放在Makefile里管理。比如格式化代码 ，编译，打包，开发环境运行等等，并维护好依赖关系。</p>
+<p>不要写一堆.sh脚本了。</p>
+<h3 id="docker">Docker</h3>
+<p>维护一份Dockerfile，项目交付物通过制作成Docker镜像分发。比如：</p>
+<pre><code># Dockerfile
+FROM alpine:latest
+WORKDIR /app
+COPY ./dist .
+ENTRYPOINT [&quot;./app&quot;, &quot;serve&quot;]
+</code></pre><p>可以通过Docker来构建Go项目（一个两阶段的Dockerfile）。也可以像我这样，在宿主机就构建好，Dockerfile只需要COPY编译产物即可。</p>
+<h3 id="swagger">Swagger</h3>
+<p>目前没有方便的生成方法，得手写注释！</p>
+<h2 id="项目结构">项目结构</h2>
+<p>Go web项目结构没有定式，每个人的风格都不一样。参考了这个系列文章，觉得不错，特别是第二篇。</p>
+<ol>
+<li>Go Web Application Structure - Part 1 <a href="https://aaf.engineering/go-web-application-structure-pt-1/">https://aaf.engineering/go-web-application-structure-pt-1/</a></li>
+<li><strong>Go Web Application Structure - Part 2 - Routing/Serving</strong> <a href="https://aaf.engineering/go-web-application-structure-part-2/">https://aaf.engineering/go-web-application-structure-part-2/</a></li>
+<li>Go Web Application Structure - Part 3 - The Database <a href="https://aaf.engineering/go-web-application-structure-part-3/">https://aaf.engineering/go-web-application-structure-part-3/</a></li>
+<li>Go Web Application Structure - Part 4 - Database Migrations &amp; Business Logic <a href="https://aaf.engineering/go-web-application-structure-part-4/">https://aaf.engineering/go-web-application-structure-part-4/</a></li>
+<li>code <a href="https://github.com/theaaf/todos">https://github.com/theaaf/todos</a></li>
+</ol>
+<p>层级调用链：cmd -&gt; api -&gt; app -&gt; db。model/config横切，其它层共享之。</p>
+<h3 id="model-database-models">model: database models</h3>
+<p>模型实体，通过分析需求建模，合理的建模便于后期维护。</p>
+<p>横切层。其他每层都会用到。</p>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-sizes="auto"
+        data-srcset="../../images/image-20200320170405357.png, ../../images/image-20200320170405357.png 1.5x, ../../images/image-20200320170405357.png 2x"
+        data-src="../../images/image-20200320170405357.png"
+        alt="image-20200320170405357"
+        title="image-20200320170405357" /></p>
+<h3 id="config">config</h3>
+<p>横切层。</p>
+<p>并没有自己独立的包，而是其他每层都可以根据需要，有一个自己独立的Config结构体。通过一个全局的Viper变量，取出该层关心的配置变量（或是从配置文件，或是从环境变量）。</p>
+<p>比如数据层的config：</p>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-sizes="auto"
+        data-srcset="../../images/image-20200320170301550.png, ../../images/image-20200320170301550.png 1.5x, ../../images/image-20200320170301550.png 2x"
+        data-src="../../images/image-20200320170301550.png"
+        alt="image-20200320170301550"
+        title="image-20200320170301550" /></p>
+<h3 id="db-database-operations">db: database operations</h3>
+<p>数据持久化层，底层。CRUD操作的封装。通过“构造函数”做依赖注入，方便单元测试。</p>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-sizes="auto"
+        data-srcset="../../images/image-20200320170627650.png, ../../images/image-20200320170627650.png 1.5x, ../../images/image-20200320170627650.png 2x"
+        data-src="../../images/image-20200320170627650.png"
+        alt="image-20200320170627650"
+        title="image-20200320170627650" /></p>
+<h3 id="app-business-logic">app: business logic</h3>
+<p>业务逻辑层，中层，核心层。调用数据层，及其他底层服务，比如S3云存储等。</p>
+<h4 id="三类错误">三类错误</h4>
+<p>该层方法返回的错误可以分三类。</p>
+<ol>
+<li>ValidationError 输入不正确，校验不通过，比如手机号长度不对。对应的HTTP状态码：400。</li>
+<li>UserError 认证错误，比如用户登录失败，用户没有权限。对应的HTTP状态码：401, 403。</li>
+<li>ServerError 系统错误，比如数据库连不上，也不需要特别定义ServerError：只要error不是ValidationError，UserError，就是ServerError。对应的HTTP状态码：500。</li>
+<li>没有错误，那么对应的HTTP状态码就是200。</li>
+</ol>
+<h3 id="api-api-controllers">api: api controllers</h3>
+<p>接口层。尽可能轻量，尽可能没有业务逻辑，只负责转译。通过调用业务逻辑层完成任务。将上述三分类错误映射到合适的状态码。</p>
+<h4 id="application-state-vs-request-state">Application State vs. Request State</h4>
+<p>请求入口函数需要为每个请求创建一个context（上下文）。context包含如下，摘抄原文。包含的字段需满足完成request的所需。</p>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-sizes="auto"
+        data-srcset="../../images/image-20200320181127465.png, ../../images/image-20200320181127465.png 1.5x, ../../images/image-20200320181127465.png 2x"
+        data-src="../../images/image-20200320181127465.png"
+        alt="image-20200320181127465"
+        title="image-20200320181127465" /></p>
+<h4 id="request-context-请求上下文信息">(Request) Context 请求上下文信息</h4>
+<ol>
+<li>Remote IP地址，显示于access log。使用logrus.WithField()。</li>
+<li>Request ID，显示于access log。使用logrus.WithField()。</li>
+<li>User，用于后续鉴权。如果有认证头信息（Auth Token），从数据库取出用户。</li>
+</ol>
+<h3 id="cmd-command-line-methods">cmd: command line methods</h3>
+<p>使用Cobra生成子命令。</p>
+<p><code>app serve </code></p>
+<p>启动web server，并加入web server优雅退出的功能。</p>
+</div><div class="post-footer" id="post-footer">
+    <div class="post-info">
+        <div class="post-info-line">
+            <div class="post-info-mod">
+                <span>The article was updated on 2020-03-20</span>
+            </div>
+            <div class="post-info-license"></div>
+        </div>
+        <div class="post-info-line">
+            <div class="post-info-md"></div>
+            <div class="post-info-share">
+                <span></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="post-info-more">
+        <section><span>
+                        <a href="/tags/golang">
+                            <i class="fas fa-tag fa-fw"></i>Golang
+                        </a>
+                    </span>&nbsp;<span>
+                        <a href="/tags/web">
+                            <i class="fas fa-tag fa-fw"></i>Web
+                        </a>
+                    </span>&nbsp;</section>
+        <section>
+            <span><a href="javascript:window.history.back();">Back</a></span>&nbsp;|&nbsp;<span><a href="/">Home</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav"><a href="https://xujiahua.github.io/posts/slash-in-url-path/" class="prev" rel="prev" title="Go库对URL Path中%2F的处理"><i class="fas fa-angle-left fa-fw"></i>Go库对URL Path中%2F的处理</a></div>
+</div>
+<div class="comment"></div>
+    </article></div>
+            </main><footer class="footer">
+    <div class="copyright"><div class="copyright-line">Powered by <a href="https://gohugo.io/" target="_blank" rel="external nofollow noopener noreffer">Hugo</a> | Theme - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="external nofollow noopener noreffer">LoveIt<i class="far fa-heart fa-fw"></i></a>
+        </div>
+
+        <div class="copyright-line"><i class="far fa-copyright fa-fw"></i><span itemprop="copyrightYear">2020</span></div>
+    </div>
+</footer>
+</div><a href="#" class="dynamic-to-top animated faster" id="dynamic-to-top">
+            <span>&nbsp;</span>
+        </a><script>
+        document.addEventListener('DOMContentLoaded', function () {
+            lightGallery(document.getElementById('content'), {
+                selector: '.lightgallery',
+                speed: 400,
+                hideBarsDelay: 2000,
+                thumbnail: true,
+                exThumbImage: 'data-thumbnail',
+                thumbWidth: 80,
+                thumbContHeight: 80,
+            });
+        });
+    </script><link rel="stylesheet" href="/lib/lightgallery/lightgallery.min.a0f67639490aba5d9a250783c0aa0ed69f83a6f151fb0d7b9fb617c9dbc54565.css" integrity="sha256-oPZ2OUkKul2aJQeDwKoO1p&#43;DpvFR&#43;w17n7YXydvFRWU="><script src="/lib/smooth-scroll/smooth-scroll.polyfills.min.54590077ee163035c3dd38dc034e9f6915ecbe680dd832f449afa21672cab116.js" integrity="sha256-VFkAd&#43;4WMDXD3TjcA06faRXsvmgN2DL0Sa&#43;iFnLKsRY="></script><script src="/lib/sharer/sharer.min.9c88f86c7f0820287113f6236200459832693656e80d7556cc80a93dfbd45813.js" integrity="sha256-nIj4bH8IIChxE/YjYgBFmDJpNlboDXVWzICpPfvUWBM="></script><script src="/lib/lazysizes/lazysizes.min.876b4c12685e991d88378c1b6dd3638fd2da0c88f3c24da1ada950c1f26604e1.js" integrity="sha256-h2tMEmhemR2IN4wbbdNjj9LaDIjzwk2hralQwfJmBOE="></script><script src="/lib/lightgallery/lightgallery.min.7a84c63ab156d68e4a7269487c9c65a4eb34b0c7864f2d3fd2b87f7c664480d3.js" integrity="sha256-eoTGOrFW1o5KcmlIfJxlpOs0sMeGTy0/0rh/fGZEgNM="></script><script src="/lib/lightgallery/lg-thumbnail.min.eab31af8f90835b7ab674b2dd2474841039bc01022aa312f80dde6e22fde58d7.js" integrity="sha256-6rMa&#43;PkINberZ0st0kdIQQObwBAiqjEvgN3m4i/eWNc="></script><script src="/lib/lightgallery/lg-zoom.min.e3a7e6bb4a69f8627654ba9e0ab1252971bcfb400538dbb0605db9a3342ce5b9.js" integrity="sha256-46fmu0pp&#43;GJ2VLqeCrElKXG8&#43;0AFONuwYF25ozQs5bk="></script><script src="/js/theme.min.1482fc67bfa2c3b8cebe476d0037b9321b5b7a8a1525b547b94143948be90e9e.js" integrity="sha256-FIL8Z7&#43;iw7jOvkdtADe5MhtbeooVJbVHuUFDlIvpDp4="></script></body>
+</html>

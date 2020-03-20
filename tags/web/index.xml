@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Web on 许嘉华的博客</title>
+    <link>https://xujiahua.github.io/tags/web/</link>
+    <description>Recent content in Web on 许嘉华的博客</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Fri, 20 Mar 2020 15:24:22 +0800</lastBuildDate>
+    
+	<atom:link href="https://xujiahua.github.io/tags/web/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Go Web 项目框架</title>
+      <link>https://xujiahua.github.io/posts/go-web-project/</link>
+      <pubDate>Fri, 20 Mar 2020 15:24:22 +0800</pubDate>
+      
+      <guid>https://xujiahua.github.io/posts/go-web-project/</guid>
+      <description>常用开源库 依赖包管理 Go Modules Go Modules。Go 从1.11版本开始支持，Go 1.14被认为是生产可用了。个人用过最方便的Go依赖包管理工具了。
+版本管理中维护 go.mod/go.sum 两个文件。
+参考  Using Go Modules https://blog.golang.org/using-go-modules  命令行框架 Corba Corba。第一次看到，是在翻看 Hyperledger Fabric 的时候。
+ 子命令，嵌套的子命令。 增强版本的flags。 项目模板的生成工具。 生成工具也自动引入了Viper这个包。Corba与Viper由一个作者开发，两个项目配合使用非常方便。  建议使用Cobra命令行工具生成项目模板。
+ ▾ appName/ ▾ cmd/ add.go your.go commands.go here.go main.go 参考  A Commander for modern Go CLI interactions https://github.com/spf13/cobra Cobra Generator https://github.com/spf13/cobra/blob/master/cobra/README.md  配置管理 Viper Viper。常常与Corba搭配使用。抄一段官方简介：
+Viper is a complete configuration solution for Go applications including 12-Factor apps. It is designed to work within an application, and can handle all types of configuration needs and formats.</description>
+    </item>
+    
+  </channel>
+</rss>
