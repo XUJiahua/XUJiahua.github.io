@@ -42,7 +42,7 @@ Viper is a complete configuration solution for Go applications including 12-Fact
         "mainEntityOfPage": {
             "@type": "WebPage",
             "@id": "https:\/\/xujiahua.github.io\/posts\/go-web-project\/"
-        },"genre": "posts","keywords": "Golang, Web","wordcount":  746 ,
+        },"genre": "posts","keywords": "Golang, Web","wordcount":  747 ,
         "url": "https:\/\/xujiahua.github.io\/posts\/go-web-project\/","datePublished": "2020-03-20T15:24:22\x2b08:00","dateModified": "2020-03-20T15:24:22\x2b08:00","description": ""
     }
     </script></head>
@@ -90,7 +90,7 @@ Viper is a complete configuration solution for Go applications including 12-Fact
                     </a>
                 </span></div>
             <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i><time datetime=2020-03-20>2020-03-20</time>&nbsp;
-                <i class="fas fa-pencil-alt fa-fw"></i>about 746 words&nbsp;
+                <i class="fas fa-pencil-alt fa-fw"></i>about 747 words&nbsp;
                 <i class="far fa-clock fa-fw"></i>4 min&nbsp;</div>
         </div><div class="toc" id="toc-auto">
                 <h2 class="toc-title">Contents</h2>
@@ -208,11 +208,19 @@ Viper is a complete configuration solution for Go applications including 12-Fact
 </ul>
 <p>Viper can be thought of as a registry for all of your applications configuration needs.</p>
 <h4 id="关于读环境变量">关于读环境变量</h4>
-<p>viper.Get读环境变量的问题。我曾天真的以为能读任何环境变量，其实并没有。摘抄一段：</p>
 <p>AutomaticEnv is a powerful helper especially when combined with SetEnvPrefix. When called, Viper will check for an environment variable any time a viper.Get request is made. <strong>It will apply the following rules. It will check for a environment variable with a name matching the key uppercased</strong> and prefixed with the EnvPrefix if set.</p>
-<p>也就是先有key的存在，才能读到环境变量中的同名环境变量值。而key的存在，一般是读取了配置文件之后的事情。</p>
-<p>那么不match怎么办呢。使用BindEnv，绑定key与环境变量名之间的关系。</p>
-<p><code>BindEnv</code> takes one or two parameters. The first parameter is the key name, the second is the name of the environment variable. The name of the environment variable is case sensitive. If the ENV variable name is not provided, then Viper will automatically assume that the ENV variable matches the following format: prefix + &ldquo;_&rdquo; + the key name in ALL CAPS. When you explicitly provide the ENV variable name (the second parameter), it <strong>does not</strong> automatically add the prefix. For example if the second parameter is &ldquo;id&rdquo;, Viper will look for the ENV variable &ldquo;ID&rdquo;.</p>
+<p>环境变量名是有要求的，默认是大写+下划线组合。如果设置了EnvPrefix，环境变量名需要加上前缀加下划线。</p>
+<p>vip.GetXXX(var) 这里的var倒是大小写随意的，因为viper内部统一小写处理。</p>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-sizes="auto"
+        data-srcset="../../images/image-20200321181144230.png, ../../images/image-20200321181144230.png 1.5x, ../../images/image-20200321181144230.png 2x"
+        data-src="../../images/image-20200321181144230.png"
+        alt="image-20200321181144230"
+        title="image-20200321181144230" /></p>
+<p>如果环境变量名并不满足组合怎么办呢。使用BindEnv，绑定key与环境变量名之间的关系，而不是使用默认的约定。</p>
+<p><code>BindEnv</code> takes one or two parameters. The first parameter is the key name, the second is the name of the environment variable. The name of the environment variable is case sensitive. If the ENV variable name is not provided, then Viper will automatically assume that the ENV variable matches the following format: prefix + &ldquo;_&rdquo; + the key name in ALL CAPS. <strong>When you explicitly provide the ENV variable name (the second parameter), it does not automatically add the prefix.</strong> For example if the second parameter is &ldquo;id&rdquo;, Viper will look for the ENV variable &ldquo;ID&rdquo;.</p>
 <h4 id="参考-2">参考</h4>
 <ol>
 <li>Go configuration with fangs <a href="https://github.com/spf13/viper">https://github.com/spf13/viper</a></li>
