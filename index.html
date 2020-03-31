@@ -11,7 +11,7 @@
 <meta property="og:description" content="" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://xujiahua.github.io/" />
-<meta property="og:updated_time" content="2020-03-26T09:01:38+08:00" />
+<meta property="og:updated_time" content="2020-03-31T09:53:05+08:00" />
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="许嘉华的博客"/>
 <meta name="twitter:description" content=""/>
@@ -70,6 +70,22 @@
 </script>
 <main class="main">
                 <div class="container"><div class="page home"><article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
+        <a href="https://xujiahua.github.io/posts/use-docker-machine/">使用 Docker Machine</a>
+    </h1><div class="post-meta"><span class="post-author">
+            <a class="author" href="/" rel="author" target="_blank">
+                <i class="fas fa-user-circle fa-fw"></i>Author
+            </a>
+        </span>&nbsp;<span class="post-publish">
+            published on&nbsp;<time datetime=2020-03-31>2020-03-31</time>
+        </span></div><div class="content">简介 Docker Machine lets you create Docker hosts on your computer, on cloud providers, and inside your own data center. It creates servers, installs Docker on them, then configures the Docker client to talk to them.
+参考：
+ https://github.com/docker/machine https://docs.docker.com/machine/overview/  vs. Vagrant 与Vagrant的交集 目前使用 Vagrant 搭 Docker 环境的步骤如下：
+ vagrant init {box_name}，下载一个基础的虚拟机镜像，比如centos，并创建一个Vagrantfile。 Vagrantfile中设置虚拟机hostname。 Vagrantfile中设置Private network，使得几个VM可以互相通信。 VM内安装docker软件。  如果用上了docker-machine，只要一行命令。在这个场景上，docker-machine 比 Vagrant 方便了很多。
+docker-machine create -d virtualbox {host_name} VM的管理，vagrant命令需要在Vagrantfile所在目录执行。而docker-machine可以在任何目录管理VM。
+其他特色  通过其他driver，可以安装管理云主机或是私有数据中心，而不仅仅是virtualbox。 通过eval &ldquo;$(docker-machine env default)&quot;，覆盖环境变量DOCKER_HOST，使得本地docker client访问VM内的docker daemon。 更多实用命令，参考 https://docs.</div><div class="post-footer">
+        <a href="https://xujiahua.github.io/posts/use-docker-machine/">Read More</a></div>
+</article>
+<article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
         <a href="https://xujiahua.github.io/posts/use-consul/">Consul调研</a>
     </h1><div class="post-meta"><span class="post-author">
             <a class="author" href="/" rel="author" target="_blank">
@@ -79,7 +95,15 @@
             published on&nbsp;<time datetime=2020-03-26>2020-03-26</time>
         </span></div><div class="content">Consul简介 Consul 是 HashiCorp 公司推出的开源分布式服务发现与配置系统。
  服务发现。特别是搭配Consul Connect（Service Mesh），可达到一种无侵入式的服务发现和客户端负载均衡。 Key/Value 存储 作为配置中心。 使用 Raft 算法来保证一致性。 支持多数据中心。 支持健康检查：服务注册的时候可以提供健康检查项，服务发现会过滤掉不健康的service。 支持 http 和 dns 协议接口。 Web 管理界面。 没有长连接，轮询方式可能不够及时。  核心概念  consul agent server：维护核心状态并参与leader选举。server节点一般建议3个或是5个，测试用1个即可。写压力大的集群，考虑升级服务器实例的配置和低延迟的存储。（TIP For write-heavy clusters, consider scaling vertically with larger machine instances and lower latency storage. https://learn.hashicorp.com/consul/datacenter-deploy/reference-architecture） consul agent client：与其他agent联通，并消息中转。每个主机都有一个agent的好处是，只要与本地agent通信，不用设置CONSUL_HTTP_ADDR，代码也不用指定这个地址。方便无脑操作。(In a multi-agent Consul datacenter, each service would register with its local Consul client, and the clients would forward the registration to the Consul servers, which maintain the service catalog.</div><div class="post-footer">
-        <a href="https://xujiahua.github.io/posts/use-consul/">Read More</a></div>
+        <a href="https://xujiahua.github.io/posts/use-consul/">Read More</a><div class="post-tags">&nbsp;<span>
+                        <a href="/tags/service-mesh">
+                            <i class="fas fa-tag fa-fw"></i>Service Mesh
+                        </a>
+                    </span>&nbsp;<span>
+                        <a href="/tags/consul">
+                            <i class="fas fa-tag fa-fw"></i>consul
+                        </a>
+                    </span></div></div>
 </article>
 <article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
         <a href="https://xujiahua.github.io/posts/go-web-project/">Go Web 项目框架</a>

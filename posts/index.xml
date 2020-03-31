@@ -6,10 +6,24 @@
     <description>Recent content in Posts on 许嘉华的博客</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Thu, 26 Mar 2020 09:01:38 +0800</lastBuildDate>
+    <lastBuildDate>Tue, 31 Mar 2020 09:53:05 +0800</lastBuildDate>
     
 	<atom:link href="https://xujiahua.github.io/posts/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>使用 Docker Machine</title>
+      <link>https://xujiahua.github.io/posts/use-docker-machine/</link>
+      <pubDate>Tue, 31 Mar 2020 09:53:05 +0800</pubDate>
+      
+      <guid>https://xujiahua.github.io/posts/use-docker-machine/</guid>
+      <description>简介 Docker Machine lets you create Docker hosts on your computer, on cloud providers, and inside your own data center. It creates servers, installs Docker on them, then configures the Docker client to talk to them.
+参考：
+ https://github.com/docker/machine https://docs.docker.com/machine/overview/  vs. Vagrant 与Vagrant的交集 目前使用 Vagrant 搭 Docker 环境的步骤如下：
+ vagrant init {box_name}，下载一个基础的虚拟机镜像，比如centos，并创建一个Vagrantfile。 Vagrantfile中设置虚拟机hostname。 Vagrantfile中设置Private network，使得几个VM可以互相通信。 VM内安装docker软件。  如果用上了docker-machine，只要一行命令。在这个场景上，docker-machine 比 Vagrant 方便了很多。
+docker-machine create -d virtualbox {host_name} VM的管理，vagrant命令需要在Vagrantfile所在目录执行。而docker-machine可以在任何目录管理VM。
+其他特色  通过其他driver，可以安装管理云主机或是私有数据中心，而不仅仅是virtualbox。 通过eval &amp;ldquo;$(docker-machine env default)&amp;quot;，覆盖环境变量DOCKER_HOST，使得本地docker client访问VM内的docker daemon。 更多实用命令，参考 https://docs.</description>
+    </item>
     
     <item>
       <title>Consul调研</title>

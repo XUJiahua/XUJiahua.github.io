@@ -2,13 +2,16 @@
     xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
     xmlns:xhtml="http://www.w3.org/1999/xhtml"
     ><url>
+            <loc>https://xujiahua.github.io/posts/</loc><lastmod>2020-03-31T09:53:05&#43;08:00</lastmod></url><url>
+            <loc>https://xujiahua.github.io/posts/use-docker-machine/</loc><lastmod>2020-03-31T09:53:05&#43;08:00</lastmod></url><url>
+            <loc>https://xujiahua.github.io/</loc><lastmod>2020-03-31T09:53:05&#43;08:00</lastmod></url><url>
+            <loc>https://xujiahua.github.io/tags/consul/</loc><lastmod>2020-03-26T09:01:38&#43;08:00</lastmod></url><url>
             <loc>https://xujiahua.github.io/posts/use-consul/</loc><lastmod>2020-03-26T09:01:38&#43;08:00</lastmod></url><url>
-            <loc>https://xujiahua.github.io/posts/</loc><lastmod>2020-03-26T09:01:38&#43;08:00</lastmod></url><url>
-            <loc>https://xujiahua.github.io/</loc><lastmod>2020-03-26T09:01:38&#43;08:00</lastmod></url><url>
+            <loc>https://xujiahua.github.io/tags/service-mesh/</loc><lastmod>2020-03-26T09:01:38&#43;08:00</lastmod></url><url>
+            <loc>https://xujiahua.github.io/tags/</loc><lastmod>2020-03-26T09:01:38&#43;08:00</lastmod></url><url>
             <loc>https://xujiahua.github.io/tags/go/</loc><lastmod>2020-03-20T15:24:22&#43;08:00</lastmod></url><url>
             <loc>https://xujiahua.github.io/posts/go-web-project/</loc><lastmod>2020-03-20T15:24:22&#43;08:00</lastmod></url><url>
             <loc>https://xujiahua.github.io/tags/golang/</loc><lastmod>2020-03-20T15:24:22&#43;08:00</lastmod></url><url>
-            <loc>https://xujiahua.github.io/tags/</loc><lastmod>2020-03-20T15:24:22&#43;08:00</lastmod></url><url>
             <loc>https://xujiahua.github.io/tags/web/</loc><lastmod>2020-03-20T15:24:22&#43;08:00</lastmod></url><url>
             <loc>https://xujiahua.github.io/tags/bug/</loc><lastmod>2020-03-12T15:17:36&#43;08:00</lastmod></url><url>
             <loc>https://xujiahua.github.io/tags/go-router/</loc><lastmod>2020-03-12T15:17:36&#43;08:00</lastmod></url><url>
