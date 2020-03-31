@@ -42,7 +42,7 @@ none模式 &ndash;net=none 无网络。
         "mainEntityOfPage": {
             "@type": "WebPage",
             "@id": "https:\/\/xujiahua.github.io\/posts\/docker-network\/"
-        },"genre": "posts","keywords": "Docker, network","wordcount":  1288 ,
+        },"genre": "posts","keywords": "Docker, network","wordcount":  1289 ,
         "url": "https:\/\/xujiahua.github.io\/posts\/docker-network\/","datePublished": "2020-03-21T14:10:40\x2b08:00","dateModified": "2020-03-21T14:10:40\x2b08:00","description": ""
     }
     </script></head>
@@ -90,7 +90,7 @@ none模式 &ndash;net=none 无网络。
                     </a>
                 </span></div>
             <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i><time datetime=2020-03-21>2020-03-21</time>&nbsp;
-                <i class="fas fa-pencil-alt fa-fw"></i>about 1288 words&nbsp;
+                <i class="fas fa-pencil-alt fa-fw"></i>about 1289 words&nbsp;
                 <i class="far fa-clock fa-fw"></i>7 min&nbsp;</div>
         </div><div class="toc" id="toc-auto">
                 <h2 class="toc-title">Contents</h2>
@@ -112,7 +112,7 @@ none模式 &ndash;net=none 无网络。
         <li><a href="#none模式---netnone">none模式 &ndash;net=none</a></li>
         <li><a href="#host模式---nethost">host模式 &ndash;net=host</a></li>
         <li><a href="#bridge模式---netname_it_youself">bridge模式 &ndash;net={name_it_youself}</a></li>
-        <li><a href="#--netcontainerbase_container">&ndash;net=container:base_container</a></li>
+        <li><a href="#容器模式---netcontainerbase_container">容器模式 &ndash;net=container:base_container</a></li>
       </ul>
     </li>
     <li><a href="#跨主机网络">跨主机网络</a>
@@ -235,7 +235,7 @@ bd80d0dedaa8        none                null                local
 </ol>
 <h4 id="实验-1">实验</h4>
 <p>TODO</p>
-<h3 id="--netcontainerbase_container">&ndash;net=container:base_container</h3>
+<h3 id="容器模式---netcontainerbase_container">容器模式 &ndash;net=container:base_container</h3>
 <p>共用其他容器的网络栈，其他资源容器隔离。这个在Service Mesh的场景下非常有用。</p>
 <h4 id="实验-2">实验</h4>
 <pre><code># docker run -it --name=base_container alpine /bin/ash
