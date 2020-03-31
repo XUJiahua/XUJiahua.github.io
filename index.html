@@ -83,7 +83,11 @@
  vagrant init {box_name}，下载一个基础的虚拟机镜像，比如centos，并创建一个Vagrantfile。 Vagrantfile中设置虚拟机hostname。 Vagrantfile中设置Private network，使得几个VM可以互相通信。 VM内安装docker软件。  如果用上了docker-machine，只要一行命令。在这个场景上，docker-machine 比 Vagrant 方便了很多。
 docker-machine create -d virtualbox {host_name} VM的管理，vagrant命令需要在Vagrantfile所在目录执行。而docker-machine可以在任何目录管理VM。
 其他特色  通过其他driver，可以安装管理云主机或是私有数据中心，而不仅仅是virtualbox。 通过eval &ldquo;$(docker-machine env default)&quot;，覆盖环境变量DOCKER_HOST，使得本地docker client访问VM内的docker daemon。 更多实用命令，参考 https://docs.</div><div class="post-footer">
-        <a href="https://xujiahua.github.io/posts/use-docker-machine/">Read More</a></div>
+        <a href="https://xujiahua.github.io/posts/use-docker-machine/">Read More</a><div class="post-tags">&nbsp;<span>
+                        <a href="/tags/docker">
+                            <i class="fas fa-tag fa-fw"></i>Docker
+                        </a>
+                    </span></div></div>
 </article>
 <article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
         <a href="https://xujiahua.github.io/posts/use-consul/">Consul调研</a>
@@ -119,7 +123,15 @@ Docker安装完后，默认有三个（三种）网络。分别是默认的bridg
 # docker network ls NETWORK ID NAME DRIVER SCOPE 51cbe7a9bb19 bridge bridge local 7182ef9fa8c4 host host local bd80d0dedaa8 none null local 参考：https://docs.docker.com/network/
 none模式 &ndash;net=none 无网络。
 # docker run --net=none --rm -it alpine ip addr show 1: lo: &lt;LOOPBACK,UP,LOWER_UP&gt; mtu 65536 qdisc noqueue state UNKNOWN qlen 1000 link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00 inet 127.0.0.1/8 scope host lo valid_lft forever preferred_lft forever host模式 &ndash;net=host  容器共用宿主机的网络。但是，容器的其他方面，如文件系统、进程列表等还是和宿主机隔离的。 容器不会申请独立的IP。 容器申请的端口占用宿主机的端口资源。 -p等端口映射命令不起作用：WARNING: Published ports are discarded when using host network mode 性能上比较好，因为没有地址转换。Host mode networking can be useful to optimize performance, and in situations where a container needs to handle a large range of ports, as it does not require network address translation (NAT), and no “userland-proxy” is created for each port.</div><div class="post-footer">
-        <a href="https://xujiahua.github.io/posts/docker-network/">Read More</a></div>
+        <a href="https://xujiahua.github.io/posts/docker-network/">Read More</a><div class="post-tags">&nbsp;<span>
+                        <a href="/tags/docker">
+                            <i class="fas fa-tag fa-fw"></i>Docker
+                        </a>
+                    </span>&nbsp;<span>
+                        <a href="/tags/network">
+                            <i class="fas fa-tag fa-fw"></i>network
+                        </a>
+                    </span></div></div>
 </article>
 <article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
         <a href="https://xujiahua.github.io/posts/go-web-project/">Go Web 项目框架</a>

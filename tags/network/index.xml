@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>network on 许嘉华的博客</title>
+    <link>https://xujiahua.github.io/tags/network/</link>
+    <description>Recent content in network on 许嘉华的博客</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Sat, 21 Mar 2020 14:10:40 +0800</lastBuildDate>
+    
+	<atom:link href="https://xujiahua.github.io/tags/network/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Docker Network小结</title>
+      <link>https://xujiahua.github.io/posts/docker-network/</link>
+      <pubDate>Sat, 21 Mar 2020 14:10:40 +0800</pubDate>
+      
+      <guid>https://xujiahua.github.io/posts/docker-network/</guid>
+      <description>笔记整理。建议先看一些入门资料。
+Docker 学习资料  Docker — 从入门到实践 https://www.yuque.com/grasilife/docker Docker Kubernetes Lab Handbook https://docker-k8s-lab.readthedocs.io/en/latest/index.html 「Docker进阶与实战」华为Docker实践小组  单机网络 （建议在Linux系统上实验。）
+Docker安装完后，默认有三个（三种）网络。分别是默认的bridge模式，host模式，none模式。
+# docker network ls NETWORK ID NAME DRIVER SCOPE 51cbe7a9bb19 bridge bridge local 7182ef9fa8c4 host host local bd80d0dedaa8 none null local 参考：https://docs.docker.com/network/
+none模式 &amp;ndash;net=none 无网络。
+# docker run --net=none --rm -it alpine ip addr show 1: lo: &amp;lt;LOOPBACK,UP,LOWER_UP&amp;gt; mtu 65536 qdisc noqueue state UNKNOWN qlen 1000 link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00 inet 127.0.0.1/8 scope host lo valid_lft forever preferred_lft forever host模式 &amp;ndash;net=host  容器共用宿主机的网络。但是，容器的其他方面，如文件系统、进程列表等还是和宿主机隔离的。 容器不会申请独立的IP。 容器申请的端口占用宿主机的端口资源。 -p等端口映射命令不起作用：WARNING: Published ports are discarded when using host network mode 性能上比较好，因为没有地址转换。Host mode networking can be useful to optimize performance, and in situations where a container needs to handle a large range of ports, as it does not require network address translation (NAT), and no “userland-proxy” is created for each port.</description>
+    </item>
+    
+  </channel>
+</rss>
