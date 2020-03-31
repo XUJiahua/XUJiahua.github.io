@@ -106,6 +106,22 @@ docker-machine create -d virtualbox {host_name} VM的管理，vagrant命令需�
                     </span></div></div>
 </article>
 <article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
+        <a href="https://xujiahua.github.io/posts/docker-network/">Docker Network</a>
+    </h1><div class="post-meta"><span class="post-author">
+            <a class="author" href="/" rel="author" target="_blank">
+                <i class="fas fa-user-circle fa-fw"></i>Author
+            </a>
+        </span>&nbsp;<span class="post-publish">
+            published on&nbsp;<time datetime=2020-03-21>2020-03-21</time>
+        </span></div><div class="content">笔记整理。建议先看一些入门资料。
+Docker 学习资料  Docker — 从入门到实践 https://www.yuque.com/grasilife/docker Docker Kubernetes Lab Handbook https://docker-k8s-lab.readthedocs.io/en/latest/index.html 「Docker进阶与实战」华为Docker实践小组  单机网络 （建议在Linux系统上实验。）
+Docker安装完后，默认有三个（三种）网络。分别是默认的bridge模式，host模式，none模式。
+# docker network ls NETWORK ID NAME DRIVER SCOPE 51cbe7a9bb19 bridge bridge local 7182ef9fa8c4 host host local bd80d0dedaa8 none null local 参考：https://docs.docker.com/network/
+none模式 &ndash;net=none 无网络。
+# docker run --net=none --rm -it alpine ip addr show 1: lo: &lt;LOOPBACK,UP,LOWER_UP&gt; mtu 65536 qdisc noqueue state UNKNOWN qlen 1000 link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00 inet 127.0.0.1/8 scope host lo valid_lft forever preferred_lft forever host模式 &ndash;net=host  容器共用宿主机的网络。但是，容器的其他方面，如文件系统、进程列表等还是和宿主机隔离的。 容器不会申请独立的IP。 容器申请的端口占用宿主机的端口资源。 -p等端口映射命令不起作用：WARNING: Published ports are discarded when using host network mode 性能上比较好，因为没有地址转换。Host mode networking can be useful to optimize performance, and in situations where a container needs to handle a large range of ports, as it does not require network address translation (NAT), and no “userland-proxy” is created for each port.</div><div class="post-footer">
+        <a href="https://xujiahua.github.io/posts/docker-network/">Read More</a></div>
+</article>
+<article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
         <a href="https://xujiahua.github.io/posts/go-web-project/">Go Web 项目框架</a>
     </h1><div class="post-meta"><span class="post-author">
             <a class="author" href="/" rel="author" target="_blank">
@@ -279,42 +295,15 @@ Hyper-V Default Switch + VM DHCP 的组合默认有了NAT功能，满足以下�
                         </a>
                     </span></div></div>
 </article>
-<article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
-        <a href="https://xujiahua.github.io/posts/recsys-implicit/">Implicit：推荐系统协同过滤库的测评</a>
-    </h1><div class="post-meta"><span class="post-author">
-            <a class="author" href="/" rel="author" target="_blank">
-                <i class="fas fa-user-circle fa-fw"></i>Author
-            </a>
-        </span>&nbsp;<span class="post-publish">
-            published on&nbsp;<time datetime=2020-02-11>2020-02-11</time>
-        </span></div><div class="content">简介 Implicit是一个推荐系统协同过滤库。所谓协同过滤，只用到了user、item的ID和user、item交互后的评分（或是某个度量）。
-GitHub：https://github.com/benfred/implicit
-安装 pip install implicit 其他选择 自己照着「推荐系统实战」里的基于物品推荐的相似度公式（类似关联分析中的Lift公式），也写了一个item-item recommender。
- 看推荐结果，自己写与implicit ALS有点差别，与implicit Cosine的结果差不多。 纯python，没有并行，没有用C/C++，果然很慢。 自己写一个的目的，除了练手，也想看看implicit的效果具体怎么样。 生产使用，不建议用自己手写的，水平真的有限。  Spark Mllib怎么样。
- Spark Mllib支持分布式，感觉没必要。本来Implicit单机就很强了。只要把数据导出来，导到训练机器上即可。 Spark分布式，扩展性好，但是性能并没有Implicit那么好。 Spark还得搭配HDFS，真的蛮重的，开发效率也没那么好。  背后的原理 今早根据作者文章Distance Metrics for Fun and Profit，整理了一份读后感，把之前的知识给梳理起来了。这篇文章主要介绍的是距离公式，用于K近邻的推荐算法。
-协同过滤算法分两类：
- 基于记忆的，K近邻算法（基于“距离”公式），建议使用BM25。优势在读后感中有写。（实际效果怎么样，还得看数据） 基于模型的，矩阵分解算法，建议使用 (implicit) ALS，其变种是支持implicit dataset的。矩阵分解算法SGD，只适用于评分。  效果，见测评图。ALS的效果是最好的了。这是在movielens100k的结果。
-看起来指标都很低，「推荐系统实战」里差不多这个结果。
-遇到的小问题  K近邻算法的model没有model.recommend_all方法。 model.recommend与model.recommend_all的返回数据结构不同，model.recommend是包含评分的，而model.recommend_all只返回ID。 recommend(0)，传入第一个用户ID，与recommend_all[0]，取出第一个用户ID，两者的结果是不一样的，不管用什么算法都一样！去年12月就有这样的issue：https://github.com/benfred/implicit/issues/299，我解决了，回复了这个issue。  猜想，因为recommend方法用到indices的原因？试着重新构建下user-item维度的sparse matrix。改完后，果然就一致了。技术原因，sparse matrix transpose后，indices是未转置前的indices，没有变化。 具体地，user_items.indices与item_users.T.indices是不同的。
-ALS算法在Mac上表现稀烂啊，同样的代码。ALS_Faiss还报错了。先在Linux上用吧。  Mac上的ALS效果：
-Linux上的ALS效果：
-冷启动 一开始并没有那么多行为数据。训练出的结果肯定是挺一般的。这时候用标签推荐，运营根据经验配置标签和推荐的映射即可。
-考虑用户特征、商品特征（而不仅仅是ID） 如果有user特征、item特征，可以使用更一般的监督学习算法。或是使用factorization machine。</div><div class="post-footer">
-        <a href="https://xujiahua.github.io/posts/recsys-implicit/">Read More</a><div class="post-tags">&nbsp;<span>
-                        <a href="/tags/recsys">
-                            <i class="fas fa-tag fa-fw"></i>Recsys
-                        </a>
-                    </span>&nbsp;<span>
-                        <a href="/tags/implicit">
-                            <i class="fas fa-tag fa-fw"></i>Implicit
-                        </a>
-                    </span>&nbsp;<span>
-                        <a href="/tags/%E6%B5%8B%E8%AF%84">
-                            <i class="fas fa-tag fa-fw"></i>测评
-                        </a>
-                    </span></div></div>
-</article>
-</div></div>
+<ul class="pagination"><li class="page-item active">
+                    <span class="page-link">
+                        <a href="/">1</a>
+                    </span>
+                </li><li class="page-item ">
+                    <span class="page-link">
+                        <a href="/page/2/">2</a>
+                    </span>
+                </li></ul></div></div>
             </main><footer class="footer">
     <div class="copyright"><div class="copyright-line">Powered by <a href="https://gohugo.io/" target="_blank" rel="external nofollow noopener noreffer">Hugo</a> | Theme - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="external nofollow noopener noreffer">LoveIt<i class="far fa-heart fa-fw"></i></a>
         </div>

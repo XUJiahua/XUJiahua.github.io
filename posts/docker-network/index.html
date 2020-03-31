@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="robots" content="noodp" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1">
+        <title>Docker Network | 许嘉华的博客</title>
+        <meta name="Description" content=""><meta property="og:title" content="Docker Network" />
+<meta property="og:description" content="笔记整理。建议先看一些入门资料。
+Docker 学习资料  Docker — 从入门到实践 https://www.yuque.com/grasilife/docker Docker Kubernetes Lab Handbook https://docker-k8s-lab.readthedocs.io/en/latest/index.html 「Docker进阶与实战」华为Docker实践小组  单机网络 （建议在Linux系统上实验。）
+Docker安装完后，默认有三个（三种）网络。分别是默认的bridge模式，host模式，none模式。
+# docker network ls NETWORK ID NAME DRIVER SCOPE 51cbe7a9bb19 bridge bridge local 7182ef9fa8c4 host host local bd80d0dedaa8 none null local 参考：https://docs.docker.com/network/
+none模式 &ndash;net=none 无网络。
+# docker run --net=none --rm -it alpine ip addr show 1: lo: &lt;LOOPBACK,UP,LOWER_UP&gt; mtu 65536 qdisc noqueue state UNKNOWN qlen 1000 link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00 inet 127.0.0.1/8 scope host lo valid_lft forever preferred_lft forever host模式 &ndash;net=host  容器共用宿主机的网络。但是，容器的其他方面，如文件系统、进程列表等还是和宿主机隔离的。 容器不会申请独立的IP。 容器申请的端口占用宿主机的端口资源。 -p等端口映射命令不起作用：WARNING: Published ports are discarded when using host network mode 性能上比较好，因为没有地址转换。Host mode networking can be useful to optimize performance, and in situations where a container needs to handle a large range of ports, as it does not require network address translation (NAT), and no “userland-proxy” is created for each port." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://xujiahua.github.io/posts/docker-network/" />
+<meta property="article:published_time" content="2020-03-21T14:10:40+08:00" />
+<meta property="article:modified_time" content="2020-03-21T14:10:40+08:00" />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Docker Network"/>
+<meta name="twitter:description" content="笔记整理。建议先看一些入门资料。
+Docker 学习资料  Docker — 从入门到实践 https://www.yuque.com/grasilife/docker Docker Kubernetes Lab Handbook https://docker-k8s-lab.readthedocs.io/en/latest/index.html 「Docker进阶与实战」华为Docker实践小组  单机网络 （建议在Linux系统上实验。）
+Docker安装完后，默认有三个（三种）网络。分别是默认的bridge模式，host模式，none模式。
+# docker network ls NETWORK ID NAME DRIVER SCOPE 51cbe7a9bb19 bridge bridge local 7182ef9fa8c4 host host local bd80d0dedaa8 none null local 参考：https://docs.docker.com/network/
+none模式 &ndash;net=none 无网络。
+# docker run --net=none --rm -it alpine ip addr show 1: lo: &lt;LOOPBACK,UP,LOWER_UP&gt; mtu 65536 qdisc noqueue state UNKNOWN qlen 1000 link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00 inet 127.0.0.1/8 scope host lo valid_lft forever preferred_lft forever host模式 &ndash;net=host  容器共用宿主机的网络。但是，容器的其他方面，如文件系统、进程列表等还是和宿主机隔离的。 容器不会申请独立的IP。 容器申请的端口占用宿主机的端口资源。 -p等端口映射命令不起作用：WARNING: Published ports are discarded when using host network mode 性能上比较好，因为没有地址转换。Host mode networking can be useful to optimize performance, and in situations where a container needs to handle a large range of ports, as it does not require network address translation (NAT), and no “userland-proxy” is created for each port."/>
+<meta name="theme-color" content="#ffffff">
+<meta name="msapplication-TileColor" content="#da532c">
+<link rel="canonical" href="https://xujiahua.github.io/posts/docker-network/" />
+<link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="prev" href="https://xujiahua.github.io/posts/go-web-project/" /><link rel="next" href="https://xujiahua.github.io/posts/use-consul/" /><link rel="stylesheet" href="/lib/fontawesome-free/all.min.9a680b90260b5106d79f4075491ab31daafa7429eff686453c40b58357309649.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk="><link rel="stylesheet" href="/lib/animate/animate.min.3c770e90f98eb21b0c042fafb49755af93306fbaf42e449524f94fae9fc83295.css" integrity="sha256-PHcOkPmOshsMBC&#43;vtJdVr5Mwb7r0LkSVJPlPrp/IMpU="><link rel="stylesheet" href="/css/style.min.e8ca640cf5b1714eaa34bc21e8e2d0e79ae9cc05a934f6ee78a318487d7c515b.css" integrity="sha256-6MpkDPWxcU6qNLwh6OLQ55rpzAWpNPbueKMYSH18UVs=">
+<script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "headline": "Docker Network",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "https:\/\/xujiahua.github.io\/posts\/docker-network\/"
+        },"genre": "posts","wordcount":  1288 ,
+        "url": "https:\/\/xujiahua.github.io\/posts\/docker-network\/","datePublished": "2020-03-21T14:10:40\x2b08:00","dateModified": "2020-03-21T14:10:40\x2b08:00","description": ""
+    }
+    </script></head>
+    <body><script>
+            if (!window.localStorage || !window.localStorage.getItem('theme')) {window.isDark = '' === 'dark';} else {
+                window.isDark = (window.localStorage && window.localStorage.getItem('theme')) === 'dark';
+            }
+            window.isDark && document.body.classList.add('dark-theme');
+        </script><div class="wrapper"><header class="desktop" id="header-desktop">
+    <div class="header-wrapper">
+        <div class="header-title animated bounceIn">
+            <a href="/">许嘉华的博客</a>
+        </div>
+        <div class="menu"><a class="menu-item" href="/posts/">Posts</a><a class="menu-item" href="/tags/">Tags</a><a class="menu-item" href="/categories/">Categories</a><a class="menu-item" href="/about/">About</a><a href="javascript:void(0);" class="theme-switch" title="Switch Theme">
+                <i class="fas fa-adjust fa-rotate-180 fa-fw"></i>
+            </a>
+        </div>
+    </div>
+</header><header class="mobile" id="header-mobile">
+    <div class="header-wrapper">
+        <div class="header-container">
+            <div class="header-title animated bounceIn">
+                <a href="/">许嘉华的博客</a>
+            </div>
+            <div class="menu-toggle" id="menu-toggle-mobile">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="menu" id="menu-mobile"><a class="menu-item" href="/posts/" title="">Posts</a><a class="menu-item" href="/tags/" title="">Tags</a><a class="menu-item" href="/categories/" title="">Categories</a><a class="menu-item" href="/about/" title="">About</a><a href="javascript:void(0);" class="theme-switch" title="Switch Theme">
+                <i class="fas fa-adjust fa-rotate-180 fa-fw"></i>
+            </a>
+        </div>
+    </div>
+</header>
+
+<script>
+    window.desktopHeaderMode =  null ;
+    window.mobileHeaderMode =  null ;
+</script>
+<main class="main">
+                <div class="container"><article class="page single"><h1 class="single-title animated flipInX">Docker Network</h1><div class="post-meta">
+            <div class="post-meta-line"><span class="post-author">
+                    <a class="author" href="/" rel="author" target="_blank">
+                        <i class="fas fa-user-circle fa-fw"></i>Author
+                    </a>
+                </span></div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i><time datetime=2020-03-21>2020-03-21</time>&nbsp;
+                <i class="fas fa-pencil-alt fa-fw"></i>about 1288 words&nbsp;
+                <i class="far fa-clock fa-fw"></i>7 min&nbsp;</div>
+        </div><div class="toc" id="toc-auto">
+                <h2 class="toc-title">Contents</h2>
+                <div class="toc-content always-active" id="toc-content-auto"></div>
+            </div>
+            <div class="toc" id="toc-static">
+                <details>
+                    <summary>
+                        <div class="toc-title">
+                            <span>Contents</span>
+                            <span><i class="details icon fas fa-angle-down"></i></span>
+                        </div>
+                    </summary>
+                    <div class="toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#docker-学习资料">Docker 学习资料</a></li>
+    <li><a href="#单机网络">单机网络</a>
+      <ul>
+        <li><a href="#none模式---netnone">none模式 &ndash;net=none</a></li>
+        <li><a href="#host模式---nethost">host模式 &ndash;net=host</a></li>
+        <li><a href="#bridge模式---netname_it_youself">bridge模式 &ndash;net={name_it_youself}</a></li>
+        <li><a href="#--netcontainerbase_container">&ndash;net=container:base_container</a></li>
+      </ul>
+    </li>
+    <li><a href="#跨主机网络">跨主机网络</a>
+      <ul>
+        <li><a href="#docker-overlay">Docker Overlay</a></li>
+        <li><a href="#weave">Weave</a></li>
+        <li><a href="#flannel">Flannel</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav></div>
+                </details>
+            </div><div class="content" id="content"><p>笔记整理。建议先看一些入门资料。</p>
+<h2 id="docker-学习资料">Docker 学习资料</h2>
+<ol>
+<li>Docker — 从入门到实践  <a href="https://www.yuque.com/grasilife/docker">https://www.yuque.com/grasilife/docker</a></li>
+<li>Docker Kubernetes Lab Handbook <a href="https://docker-k8s-lab.readthedocs.io/en/latest/index.html">https://docker-k8s-lab.readthedocs.io/en/latest/index.html</a></li>
+<li>「Docker进阶与实战」华为Docker实践小组</li>
+</ol>
+<h2 id="单机网络">单机网络</h2>
+<p>（建议在Linux系统上实验。）</p>
+<p>Docker安装完后，默认有三个（三种）网络。分别是默认的bridge模式，host模式，none模式。</p>
+<pre><code># docker network ls
+NETWORK ID          NAME                DRIVER              SCOPE
+51cbe7a9bb19        bridge              bridge              local
+7182ef9fa8c4        host                host                local
+bd80d0dedaa8        none                null                local
+</code></pre><p>参考：https://docs.docker.com/network/</p>
+<h3 id="none模式---netnone">none模式 &ndash;net=none</h3>
+<p>无网络。</p>
+<pre><code># docker run --net=none --rm -it alpine ip addr show
+1: lo: &lt;LOOPBACK,UP,LOWER_UP&gt; mtu 65536 qdisc noqueue state UNKNOWN qlen 1000
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+    inet 127.0.0.1/8 scope host lo
+       valid_lft forever preferred_lft forever
+</code></pre><h3 id="host模式---nethost">host模式 &ndash;net=host</h3>
+<ol>
+<li>容器共用宿主机的网络。但是，容器的其他方面，如文件系统、进程列表等还是和宿主机隔离的。</li>
+<li>容器不会申请独立的IP。</li>
+<li>容器申请的端口占用宿主机的端口资源。</li>
+<li>-p等端口映射命令不起作用：WARNING: Published ports are discarded when using host network mode</li>
+<li>性能上比较好，因为没有地址转换。Host mode networking can be useful to optimize performance, and in situations where a container needs to handle a large range of ports, as it does not require network address translation (NAT), and no “userland-proxy” is created for each port.</li>
+<li>Linux ONLY。The host networking driver only works on Linux hosts, and is not supported on Docker Desktop for Mac, Docker Desktop for Windows, or Docker EE for Windows Server.</li>
+</ol>
+<h4 id="参考">参考</h4>
+<ol>
+<li><a href="https://docs.docker.com/network/host/">https://docs.docker.com/network/host/</a></li>
+<li>Networking using the host network <a href="https://docs.docker.com/network/network-tutorial-host/">https://docs.docker.com/network/network-tutorial-host/</a></li>
+</ol>
+<h4 id="实验">实验</h4>
+<pre><code># docker run --net=host --rm -it alpine ip addr show
+1: lo: &lt;LOOPBACK,UP,LOWER_UP&gt; mtu 65536 qdisc noqueue state UNKNOWN qlen 1000
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+    inet 127.0.0.1/8 scope host lo
+       valid_lft forever preferred_lft forever
+    inet6 ::1/128 scope host
+       valid_lft forever preferred_lft forever
+2: eno1: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu 1500 qdisc fq_codel state UP qlen 1000
+    link/ether 10:7b:44:b0:b1:37 brd ff:ff:ff:ff:ff:ff
+    inet 192.168.0.106/24 brd 192.168.0.255 scope global dynamic eno1
+       valid_lft 6663sec preferred_lft 6663sec
+    inet6 fe80::e0c5:55dc:fba0:549b/64 scope link
+       valid_lft forever preferred_lft forever
+5: docker0: &lt;NO-CARRIER,BROADCAST,MULTICAST,UP&gt; mtu 1500 qdisc noqueue state DOWN
+    link/ether 02:42:8c:6e:08:4d brd ff:ff:ff:ff:ff:ff
+    inet 172.17.0.1/16 brd 172.17.255.255 scope global docker0
+       valid_lft forever preferred_lft forever
+    inet6 fe80::42:8cff:fe6e:84d/64 scope link
+       valid_lft forever preferred_lft forever
+
+# ip addr show
+1: lo: &lt;LOOPBACK,UP,LOWER_UP&gt; mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+    inet 127.0.0.1/8 scope host lo
+       valid_lft forever preferred_lft forever
+    inet6 ::1/128 scope host
+       valid_lft forever preferred_lft forever
+2: eno1: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu 1500 qdisc fq_codel state UP group default qlen 1000
+    link/ether 10:7b:44:b0:b1:37 brd ff:ff:ff:ff:ff:ff
+    inet 192.168.0.106/24 brd 192.168.0.255 scope global dynamic noprefixroute eno1
+       valid_lft 6619sec preferred_lft 6619sec
+    inet6 fe80::e0c5:55dc:fba0:549b/64 scope link noprefixroute
+       valid_lft forever preferred_lft forever
+5: docker0: &lt;NO-CARRIER,BROADCAST,MULTICAST,UP&gt; mtu 1500 qdisc noqueue state DOWN group default
+    link/ether 02:42:8c:6e:08:4d brd ff:ff:ff:ff:ff:ff
+    inet 172.17.0.1/16 brd 172.17.255.255 scope global docker0
+       valid_lft forever preferred_lft forever
+    inet6 fe80::42:8cff:fe6e:84d/64 scope link
+       valid_lft forever preferred_lft forever
+</code></pre><p>容器只是隔离除了网络之外的资源。因为使用了宿主机的网络，所以容器进程可以与其他主机进程互相通信。需要注意的是端口冲突的问题，以及安全的问题（共用了宿主机的资源）。</p>
+<h3 id="bridge模式---netname_it_youself">bridge模式 &ndash;net={name_it_youself}</h3>
+<ol>
+<li>Docker默认的网络模式。</li>
+<li>一个独立的虚拟网络。</li>
+<li>宿主机网络对容器网络是无感知的，需要让容器的进程端口映射到宿主机的端口上，同样，映射需要注意端口冲突的问题。</li>
+<li>每个Container都有一个独立的IP。<code>docker network inspect bridge</code> 可查看。</li>
+<li>同一个虚拟网络下的容器可以互相通信。</li>
+<li>容器可与宿主机通信。</li>
+<li>容器可通过宿主机与其他网络通信。只要宿主机能到，容器就能到。有点像是VMWare中的NAT模式。同样叫bridge，VMWare的bridge模式跟Docker bridge完全不同。</li>
+<li>创建一个新的bridge，就是创建了一个新的子网。<code>docker network create -d bridge my_bridge</code></li>
+<li>桥接网络只对一个Docker daemon host上的容器管用，多机就不行了，docker-compose也只能在单机上跑，生产没法用。Bridge networks apply to containers running on the <strong>same Docker daemon host</strong>. For communication among containers running on different Docker daemon hosts, you can either manage routing at the OS level, or you can use an overlay network.</li>
+<li>建议使用自定义的bridge网络。</li>
+<li>最实用的，自定义网络可以通过容器名称而不是IP与其他容器通信，而默认网络只能通过IP。User-defined bridges provide automatic DNS resolution between containers.</li>
+<li>User-defined bridges provide better isolation.</li>
+<li>Containers can be attached and detached from user-defined networks on the fly.</li>
+<li>网络拓扑如下。</li>
+</ol>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-sizes="auto"
+        data-srcset="../../images/bridge_network.jpg, ../../images/bridge_network.jpg 1.5x, ../../images/bridge_network.jpg 2x"
+        data-src="../../images/bridge_network.jpg"
+        alt="“docker bridge network”的图片搜索结果"
+        title="“docker bridge network”的图片搜索结果" /></p>
+<h4 id="参考-1">参考</h4>
+<ol>
+<li><a href="https://docs.docker.com/network/bridge/">https://docs.docker.com/network/bridge/</a></li>
+<li>Networking with standalone containers <a href="https://docs.docker.com/network/network-tutorial-standalone/">https://docs.docker.com/network/network-tutorial-standalone/</a></li>
+</ol>
+<h4 id="实验-1">实验</h4>
+<p>TODO</p>
+<h3 id="--netcontainerbase_container">&ndash;net=container:base_container</h3>
+<p>共用其他容器的网络栈，其他资源容器隔离。这个在Service Mesh的场景下非常有用。</p>
+<h4 id="实验-2">实验</h4>
+<pre><code># docker run -it --name=base_container alpine /bin/ash
+/ # ip addr show
+1: lo: &lt;LOOPBACK,UP,LOWER_UP&gt; mtu 65536 qdisc noqueue state UNKNOWN qlen 1000
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+    inet 127.0.0.1/8 scope host lo
+       valid_lft forever preferred_lft forever
+8: eth0@if9: &lt;BROADCAST,MULTICAST,UP,LOWER_UP,M-DOWN&gt; mtu 1500 qdisc noqueue state UP
+    link/ether 02:42:ac:11:00:02 brd ff:ff:ff:ff:ff:ff
+    inet 172.17.0.2/16 brd 172.17.255.255 scope global eth0
+       valid_lft forever preferred_lft forever
+       
+
+# docker run --net=container:base_container --rm -it alpine ip addr show
+1: lo: &lt;LOOPBACK,UP,LOWER_UP&gt; mtu 65536 qdisc noqueue state UNKNOWN qlen 1000
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+    inet 127.0.0.1/8 scope host lo
+       valid_lft forever preferred_lft forever
+8: eth0@if9: &lt;BROADCAST,MULTICAST,UP,LOWER_UP,M-DOWN&gt; mtu 1500 qdisc noqueue state UP
+    link/ether 02:42:ac:11:00:02 brd ff:ff:ff:ff:ff:ff
+    inet 172.17.0.2/16 brd 172.17.255.255 scope global eth0
+       valid_lft forever preferred_lft forever
+
+</code></pre><h2 id="跨主机网络">跨主机网络</h2>
+<p>github上搜索有关Container networking的项目。</p>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-sizes="auto"
+        data-srcset="../../images/image-20200330115410819.png, ../../images/image-20200330115410819.png 1.5x, ../../images/image-20200330115410819.png 2x"
+        data-src="../../images/image-20200330115410819.png"
+        alt="image-20200330115410819"
+        title="image-20200330115410819" /></p>
+<h3 id="docker-overlay">Docker Overlay</h3>
+<p>官方提供的方案。之前是需要etcd辅助的。Docker Engine 1.12 integrated the control plane state into Docker Engine so that an external store is no longer required.</p>
+<h3 id="weave">Weave</h3>
+<p>Weave Net creates a virtual network that connects Docker containers across multiple hosts and enables their automatic discovery.  参考：https://www.weave.works/docs/net/latest/overview/</p>
+<p>原理是所有容器都连入一个虚拟网络 weave network，所有加入这个网络的容器都有一块weave网卡。要求每台宿主机启动weave。</p>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-sizes="auto"
+        data-srcset="../../images/weave1.png, ../../images/weave1.png 1.5x, ../../images/weave1.png 2x"
+        data-src="../../images/weave1.png"
+        alt="使用Weave 实现Docker 多宿主机互联- 运维之美"
+        title="使用Weave 实现Docker 多宿主机互联- 运维之美" /></p>
+<h4 id="实验-3">实验</h4>
+<p>实验参考：https://www.weave.works/docs/net/latest/install/using-weave/</p>
+<p>Docker可以通过插件形式来集成其他网络驱动。看说明weave说明，这种只适合Swarm模式。所以我们实验不采用这种方式。Before using the plugin, please keep in mind the plugin works only in Swarm mode and requires Docker version 1.13 or later. <a href="https://www.weave.works/docs/net/latest/install/plugin/plugin-v2/">https://www.weave.works/docs/net/latest/install/plugin/plugin-v2/</a></p>
+<p>虚拟机环境搭建，创建两台虚拟机。注意在同一个网络下。参考：https://www.vagrantup.com/docs/networking/private_network.html</p>
+<pre><code>vagrant init centos/7
+</code></pre><p>（快速）安装Docker。参考：https://www.yuque.com/grasilife/docker/install-centos#ccbf609c</p>
+<pre><code># curl -fsSL get.docker.com -o get-docker.sh
+# sh get-docker.sh --mirror Aliyun
+# systemctl enable docker
+# systemctl start docker
+</code></pre><p>安装weave。参考：https://www.weave.works/docs/net/latest/install/installing-weave/</p>
+<pre><code># curl -L git.io/weave -o /usr/bin/weave
+# chmod a+x /usr/bin/weave
+</code></pre><p>weave网络启动，网络的分配将有weave来处理。<code>eval $(weave env)</code> 覆盖了 DOCKER_HOST 为 unix:///var/run/weave/weave.sock。相当于劫持了docker客户端与docker daemon的通信。参考：https://www.youtube.com/watch?v=kihQCCT1ykE&amp;feature=youtu.be</p>
+<pre><code>[root@host2 vagrant]# weave launch
+[root@host2 vagrant]# eval $(weave env)
+
+# join host2
+[root@host1 vagrant]# weave launch $host2
+[root@host1 vagrant]# eval $(weave env)
+</code></pre><p>连通测试。</p>
+<pre><code># start tcp server on container in host2
+[root@host2 vagrant]# docker run --name hello busybox nc -lp 8888
+
+# ping from container in host1 to container in host2
+[root@host1 vagrant]# docker run --rm -it busybox ping hello
+PING hello (10.32.0.1): 56 data bytes
+64 bytes from 10.32.0.1: seq=0 ttl=64 time=3.936 ms
+64 bytes from 10.32.0.1: seq=1 ttl=64 time=0.616 ms
+
+# tcp test from container in host1 to container in host2
+[root@host1 vagrant]# docker run --rm -it busybox sh
+/ # echo &quot;hello world!&quot; | nc hello 8888
+</code></pre><p>查看容器网卡，能看到ethwe网卡，与weave有关。</p>
+<pre><code>[root@host2 vagrant]# docker run --rm busybox ip addr
+1: lo: &lt;LOOPBACK,UP,LOWER_UP&gt; mtu 65536 qdisc noqueue qlen 1000
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+    inet 127.0.0.1/8 scope host lo
+       valid_lft forever preferred_lft forever
+41: eth0@if42: &lt;BROADCAST,MULTICAST,UP,LOWER_UP,M-DOWN&gt; mtu 1500 qdisc noqueue
+    link/ether 02:42:ac:11:00:02 brd ff:ff:ff:ff:ff:ff
+    inet 172.17.0.2/16 brd 172.17.255.255 scope global eth0
+       valid_lft forever preferred_lft forever
+43: ethwe@if44: &lt;BROADCAST,MULTICAST,UP,LOWER_UP,M-DOWN&gt; mtu 1376 qdisc noqueue
+    link/ether ca:97:90:14:18:5e brd ff:ff:ff:ff:ff:ff
+    inet 10.32.0.2/12 brd 10.47.255.255 scope global ethwe
+       valid_lft forever preferred_lft forever
+
+[root@host1 vagrant]# docker run --rm busybox ip addr
+1: lo: &lt;LOOPBACK,UP,LOWER_UP&gt; mtu 65536 qdisc noqueue qlen 1000
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+    inet 127.0.0.1/8 scope host lo
+       valid_lft forever preferred_lft forever
+29: eth0@if30: &lt;BROADCAST,MULTICAST,UP,LOWER_UP,M-DOWN&gt; mtu 1500 qdisc noqueue
+    link/ether 02:42:ac:11:00:02 brd ff:ff:ff:ff:ff:ff
+    inet 172.17.0.2/16 brd 172.17.255.255 scope global eth0
+       valid_lft forever preferred_lft forever
+31: ethwe@if32: &lt;BROADCAST,MULTICAST,UP,LOWER_UP,M-DOWN&gt; mtu 1376 qdisc noqueue
+    link/ether da:f2:40:0a:1e:d7 brd ff:ff:ff:ff:ff:ff
+    inet 10.44.0.0/12 brd 10.47.255.255 scope global ethwe
+       valid_lft forever preferred_lft forever
+</code></pre><h4 id="总结下weave特点">总结下Weave特点</h4>
+<ol>
+<li>通过劫持Docker client与daemon的方式工作。</li>
+<li>创建容器的请求被劫持，weave为容器注入了weave网络。</li>
+<li>不依赖etcd或是consul等kv数据库。</li>
+<li>集群扩容，增加宿主机，需要将宿主机配置为weave节点。</li>
+<li>容器部署，根据资源利用率，部署到哪个宿主机节点。没有容器编排工具，比如Kubernetes，还是挺不方便的。</li>
+</ol>
+<h3 id="flannel">Flannel</h3>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-sizes="auto"
+        data-srcset="../../images/docker-flannel.png, ../../images/docker-flannel.png 1.5x, ../../images/docker-flannel.png 2x"
+        data-src="../../images/docker-flannel.png"
+        alt="../_images/docker-flannel.png"
+        title="../_images/docker-flannel.png" /></p>
+<h4 id="实验-4">实验</h4>
+<p>使用docker-machine创建了三台虚拟机。</p>
+<table>
+<thead>
+<tr>
+<th>节点</th>
+<th>IP</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>etcd</td>
+<td>192.168.99.105</td>
+<td>安装etcd</td>
+</tr>
+<tr>
+<td>node01</td>
+<td>192.168.99.108</td>
+<td>安装docker, flannel</td>
+</tr>
+<tr>
+<td>node02</td>
+<td>192.168.99.109</td>
+<td>安装docker, flannel</td>
+</tr>
+</tbody>
+</table>
+<p>参考：</p>
+<ol>
+<li>Multi-Host Networking Overlay with Flannel <a href="https://docker-k8s-lab.readthedocs.io/en/latest/docker/docker-flannel.html">https://docker-k8s-lab.readthedocs.io/en/latest/docker/docker-flannel.html</a></li>
+<li>Running flannel <a href="https://github.com/coreos/flannel/blob/master/Documentation/running.md">https://github.com/coreos/flannel/blob/master/Documentation/running.md</a></li>
+</ol>
+<p>etcd集群搭建，需要兼容etcd2，因为flannel依赖etcd2。https://github.com/coreos/flannel/issues/1191</p>
+<p>配置一个网段，写入etcd。</p>
+<pre><code>docker@etcd01:~$ etcd -listen-client-urls=&quot;http://0.0.0.0:2379&quot; --advertise-client-urls=&quot;http://192.168.99.105:2379&quot; --enable-v2
+
+docker@etcd01:~$ ETCDCTL_API=2 etcdctl set /coreos.com/network/config '{ &quot;Network&quot;: &quot;10.5.0.0/16&quot;, &quot;Backend&quot;: {&quot;Type&quot;: &quot;vxlan&quot;}}'
+
+docker@etcd01:~$ ETCDCTL_API=2 etcdctl get /coreos.com/network/config
+</code></pre><p>flanneld会读取etcd配置，并为该主机分配子网段。</p>
+<pre><code>root@node01:~# ./flanneld-amd64 -etcd-endpoints=&quot;http://192.168.99.105:2379&quot; -iface=192.168.99.108
+</code></pre><pre><code>root@node02:~# ./flanneld-amd64 -etcd-endpoints=&quot;http://192.168.99.105:2379&quot; -iface=192.168.99.109
+</code></pre><p>可以看到，主机上有了新网卡，子网段也会写入etcd。</p>
+<pre><code>docker@etcd01:~$ ETCDCTL_API=2 etcdctl ls /coreos.com/network/subnets
+/coreos.com/network/subnets/10.5.94.0-24
+/coreos.com/network/subnets/10.5.90.0-24
+</code></pre><p>配置docker daemon参数，boot2docker linux配置如下：参考 <a href="https://github.com/boot2docker/boot2docker/issues/508">https://github.com/boot2docker/boot2docker/issues/508</a>。</p>
+<p>node01重新配置docker daemon：</p>
+<pre><code>root@node01:~# /etc/init.d/docker stop
+Stopping dockerd (5350)
+
+root@node01:~# source /run/flannel/subnet.env
+
+root@node01:~# echo EXTRA_ARGS=\&quot;--bip=${FLANNEL_SUBNET} --mtu=${FLANNEL_MTU}\&quot; &gt;&gt; /var/lib/boot2docker/profile
+root@node01:~# cat /var/lib/boot2docker/profile
+
+EXTRA_ARGS='
+--label provider=virtualbox
+
+'
+CACERT=/var/lib/boot2docker/ca.pem
+DOCKER_HOST='-H tcp://0.0.0.0:2376'
+DOCKER_STORAGE=overlay2
+DOCKER_TLS=auto
+SERVERKEY=/var/lib/boot2docker/server-key.pem
+SERVERCERT=/var/lib/boot2docker/server.pem
+
+EXTRA_ARGS=&quot;--bip=10.5.94.1/24 --mtu=1450&quot;
+
+root@node01:~# /etc/init.d/docker start
+Starting dockerd
+</code></pre><p>node02重新配置docker daemon：</p>
+<pre><code>root@node02:~# /etc/init.d/docker stop
+Stopping dockerd (2624)
+
+root@node02:~# source /run/flannel/subnet.env
+
+root@node02:~# echo EXTRA_ARGS=\&quot;--bip=${FLANNEL_SUBNET} --mtu=${FLANNEL_MTU}\&quot; &gt;&gt; /var/lib/boot2docker/profile
+root@node02:~# cat /var/lib/boot2docker/profile
+
+EXTRA_ARGS='
+--label provider=virtualbox
+
+'
+CACERT=/var/lib/boot2docker/ca.pem
+DOCKER_HOST='-H tcp://0.0.0.0:2376'
+DOCKER_STORAGE=overlay2
+DOCKER_TLS=auto
+SERVERKEY=/var/lib/boot2docker/server-key.pem
+SERVERCERT=/var/lib/boot2docker/server.pem
+
+
+EXTRA_ARGS=&quot;--bip=10.5.90.1/24 --mtu=1450&quot;
+
+root@node02:~# /etc/init.d/docker start
+Starting dockerd
+</code></pre><p>连通测试：</p>
+<pre><code>root@node01:~# docker run -it busybox
+/ # ip a
+1: lo: &lt;LOOPBACK,UP,LOWER_UP&gt; mtu 65536 qdisc noqueue qlen 1000
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+    inet 127.0.0.1/8 scope host lo
+       valid_lft forever preferred_lft forever
+2: sit0@NONE: &lt;NOARP&gt; mtu 1480 qdisc noop qlen 1000
+    link/sit 0.0.0.0 brd 0.0.0.0
+10: eth0@if11: &lt;BROADCAST,MULTICAST,UP,LOWER_UP,M-DOWN&gt; mtu 1450 qdisc noqueue
+    link/ether 02:42:0a:05:5e:02 brd ff:ff:ff:ff:ff:ff
+    inet 10.5.94.2/24 brd 10.5.94.255 scope global eth0
+       valid_lft forever preferred_lft forever
+/ # nc -lp 8888
+
+root@node02:~# docker run -it busybox
+/ # ip a
+1: lo: &lt;LOOPBACK,UP,LOWER_UP&gt; mtu 65536 qdisc noqueue qlen 1000
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+    inet 127.0.0.1/8 scope host lo
+       valid_lft forever preferred_lft forever
+2: sit0@NONE: &lt;NOARP&gt; mtu 1480 qdisc noop qlen 1000
+    link/sit 0.0.0.0 brd 0.0.0.0
+10: eth0@if11: &lt;BROADCAST,MULTICAST,UP,LOWER_UP,M-DOWN&gt; mtu 1450 qdisc noqueue
+    link/ether 02:42:0a:05:5a:02 brd ff:ff:ff:ff:ff:ff
+    inet 10.5.90.2/24 brd 10.5.90.255 scope global eth0
+       valid_lft forever preferred_lft forever
+/ # echo &quot;hello world!&quot; | nc 10.5.94.2 8888
+</code></pre><h4 id="总结flannel特点">总结Flannel特点</h4>
+<ol>
+<li>依赖etcd2，在Kubernetes环境里依赖Kubernetes API（封装etcd）。存储网段与路由表？</li>
+<li>不侵入docker容器。这是比weave优雅的地方。</li>
+<li>整体思路，先划分一个大的网段，为每台加入的主机从大的网段里分配小的网段，为docker容器从小网段里分配IP。</li>
+</ol>
+</div><div class="post-footer" id="post-footer">
+    <div class="post-info">
+        <div class="post-info-line">
+            <div class="post-info-mod">
+                <span>The article was updated on 2020-03-21</span>
+            </div>
+            <div class="post-info-license"></div>
+        </div>
+        <div class="post-info-line">
+            <div class="post-info-md"></div>
+            <div class="post-info-share">
+                <span></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="post-info-more">
+        <section></section>
+        <section>
+            <span><a href="javascript:window.history.back();">Back</a></span>&nbsp;|&nbsp;<span><a href="/">Home</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav"><a href="https://xujiahua.github.io/posts/go-web-project/" class="prev" rel="prev" title="Go Web 项目框架"><i class="fas fa-angle-left fa-fw"></i>Go Web 项目框架</a>
+            <a href="https://xujiahua.github.io/posts/use-consul/" class="next" rel="next" title="Consul调研">Consul调研<i class="fas fa-angle-right fa-fw"></i></a></div>
+</div>
+<div class="comment"></div>
+    </article></div>
+            </main><footer class="footer">
+    <div class="copyright"><div class="copyright-line">Powered by <a href="https://gohugo.io/" target="_blank" rel="external nofollow noopener noreffer">Hugo</a> | Theme - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="external nofollow noopener noreffer">LoveIt<i class="far fa-heart fa-fw"></i></a>
+        </div>
+
+        <div class="copyright-line"><i class="far fa-copyright fa-fw"></i><span itemprop="copyrightYear">2020</span></div>
+    </div>
+</footer>
+</div><a href="#" class="dynamic-to-top animated faster" id="dynamic-to-top">
+            <span>&nbsp;</span>
+        </a><script>
+        document.addEventListener('DOMContentLoaded', function () {
+            lightGallery(document.getElementById('content'), {
+                selector: '.lightgallery',
+                speed: 400,
+                hideBarsDelay: 2000,
+                thumbnail: true,
+                exThumbImage: 'data-thumbnail',
+                thumbWidth: 80,
+                thumbContHeight: 80,
+            });
+        });
+    </script><link rel="stylesheet" href="/lib/lightgallery/lightgallery.min.a0f67639490aba5d9a250783c0aa0ed69f83a6f151fb0d7b9fb617c9dbc54565.css" integrity="sha256-oPZ2OUkKul2aJQeDwKoO1p&#43;DpvFR&#43;w17n7YXydvFRWU="><script src="/lib/smooth-scroll/smooth-scroll.polyfills.min.54590077ee163035c3dd38dc034e9f6915ecbe680dd832f449afa21672cab116.js" integrity="sha256-VFkAd&#43;4WMDXD3TjcA06faRXsvmgN2DL0Sa&#43;iFnLKsRY="></script><script src="/lib/sharer/sharer.min.9c88f86c7f0820287113f6236200459832693656e80d7556cc80a93dfbd45813.js" integrity="sha256-nIj4bH8IIChxE/YjYgBFmDJpNlboDXVWzICpPfvUWBM="></script><script src="/lib/lazysizes/lazysizes.min.876b4c12685e991d88378c1b6dd3638fd2da0c88f3c24da1ada950c1f26604e1.js" integrity="sha256-h2tMEmhemR2IN4wbbdNjj9LaDIjzwk2hralQwfJmBOE="></script><script src="/lib/lightgallery/lightgallery.min.7a84c63ab156d68e4a7269487c9c65a4eb34b0c7864f2d3fd2b87f7c664480d3.js" integrity="sha256-eoTGOrFW1o5KcmlIfJxlpOs0sMeGTy0/0rh/fGZEgNM="></script><script src="/lib/lightgallery/lg-thumbnail.min.eab31af8f90835b7ab674b2dd2474841039bc01022aa312f80dde6e22fde58d7.js" integrity="sha256-6rMa&#43;PkINberZ0st0kdIQQObwBAiqjEvgN3m4i/eWNc="></script><script src="/lib/lightgallery/lg-zoom.min.e3a7e6bb4a69f8627654ba9e0ab1252971bcfb400538dbb0605db9a3342ce5b9.js" integrity="sha256-46fmu0pp&#43;GJ2VLqeCrElKXG8&#43;0AFONuwYF25ozQs5bk="></script><script src="/js/theme.min.1482fc67bfa2c3b8cebe476d0037b9321b5b7a8a1525b547b94143948be90e9e.js" integrity="sha256-FIL8Z7&#43;iw7jOvkdtADe5MhtbeooVJbVHuUFDlIvpDp4="></script></body>
+</html>
