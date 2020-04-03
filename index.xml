@@ -162,6 +162,65 @@ td-agent 30602 30596  9 17:10 ?        00:00:00 /opt/td-agent/embedded/bin/ruby 
     
     
         <item>
+        <title>Google Vision API</title>
+        <link>https://xujiahua.github.io/posts/google-vision-api/</link>
+        <pubDate>Wed, 01 Apr 2020 14:20:51 +0800</pubDate>
+        
+        <guid>https://xujiahua.github.io/posts/google-vision-api/</guid>
+        <description>许嘉华的博客 https://xujiahua.github.io/posts/google-vision-api/ -&lt;h2 id=&#34;目标&#34;&gt;目标&lt;/h2&gt;
+&lt;p&gt;业务上需要识别出文本、图像敏感内容，降低业务风险。&lt;/p&gt;
+&lt;p&gt;调用下云服务的产品。&lt;/p&gt;
+&lt;h2 id=&#34;google-cloud-platform&#34;&gt;Google Cloud Platform&lt;/h2&gt;
+&lt;p&gt;GCP上，图像识别有两个产品：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Vision API 直接使用预先训练的模型&lt;/li&gt;
+&lt;li&gt;AutoML 迁移学习，使用用户提交的新分类数据，训练模型。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;关于文本识别的产品是类似的，也分直接使用预训练模型和迁移学习重新训练。&lt;/p&gt;
+&lt;h2 id=&#34;vision-api图像内容识别&#34;&gt;Vision API：图像内容识别&lt;/h2&gt;
+&lt;ol&gt;
+&lt;li&gt;Google Vision API的模型已经有审核内容的能力：暴力、成人内容的识别。&lt;/li&gt;
+&lt;li&gt;提供API，也提供了各个语言的SDK。&lt;/li&gt;
+&lt;li&gt;不需要开发者训练模型。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200401145549783.png&#34; alt=&#34;image-20200401145549783&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200401145658730.png&#34; alt=&#34;image-20200401145658730&#34;&gt;&lt;/p&gt;
+&lt;p&gt;参考：https://cloud.google.com/vision?hl=zh-cn&lt;/p&gt;
+&lt;h3 id=&#34;试用&#34;&gt;试用&lt;/h3&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200401142058025.png&#34; alt=&#34;image-20200401142058025&#34;&gt;&lt;/p&gt;
+&lt;h3 id=&#34;安全搜索的分类说明&#34;&gt;安全搜索的分类说明&lt;/h3&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200401144423857.png&#34; alt=&#34;image-20200401144423857&#34;&gt;&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Adult 成人内容&lt;/li&gt;
+&lt;li&gt;Spoof 恶搞，比如恶搞政治人物&lt;/li&gt;
+&lt;li&gt;Medical 医疗影像&lt;/li&gt;
+&lt;li&gt;Violence 暴力内容&lt;/li&gt;
+&lt;li&gt;Racy 猥亵类，类似成人内容&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;参考：https://cloud.google.com/vision/docs/reference/rpc/google.cloud.vision.v1?hl=zh-cn#google.cloud.vision.v1.SafeSearchAnnotation&lt;/p&gt;
+&lt;h3 id=&#34;对接流程&#34;&gt;对接流程&lt;/h3&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200401143626559.png&#34; alt=&#34;image-20200401143626559&#34;&gt;&lt;/p&gt;
+&lt;p&gt;参考：https://codelabs.developers.google.com/codelabs/cloud-vision-intro/index.html?index=..%2F..cloudai&amp;amp;hl=zh-cn&amp;amp;_ga=2.102874504.925825070.1585721382-1910642988.1585296097#0&lt;/p&gt;
+&lt;p&gt;注意，图像不一定需要上传到Google的云存储。&lt;/p&gt;
+&lt;p&gt;开发对接参考：检测露骨内容（安全搜索）https://cloud.google.com/vision/docs/detecting-safe-search?hl=zh-cn&lt;/p&gt;
+&lt;h3 id=&#34;demo&#34;&gt;DEMO&lt;/h3&gt;
+&lt;p&gt;创建服务账号、创建密钥，自动下载json文件：&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200401160832697.png&#34; alt=&#34;image-20200401160832697&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200401161206429.png&#34; alt=&#34;image-20200401161206429&#34;&gt;&lt;/p&gt;
+&lt;p&gt;code：&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://github.com/GoogleCloudPlatform/golang-samples/blob/master/vision/detect/README.md&#34;&gt;https://github.com/GoogleCloudPlatform/golang-samples/blob/master/vision/detect/README.md&lt;/a&gt;&lt;/p&gt;
+&lt;h2 id=&#34;natural-language-api-文本内容识别&#34;&gt;Natural Language API： 文本内容识别&lt;/h2&gt;
+&lt;p&gt;&lt;a href=&#34;https://cloud.google.com/natural-language/docs/how-to?hl=zh-cn&#34;&gt;https://cloud.google.com/natural-language/docs/how-to?hl=zh-cn&lt;/a&gt;&lt;/p&gt;
+&lt;h3 id=&#34;内容分类&#34;&gt;内容分类&lt;/h3&gt;
+&lt;p&gt;内容分类没有我们关注的敏感内容分类。&lt;/p&gt;
+&lt;p&gt;参考：https://cloud.google.com/natural-language/docs/categories?hl=zh-cn&lt;/p&gt;
+&lt;p&gt;通过简单的关键字过滤吧。&lt;/p&gt;
+- https://xujiahua.github.io/posts/google-vision-api/ - </description>
+        </item>
+    
+    
+    
+        <item>
         <title>使用 Docker Machine</title>
         <link>https://xujiahua.github.io/posts/use-docker-machine/</link>
         <pubDate>Tue, 31 Mar 2020 09:53:05 +0800</pubDate>
@@ -1205,37 +1264,6 @@ hugo -D
 &lt;li&gt;Windows VPN对NAT有影响，相当于断网了。&lt;/li&gt;
 &lt;/ol&gt;
 - https://xujiahua.github.io/posts/use-hyper-v/ - </description>
-        </item>
-    
-    
-    
-        <item>
-        <title>使用Go Modules</title>
-        <link>https://xujiahua.github.io/posts/go-modules/</link>
-        <pubDate>Fri, 28 Feb 2020 15:05:18 +0800</pubDate>
-        
-        <guid>https://xujiahua.github.io/posts/go-modules/</guid>
-        <description>许嘉华的博客 https://xujiahua.github.io/posts/go-modules/ -&lt;p&gt;Go Modules使用着感觉不错，Go终于有正常点的依赖管理工具了。记录一二。&lt;/p&gt;
-&lt;h2 id=&#34;使用小结&#34;&gt;使用小结&lt;/h2&gt;
-&lt;ol&gt;
-&lt;li&gt;go.mod, go.sum加入版本管理 Both go.mod and go.sum should be checked into version control.&lt;/li&gt;
-&lt;li&gt;直接依赖体现在go.mod，间接依赖由直接依赖自己管理，这是个递归的过程 Only direct dependencies are recorded in the go.mod file.&lt;/li&gt;
-&lt;li&gt;go命令自动管理go.mod，这可太方便了 When it encounters an import of a package not provided   by any module in go.mod, the go command automatically   looks up the module containing that package and adds it to   go.mod, using the latest version.&lt;/li&gt;
-&lt;li&gt;看着比之前的依赖管理好用很多。比如dep。因为网络下载包等问题，最后把依赖包全checkin到vendor目录了。太臃肿。&lt;/li&gt;
-&lt;/ol&gt;
-&lt;h2 id=&#34;常用命令&#34;&gt;常用命令&lt;/h2&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;code&gt;go mod init&lt;/code&gt; creates a new module, initializing the go.mod file that describes it.&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;go build&lt;/code&gt;,&lt;code&gt; go test&lt;/code&gt;, and other package-building commands add new dependencies to go.mod as needed.&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;go list -m&lt;/code&gt; all prints the current module’s dependencies.&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;go get&lt;/code&gt; changes the required version of a dependency (or adds a new dependency).&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;go mod tidy&lt;/code&gt; removes unused dependencies.&lt;/li&gt;
-&lt;/ul&gt;
-&lt;h2 id=&#34;代理&#34;&gt;代理&lt;/h2&gt;
-&lt;p&gt;国内网络的问题，加上下面这行就好很多了。&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;# Set the GOPROXY environment variable
-export GOPROXY=https://goproxy.io
-&lt;/code&gt;&lt;/pre&gt;- https://xujiahua.github.io/posts/go-modules/ - </description>
         </item>
     
     

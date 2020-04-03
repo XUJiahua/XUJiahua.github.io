@@ -27,6 +27,30 @@ root@ubuntu-parallel:~# ps -ef | grep fluentd td-agent 30596 1 0 17:10 ? 00:00:0
     </item>
     
     <item>
+      <title>Google Vision API</title>
+      <link>https://xujiahua.github.io/posts/google-vision-api/</link>
+      <pubDate>Wed, 01 Apr 2020 14:20:51 +0800</pubDate>
+      
+      <guid>https://xujiahua.github.io/posts/google-vision-api/</guid>
+      <description>目标 业务上需要识别出文本、图像敏感内容，降低业务风险。
+调用下云服务的产品。
+Google Cloud Platform GCP上，图像识别有两个产品：
+ Vision API 直接使用预先训练的模型 AutoML 迁移学习，使用用户提交的新分类数据，训练模型。  关于文本识别的产品是类似的，也分直接使用预训练模型和迁移学习重新训练。
+Vision API：图像内容识别  Google Vision API的模型已经有审核内容的能力：暴力、成人内容的识别。 提供API，也提供了各个语言的SDK。 不需要开发者训练模型。  参考：https://cloud.google.com/vision?hl=zh-cn
+试用 安全搜索的分类说明  Adult 成人内容 Spoof 恶搞，比如恶搞政治人物 Medical 医疗影像 Violence 暴力内容 Racy 猥亵类，类似成人内容  参考：https://cloud.google.com/vision/docs/reference/rpc/google.cloud.vision.v1?hl=zh-cn#google.cloud.vision.v1.SafeSearchAnnotation
+对接流程 参考：https://codelabs.developers.google.com/codelabs/cloud-vision-intro/index.html?index=..%2F..cloudai&amp;amp;hl=zh-cn&amp;amp;_ga=2.102874504.925825070.1585721382-1910642988.1585296097#0
+注意，图像不一定需要上传到Google的云存储。
+开发对接参考：检测露骨内容（安全搜索）https://cloud.google.com/vision/docs/detecting-safe-search?hl=zh-cn
+DEMO 创建服务账号、创建密钥，自动下载json文件：
+code：
+https://github.com/GoogleCloudPlatform/golang-samples/blob/master/vision/detect/README.md
+Natural Language API： 文本内容识别 https://cloud.google.com/natural-language/docs/how-to?hl=zh-cn
+内容分类 内容分类没有我们关注的敏感内容分类。
+参考：https://cloud.google.com/natural-language/docs/categories?hl=zh-cn
+通过简单的关键字过滤吧。</description>
+    </item>
+    
+    <item>
       <title>使用 Docker Machine</title>
       <link>https://xujiahua.github.io/posts/use-docker-machine/</link>
       <pubDate>Tue, 31 Mar 2020 09:53:05 +0800</pubDate>
