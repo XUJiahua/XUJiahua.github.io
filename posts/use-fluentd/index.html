@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="robots" content="noodp" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1">
+        <title>Fluentd实战 | 许嘉华的博客</title>
+        <meta name="Description" content=""><meta property="og:title" content="Fluentd实战" />
+<meta property="og:description" content="以收集Docker容器日志的例子，介绍下Fluentd的用法。
+安装 Fluentd Ubuntu 18.04上的安装命令（https://docs.fluentd.org/installation/install-by-deb）：
+root@ubuntu-parallel:~# curl -L https://toolbelt.treasuredata.com/sh/install-ubuntu-bionic-td-agent3.sh | sh 以Daemon方式启动：
+root@ubuntu-parallel:~# systemctl start td-agent.service root@ubuntu-parallel:~# systemctl status td-agent.service fluentd的安装目录是在/opt/td-agent/下的。为演示方便，我们可以直接使用 /opt/td-agent/embedded/bin/fluentd这个程序。
+root@ubuntu-parallel:~# ps -ef | grep fluentd td-agent 30596 1 0 17:10 ? 00:00:00 /opt/td-agent/embedded/bin/ruby /opt/td-agent/embedded/bin/fluentd --log /var/log/td-agent/td-agent.log --daemon /var/run/td-agent/td-agent.pid td-agent 30602 30596 9 17:10 ? 00:00:00 /opt/td-agent/embedded/bin/ruby -Eascii-8bit:ascii-8bit /opt/td-agent/embedded/bin/fluentd --log /var/log/td-agent/td-agent.log --daemon /var/run/td-agent/td-agent.pid --under-supervisor 其他系统的安装参考：https://docs.fluentd.org/installation
+小试牛刀 配置文件 test.conf，启动一个HTTP服务，并把接收到的日志，打印到标准输出。
+&lt;source&gt; @type http port 9880 &lt;/source&gt; &lt;match *.*&gt; @type stdout &lt;/match&gt; 启动fluentd进程。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://xujiahua.github.io/posts/use-fluentd/" />
+<meta property="article:published_time" content="2020-04-02T16:58:23+08:00" />
+<meta property="article:modified_time" content="2020-04-02T16:58:23+08:00" />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Fluentd实战"/>
+<meta name="twitter:description" content="以收集Docker容器日志的例子，介绍下Fluentd的用法。
+安装 Fluentd Ubuntu 18.04上的安装命令（https://docs.fluentd.org/installation/install-by-deb）：
+root@ubuntu-parallel:~# curl -L https://toolbelt.treasuredata.com/sh/install-ubuntu-bionic-td-agent3.sh | sh 以Daemon方式启动：
+root@ubuntu-parallel:~# systemctl start td-agent.service root@ubuntu-parallel:~# systemctl status td-agent.service fluentd的安装目录是在/opt/td-agent/下的。为演示方便，我们可以直接使用 /opt/td-agent/embedded/bin/fluentd这个程序。
+root@ubuntu-parallel:~# ps -ef | grep fluentd td-agent 30596 1 0 17:10 ? 00:00:00 /opt/td-agent/embedded/bin/ruby /opt/td-agent/embedded/bin/fluentd --log /var/log/td-agent/td-agent.log --daemon /var/run/td-agent/td-agent.pid td-agent 30602 30596 9 17:10 ? 00:00:00 /opt/td-agent/embedded/bin/ruby -Eascii-8bit:ascii-8bit /opt/td-agent/embedded/bin/fluentd --log /var/log/td-agent/td-agent.log --daemon /var/run/td-agent/td-agent.pid --under-supervisor 其他系统的安装参考：https://docs.fluentd.org/installation
+小试牛刀 配置文件 test.conf，启动一个HTTP服务，并把接收到的日志，打印到标准输出。
+&lt;source&gt; @type http port 9880 &lt;/source&gt; &lt;match *.*&gt; @type stdout &lt;/match&gt; 启动fluentd进程。"/>
+<meta name="theme-color" content="#ffffff">
+<meta name="msapplication-TileColor" content="#da532c">
+<link rel="canonical" href="https://xujiahua.github.io/posts/use-fluentd/" />
+<link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="prev" href="https://xujiahua.github.io/posts/use-docker-machine/" /><link rel="stylesheet" href="/lib/fontawesome-free/all.min.9a680b90260b5106d79f4075491ab31daafa7429eff686453c40b58357309649.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk="><link rel="stylesheet" href="/lib/animate/animate.min.3c770e90f98eb21b0c042fafb49755af93306fbaf42e449524f94fae9fc83295.css" integrity="sha256-PHcOkPmOshsMBC&#43;vtJdVr5Mwb7r0LkSVJPlPrp/IMpU="><link rel="stylesheet" href="/css/style.min.e8ca640cf5b1714eaa34bc21e8e2d0e79ae9cc05a934f6ee78a318487d7c515b.css" integrity="sha256-6MpkDPWxcU6qNLwh6OLQ55rpzAWpNPbueKMYSH18UVs=">
+<script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "headline": "Fluentd实战",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "https:\/\/xujiahua.github.io\/posts\/use-fluentd\/"
+        },"genre": "posts","wordcount":  254 ,
+        "url": "https:\/\/xujiahua.github.io\/posts\/use-fluentd\/","datePublished": "2020-04-02T16:58:23\x2b08:00","dateModified": "2020-04-02T16:58:23\x2b08:00","description": ""
+    }
+    </script></head>
+    <body><script>
+            if (!window.localStorage || !window.localStorage.getItem('theme')) {window.isDark = '' === 'dark';} else {
+                window.isDark = (window.localStorage && window.localStorage.getItem('theme')) === 'dark';
+            }
+            window.isDark && document.body.classList.add('dark-theme');
+        </script><div class="wrapper"><header class="desktop" id="header-desktop">
+    <div class="header-wrapper">
+        <div class="header-title animated bounceIn">
+            <a href="/">许嘉华的博客</a>
+        </div>
+        <div class="menu"><a class="menu-item" href="/posts/">Posts</a><a class="menu-item" href="/tags/">Tags</a><a class="menu-item" href="/categories/">Categories</a><a class="menu-item" href="/about/">About</a><a href="javascript:void(0);" class="theme-switch" title="Switch Theme">
+                <i class="fas fa-adjust fa-rotate-180 fa-fw"></i>
+            </a>
+        </div>
+    </div>
+</header><header class="mobile" id="header-mobile">
+    <div class="header-wrapper">
+        <div class="header-container">
+            <div class="header-title animated bounceIn">
+                <a href="/">许嘉华的博客</a>
+            </div>
+            <div class="menu-toggle" id="menu-toggle-mobile">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="menu" id="menu-mobile"><a class="menu-item" href="/posts/" title="">Posts</a><a class="menu-item" href="/tags/" title="">Tags</a><a class="menu-item" href="/categories/" title="">Categories</a><a class="menu-item" href="/about/" title="">About</a><a href="javascript:void(0);" class="theme-switch" title="Switch Theme">
+                <i class="fas fa-adjust fa-rotate-180 fa-fw"></i>
+            </a>
+        </div>
+    </div>
+</header>
+
+<script>
+    window.desktopHeaderMode =  null ;
+    window.mobileHeaderMode =  null ;
+</script>
+<main class="main">
+                <div class="container"><article class="page single"><h1 class="single-title animated flipInX">Fluentd实战</h1><div class="post-meta">
+            <div class="post-meta-line"><span class="post-author">
+                    <a class="author" href="/" rel="author" target="_blank">
+                        <i class="fas fa-user-circle fa-fw"></i>Author
+                    </a>
+                </span></div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i><time datetime=2020-04-02>2020-04-02</time>&nbsp;
+                <i class="fas fa-pencil-alt fa-fw"></i>about 254 words&nbsp;
+                <i class="far fa-clock fa-fw"></i>2 min&nbsp;</div>
+        </div><div class="toc" id="toc-auto">
+                <h2 class="toc-title">Contents</h2>
+                <div class="toc-content always-active" id="toc-content-auto"></div>
+            </div>
+            <div class="toc" id="toc-static">
+                <details>
+                    <summary>
+                        <div class="toc-title">
+                            <span>Contents</span>
+                            <span><i class="details icon fas fa-angle-down"></i></span>
+                        </div>
+                    </summary>
+                    <div class="toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#安装-fluentd">安装 Fluentd</a>
+      <ul>
+        <li><a href="#小试牛刀">小试牛刀</a></li>
+      </ul>
+    </li>
+    <li><a href="#实战收集linux主机上的docker容器日志">实战：收集Linux主机上的Docker容器日志</a>
+      <ul>
+        <li><a href="#实验前提条件">实验前提条件</a></li>
+        <li><a href="#配置文件输出到stdout">配置文件（输出到stdout）</a></li>
+        <li><a href="#启动fluentd">启动fluentd</a></li>
+        <li><a href="#生成日志">生成日志</a></li>
+        <li><a href="#输出从stdout改为elasticsearch">输出从stdout改为elasticsearch</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav></div>
+                </details>
+            </div><div class="content" id="content"><p>以收集Docker容器日志的例子，介绍下Fluentd的用法。</p>
+<h2 id="安装-fluentd">安装 Fluentd</h2>
+<p>Ubuntu 18.04上的安装命令（https://docs.fluentd.org/installation/install-by-deb）：</p>
+<pre><code>root@ubuntu-parallel:~# curl -L https://toolbelt.treasuredata.com/sh/install-ubuntu-bionic-td-agent3.sh | sh
+</code></pre><p>以Daemon方式启动：</p>
+<pre><code>root@ubuntu-parallel:~# systemctl start td-agent.service
+root@ubuntu-parallel:~# systemctl status td-agent.service
+</code></pre><p>fluentd的安装目录是在/opt/td-agent/下的。为演示方便，我们可以直接使用 <code>/opt/td-agent/embedded/bin/fluentd</code>这个程序。</p>
+<pre><code>root@ubuntu-parallel:~# ps -ef | grep fluentd
+td-agent 30596     1  0 17:10 ?        00:00:00 /opt/td-agent/embedded/bin/ruby /opt/td-agent/embedded/bin/fluentd --log /var/log/td-agent/td-agent.log --daemon /var/run/td-agent/td-agent.pid
+td-agent 30602 30596  9 17:10 ?        00:00:00 /opt/td-agent/embedded/bin/ruby -Eascii-8bit:ascii-8bit /opt/td-agent/embedded/bin/fluentd --log /var/log/td-agent/td-agent.log --daemon /var/run/td-agent/td-agent.pid --under-supervisor
+</code></pre><p>其他系统的安装参考：https://docs.fluentd.org/installation</p>
+<h3 id="小试牛刀">小试牛刀</h3>
+<p>配置文件 test.conf，启动一个HTTP服务，并把接收到的日志，打印到标准输出。</p>
+<pre><code>&lt;source&gt;
+  @type http
+  port 9880
+&lt;/source&gt;
+
+&lt;match *.*&gt;
+  @type stdout
+&lt;/match&gt;
+</code></pre><p>启动fluentd进程。</p>
+<pre><code>root@ubuntu-parallel:~# /opt/td-agent/embedded/bin/fluentd -c test.conf
+</code></pre><p>通过HTTP服务提交日志。可以看到fluentd终端打印出了输入的日志。</p>
+<pre><code>root@ubuntu-parallel:~# curl -X POST -d 'json={&quot;event&quot;:&quot;data&quot;}' http://localhost:9880/my.tag
+</code></pre><h2 id="实战收集linux主机上的docker容器日志">实战：收集Linux主机上的Docker容器日志</h2>
+<p>Docker官方有fluentd的Logging Driver。不足之处：</p>
+<ol>
+<li>因为没有了本地日志文件，docker logs 不管用了。</li>
+<li>需要额外配置，或是在daemon.json里设定，或是docker run时候设定。新增机器或是运行容器，很容易忘记。</li>
+<li>如果远程数据存储down了，会不会丢日志。</li>
+</ol>
+<p>考虑到这些问题，本实验以收集本地日志的方式使用fluentd。</p>
+<h3 id="实验前提条件">实验前提条件</h3>
+<ol>
+<li>Linux系统</li>
+<li>Docker容器使用默认的Logging Driver，也就是json-file</li>
+<li>容器日志目录（也包含其他配置文件的）<code>/var/lib/docker/containers</code></li>
+</ol>
+<h3 id="配置文件输出到stdout">配置文件（输出到stdout）</h3>
+<p>定义一个配置文件 docker.container.log.conf</p>
+<pre><code>&lt;source&gt;
+  @type tail
+  path /var/lib/docker/containers/*/*-json.log
+  pos_file /var/log/docker_container.log.pos
+  tag docker.*
+  refresh_interval 10
+  read_from_head true
+  &lt;parse&gt;
+    @type json
+  &lt;/parse&gt;
+&lt;/source&gt;
+
+&lt;filter docker.var.lib.docker.containers.*.*.log&gt;
+  @type parser
+  key_name log
+  remove_key_name_field true
+  &lt;parse&gt;
+    @type json
+  &lt;/parse&gt;
+&lt;/filter&gt;
+
+&lt;filter docker.var.lib.docker.containers.*.*.log&gt;
+  @type record_transformer
+  &lt;record&gt;
+    container_id ${tag_parts[5]}
+    hostname &quot;#{Socket.gethostname}&quot;
+  &lt;/record&gt;
+&lt;/filter&gt;
+
+&lt;match docker.var.lib.docker.containers.*.*.log&gt;
+  @type stdout
+&lt;/match&gt;
+</code></pre><h4 id="简要介绍">简要介绍</h4>
+<p>一个典型的日志收集过程分三部分：</p>
+<ol>
+<li>定义数据源，也就是source部分</li>
+<li>每条数据可以增删修改字段，也就是filter部分，filter可以是0个或是多个，按顺序处理。</li>
+<li>数据输出，也就是match部分</li>
+</ol>
+<h4 id="source">source</h4>
+<ol>
+<li>@type tail 使用tail插件 <a href="https://docs.fluentd.org/input/tail">https://docs.fluentd.org/input/tail</a></li>
+<li>path 定义路径，正则匹配</li>
+<li>pos_file 存放读文件的offset</li>
+<li>需要定义tag，filter、match使用tag进行匹配。</li>
+<li>tag docker.*，*会被实际的文件名给替代</li>
+<li>refresh_interval 设置多久刷新监听的文件列表，默认60秒</li>
+<li>read_from_head 默认false，也就是，没有pos存在的话，从文件尾读取。设置为true，解决新增文件而文件又没被fluentd及时监听起来的问题。</li>
+<li>parse 使用json解析，因为docker的logging driver用的json-file</li>
+</ol>
+<p>更多source插件见：https://docs.fluentd.org/input</p>
+<h4 id="filter">filter</h4>
+<ol>
+<li>指定tag pattern</li>
+<li>@type parser 使用parser插件 <a href="https://docs.fluentd.org/filter/parser">https://docs.fluentd.org/filter/parser</a></li>
+<li>key_name 需要parse的字段名</li>
+<li>remove_key_name_field 因为我们只需要log字段的json内容，log字段本身不需要保留</li>
+<li>parse 解析为json，因为我们的应用日志是json格式输出的</li>
+<li>@type record_transformer 使用record_transformer插件 <a href="https://docs.fluentd.org/filter/record_transformer">https://docs.fluentd.org/filter/record_transformer</a></li>
+<li>record 新增字段</li>
+<li>${tag_parts[5]} 预定义的变量，tag_parts是tag字符串被&rdquo;.&ldquo;切分后的数组，第6个代表的是container_id</li>
+<li><code>&quot;#{Socket.gethostname}&quot;</code> ruby内的变量</li>
+</ol>
+<p>更多filter插件见：https://docs.fluentd.org/filter</p>
+<h4 id="match">match</h4>
+<ol>
+<li>指定tag pattern</li>
+<li>@type stdout 使用stdout插件，用于演示 <a href="https://docs.fluentd.org/output/stdout">https://docs.fluentd.org/output/stdout</a></li>
+</ol>
+<h3 id="启动fluentd">启动fluentd</h3>
+<p>注意查看日志。</p>
+<pre><code>root@ubuntu-parallel:~# /opt/td-agent/embedded/bin/fluentd -c docker.container.log.conf
+</code></pre><h3 id="生成日志">生成日志</h3>
+<p>JSON格式输出每一行日志。</p>
+<pre><code>root@ubuntu-parallel:~# docker run -it busybox echo '{&quot;user&quot;:1,&quot;num&quot;:2}'
+{&quot;user&quot;:1,&quot;num&quot;:2}
+</code></pre><p>观察 <code>/var/lib/docker/containers/*/*-json.log</code>日志内容：</p>
+<pre><code>{&quot;log&quot;:&quot;{\&quot;user\&quot;:1,\&quot;num\&quot;:2}\r\n&quot;,&quot;stream&quot;:&quot;stdout&quot;,&quot;time&quot;:&quot;2020-04-02T12:25:50.877037148Z&quot;}
+</code></pre><p>fluentd stdout输出：</p>
+<pre><code>{&quot;user&quot;:1,&quot;num&quot;:2,&quot;container_id&quot;:&quot;e4fb94ee2d067450eeaf15837ed1497e2b7eb2f6754ba4eec1792ee37e31f12f&quot;,&quot;hostname&quot;:&quot;ubuntu-parallel&quot;}
+</code></pre><h3 id="输出从stdout改为elasticsearch">输出从stdout改为elasticsearch</h3>
+<h4 id="启动es">启动ES</h4>
+<p>参考 <a href="https://www.elastic.co/guide/en/elastic-stack-get-started/current/get-started-docker.html">https://www.elastic.co/guide/en/elastic-stack-get-started/current/get-started-docker.html</a>，使用docker-compose启动es和kibana服务。</p>
+<pre><code>root@ubuntu-parallel:~# docker-compose up
+</code></pre><h4 id="修改match">修改match</h4>
+<pre><code>&lt;match docker.var.lib.docker.containers.*.*.log&gt;
+  @type elasticsearch
+  host localhost
+  port 9200
+  logstash_format true
+&lt;/match&gt;
+</code></pre><p>参考：https://docs.fluentd.org/output/elasticsearch</p>
+<h4 id="启动fluentd-1">启动fluentd</h4>
+<pre><code>root@ubuntu-parallel:~# /opt/td-agent/embedded/bin/fluentd -c docker.container.log.es.conf
+</code></pre><h4 id="kibana日志分析">kibana日志分析</h4>
+<p>因为ES的日志已经是JSON格式输出的，所以也不需要额外造数据了。</p>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-sizes="auto"
+        data-srcset="../../images/image-20200403001746670.png, ../../images/image-20200403001746670.png 1.5x, ../../images/image-20200403001746670.png 2x"
+        data-src="../../images/image-20200403001746670.png"
+        alt="image-20200403001746670"
+        title="image-20200403001746670" /></p>
+</div><div class="post-footer" id="post-footer">
+    <div class="post-info">
+        <div class="post-info-line">
+            <div class="post-info-mod">
+                <span>The article was updated on 2020-04-02</span>
+            </div>
+            <div class="post-info-license"></div>
+        </div>
+        <div class="post-info-line">
+            <div class="post-info-md"></div>
+            <div class="post-info-share">
+                <span></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="post-info-more">
+        <section></section>
+        <section>
+            <span><a href="javascript:window.history.back();">Back</a></span>&nbsp;|&nbsp;<span><a href="/">Home</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav"><a href="https://xujiahua.github.io/posts/use-docker-machine/" class="prev" rel="prev" title="使用 Docker Machine"><i class="fas fa-angle-left fa-fw"></i>使用 Docker Machine</a></div>
+</div>
+<div class="comment"></div>
+    </article></div>
+            </main><footer class="footer">
+    <div class="copyright"><div class="copyright-line">Powered by <a href="https://gohugo.io/" target="_blank" rel="external nofollow noopener noreffer">Hugo</a> | Theme - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="external nofollow noopener noreffer">LoveIt<i class="far fa-heart fa-fw"></i></a>
+        </div>
+
+        <div class="copyright-line"><i class="far fa-copyright fa-fw"></i><span itemprop="copyrightYear">2020</span></div>
+    </div>
+</footer>
+</div><a href="#" class="dynamic-to-top animated faster" id="dynamic-to-top">
+            <span>&nbsp;</span>
+        </a><script>
+        document.addEventListener('DOMContentLoaded', function () {
+            lightGallery(document.getElementById('content'), {
+                selector: '.lightgallery',
+                speed: 400,
+                hideBarsDelay: 2000,
+                thumbnail: true,
+                exThumbImage: 'data-thumbnail',
+                thumbWidth: 80,
+                thumbContHeight: 80,
+            });
+        });
+    </script><link rel="stylesheet" href="/lib/lightgallery/lightgallery.min.a0f67639490aba5d9a250783c0aa0ed69f83a6f151fb0d7b9fb617c9dbc54565.css" integrity="sha256-oPZ2OUkKul2aJQeDwKoO1p&#43;DpvFR&#43;w17n7YXydvFRWU="><script src="/lib/smooth-scroll/smooth-scroll.polyfills.min.54590077ee163035c3dd38dc034e9f6915ecbe680dd832f449afa21672cab116.js" integrity="sha256-VFkAd&#43;4WMDXD3TjcA06faRXsvmgN2DL0Sa&#43;iFnLKsRY="></script><script src="/lib/sharer/sharer.min.9c88f86c7f0820287113f6236200459832693656e80d7556cc80a93dfbd45813.js" integrity="sha256-nIj4bH8IIChxE/YjYgBFmDJpNlboDXVWzICpPfvUWBM="></script><script src="/lib/lazysizes/lazysizes.min.876b4c12685e991d88378c1b6dd3638fd2da0c88f3c24da1ada950c1f26604e1.js" integrity="sha256-h2tMEmhemR2IN4wbbdNjj9LaDIjzwk2hralQwfJmBOE="></script><script src="/lib/lightgallery/lightgallery.min.7a84c63ab156d68e4a7269487c9c65a4eb34b0c7864f2d3fd2b87f7c664480d3.js" integrity="sha256-eoTGOrFW1o5KcmlIfJxlpOs0sMeGTy0/0rh/fGZEgNM="></script><script src="/lib/lightgallery/lg-thumbnail.min.eab31af8f90835b7ab674b2dd2474841039bc01022aa312f80dde6e22fde58d7.js" integrity="sha256-6rMa&#43;PkINberZ0st0kdIQQObwBAiqjEvgN3m4i/eWNc="></script><script src="/lib/lightgallery/lg-zoom.min.e3a7e6bb4a69f8627654ba9e0ab1252971bcfb400538dbb0605db9a3342ce5b9.js" integrity="sha256-46fmu0pp&#43;GJ2VLqeCrElKXG8&#43;0AFONuwYF25ozQs5bk="></script><script src="/js/theme.min.1482fc67bfa2c3b8cebe476d0037b9321b5b7a8a1525b547b94143948be90e9e.js" integrity="sha256-FIL8Z7&#43;iw7jOvkdtADe5MhtbeooVJbVHuUFDlIvpDp4="></script></body>
+</html>

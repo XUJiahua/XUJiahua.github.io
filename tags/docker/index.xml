@@ -31,7 +31,7 @@ docker-machine create -d virtualbox {host_name} VM的管理，vagrant命令需�
       <pubDate>Sat, 21 Mar 2020 14:10:40 +0800</pubDate>
       
       <guid>https://xujiahua.github.io/posts/docker-network/</guid>
-      <description>笔记整理。建议先看一些入门资料。
+      <description>Docker网络非常值得学习。对Docker不熟的同学，建议先看一些入门资料。
 Docker 学习资料  Docker — 从入门到实践 https://www.yuque.com/grasilife/docker Docker Kubernetes Lab Handbook https://docker-k8s-lab.readthedocs.io/en/latest/index.html 「Docker进阶与实战」华为Docker实践小组  单机网络 （建议在Linux系统上实验。）
 Docker安装完后，默认有三个（三种）网络。分别是默认的bridge模式，host模式，none模式。
 # docker network ls NETWORK ID NAME DRIVER SCOPE 51cbe7a9bb19 bridge bridge local 7182ef9fa8c4 host host local bd80d0dedaa8 none null local 参考：https://docs.docker.com/network/
