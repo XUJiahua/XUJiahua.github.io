@@ -30,8 +30,7 @@ credit: https://jaxenter.com/docker-logging-gotchas-137049.html
 翻看文档，能够记录的上下文信息非常有限，基本上是没有。有限的上下文信息包括容器ID，因为日志文件名包含了容器ID。但是容器ID也就够区分哪些日志是在一个进程实例，仅此而已。不知道进程到底是哪个服务。
 如果能记录下镜像名称就好很多。
 其他驱动可以记录一些上下文信息，https://docs.docker.com/config/containers/logging/log_tags/，倒是json-file不支持。issue https://github.com/moby/moby/issues/19803
-其他方式：
- labels 看着太过繁琐 fluentd filter阶段解析容器config.</description>
+看起来，使用docker logs和 收集容器名称、镜像名称等上下文数据，无法兼顾。</description>
     </item>
     
     <item>

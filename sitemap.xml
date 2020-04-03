@@ -3,12 +3,22 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
+    <loc>https://xujiahua.github.io/tags/docker/</loc>
+    <lastmod>2020-04-03T15:43:07+08:00</lastmod>
+  </url>
+  
+  <url>
     <loc>https://xujiahua.github.io/posts/docker-logging/</loc>
     <lastmod>2020-04-03T15:43:07+08:00</lastmod>
   </url>
   
   <url>
     <loc>https://xujiahua.github.io/posts/</loc>
+    <lastmod>2020-04-03T15:43:07+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://xujiahua.github.io/tags/</loc>
     <lastmod>2020-04-03T15:43:07+08:00</lastmod>
   </url>
   
@@ -25,16 +35,6 @@
   <url>
     <loc>https://xujiahua.github.io/posts/google-vision-api/</loc>
     <lastmod>2020-04-01T14:20:51+08:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://xujiahua.github.io/tags/docker/</loc>
-    <lastmod>2020-03-31T09:53:05+08:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://xujiahua.github.io/tags/</loc>
-    <lastmod>2020-03-31T09:53:05+08:00</lastmod>
   </url>
   
   <url>

@@ -43,6 +43,7 @@ root@ubuntu-parallel:~# cat &lt;span style=&#34;color:#66d9ef&#34;&gt;$(&lt;/spa
 &lt;p&gt;翻看文档，能够记录的上下文信息非常有限，基本上是没有。有限的上下文信息包括容器ID，因为日志文件名包含了容器ID。但是容器ID也就够区分哪些日志是在一个进程实例，仅此而已。不知道进程到底是哪个服务。&lt;/p&gt;
 &lt;p&gt;如果能记录下镜像名称就好很多。&lt;/p&gt;
 &lt;p&gt;其他驱动可以记录一些上下文信息，https://docs.docker.com/config/containers/logging/log_tags/，倒是json-file不支持。issue &lt;a href=&#34;https://github.com/moby/moby/issues/19803&#34;&gt;https://github.com/moby/moby/issues/19803&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;看起来，使用&lt;code&gt;docker logs&lt;/code&gt;和 收集容器名称、镜像名称等上下文数据，无法兼顾。&lt;/p&gt;
 &lt;p&gt;其他方式：&lt;/p&gt;
 &lt;ol&gt;
 &lt;li&gt;labels 看着太过繁琐&lt;/li&gt;

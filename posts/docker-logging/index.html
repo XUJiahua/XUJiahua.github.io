@@ -913,6 +913,12 @@ Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopene
                         
 
                         
+                            <i class="material-icons" style="">label</i>
+                            
+                                <a href="/tags/docker">Docker</a>
+                                &nbsp;
+                            
+                        
                     </div>
                 </div>
             </div>
@@ -945,6 +951,7 @@ root@ubuntu-parallel:~# cat <span style="color:#66d9ef">$(</span>docker ps --no-
 <p>翻看文档，能够记录的上下文信息非常有限，基本上是没有。有限的上下文信息包括容器ID，因为日志文件名包含了容器ID。但是容器ID也就够区分哪些日志是在一个进程实例，仅此而已。不知道进程到底是哪个服务。</p>
 <p>如果能记录下镜像名称就好很多。</p>
 <p>其他驱动可以记录一些上下文信息，https://docs.docker.com/config/containers/logging/log_tags/，倒是json-file不支持。issue <a href="https://github.com/moby/moby/issues/19803">https://github.com/moby/moby/issues/19803</a></p>
+<p>看起来，使用<code>docker logs</code>和 收集容器名称、镜像名称等上下文数据，无法兼顾。</p>
 <p>其他方式：</p>
 <ol>
 <li>labels 看着太过繁琐</li>
