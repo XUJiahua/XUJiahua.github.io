@@ -1,0 +1,1077 @@
+<!DOCTYPE html>
+<html><head>
+<title>Docker日志驱动小结</title>
+
+<meta charset="utf-8">
+<meta name="X-UA-Compatible" content="IE=edge">
+<meta name="google-site-verification" content="">
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport">
+<meta content="telephone=no" name="format-detection">
+<meta name="description" content="">
+<meta name="renderer" content="webkit">
+<meta name="theme-color" content="#ffffff">
+
+
+
+
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+	ga('create', 'UA-162706610-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+
+
+
+<script src="/vendor/js/jquery.min.js" ></script>
+<script src="/vendor/js/popper.min.js" ></script>
+<script src="/vendor/js/bootstrap.min.js" ></script>
+<script src="/vendor/js/smooth-scroll.polyfills.min.js" ></script>
+<link type="text/css" rel="stylesheet" href="/vendor/css/bootstrap.min.css">
+<script src="/vendor/js/vue.min.js" ></script>
+
+
+
+
+<link rel="stylesheet" href="https://xujiahua.github.io/scss/journal.min.5c667e74038e21ddbb9024b67930f8544e02af62491281cf73fdb817eec2947e.css" integrity="sha256-XGZ&#43;dAOOId27kCS2eTD4VE4Cr2JJEoHPc/24F&#43;7ClH4=" media="screen">
+
+<script src="https://xujiahua.github.io//js/loadCSS.js"></script>
+<script src="https://xujiahua.github.io//js/table.js"></script>
+
+
+<script src="https://xujiahua.github.io//js/toc.js"></script>
+
+
+<script>
+    loadCSS("https://fonts.googleapis.com/css?family=Lora|Montserrat|Fira+Mono|Noto+Serif+SC|Material+Icons");
+</script>
+
+
+
+
+
+
+</head><body>
+    	<div id="app"><div ref="sideContainer" class="side-container">
+    
+    <a class="a-block nav-head false" href="https://xujiahua.github.io/">
+    
+        <div class="nav-title">
+            许嘉华的博客
+        </div>
+        
+    </a>
+
+    <div class="nav-link-list">
+        
+        
+            
+            
+            
+                
+            
+            
+            
+            <a class="a-block nav-link-item active" href="/posts">
+                Archive
+            </a>
+            
+        
+            
+            
+            
+            
+            
+            <a class="a-block nav-link-item false" href="/categories">
+                Categories
+            </a>
+            
+        
+            
+            
+            
+            
+            
+            <a class="a-block nav-link-item false" href="/tags">
+                Tags
+            </a>
+            
+        
+            
+            
+            
+            
+            
+            <a class="a-block nav-link-item false" href="/index.xml">
+                RSS Feed
+            </a>
+            
+        
+    </div>
+
+    
+
+    <div class="nav-footer">
+        
+Hugo Theme <a href="https://github.com/amazingrise/hugo-theme-diary">Diary</a> by <a href="https://amazingrise.net">Rise</a>
+<br>
+Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopener">Makito</a>'s <a href="https://github.com/SumiMakito/hexo-theme-journal/" target="_blank" rel="noreferrer noopener">Journal.</a> <br>
+<br>
+
+&copy;
+	
+	2020 许嘉华的博客
+	
+    </div>
+    
+</div><div ref="extraContainer" class="extra-container">
+    
+    <div class="toc animated-visibility" :class="{ invisible: scrollY <= 140 }">
+
+
+	<div class="toc-content">
+	
+		
+		
+		
+		<center>- CATALOG -</center>
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e9%bb%98%e8%ae%a4%e9%a9%b1%e5%8a%a8json-file" v-on:click="closeDrawer" id="默认驱动json-file-nav">
+										 默认驱动：json-file
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e5%ae%9e%e9%aa%8c" v-on:click="closeDrawer" id="实验-nav">
+										 实验
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e6%80%8e%e4%b9%88%e8%ae%b0%e5%bd%95%e6%9b%b4%e5%a4%9a%e4%b8%8a%e4%b8%8b%e6%96%87%e4%bf%a1%e6%81%af" v-on:click="closeDrawer" id="怎么记录更多上下文信息-nav">
+										 怎么记录更多上下文信息
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#local" v-on:click="closeDrawer" id="local-nav">
+										 local
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e5%ae%9e%e9%aa%8c-1" v-on:click="closeDrawer" id="实验-1-nav">
+										 实验
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#none" v-on:click="closeDrawer" id="none-nav">
+										 none
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e5%ae%9e%e9%aa%8c-2" v-on:click="closeDrawer" id="实验-2-nav">
+										 实验
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#syslog" v-on:click="closeDrawer" id="syslog-nav">
+										 syslog
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e5%ae%9e%e9%aa%8c-3" v-on:click="closeDrawer" id="实验-3-nav">
+										 实验
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#journald" v-on:click="closeDrawer" id="journald-nav">
+										 journald
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e5%ae%9e%e9%aa%8c-4" v-on:click="closeDrawer" id="实验-4-nav">
+										 实验
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#fluentd" v-on:click="closeDrawer" id="fluentd-nav">
+										 Fluentd
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e6%80%bb%e7%bb%93" v-on:click="closeDrawer" id="总结-nav">
+										 总结
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+	</div>
+
+</div>
+    
+    <div class="pagination">
+        <a id="globalBackToTop" class="pagination-action animated-visibility" href="#top" :class="{ invisible: scrollY == 0 }">
+            <i class="material-icons pagination-action-icon">
+                keyboard_arrow_up
+            </i>
+        </a>
+        
+    </div>
+</div><div class="single-column-drawer-container" ref="drawer"
+     v-bind:class="{ 'single-column-drawer-container-active': isDrawerOpen }">
+    <div class="drawer-content">
+        <div class="drawer-menu">
+            
+            
+                
+                
+                
+                    
+                
+                
+                
+                <a class="a-block drawer-menu-item active" href="/posts">
+                    Archive
+                </a>
+                
+            
+                
+                
+                
+                
+                
+                <a class="a-block drawer-menu-item false" href="/categories">
+                    Categories
+                </a>
+                
+            
+                
+                
+                
+                
+                
+                <a class="a-block drawer-menu-item false" href="/tags">
+                    Tags
+                </a>
+                
+            
+                
+                
+                
+                
+                
+                <a class="a-block drawer-menu-item false" href="/index.xml">
+                    RSS Feed
+                </a>
+                
+            
+            
+            <div class="toc">
+
+
+	<div class="toc-content">
+	
+		
+		
+		
+		<center>- CATALOG -</center>
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e9%bb%98%e8%ae%a4%e9%a9%b1%e5%8a%a8json-file" v-on:click="closeDrawer" id="默认驱动json-file-nav">
+										 默认驱动：json-file
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e5%ae%9e%e9%aa%8c" v-on:click="closeDrawer" id="实验-nav">
+										 实验
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e6%80%8e%e4%b9%88%e8%ae%b0%e5%bd%95%e6%9b%b4%e5%a4%9a%e4%b8%8a%e4%b8%8b%e6%96%87%e4%bf%a1%e6%81%af" v-on:click="closeDrawer" id="怎么记录更多上下文信息-nav">
+										 怎么记录更多上下文信息
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#local" v-on:click="closeDrawer" id="local-nav">
+										 local
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e5%ae%9e%e9%aa%8c-1" v-on:click="closeDrawer" id="实验-1-nav">
+										 实验
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#none" v-on:click="closeDrawer" id="none-nav">
+										 none
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e5%ae%9e%e9%aa%8c-2" v-on:click="closeDrawer" id="实验-2-nav">
+										 实验
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#syslog" v-on:click="closeDrawer" id="syslog-nav">
+										 syslog
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e5%ae%9e%e9%aa%8c-3" v-on:click="closeDrawer" id="实验-3-nav">
+										 实验
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#journald" v-on:click="closeDrawer" id="journald-nav">
+										 journald
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e5%ae%9e%e9%aa%8c-4" v-on:click="closeDrawer" id="实验-4-nav">
+										 实验
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#fluentd" v-on:click="closeDrawer" id="fluentd-nav">
+										 Fluentd
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e6%80%bb%e7%bb%93" v-on:click="closeDrawer" id="总结-nav">
+										 总结
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+	</div>
+
+</div>
+            
+        </div>
+    </div>
+</div>
+<transition name="fade">
+    <div v-bind:class="{ 'single-column-drawer-mask': mounted }" v-if="isDrawerOpen" v-on:click="toggleDrawer"></div>
+</transition>
+<nav ref="navBar" class="navbar sticky-top navbar-light single-column-nav-container">
+    <div ref="navBackground" class="nav-background"></div>
+    <div class="container container-narrow nav-content">
+        <button id="nav_dropdown_btn" class="nav-dropdown-toggle" type="button" v-on:click="toggleDrawer">
+            <i class="material-icons">
+                menu
+            </i>
+        </button>
+        <a ref="navTitle" class="navbar-brand" href="https://xujiahua.github.io/">
+            许嘉华的博客
+        </a>
+    </div>
+</nav>
+<div class="single-column-header-container" ref="pageHead"
+     v-bind:style="{ transform: 'translateZ(0px) translateY('+.3*scrollY+'px)', opacity: 1-navOpacity }">
+    <a href="https://xujiahua.github.io/">
+        <div class="single-column-header-title">许嘉华的博客</div>
+        
+
+    </a>
+</div>
+            <div id="content">
+<div ref="streamContainer" class="stream-container">
+    <div class="post-list-container post-list-container-shadow">
+        <div class="post">
+            
+            
+            
+
+            <div class="post-head-wrapper-text-only"
+                 style="background-image: url('/')">
+                <div class="post-title">
+                    Docker日志驱动小结
+                    
+                    <div class="post-meta">
+                        
+                        <time itemprop="datePublished">
+                            2020-04-03 15:43
+                        </time>
+                        
+
+                        
+
+                        
+                    </div>
+                </div>
+            </div>
+            
+            <div class="post-body-wrapper">
+                <div class="post-body">
+                    <p><code>docker logs</code>， <code>kubectl logs</code>能看到Docker容器的标准输出、标准错误，方便定位问题。而 <code>xxx logs</code>之所以能看到，是因为标准输出、标准错误存储在每个容器独有的日志文件中。</p>
+<p>另外日志量大了，用<code>docker logs</code>看历史数据不大合适。我们就需要考虑将日志存储到日志中心去。</p>
+<p>Docker默认支持如下日志驱动。有直接写文件的，有使用云服务的。下面简单介绍下。</p>
+<p><img src="../../images/Screen-Shot-2017-09-11-at-3.08.50-PM.png" alt="img"></p>
+<p>credit: <a href="https://jaxenter.com/docker-logging-gotchas-137049.html">https://jaxenter.com/docker-logging-gotchas-137049.html</a></p>
+<p>官方文档 <a href="https://docs.docker.com/config/containers/logging/configure/">https://docs.docker.com/config/containers/logging/configure/</a></p>
+<h2 id="默认驱动json-file">默认驱动：json-file</h2>
+<p>默认的Logging Driver是json-file。<code>docker info</code>可以查看。全局的日志驱动设置，可以修改daemon配置文件 <code>/etc/docker/daemon.json</code>。</p>
+<p>写入文件的日志格式长这样：<code>{&quot;log&quot;:&quot;Log line is here\n&quot;,&quot;stream&quot;:&quot;stdout&quot;,&quot;time&quot;:&quot;2019-01-01T11:11:11.111111111Z&quot;}</code>，每一行是一个json文件，log字段为容器原来输出的每行内容。</p>
+<p>默认配置，创建的容器的信息在这个目录下： <code>/var/lib/docker/containers</code>。</p>
+<h3 id="实验">实验</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">root@ubuntu-parallel:~# docker run --name default_logging_driver hello-world
+
+root@ubuntu-parallel:~# cd /var/lib/docker/containers/<span style="color:#66d9ef">$(</span>docker ps --no-trunc -aqf <span style="color:#e6db74">&#34;name=default_logging_driver&#34;</span><span style="color:#66d9ef">)</span>
+
+root@ubuntu-parallel:~# cat <span style="color:#66d9ef">$(</span>docker ps --no-trunc -aqf <span style="color:#e6db74">&#34;name=default_logging_driver&#34;</span><span style="color:#66d9ef">)</span>-json.log
+<span style="color:#f92672">{</span><span style="color:#e6db74">&#34;log&#34;</span>:<span style="color:#e6db74">&#34;\n&#34;</span>,<span style="color:#e6db74">&#34;stream&#34;</span>:<span style="color:#e6db74">&#34;stdout&#34;</span>,<span style="color:#e6db74">&#34;time&#34;</span>:<span style="color:#e6db74">&#34;2020-04-02T01:46:54.096347888Z&#34;</span><span style="color:#f92672">}</span>
+<span style="color:#f92672">{</span><span style="color:#e6db74">&#34;log&#34;</span>:<span style="color:#e6db74">&#34;Hello from Docker!\n&#34;</span>,<span style="color:#e6db74">&#34;stream&#34;</span>:<span style="color:#e6db74">&#34;stdout&#34;</span>,<span style="color:#e6db74">&#34;time&#34;</span>:<span style="color:#e6db74">&#34;2020-04-02T01:46:54.096377382Z&#34;</span><span style="color:#f92672">}</span>
+<span style="color:#f92672">{</span><span style="color:#e6db74">&#34;log&#34;</span>:<span style="color:#e6db74">&#34;This message shows that your installation appears to be working correctly.\n&#34;</span>,<span style="color:#e6db74">&#34;stream&#34;</span>:<span style="color:#e6db74">&#34;stdout&#34;</span>,<span style="color:#e6db74">&#34;time&#34;</span>:<span style="color:#e6db74">&#34;2020-04-02T01:46:54.096381118Z&#34;</span><span style="color:#f92672">}</span>
+<span style="color:#f92672">{</span><span style="color:#e6db74">&#34;log&#34;</span>:<span style="color:#e6db74">&#34;\n&#34;</span>,<span style="color:#e6db74">&#34;stream&#34;</span>:<span style="color:#e6db74">&#34;stdout&#34;</span>,<span style="color:#e6db74">&#34;time&#34;</span>:<span style="color:#e6db74">&#34;2020-04-02T01:46:54.096383725Z&#34;</span><span style="color:#f92672">}</span>
+</code></pre></div><p><a href="https://docs.docker.com/config/containers/logging/json-file/">https://docs.docker.com/config/containers/logging/json-file/</a></p>
+<h3 id="怎么记录更多上下文信息">怎么记录更多上下文信息</h3>
+<p>未有定论，TODO。</p>
+<p>翻看文档，能够记录的上下文信息非常有限，基本上是没有。有限的上下文信息包括容器ID，因为日志文件名包含了容器ID。但是容器ID也就够区分哪些日志是在一个进程实例，仅此而已。不知道进程到底是哪个服务。</p>
+<p>如果能记录下镜像名称就好很多。</p>
+<p>其他驱动可以记录一些上下文信息，https://docs.docker.com/config/containers/logging/log_tags/，倒是json-file不支持。issue <a href="https://github.com/moby/moby/issues/19803">https://github.com/moby/moby/issues/19803</a></p>
+<p>其他方式：</p>
+<ol>
+<li>labels 看着太过繁琐</li>
+<li>fluentd filter阶段解析容器config.v2.json文件中的ImageName值，<code>JSON.parse(IO.read(&quot;/var/lib/docker/containers/#{id}/config.v2.json&quot;))[&quot;Name&quot;]</code>。感觉有性能问题 <a href="https://stackoverflow.com/questions/37143923/how-to-get-container-and-image-name-when-using-fluentd-for-docker-logging">https://stackoverflow.com/questions/37143923/how-to-get-container-and-image-name-when-using-fluentd-for-docker-logging</a></li>
+<li>fluentd 能维护一个container_id与image name之间的映射关系么，缓存起来？</li>
+<li>k8s是怎么处理这个问题的？</li>
+</ol>
+<h2 id="local">local</h2>
+<p><code>--log-driver</code>指定日志驱动。</p>
+<p>cat输出local文件，部分结果乱码。挺不方便日志解析的。</p>
+<h3 id="实验-1">实验</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">root@ubuntu-parallel:~# docker run --name local_logging_driver --log-driver local hello-world
+
+root@ubuntu-parallel:~# cd /var/lib/docker/containers/<span style="color:#66d9ef">$(</span>docker ps --no-trunc -aqf <span style="color:#e6db74">&#34;name=local_logging_driver&#34;</span><span style="color:#66d9ef">)</span>
+
+root@ubuntu-parallel:~# cat local-logs/container.log
+stdout�������&amp;
+stdout�������Hello from Docker!&amp;^
+stdout˧�����JThis message shows that your installation appears to be working correctly.^
+</code></pre></div><p><a href="https://docs.docker.com/config/containers/logging/local/">https://docs.docker.com/config/containers/logging/local/</a></p>
+<h2 id="none">none</h2>
+<p>不生成日志文件，<code>docker logs</code>也拿不到日志。实际使用不会考虑。</p>
+<h3 id="实验-2">实验</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">root@ubuntu-parallel:~# docker run --name none_logging_driver --log-driver none hello-world
+
+root@ubuntu-parallel:~# cd /var/lib/docker/containers/<span style="color:#66d9ef">$(</span>docker ps --no-trunc -aqf <span style="color:#e6db74">&#34;name=none_logging_driver&#34;</span><span style="color:#66d9ef">)</span>
+
+root@ubuntu-parallel:~# docker logs none_logging_driver
+Error response from daemon: configured logging driver does not support reading
+</code></pre></div><h2 id="syslog">syslog</h2>
+<p>因为日志被写入了syslog，并混在其他应用的日志中，<code>docker logs</code>没办法工作了。</p>
+<h3 id="实验-3">实验</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e"># 观察syslog</span>
+root@ubuntu-parallel:~# tail -f /var/log/syslog
+
+root@ubuntu-parallel:~# docker run --name syslog_logging_driver --log-driver syslog hello-world
+
+<span style="color:#75715e"># 日志不会写本地</span>
+root@ubuntu-parallel:~# cd /var/lib/docker/containers/<span style="color:#66d9ef">$(</span>docker ps --no-trunc -aqf <span style="color:#e6db74">&#34;name=syslog_logging_driver&#34;</span><span style="color:#66d9ef">)</span>
+
+root@ubuntu-parallel:~# docker logs syslog_logging_driver
+Error response from daemon: configured logging driver does not support reading
+</code></pre></div><p><a href="https://docs.docker.com/config/containers/logging/syslog/">https://docs.docker.com/config/containers/logging/syslog/</a></p>
+<h2 id="journald">journald</h2>
+<p>写入syslog和journald，应用日志与系统日志混在一起，难以辨认了。</p>
+<p>倒是journald驱动下，可以使用<code>docker logs</code>。</p>
+<p>参考：https://wiki.archlinux.org/index.php/Systemd/Journal</p>
+<h3 id="实验-4">实验</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">root@ubuntu-parallel:~# docker run --name journald_logging_driver --log-driver journald hello-world
+
+root@ubuntu-parallel:~# journalctl
+Apr <span style="color:#ae81ff">02</span> 10:30:36 ubuntu-parallel 4b948bf091a8<span style="color:#f92672">[</span>999<span style="color:#f92672">]</span>: To try something more ambitious, you can run an Ubuntu container with:
+Apr <span style="color:#ae81ff">02</span> 10:30:36 ubuntu-parallel 4b948bf091a8<span style="color:#f92672">[</span>999<span style="color:#f92672">]</span>:  $ docker run -it ubuntu bash
+Apr <span style="color:#ae81ff">02</span> 10:30:36 ubuntu-parallel 4b948bf091a8<span style="color:#f92672">[</span>999<span style="color:#f92672">]</span>:
+Apr <span style="color:#ae81ff">02</span> 10:30:36 ubuntu-parallel 4b948bf091a8<span style="color:#f92672">[</span>999<span style="color:#f92672">]</span>: Share images, automate workflows, and more with a free Docker ID:
+Apr <span style="color:#ae81ff">02</span> 10:30:36 ubuntu-parallel 4b948bf091a8<span style="color:#f92672">[</span>999<span style="color:#f92672">]</span>:  https://hub.docker.com/
+
+root@ubuntu-parallel:~# cd /var/lib/docker/containers/<span style="color:#66d9ef">$(</span>docker ps --no-trunc -aqf <span style="color:#e6db74">&#34;name=journald_logging_driver&#34;</span><span style="color:#66d9ef">)</span>
+
+<span style="color:#75715e"># docker logs管用</span>
+root@ubuntu-parallel:~# docker logs journald_logging_driver
+
+</code></pre></div><p><a href="https://docs.docker.com/config/containers/logging/journald/">https://docs.docker.com/config/containers/logging/journald/</a></p>
+<h2 id="fluentd">Fluentd</h2>
+<p>通过服务请求，让docker吐日志到fluentd进程。https://docs.docker.com/config/containers/logging/fluentd/</p>
+<p>使用包括fluentd在很多日志驱动，因为日志写入到远程服务器，会导致<code>docker logs</code>， <code>kubectl logs</code>不可用。</p>
+<p>Fluentd是一个挺灵活的工具，可以让fluentd主动监听容器目录下的日志文件。参考另一篇文章 <a href="https://xujiahua.github.io/posts/use-fluentd/">https://xujiahua.github.io/posts/use-fluentd/</a></p>
+<h2 id="总结">总结</h2>
+<p>为了兼容可使用<code>docker logs</code> ，<code>kubectl logs</code>，必须使用写本地文件的日志驱动。而json格式更方便工具（比如fluentd，logstash）解析，所以json-file是首选。</p>
+<p>然后使用日志收集工具集中采集docker容器日志。k8s中日志收集策略，一般是在每台服务器上以DaemonSet的形式安装logging agent，监听本地文件、文件夹，将日志转发到日志中心。</p>
+<p>当然这个前提条件是，应用日志是输出到标准输出和标准错误的。这对应用日志的规范有一定要求：</p>
+<ol>
+<li>不输出多行日志。比如panic、exception。</li>
+<li>应用日志使用JSON格式输出，方便后续的日志分析。</li>
+<li>应用日志中加入更多的上下文信息。用于问题定位，维度分析。</li>
+<li>Go应用开发，使用logrus日志库，加字段，以JSON格式输出都很方便。</li>
+<li>应用不关注日志该如何收集这个问题。不在应用层写日志到kafka、redis等中间件，让基础设施层处理。</li>
+<li>应用要么写入文件、要么写入标准输出，这个应该很方便做成可配置的。对程序来说，都有共同的抽象，io.Writer。</li>
+</ol>
+<p>应用日志如果是写到文件的，需要考虑通过数据卷，挂载等将日志与容器分离。采集挂载目录上的日志文件，以前怎么收集，现在还是怎么收集。还是建议写标准输出，这是目前的最佳实践。</p>
+
+                    
+                    <HR width="100%" id="EOF">
+                    <p style="color:#777;">Last modified on 2020-04-03</p>
+                    
+                </div>
+            </div>
+            
+            
+            <nav class="post-pagination">
+
+                
+                <a class="newer-posts">
+                    Next<br>No newer posts.
+                </a>
+                
+                
+                
+                <a class="older-posts" href="https://xujiahua.github.io/posts/use-fluentd/">
+                    Previous<br>Fluentd实战
+                </a>
+                
+            </nav>
+            <div class="post-comment-wrapper">
+                
+
+
+
+
+
+
+            </div>
+        </div>
+    </div>
+</div>
+
+            </div><div id="single-column-footer">
+Hugo Theme <a href="https://github.com/amazingrise/hugo-theme-diary">Diary</a> by <a href="https://amazingrise.net">Rise</a>
+<br>
+Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopener">Makito</a>'s <a href="https://github.com/SumiMakito/hexo-theme-journal/" target="_blank" rel="noreferrer noopener">Journal.</a> <br>
+<br>
+
+&copy;
+	
+	2020 许嘉华的博客
+	</div>
+    	</div>
+    <script src="https://xujiahua.github.io//js/journal.js"></script>
+    </body>
+</html>
