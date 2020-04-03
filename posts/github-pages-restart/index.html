@@ -1,119 +1,607 @@
 <!DOCTYPE html>
-<html lang="zh-cn">
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta name="robots" content="noodp" />
-        <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1">
-        <title>Github pages重新开始：使用Hugo、Typora | 许嘉华的博客</title>
-        <meta name="Description" content=""><meta property="og:title" content="Github pages重新开始：使用Hugo、Typora" />
-<meta property="og:description" content="重新开始GitHub pages 曾使用GitHub pages &#43;  jekyll 写过一段时间博客，没啥营养。
-打算重新开始：
- 把我记录在Evernote和Typora中的资料迁移到GitHub pages上。 另外做一些Web形式的小工具，挂载在一个子目录里，方便平时使用。  Hugo &#43; Typora 打算如下：
- Markdown文件还是使用Typora写。用过MWeb、Typora，Typora使用感受更好些（这么好用还不要钱）。 Hugo作为静态网站生成，创建一个博客模板。  Hugo quickstart # 安装hugo（其实是Go编译的二进制文件） brew install hugo # 创建site hugo new site quickstart # 通过git submodule的方式下载主题 git init git submodule -b master add https://github.com/dillonzq/LoveIt themes/LoveIt # 更新config.toml，配置主题参数，见loveit配置 # 创建博客，创建的posts在content目录下。文件格式为：content/&lt;CATEGORY&gt;/&lt;FILE&gt;.&lt;FORMAT&gt; # hugo new 会采用 archetypes/default.md作为模板，把一些共性配置放在这个模板里吧。 hugo new posts/my-first-post.md # 本地看blog效果，-D表示草稿状态的博客也显示 hugo server -D # 生成静态网站到./public/，也可以指定目录 hugo -D 挑选了一个比较实用的主题 https://hugoloveit.com/" />
-<meta property="og:type" content="article" />
-<meta property="og:url" content="https://xujiahua.github.io/posts/github-pages-restart/" />
-<meta property="article:published_time" content="2020-03-10T11:24:49+08:00" />
-<meta property="article:modified_time" content="2020-03-10T11:24:49+08:00" />
-<meta name="twitter:card" content="summary"/>
-<meta name="twitter:title" content="Github pages重新开始：使用Hugo、Typora"/>
-<meta name="twitter:description" content="重新开始GitHub pages 曾使用GitHub pages &#43;  jekyll 写过一段时间博客，没啥营养。
-打算重新开始：
- 把我记录在Evernote和Typora中的资料迁移到GitHub pages上。 另外做一些Web形式的小工具，挂载在一个子目录里，方便平时使用。  Hugo &#43; Typora 打算如下：
- Markdown文件还是使用Typora写。用过MWeb、Typora，Typora使用感受更好些（这么好用还不要钱）。 Hugo作为静态网站生成，创建一个博客模板。  Hugo quickstart # 安装hugo（其实是Go编译的二进制文件） brew install hugo # 创建site hugo new site quickstart # 通过git submodule的方式下载主题 git init git submodule -b master add https://github.com/dillonzq/LoveIt themes/LoveIt # 更新config.toml，配置主题参数，见loveit配置 # 创建博客，创建的posts在content目录下。文件格式为：content/&lt;CATEGORY&gt;/&lt;FILE&gt;.&lt;FORMAT&gt; # hugo new 会采用 archetypes/default.md作为模板，把一些共性配置放在这个模板里吧。 hugo new posts/my-first-post.md # 本地看blog效果，-D表示草稿状态的博客也显示 hugo server -D # 生成静态网站到./public/，也可以指定目录 hugo -D 挑选了一个比较实用的主题 https://hugoloveit.com/"/>
+<html><head>
+<title>Github pages重新开始：使用Hugo、Typora</title>
+
+<meta charset="utf-8">
+<meta name="X-UA-Compatible" content="IE=edge">
+<meta name="google-site-verification" content="">
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport">
+<meta content="telephone=no" name="format-detection">
+<meta name="description" content="">
+<meta name="renderer" content="webkit">
 <meta name="theme-color" content="#ffffff">
-<meta name="msapplication-TileColor" content="#da532c">
-<link rel="canonical" href="https://xujiahua.github.io/posts/github-pages-restart/" />
-<link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
-<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
-<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
-<link rel="manifest" href="/site.webmanifest">
-<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="prev" href="https://xujiahua.github.io/posts/use-hyper-v/" /><link rel="next" href="https://xujiahua.github.io/posts/patent/" /><link rel="stylesheet" href="/lib/fontawesome-free/all.min.9a680b90260b5106d79f4075491ab31daafa7429eff686453c40b58357309649.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk="><link rel="stylesheet" href="/lib/animate/animate.min.3c770e90f98eb21b0c042fafb49755af93306fbaf42e449524f94fae9fc83295.css" integrity="sha256-PHcOkPmOshsMBC&#43;vtJdVr5Mwb7r0LkSVJPlPrp/IMpU="><link rel="stylesheet" href="/css/style.min.e8ca640cf5b1714eaa34bc21e8e2d0e79ae9cc05a934f6ee78a318487d7c515b.css" integrity="sha256-6MpkDPWxcU6qNLwh6OLQ55rpzAWpNPbueKMYSH18UVs=">
-<script type="application/ld+json">
-    {
-        "@context": "http://schema.org",
-        "@type": "BlogPosting",
-        "headline": "Github pages重新开始：使用Hugo、Typora",
-        "mainEntityOfPage": {
-            "@type": "WebPage",
-            "@id": "https:\/\/xujiahua.github.io\/posts\/github-pages-restart\/"
-        },"genre": "posts","keywords": "GitHub pages, Hugo, Typora","wordcount":  139 ,
-        "url": "https:\/\/xujiahua.github.io\/posts\/github-pages-restart\/","datePublished": "2020-03-10T11:24:49\x2b08:00","dateModified": "2020-03-10T11:24:49\x2b08:00","description": ""
-    }
-    </script></head>
-    <body><script>
-            if (!window.localStorage || !window.localStorage.getItem('theme')) {window.isDark = '' === 'dark';} else {
-                window.isDark = (window.localStorage && window.localStorage.getItem('theme')) === 'dark';
-            }
-            window.isDark && document.body.classList.add('dark-theme');
-        </script><div class="wrapper"><header class="desktop" id="header-desktop">
-    <div class="header-wrapper">
-        <div class="header-title animated bounceIn">
-            <a href="/">许嘉华的博客</a>
-        </div>
-        <div class="menu"><a class="menu-item" href="/posts/">Posts</a><a class="menu-item" href="/tags/">Tags</a><a class="menu-item" href="/categories/">Categories</a><a class="menu-item" href="/about/">About</a><a href="javascript:void(0);" class="theme-switch" title="Switch Theme">
-                <i class="fas fa-adjust fa-rotate-180 fa-fw"></i>
-            </a>
-        </div>
-    </div>
-</header><header class="mobile" id="header-mobile">
-    <div class="header-wrapper">
-        <div class="header-container">
-            <div class="header-title animated bounceIn">
-                <a href="/">许嘉华的博客</a>
-            </div>
-            <div class="menu-toggle" id="menu-toggle-mobile">
-                <span></span><span></span><span></span>
-            </div>
-        </div>
-        <div class="menu" id="menu-mobile"><a class="menu-item" href="/posts/" title="">Posts</a><a class="menu-item" href="/tags/" title="">Tags</a><a class="menu-item" href="/categories/" title="">Categories</a><a class="menu-item" href="/about/" title="">About</a><a href="javascript:void(0);" class="theme-switch" title="Switch Theme">
-                <i class="fas fa-adjust fa-rotate-180 fa-fw"></i>
-            </a>
-        </div>
-    </div>
-</header>
+
+
+
+
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+	ga('create', 'UA-162706610-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+
+
+
+<script src="/vendor/js/jquery.min.js" ></script>
+<script src="/vendor/js/popper.min.js" ></script>
+<script src="/vendor/js/bootstrap.min.js" ></script>
+<script src="/vendor/js/smooth-scroll.polyfills.min.js" ></script>
+<link type="text/css" rel="stylesheet" href="/vendor/css/bootstrap.min.css">
+<script src="/vendor/js/vue.min.js" ></script>
+
+
+
+
+<link rel="stylesheet" href="https://xujiahua.github.io/scss/journal.min.5c667e74038e21ddbb9024b67930f8544e02af62491281cf73fdb817eec2947e.css" integrity="sha256-XGZ&#43;dAOOId27kCS2eTD4VE4Cr2JJEoHPc/24F&#43;7ClH4=" media="screen">
+
+<script src="https://xujiahua.github.io//js/loadCSS.js"></script>
+<script src="https://xujiahua.github.io//js/table.js"></script>
+
+
+<script src="https://xujiahua.github.io//js/toc.js"></script>
+
 
 <script>
-    window.desktopHeaderMode =  null ;
-    window.mobileHeaderMode =  null ;
+    loadCSS("https://fonts.googleapis.com/css?family=Lora|Montserrat|Fira+Mono|Noto+Serif+SC|Material+Icons");
 </script>
-<main class="main">
-                <div class="container"><article class="page single"><h1 class="single-title animated flipInX">Github pages重新开始：使用Hugo、Typora</h1><div class="post-meta">
-            <div class="post-meta-line"><span class="post-author">
-                    <a class="author" href="/" rel="author" target="_blank">
-                        <i class="fas fa-user-circle fa-fw"></i>Author
-                    </a>
-                </span></div>
-            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i><time datetime=2020-03-10>2020-03-10</time>&nbsp;
-                <i class="fas fa-pencil-alt fa-fw"></i>about 139 words&nbsp;
-                <i class="far fa-clock fa-fw"></i>1 min&nbsp;</div>
-        </div><div class="toc" id="toc-auto">
-                <h2 class="toc-title">Contents</h2>
-                <div class="toc-content always-active" id="toc-content-auto"></div>
+
+
+
+
+
+
+</head><body>
+    	<div id="app"><div ref="sideContainer" class="side-container">
+    
+    <a class="a-block nav-head false" href="https://xujiahua.github.io/">
+    
+        <div class="nav-title">
+            许嘉华的博客
+        </div>
+        
+    </a>
+
+    <div class="nav-link-list">
+        
+        
+            
+            
+            
+                
+            
+            
+            
+            <a class="a-block nav-link-item active" href="/posts">
+                Archive
+            </a>
+            
+        
+            
+            
+            
+            
+            
+            <a class="a-block nav-link-item false" href="/categories">
+                Categories
+            </a>
+            
+        
+            
+            
+            
+            
+            
+            <a class="a-block nav-link-item false" href="/tags">
+                Tags
+            </a>
+            
+        
+            
+            
+            
+            
+            
+            <a class="a-block nav-link-item false" href="/index.xml">
+                RSS Feed
+            </a>
+            
+        
+    </div>
+
+    
+
+    <div class="nav-footer">
+        
+Hugo Theme <a href="https://github.com/amazingrise/hugo-theme-diary">Diary</a> by <a href="https://amazingrise.net">Rise</a>
+<br>
+Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopener">Makito</a>'s <a href="https://github.com/SumiMakito/hexo-theme-journal/" target="_blank" rel="noreferrer noopener">Journal.</a> <br>
+<br>
+
+&copy;
+	
+	2020 许嘉华的博客
+	
+    </div>
+    
+</div><div ref="extraContainer" class="extra-container">
+    
+    <div class="toc animated-visibility" :class="{ invisible: scrollY <= 140 }">
+
+
+	<div class="toc-content">
+	
+		
+		
+		
+		<center>- CATALOG -</center>
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e9%87%8d%e6%96%b0%e5%bc%80%e5%a7%8bgithub-pages" v-on:click="closeDrawer" id="重新开始github-pages-nav">
+										 重新开始GitHub pages
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#hugo--typora" v-on:click="closeDrawer" id="hugo--typora-nav">
+										 Hugo &#43; Typora
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#hugo-quickstart" v-on:click="closeDrawer" id="hugo-quickstart-nav">
+										 Hugo quickstart
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e5%9b%be%e7%89%87%e6%96%87%e4%bb%b6%e5%a4%b9%e7%9a%84%e9%85%8d%e7%bd%ae" v-on:click="closeDrawer" id="图片文件夹的配置-nav">
+										 图片文件夹的配置
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#github-pages" v-on:click="closeDrawer" id="github-pages-nav">
+										 GitHub pages
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e5%9b%be%e7%89%87%e8%b5%84%e6%ba%90404%e7%9a%84%e9%97%ae%e9%a2%98" v-on:click="closeDrawer" id="图片资源404的问题-nav">
+										 图片资源404的问题
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+	</div>
+
+</div>
+    
+    <div class="pagination">
+        <a id="globalBackToTop" class="pagination-action animated-visibility" href="#top" :class="{ invisible: scrollY == 0 }">
+            <i class="material-icons pagination-action-icon">
+                keyboard_arrow_up
+            </i>
+        </a>
+        
+    </div>
+</div><div class="single-column-drawer-container" ref="drawer"
+     v-bind:class="{ 'single-column-drawer-container-active': isDrawerOpen }">
+    <div class="drawer-content">
+        <div class="drawer-menu">
+            
+            
+                
+                
+                
+                    
+                
+                
+                
+                <a class="a-block drawer-menu-item active" href="/posts">
+                    Archive
+                </a>
+                
+            
+                
+                
+                
+                
+                
+                <a class="a-block drawer-menu-item false" href="/categories">
+                    Categories
+                </a>
+                
+            
+                
+                
+                
+                
+                
+                <a class="a-block drawer-menu-item false" href="/tags">
+                    Tags
+                </a>
+                
+            
+                
+                
+                
+                
+                
+                <a class="a-block drawer-menu-item false" href="/index.xml">
+                    RSS Feed
+                </a>
+                
+            
+            
+            <div class="toc">
+
+
+	<div class="toc-content">
+	
+		
+		
+		
+		<center>- CATALOG -</center>
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e9%87%8d%e6%96%b0%e5%bc%80%e5%a7%8bgithub-pages" v-on:click="closeDrawer" id="重新开始github-pages-nav">
+										 重新开始GitHub pages
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#hugo--typora" v-on:click="closeDrawer" id="hugo--typora-nav">
+										 Hugo &#43; Typora
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#hugo-quickstart" v-on:click="closeDrawer" id="hugo-quickstart-nav">
+										 Hugo quickstart
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e5%9b%be%e7%89%87%e6%96%87%e4%bb%b6%e5%a4%b9%e7%9a%84%e9%85%8d%e7%bd%ae" v-on:click="closeDrawer" id="图片文件夹的配置-nav">
+										 图片文件夹的配置
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#github-pages" v-on:click="closeDrawer" id="github-pages-nav">
+										 GitHub pages
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e5%9b%be%e7%89%87%e8%b5%84%e6%ba%90404%e7%9a%84%e9%97%ae%e9%a2%98" v-on:click="closeDrawer" id="图片资源404的问题-nav">
+										 图片资源404的问题
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+	</div>
+
+</div>
+            
+        </div>
+    </div>
+</div>
+<transition name="fade">
+    <div v-bind:class="{ 'single-column-drawer-mask': mounted }" v-if="isDrawerOpen" v-on:click="toggleDrawer"></div>
+</transition>
+<nav ref="navBar" class="navbar sticky-top navbar-light single-column-nav-container">
+    <div ref="navBackground" class="nav-background"></div>
+    <div class="container container-narrow nav-content">
+        <button id="nav_dropdown_btn" class="nav-dropdown-toggle" type="button" v-on:click="toggleDrawer">
+            <i class="material-icons">
+                menu
+            </i>
+        </button>
+        <a ref="navTitle" class="navbar-brand" href="https://xujiahua.github.io/">
+            许嘉华的博客
+        </a>
+    </div>
+</nav>
+<div class="single-column-header-container" ref="pageHead"
+     v-bind:style="{ transform: 'translateZ(0px) translateY('+.3*scrollY+'px)', opacity: 1-navOpacity }">
+    <a href="https://xujiahua.github.io/">
+        <div class="single-column-header-title">许嘉华的博客</div>
+        
+
+    </a>
+</div>
+            <div id="content">
+<div ref="streamContainer" class="stream-container">
+    <div class="post-list-container post-list-container-shadow">
+        <div class="post">
+            
+            
+            
+
+            <div class="post-head-wrapper-text-only"
+                 style="background-image: url('/')">
+                <div class="post-title">
+                    Github pages重新开始：使用Hugo、Typora
+                    
+                    <div class="post-meta">
+                        
+                        <time itemprop="datePublished">
+                            2020-03-10 11:24
+                        </time>
+                        
+
+                        
+
+                        
+                            <i class="material-icons" style="">label</i>
+                            
+                                <a href="/tags/github-pages">GitHub pages</a>
+                                &nbsp;
+                            
+                                <a href="/tags/hugo">Hugo</a>
+                                &nbsp;
+                            
+                                <a href="/tags/typora">Typora</a>
+                                &nbsp;
+                            
+                        
+                    </div>
+                </div>
             </div>
-            <div class="toc" id="toc-static">
-                <details>
-                    <summary>
-                        <div class="toc-title">
-                            <span>Contents</span>
-                            <span><i class="details icon fas fa-angle-down"></i></span>
-                        </div>
-                    </summary>
-                    <div class="toc-content" id="toc-content-static"><nav id="TableOfContents">
-  <ul>
-    <li><a href="#重新开始github-pages">重新开始GitHub pages</a></li>
-    <li><a href="#hugo--typora">Hugo + Typora</a>
-      <ul>
-        <li><a href="#hugo-quickstart">Hugo quickstart</a></li>
-        <li><a href="#图片文件夹的配置">图片文件夹的配置</a></li>
-        <li><a href="#github-pages">GitHub pages</a></li>
-      </ul>
-    </li>
-  </ul>
-</nav></div>
-                </details>
-            </div><div class="content" id="content"><h2 id="重新开始github-pages">重新开始GitHub pages</h2>
+            
+            <div class="post-body-wrapper">
+                <div class="post-body">
+                    <h2 id="重新开始github-pages">重新开始GitHub pages</h2>
 <p>曾使用<code>GitHub pages</code> + <code> jekyll</code> 写过一段时间博客，没啥营养。</p>
 <p>打算重新开始：</p>
 <ol>
@@ -169,14 +657,7 @@ hugo -D
 </code></pre><ol start="2">
 <li>Typora打开content目录，并做配置如下。之后，像平常那样用Typora写文字吧。</li>
 </ol>
-<p><img
-        class="lazyload"
-        src="/svg/loading.min.svg"
-        data-sizes="auto"
-        data-srcset="../../images/image-20200310184153667.png, ../../images/image-20200310184153667.png 1.5x, ../../images/image-20200310184153667.png 2x"
-        data-src="../../images/image-20200310184153667.png"
-        alt="image-20200310184153667"
-        title="image-20200310184153667" /></p>
+<p><img src="../../images/image-20200310184153667.png" alt="image-20200310184153667"></p>
 <h5 id="在根目录建images软链接的理由">在根目录建<code>images</code>软链接的理由</h5>
 <p>一些信息和思路：</p>
 <ol>
@@ -205,80 +686,60 @@ hugo -D
 </code></pre><p>复用这里的deploy脚本。https://gohugo.io/hosting-and-deployment/hosting-on-github/#put-it-into-a-script</p>
 <h4 id="图片资源404的问题">图片资源404的问题</h4>
 <p>_images文件夹下的资源404了。太奇怪了，路径OK，也没大小问题。过了很久还是不见效。</p>
-<p><img
-        class="lazyload"
-        src="/svg/loading.min.svg"
-        data-sizes="auto"
-        data-srcset="../../images/image-20200312190900210.png, ../../images/image-20200312190900210.png 1.5x, ../../images/image-20200312190900210.png 2x"
-        data-src="../../images/image-20200312190900210.png"
-        alt="image-20200312190900210"
-        title="image-20200312190900210" /></p>
+<p><img src="../../images/image-20200312190900210.png" alt="image-20200312190900210"></p>
 <p>尝试在images文件夹下放了个1.txt，理论上链接应该是 <a href="https://xujiahua.github.io/images/1.txt">https://xujiahua.github.io/images/1.txt</a>，一开始也是404。过了半小时OK了。</p>
 <p>结论是，_images文件夹取名可能有问题。那就改用images。</p>
 <p>参考：</p>
 <ol>
 <li><a href="https://gohugo.io/hosting-and-deployment/hosting-on-github/">https://gohugo.io/hosting-and-deployment/hosting-on-github/</a></li>
 </ol>
-</div><div class="post-footer" id="post-footer">
-    <div class="post-info">
-        <div class="post-info-line">
-            <div class="post-info-mod">
-                <span>The article was updated on 2020-03-10</span>
+
+                    
+                    <HR width="100%" id="EOF">
+                    <p style="color:#777;">Last modified on 2020-03-10</p>
+                    
+                </div>
             </div>
-            <div class="post-info-license"></div>
-        </div>
-        <div class="post-info-line">
-            <div class="post-info-md"></div>
-            <div class="post-info-share">
-                <span></span>
+            
+            
+            <nav class="post-pagination">
+
+                
+                <a class="newer-posts" href="https://xujiahua.github.io/posts/patent/">
+                    Next<br>专利申请流程小结
+                </a>
+                
+                
+                
+                <a class="older-posts" href="https://xujiahua.github.io/posts/use-hyper-v/">
+                    Previous<br>Hyper-V使用体验
+                </a>
+                
+            </nav>
+            <div class="post-comment-wrapper">
+                
+
+
+
+
+
+
             </div>
         </div>
     </div>
-
-    <div class="post-info-more">
-        <section><span>
-                        <a href="/tags/github-pages">
-                            <i class="fas fa-tag fa-fw"></i>GitHub pages
-                        </a>
-                    </span>&nbsp;<span>
-                        <a href="/tags/hugo">
-                            <i class="fas fa-tag fa-fw"></i>Hugo
-                        </a>
-                    </span>&nbsp;<span>
-                        <a href="/tags/typora">
-                            <i class="fas fa-tag fa-fw"></i>Typora
-                        </a>
-                    </span>&nbsp;</section>
-        <section>
-            <span><a href="javascript:window.history.back();">Back</a></span>&nbsp;|&nbsp;<span><a href="/">Home</a></span>
-        </section>
-    </div>
-
-    <div class="post-nav"><a href="https://xujiahua.github.io/posts/use-hyper-v/" class="prev" rel="prev" title="Hyper-V使用体验"><i class="fas fa-angle-left fa-fw"></i>Hyper-V使用体验</a>
-            <a href="https://xujiahua.github.io/posts/patent/" class="next" rel="next" title="专利申请流程小结">专利申请流程小结<i class="fas fa-angle-right fa-fw"></i></a></div>
 </div>
-<div class="comment"></div>
-    </article></div>
-            </main><footer class="footer">
-    <div class="copyright"><div class="copyright-line">Powered by <a href="https://gohugo.io/" target="_blank" rel="external nofollow noopener noreffer">Hugo</a> | Theme - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="external nofollow noopener noreffer">LoveIt<i class="far fa-heart fa-fw"></i></a>
-        </div>
 
-        <div class="copyright-line"><i class="far fa-copyright fa-fw"></i><span itemprop="copyrightYear">2020</span></div>
-    </div>
-</footer>
-</div><a href="#" class="dynamic-to-top animated faster" id="dynamic-to-top">
-            <span>&nbsp;</span>
-        </a><script>
-        document.addEventListener('DOMContentLoaded', function () {
-            lightGallery(document.getElementById('content'), {
-                selector: '.lightgallery',
-                speed: 400,
-                hideBarsDelay: 2000,
-                thumbnail: true,
-                exThumbImage: 'data-thumbnail',
-                thumbWidth: 80,
-                thumbContHeight: 80,
-            });
-        });
-    </script><link rel="stylesheet" href="/lib/lightgallery/lightgallery.min.a0f67639490aba5d9a250783c0aa0ed69f83a6f151fb0d7b9fb617c9dbc54565.css" integrity="sha256-oPZ2OUkKul2aJQeDwKoO1p&#43;DpvFR&#43;w17n7YXydvFRWU="><script src="/lib/smooth-scroll/smooth-scroll.polyfills.min.54590077ee163035c3dd38dc034e9f6915ecbe680dd832f449afa21672cab116.js" integrity="sha256-VFkAd&#43;4WMDXD3TjcA06faRXsvmgN2DL0Sa&#43;iFnLKsRY="></script><script src="/lib/sharer/sharer.min.9c88f86c7f0820287113f6236200459832693656e80d7556cc80a93dfbd45813.js" integrity="sha256-nIj4bH8IIChxE/YjYgBFmDJpNlboDXVWzICpPfvUWBM="></script><script src="/lib/lazysizes/lazysizes.min.876b4c12685e991d88378c1b6dd3638fd2da0c88f3c24da1ada950c1f26604e1.js" integrity="sha256-h2tMEmhemR2IN4wbbdNjj9LaDIjzwk2hralQwfJmBOE="></script><script src="/lib/lightgallery/lightgallery.min.7a84c63ab156d68e4a7269487c9c65a4eb34b0c7864f2d3fd2b87f7c664480d3.js" integrity="sha256-eoTGOrFW1o5KcmlIfJxlpOs0sMeGTy0/0rh/fGZEgNM="></script><script src="/lib/lightgallery/lg-thumbnail.min.eab31af8f90835b7ab674b2dd2474841039bc01022aa312f80dde6e22fde58d7.js" integrity="sha256-6rMa&#43;PkINberZ0st0kdIQQObwBAiqjEvgN3m4i/eWNc="></script><script src="/lib/lightgallery/lg-zoom.min.e3a7e6bb4a69f8627654ba9e0ab1252971bcfb400538dbb0605db9a3342ce5b9.js" integrity="sha256-46fmu0pp&#43;GJ2VLqeCrElKXG8&#43;0AFONuwYF25ozQs5bk="></script><script src="/js/theme.min.1482fc67bfa2c3b8cebe476d0037b9321b5b7a8a1525b547b94143948be90e9e.js" integrity="sha256-FIL8Z7&#43;iw7jOvkdtADe5MhtbeooVJbVHuUFDlIvpDp4="></script></body>
+            </div><div id="single-column-footer">
+Hugo Theme <a href="https://github.com/amazingrise/hugo-theme-diary">Diary</a> by <a href="https://amazingrise.net">Rise</a>
+<br>
+Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopener">Makito</a>'s <a href="https://github.com/SumiMakito/hexo-theme-journal/" target="_blank" rel="noreferrer noopener">Journal.</a> <br>
+<br>
+
+&copy;
+	
+	2020 许嘉华的博客
+	</div>
+    	</div>
+    <script src="https://xujiahua.github.io//js/journal.js"></script>
+    </body>
 </html>

@@ -1,0 +1,137 @@
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>许嘉华的博客</title>
+    <link>https://xujiahua.github.io/</link>
+    <description>Recent content on 许嘉华的博客</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Thu, 02 Apr 2020 16:58:23 +0800</lastBuildDate>
+    
+        <atom:link href="https://xujiahua.github.io/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    
+        <item>
+        <title>5G认识小结</title>
+        <link>https://xujiahua.github.io/posts/5g/</link>
+        <pubDate>Sat, 22 Feb 2020 23:32:14 +0800</pubDate>
+        
+        <guid>https://xujiahua.github.io/posts/5g/</guid>
+        <description>许嘉华的博客 https://xujiahua.github.io/posts/5g/ -&lt;p&gt;去年11月尝鲜，买了个三星5G手机。找基站测5G速度成了刚买时候的乐趣。用了几个月，深感5G功能很鸡肋，5G基站太少。&lt;/p&gt;
+&lt;p&gt;这两天翻了好多知乎上关于5G的评论，对5G的概念、应用场景有了些厘清。&lt;/p&gt;
+&lt;h2 id=&#34;基本概念&#34;&gt;基本概念&lt;/h2&gt;
+&lt;ol&gt;
+&lt;li&gt;5G，第五代移动通信技术。也就是5G的边界是移动通信网络。&lt;/li&gt;
+&lt;li&gt;5G的直接作用是提高了移动设备到基站的下载速率，能达到1G/s，也就是所谓的空口延迟低。&lt;/li&gt;
+&lt;li&gt;5G下载的速度上限还是光纤的下载速度上限。&lt;/li&gt;
+&lt;li&gt;5G的流量套餐应该不会便宜，除非国家出政策。为什么套餐不会便宜，这得看成本。5G的基站建设成本远比4G高。5G基站覆盖面积小，需要几倍于4G的基站，5G基站耗电成本也是几倍于4G基站。肥了设备商（华为中兴），苦了运营商（移动联通电信），最后还是消费者买单。&lt;/li&gt;
+&lt;li&gt;理论速度极可能跑不满。使用者多了，平均到每个终端，带宽就不够。现在我的4G速度好慢，完全没到理论速度。现在的矛盾不是需要更快的网络，而是更多的网络。&lt;/li&gt;
+&lt;li&gt;木桶效应，一个桶能装多少水由短板决定，以前的移动通信是短板，但是通过3G、4G到现在的5G的改善，已经成为长板了。运营商的承载网等配套也得扩容。不然5G的超高下载速率就是一个理论值。又是运营商的成本。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2 id=&#34;应用场景&#34;&gt;应用场景&lt;/h2&gt;
+&lt;p&gt;大部分人的共识是，5G的杀手级应用仍在探索中。&lt;/p&gt;
+&lt;p&gt;什么样的场景，只有通过5G能够做到，而其他技术不行，这样的场景就是典型的5G应用场景。要找到技术的适用场景，不能生搬硬套。区块链也是这样一个典型。过滤那些“可以使用XXX技术，但是完全没必要”的场景。&lt;/p&gt;
+&lt;p&gt;媒体上关于5G的一些应用场景：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;远程手术 —— 为什么不用光纤，可靠性更好。如果是边远山区不方便铺光纤，5G可能是好的替代。有总比没有好。&lt;/li&gt;
+&lt;li&gt;远程挖掘机 —— 微博上看到的，挖掘机通过5G联网，驾驶员在机房操控，安全性更高。&lt;/li&gt;
+&lt;li&gt;远程办公、远程上课 —— 这些光纤都能做到。对于山村里不方便通光纤的，是好事。但是山村里的困难是超乎我们想象的。看新闻，因为疫情不得不在家上课，几个小孩子共用一个手机，流量又贵，不舍得用。太难了。&lt;/li&gt;
+&lt;li&gt;AR/VR —— 不看好。光纤，百兆宽带都这么普及了，AR/VR发展不好的根本原因应该是AR/VR本身吧，5G救不了ARVR。&lt;/li&gt;
+&lt;li&gt;无人驾驶 —— 不看好。移动通信中的延时一直保持很低很困难吧，比如短时间太多人/设备使用基站导致拥挤。可靠性太重要了，毕竟汽车是高速移动的，稍微的疏忽就是惨痛代价。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2 id=&#34;会不会带来下一个移动互联网&#34;&gt;会不会带来下一个“移动互联网”&lt;/h2&gt;
+&lt;p&gt;之所以大家对5G这么关注，就是在想，5G能否像3/4G一样带动下一个移动互联网（电商、O2O、移动支付、短视频、直播）。&lt;/p&gt;
+&lt;p&gt;先来看看移动互联网是怎么发展起来的。&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;苹果公司发布iPhone，智能手机的火种。&lt;/li&gt;
+&lt;li&gt;小米等一众国产品牌的低价策略，带来了&lt;strong&gt;智能手机的普及&lt;/strong&gt;。&lt;/li&gt;
+&lt;li&gt;国务院要求&lt;strong&gt;运营商资费下降&lt;/strong&gt;。大家都用得起流量。&lt;/li&gt;
+&lt;li&gt;总结就是：智能手机普及 + 运营商资费下降。&lt;/li&gt;
+&lt;li&gt;其中智能手机，这是从无到有，从0到1的奇迹，颠覆了之前的所有手机。（好久没有让人激动的科技产品了，苹果的创新能力也是在备受质疑，因为大家期望太高了。）&lt;/li&gt;
+&lt;li&gt;其中运营商资费下降，这是国家权力。（知乎用户：钱都让互联网企业赚走了，通讯行业等同于修路。）&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;5G目前的作用仅限于加快了与基站之间的通信速度，假如说3G完成了从0到1，4G完成了从1到10，那么5G是从10到100吧。根据边际效应准则，后面的收益会越来越少。&lt;/p&gt;
+&lt;p&gt;很难看出能带来什么样的产业革命来。&lt;/p&gt;
+&lt;h2 id=&#34;5g的利益关系&#34;&gt;5G的利益关系&lt;/h2&gt;
+&lt;p&gt;利好：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;5G基站厂商。华为为主。&lt;/li&gt;
+&lt;li&gt;国家层面。5G是国家战略，是政治正确。其一，靠专利技术薅世界羊毛，从国家角度是有利可图的。其二，带动产业发展，拉动GDP。&lt;/li&gt;
+&lt;li&gt;手机终端厂商。近年来手机上的创新的吸睛能力真不行，消费欲望降低。靠5G这个卖点，能赚一波眼球。&lt;/li&gt;
+&lt;li&gt;还有众多蹭5G话题流量的：广告公司、创业公司。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;利坏：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;三大运营商。基站投入是高成本的，为了发展5G生态，国家也会限制套餐费用，影响其收入。还好是国企。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;参考：https://www.zhihu.com/question/342366514/answer/820922564&lt;/p&gt;
+&lt;h2 id=&#34;杂言&#34;&gt;杂言&lt;/h2&gt;
+&lt;p&gt;真正有颠覆性的，真正能突破人们想象力的，都在基础科学。比如材料科学，电池技术现在是瓶颈。离我很远。我做的事情真的对人类价值不大，只是个普通人，只能做到赚钱养家对家庭做贡献了。&lt;/p&gt;
+- https://xujiahua.github.io/posts/5g/ - </description>
+        </item>
+    
+    
+    
+        <item>
+        <title>Implicit：推荐系统协同过滤库的测评</title>
+        <link>https://xujiahua.github.io/posts/recsys-implicit/</link>
+        <pubDate>Tue, 11 Feb 2020 14:34:27 +0800</pubDate>
+        
+        <guid>https://xujiahua.github.io/posts/recsys-implicit/</guid>
+        <description>许嘉华的博客 https://xujiahua.github.io/posts/recsys-implicit/ -&lt;h2 id=&#34;简介&#34;&gt;简介&lt;/h2&gt;
+&lt;p&gt;Implicit是一个推荐系统协同过滤库。所谓协同过滤，只用到了user、item的ID和user、item交互后的评分（或是某个度量）。&lt;/p&gt;
+&lt;p&gt;GitHub：https://github.com/benfred/implicit&lt;/p&gt;
+&lt;h2 id=&#34;安装&#34;&gt;安装&lt;/h2&gt;
+&lt;pre&gt;&lt;code&gt;pip install implicit
+&lt;/code&gt;&lt;/pre&gt;&lt;h2 id=&#34;其他选择&#34;&gt;其他选择&lt;/h2&gt;
+&lt;p&gt;自己照着「推荐系统实战」里的基于物品推荐的相似度公式（类似关联分析中的Lift公式），也写了一个item-item recommender。&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;看推荐结果，自己写与implicit ALS有点差别，与implicit Cosine的结果差不多。&lt;/li&gt;
+&lt;li&gt;纯python，没有并行，没有用C/C++，果然很慢。&lt;/li&gt;
+&lt;li&gt;自己写一个的目的，除了练手，也想看看implicit的效果具体怎么样。&lt;/li&gt;
+&lt;li&gt;生产使用，不建议用自己手写的，水平真的有限。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;Spark Mllib怎么样。&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Spark Mllib支持分布式，感觉没必要。本来Implicit单机就很强了。只要把数据导出来，导到训练机器上即可。&lt;/li&gt;
+&lt;li&gt;Spark分布式，扩展性好，但是性能并没有Implicit那么好。&lt;/li&gt;
+&lt;li&gt;Spark还得搭配HDFS，真的蛮重的，开发效率也没那么好。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2 id=&#34;背后的原理&#34;&gt;背后的原理&lt;/h2&gt;
+&lt;p&gt;今早根据作者文章Distance Metrics for Fun and Profit，整理了一份读后感，把之前的知识给梳理起来了。这篇文章主要介绍的是距离公式，用于K近邻的推荐算法。&lt;/p&gt;
+&lt;p&gt;协同过滤算法分两类：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;基于记忆的，K近邻算法（基于“距离”公式），建议使用BM25。优势在读后感中有写。（实际效果怎么样，还得看数据）&lt;/li&gt;
+&lt;li&gt;基于模型的，矩阵分解算法，建议使用 (implicit) ALS，其变种是支持implicit dataset的。矩阵分解算法SGD，只适用于评分。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;效果，见测评图。ALS的效果是最好的了。这是在movielens100k的结果。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/3D66F424-97FD-4236-8A57-98111FAF65A7.png&#34; alt=&#34;3D66F424-97FD-4236-8A57-98111FAF65A7&#34;&gt;&lt;/p&gt;
+&lt;p&gt;看起来指标都很低，「推荐系统实战」里差不多这个结果。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/FBC00415-D1AE-4F22-9B86-A0B070484ACF.png&#34; alt=&#34;FBC00415-D1AE-4F22-9B86-A0B070484ACF&#34;&gt;&lt;/p&gt;
+&lt;h2 id=&#34;遇到的小问题&#34;&gt;遇到的小问题&lt;/h2&gt;
+&lt;ol&gt;
+&lt;li&gt;K近邻算法的model没有model.recommend_all方法。&lt;/li&gt;
+&lt;li&gt;model.recommend与model.recommend_all的返回数据结构不同，model.recommend是包含评分的，而model.recommend_all只返回ID。&lt;/li&gt;
+&lt;li&gt;recommend(0)，传入第一个用户ID，与recommend_all[0]，取出第一个用户ID，两者的结果是不一样的，不管用什么算法都一样！去年12月就有这样的issue：https://github.com/benfred/implicit/issues/299，我解决了，回复了这个issue。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;猜想，因为recommend方法用到indices的原因？试着重新构建下user-item维度的sparse matrix。改完后，果然就一致了。技术原因，sparse matrix transpose后，indices是未转置前的indices，没有变化。 具体地，user_items.indices与item_users.T.indices是不同的。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/159B8A3D-4238-401B-A4D3-61E086FF9F0B.png&#34; alt=&#34;159B8A3D-4238-401B-A4D3-61E086FF9F0B&#34;&gt;&lt;/p&gt;
+&lt;ol start=&#34;4&#34;&gt;
+&lt;li&gt;ALS算法在Mac上表现稀烂啊，同样的代码。ALS_Faiss还报错了。先在Linux上用吧。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;Mac上的ALS效果：&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/409E288C-81F6-4588-8731-9849D1F3278B.png&#34; alt=&#34;409E288C-81F6-4588-8731-9849D1F3278B&#34;&gt;&lt;/p&gt;
+&lt;p&gt;Linux上的ALS效果：&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/8DD26395-F62D-4DA8-A801-493098799456.png&#34; alt=&#34;8DD26395-F62D-4DA8-A801-493098799456&#34;&gt;&lt;/p&gt;
+&lt;h2 id=&#34;冷启动&#34;&gt;冷启动&lt;/h2&gt;
+&lt;p&gt;一开始并没有那么多行为数据。训练出的结果肯定是挺一般的。这时候用标签推荐，运营根据经验配置标签和推荐的映射即可。&lt;/p&gt;
+&lt;h2 id=&#34;考虑用户特征商品特征而不仅仅是id&#34;&gt;考虑用户特征、商品特征（而不仅仅是ID）&lt;/h2&gt;
+&lt;p&gt;如果有user特征、item特征，可以使用更一般的监督学习算法。或是使用factorization machine。&lt;/p&gt;
+- https://xujiahua.github.io/posts/recsys-implicit/ - </description>
+        </item>
+    
+    
+    
+    
+  </channel>
+</rss> 

@@ -1,139 +1,750 @@
 <!DOCTYPE html>
-<html lang="zh-cn">
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta name="robots" content="noodp" />
-        <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1">
-        <title>Hyper-V使用体验 | 许嘉华的博客</title>
-        <meta name="Description" content=""><meta property="og:title" content="Hyper-V使用体验" />
-<meta property="og:description" content="Hyper-V 使用体验 Hyper-V是 Windows10 内置的虚拟机软件，没想到我会用到它。
-为什么要用Hyper-V  需要使用虚拟机来模拟Kubernetes环境。 Windows Docker依赖Hyper-V。貌似WSL2也是基于Hyper-V。应该是不会卸载Hyper-V了。 Hyper-V与其他虚拟机软件（VirtualBox, VMWare）冲突，用不了其他的，只能用Hyper-V。 Hyper-V与VirtualBox兼容的方案有没有。可能有，不想过于折腾了，那就不得不用。  Hyper-V好不好用  使用体验太差了，从Mac、从其他虚拟机使用过来，默认配置各种踩坑。 安装VM碰到DHCP超时的问题，反复试验无果，重启Windows后VM的DHCP不超时了。总结下，Windows上，如果怎么搞都搞不定，重启下可能就好了。WTF！ 自带的NAT网络有点残疾，VM配置静态IP，网络就不通了。不像VirtualBox是开箱即用的。 最后借助网络上的零碎信息自定义了下NAT网络，各种神奇配置。 Windows还是很屎，除了打游戏，开发体验跟我之前的体验一样糟。最后搞定花了我一天时间。要是用VMware/VirtualBox，可能在2个小时内就能搞定。总结，不好用。  Hyper-V 创建和克隆VM 创建VM 从*.iso文件创建VM。
- 注意，Linux VM，不启用Windows Secure Boot。 更多选项里，设置VM的名称和交换机。 体验不好的地方：左上方的「选择操作系统」区域有长时间的加载过程，即使使用本地镜像文件也得等。  克隆VM 从硬盘文件创建VM。
- 克隆是为了减少重复配置一些基础环境的工作量。 不像VirtualBox那样有直观的克隆按钮。摸索出的克隆功能是这样的：就是从VM硬盘创建VM。 建议先关机母体VM后，再基于母体VM的硬盘文件克隆。防止母体VM开机状态下一些更新并没有持久化到硬盘文件中。  Hyper-V NAT网络搭建总结 如果使用VMWare/VirtualBox的话，NAT网络是完全自动搭建的。
-VMWare中有三种网络模式，Bridging、NAT、Host-only分别对应Hyper-V下的三种交换机，外部、内部、专用。
- Bridging：VM使用物理网络。GUEST VM与HOST相当于通过交换机连上一个网络（细节不确定）。 NAT：VM使用虚拟网络，HOST同时连入物理网络和虚拟网络。VM出口流量都会通过HOST，使用HOST IP。 Host-only：在NAT基础上，VM连不上外网，除非有路由设置。  默认的NAT网络 默认交换机支持NAT，但是瑕疵不少，无法满足工作需要。
-Hyper-V Default Switch &#43; VM DHCP 的组合默认有了NAT功能，满足以下：
- 虚拟机之间可以互相访问 虚拟机与物理机之间可以互相访问 虚拟机可以访问互联网  但是：
- 每次重启，Default Switch的IP都会变，Windows10 物理机上的网卡IPv4配置无法让他不变。 ping baidu." />
-<meta property="og:type" content="article" />
-<meta property="og:url" content="https://xujiahua.github.io/posts/use-hyper-v/" />
-<meta property="article:published_time" content="2020-03-03T22:13:23+08:00" />
-<meta property="article:modified_time" content="2020-03-03T22:13:23+08:00" />
-<meta name="twitter:card" content="summary"/>
-<meta name="twitter:title" content="Hyper-V使用体验"/>
-<meta name="twitter:description" content="Hyper-V 使用体验 Hyper-V是 Windows10 内置的虚拟机软件，没想到我会用到它。
-为什么要用Hyper-V  需要使用虚拟机来模拟Kubernetes环境。 Windows Docker依赖Hyper-V。貌似WSL2也是基于Hyper-V。应该是不会卸载Hyper-V了。 Hyper-V与其他虚拟机软件（VirtualBox, VMWare）冲突，用不了其他的，只能用Hyper-V。 Hyper-V与VirtualBox兼容的方案有没有。可能有，不想过于折腾了，那就不得不用。  Hyper-V好不好用  使用体验太差了，从Mac、从其他虚拟机使用过来，默认配置各种踩坑。 安装VM碰到DHCP超时的问题，反复试验无果，重启Windows后VM的DHCP不超时了。总结下，Windows上，如果怎么搞都搞不定，重启下可能就好了。WTF！ 自带的NAT网络有点残疾，VM配置静态IP，网络就不通了。不像VirtualBox是开箱即用的。 最后借助网络上的零碎信息自定义了下NAT网络，各种神奇配置。 Windows还是很屎，除了打游戏，开发体验跟我之前的体验一样糟。最后搞定花了我一天时间。要是用VMware/VirtualBox，可能在2个小时内就能搞定。总结，不好用。  Hyper-V 创建和克隆VM 创建VM 从*.iso文件创建VM。
- 注意，Linux VM，不启用Windows Secure Boot。 更多选项里，设置VM的名称和交换机。 体验不好的地方：左上方的「选择操作系统」区域有长时间的加载过程，即使使用本地镜像文件也得等。  克隆VM 从硬盘文件创建VM。
- 克隆是为了减少重复配置一些基础环境的工作量。 不像VirtualBox那样有直观的克隆按钮。摸索出的克隆功能是这样的：就是从VM硬盘创建VM。 建议先关机母体VM后，再基于母体VM的硬盘文件克隆。防止母体VM开机状态下一些更新并没有持久化到硬盘文件中。  Hyper-V NAT网络搭建总结 如果使用VMWare/VirtualBox的话，NAT网络是完全自动搭建的。
-VMWare中有三种网络模式，Bridging、NAT、Host-only分别对应Hyper-V下的三种交换机，外部、内部、专用。
- Bridging：VM使用物理网络。GUEST VM与HOST相当于通过交换机连上一个网络（细节不确定）。 NAT：VM使用虚拟网络，HOST同时连入物理网络和虚拟网络。VM出口流量都会通过HOST，使用HOST IP。 Host-only：在NAT基础上，VM连不上外网，除非有路由设置。  默认的NAT网络 默认交换机支持NAT，但是瑕疵不少，无法满足工作需要。
-Hyper-V Default Switch &#43; VM DHCP 的组合默认有了NAT功能，满足以下：
- 虚拟机之间可以互相访问 虚拟机与物理机之间可以互相访问 虚拟机可以访问互联网  但是：
- 每次重启，Default Switch的IP都会变，Windows10 物理机上的网卡IPv4配置无法让他不变。 ping baidu."/>
+<html><head>
+<title>Hyper-V使用体验</title>
+
+<meta charset="utf-8">
+<meta name="X-UA-Compatible" content="IE=edge">
+<meta name="google-site-verification" content="">
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport">
+<meta content="telephone=no" name="format-detection">
+<meta name="description" content="">
+<meta name="renderer" content="webkit">
 <meta name="theme-color" content="#ffffff">
-<meta name="msapplication-TileColor" content="#da532c">
-<link rel="canonical" href="https://xujiahua.github.io/posts/use-hyper-v/" />
-<link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
-<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
-<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
-<link rel="manifest" href="/site.webmanifest">
-<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="prev" href="https://xujiahua.github.io/posts/go-modules/" /><link rel="next" href="https://xujiahua.github.io/posts/github-pages-restart/" /><link rel="stylesheet" href="/lib/fontawesome-free/all.min.9a680b90260b5106d79f4075491ab31daafa7429eff686453c40b58357309649.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk="><link rel="stylesheet" href="/lib/animate/animate.min.3c770e90f98eb21b0c042fafb49755af93306fbaf42e449524f94fae9fc83295.css" integrity="sha256-PHcOkPmOshsMBC&#43;vtJdVr5Mwb7r0LkSVJPlPrp/IMpU="><link rel="stylesheet" href="/css/style.min.e8ca640cf5b1714eaa34bc21e8e2d0e79ae9cc05a934f6ee78a318487d7c515b.css" integrity="sha256-6MpkDPWxcU6qNLwh6OLQ55rpzAWpNPbueKMYSH18UVs=">
-<script type="application/ld+json">
-    {
-        "@context": "http://schema.org",
-        "@type": "BlogPosting",
-        "headline": "Hyper-V使用体验",
-        "mainEntityOfPage": {
-            "@type": "WebPage",
-            "@id": "https:\/\/xujiahua.github.io\/posts\/use-hyper-v\/"
-        },"genre": "posts","keywords": "Hyper-V, VM","wordcount":  94 ,
-        "url": "https:\/\/xujiahua.github.io\/posts\/use-hyper-v\/","datePublished": "2020-03-03T22:13:23\x2b08:00","dateModified": "2020-03-03T22:13:23\x2b08:00","description": ""
-    }
-    </script></head>
-    <body><script>
-            if (!window.localStorage || !window.localStorage.getItem('theme')) {window.isDark = '' === 'dark';} else {
-                window.isDark = (window.localStorage && window.localStorage.getItem('theme')) === 'dark';
-            }
-            window.isDark && document.body.classList.add('dark-theme');
-        </script><div class="wrapper"><header class="desktop" id="header-desktop">
-    <div class="header-wrapper">
-        <div class="header-title animated bounceIn">
-            <a href="/">许嘉华的博客</a>
-        </div>
-        <div class="menu"><a class="menu-item" href="/posts/">Posts</a><a class="menu-item" href="/tags/">Tags</a><a class="menu-item" href="/categories/">Categories</a><a class="menu-item" href="/about/">About</a><a href="javascript:void(0);" class="theme-switch" title="Switch Theme">
-                <i class="fas fa-adjust fa-rotate-180 fa-fw"></i>
-            </a>
-        </div>
-    </div>
-</header><header class="mobile" id="header-mobile">
-    <div class="header-wrapper">
-        <div class="header-container">
-            <div class="header-title animated bounceIn">
-                <a href="/">许嘉华的博客</a>
-            </div>
-            <div class="menu-toggle" id="menu-toggle-mobile">
-                <span></span><span></span><span></span>
-            </div>
-        </div>
-        <div class="menu" id="menu-mobile"><a class="menu-item" href="/posts/" title="">Posts</a><a class="menu-item" href="/tags/" title="">Tags</a><a class="menu-item" href="/categories/" title="">Categories</a><a class="menu-item" href="/about/" title="">About</a><a href="javascript:void(0);" class="theme-switch" title="Switch Theme">
-                <i class="fas fa-adjust fa-rotate-180 fa-fw"></i>
-            </a>
-        </div>
-    </div>
-</header>
+
+
+
+
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+	ga('create', 'UA-162706610-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+
+
+
+<script src="/vendor/js/jquery.min.js" ></script>
+<script src="/vendor/js/popper.min.js" ></script>
+<script src="/vendor/js/bootstrap.min.js" ></script>
+<script src="/vendor/js/smooth-scroll.polyfills.min.js" ></script>
+<link type="text/css" rel="stylesheet" href="/vendor/css/bootstrap.min.css">
+<script src="/vendor/js/vue.min.js" ></script>
+
+
+
+
+<link rel="stylesheet" href="https://xujiahua.github.io/scss/journal.min.5c667e74038e21ddbb9024b67930f8544e02af62491281cf73fdb817eec2947e.css" integrity="sha256-XGZ&#43;dAOOId27kCS2eTD4VE4Cr2JJEoHPc/24F&#43;7ClH4=" media="screen">
+
+<script src="https://xujiahua.github.io//js/loadCSS.js"></script>
+<script src="https://xujiahua.github.io//js/table.js"></script>
+
+
+<script src="https://xujiahua.github.io//js/toc.js"></script>
+
 
 <script>
-    window.desktopHeaderMode =  null ;
-    window.mobileHeaderMode =  null ;
+    loadCSS("https://fonts.googleapis.com/css?family=Lora|Montserrat|Fira+Mono|Noto+Serif+SC|Material+Icons");
 </script>
-<main class="main">
-                <div class="container"><article class="page single"><h1 class="single-title animated flipInX">Hyper-V使用体验</h1><div class="post-meta">
-            <div class="post-meta-line"><span class="post-author">
-                    <a class="author" href="/" rel="author" target="_blank">
-                        <i class="fas fa-user-circle fa-fw"></i>Author
-                    </a>
-                </span></div>
-            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i><time datetime=2020-03-03>2020-03-03</time>&nbsp;
-                <i class="fas fa-pencil-alt fa-fw"></i>about 94 words&nbsp;
-                <i class="far fa-clock fa-fw"></i>1 min&nbsp;</div>
-        </div><div class="toc" id="toc-auto">
-                <h2 class="toc-title">Contents</h2>
-                <div class="toc-content always-active" id="toc-content-auto"></div>
+
+
+
+
+
+
+</head><body>
+    	<div id="app"><div ref="sideContainer" class="side-container">
+    
+    <a class="a-block nav-head false" href="https://xujiahua.github.io/">
+    
+        <div class="nav-title">
+            许嘉华的博客
+        </div>
+        
+    </a>
+
+    <div class="nav-link-list">
+        
+        
+            
+            
+            
+                
+            
+            
+            
+            <a class="a-block nav-link-item active" href="/posts">
+                Archive
+            </a>
+            
+        
+            
+            
+            
+            
+            
+            <a class="a-block nav-link-item false" href="/categories">
+                Categories
+            </a>
+            
+        
+            
+            
+            
+            
+            
+            <a class="a-block nav-link-item false" href="/tags">
+                Tags
+            </a>
+            
+        
+            
+            
+            
+            
+            
+            <a class="a-block nav-link-item false" href="/index.xml">
+                RSS Feed
+            </a>
+            
+        
+    </div>
+
+    
+
+    <div class="nav-footer">
+        
+Hugo Theme <a href="https://github.com/amazingrise/hugo-theme-diary">Diary</a> by <a href="https://amazingrise.net">Rise</a>
+<br>
+Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopener">Makito</a>'s <a href="https://github.com/SumiMakito/hexo-theme-journal/" target="_blank" rel="noreferrer noopener">Journal.</a> <br>
+<br>
+
+&copy;
+	
+	2020 许嘉华的博客
+	
+    </div>
+    
+</div><div ref="extraContainer" class="extra-container">
+    
+    <div class="toc animated-visibility" :class="{ invisible: scrollY <= 140 }">
+
+
+	<div class="toc-content">
+	
+		
+		
+		
+		<center>- CATALOG -</center>
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#hyper-v-%e4%bd%bf%e7%94%a8%e4%bd%93%e9%aa%8c" v-on:click="closeDrawer" id="hyper-v-使用体验-nav">
+										 Hyper-V 使用体验
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e4%b8%ba%e4%bb%80%e4%b9%88%e8%a6%81%e7%94%a8hyper-v" v-on:click="closeDrawer" id="为什么要用hyper-v-nav">
+										 为什么要用Hyper-V
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#hyper-v%e5%a5%bd%e4%b8%8d%e5%a5%bd%e7%94%a8" v-on:click="closeDrawer" id="hyper-v好不好用-nav">
+										 Hyper-V好不好用
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#hyper-v-%e5%88%9b%e5%bb%ba%e5%92%8c%e5%85%8b%e9%9a%86vm" v-on:click="closeDrawer" id="hyper-v-创建和克隆vm-nav">
+										 Hyper-V 创建和克隆VM
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e5%88%9b%e5%bb%bavm" v-on:click="closeDrawer" id="创建vm-nav">
+										 创建VM
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e5%85%8b%e9%9a%86vm" v-on:click="closeDrawer" id="克隆vm-nav">
+										 克隆VM
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#hyper-v-nat%e7%bd%91%e7%bb%9c%e6%90%ad%e5%bb%ba%e6%80%bb%e7%bb%93" v-on:click="closeDrawer" id="hyper-v-nat网络搭建总结-nav">
+										 Hyper-V NAT网络搭建总结
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e9%bb%98%e8%ae%a4%e7%9a%84nat%e7%bd%91%e7%bb%9c" v-on:click="closeDrawer" id="默认的nat网络-nav">
+										 默认的NAT网络
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e8%87%aa%e5%ae%9a%e4%b9%89nat%e7%bd%91%e7%bb%9c" v-on:click="closeDrawer" id="自定义nat网络-nav">
+										 自定义NAT网络
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+	</div>
+
+</div>
+    
+    <div class="pagination">
+        <a id="globalBackToTop" class="pagination-action animated-visibility" href="#top" :class="{ invisible: scrollY == 0 }">
+            <i class="material-icons pagination-action-icon">
+                keyboard_arrow_up
+            </i>
+        </a>
+        
+    </div>
+</div><div class="single-column-drawer-container" ref="drawer"
+     v-bind:class="{ 'single-column-drawer-container-active': isDrawerOpen }">
+    <div class="drawer-content">
+        <div class="drawer-menu">
+            
+            
+                
+                
+                
+                    
+                
+                
+                
+                <a class="a-block drawer-menu-item active" href="/posts">
+                    Archive
+                </a>
+                
+            
+                
+                
+                
+                
+                
+                <a class="a-block drawer-menu-item false" href="/categories">
+                    Categories
+                </a>
+                
+            
+                
+                
+                
+                
+                
+                <a class="a-block drawer-menu-item false" href="/tags">
+                    Tags
+                </a>
+                
+            
+                
+                
+                
+                
+                
+                <a class="a-block drawer-menu-item false" href="/index.xml">
+                    RSS Feed
+                </a>
+                
+            
+            
+            <div class="toc">
+
+
+	<div class="toc-content">
+	
+		
+		
+		
+		<center>- CATALOG -</center>
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#hyper-v-%e4%bd%bf%e7%94%a8%e4%bd%93%e9%aa%8c" v-on:click="closeDrawer" id="hyper-v-使用体验-nav">
+										 Hyper-V 使用体验
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e4%b8%ba%e4%bb%80%e4%b9%88%e8%a6%81%e7%94%a8hyper-v" v-on:click="closeDrawer" id="为什么要用hyper-v-nav">
+										 为什么要用Hyper-V
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#hyper-v%e5%a5%bd%e4%b8%8d%e5%a5%bd%e7%94%a8" v-on:click="closeDrawer" id="hyper-v好不好用-nav">
+										 Hyper-V好不好用
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#hyper-v-%e5%88%9b%e5%bb%ba%e5%92%8c%e5%85%8b%e9%9a%86vm" v-on:click="closeDrawer" id="hyper-v-创建和克隆vm-nav">
+										 Hyper-V 创建和克隆VM
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e5%88%9b%e5%bb%bavm" v-on:click="closeDrawer" id="创建vm-nav">
+										 创建VM
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e5%85%8b%e9%9a%86vm" v-on:click="closeDrawer" id="克隆vm-nav">
+										 克隆VM
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#hyper-v-nat%e7%bd%91%e7%bb%9c%e6%90%ad%e5%bb%ba%e6%80%bb%e7%bb%93" v-on:click="closeDrawer" id="hyper-v-nat网络搭建总结-nav">
+										 Hyper-V NAT网络搭建总结
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e9%bb%98%e8%ae%a4%e7%9a%84nat%e7%bd%91%e7%bb%9c" v-on:click="closeDrawer" id="默认的nat网络-nav">
+										 默认的NAT网络
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e8%87%aa%e5%ae%9a%e4%b9%89nat%e7%bd%91%e7%bb%9c" v-on:click="closeDrawer" id="自定义nat网络-nav">
+										 自定义NAT网络
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+	</div>
+
+</div>
+            
+        </div>
+    </div>
+</div>
+<transition name="fade">
+    <div v-bind:class="{ 'single-column-drawer-mask': mounted }" v-if="isDrawerOpen" v-on:click="toggleDrawer"></div>
+</transition>
+<nav ref="navBar" class="navbar sticky-top navbar-light single-column-nav-container">
+    <div ref="navBackground" class="nav-background"></div>
+    <div class="container container-narrow nav-content">
+        <button id="nav_dropdown_btn" class="nav-dropdown-toggle" type="button" v-on:click="toggleDrawer">
+            <i class="material-icons">
+                menu
+            </i>
+        </button>
+        <a ref="navTitle" class="navbar-brand" href="https://xujiahua.github.io/">
+            许嘉华的博客
+        </a>
+    </div>
+</nav>
+<div class="single-column-header-container" ref="pageHead"
+     v-bind:style="{ transform: 'translateZ(0px) translateY('+.3*scrollY+'px)', opacity: 1-navOpacity }">
+    <a href="https://xujiahua.github.io/">
+        <div class="single-column-header-title">许嘉华的博客</div>
+        
+
+    </a>
+</div>
+            <div id="content">
+<div ref="streamContainer" class="stream-container">
+    <div class="post-list-container post-list-container-shadow">
+        <div class="post">
+            
+            
+            
+
+            <div class="post-head-wrapper-text-only"
+                 style="background-image: url('/')">
+                <div class="post-title">
+                    Hyper-V使用体验
+                    
+                    <div class="post-meta">
+                        
+                        <time itemprop="datePublished">
+                            2020-03-03 22:13
+                        </time>
+                        
+
+                        
+
+                        
+                            <i class="material-icons" style="">label</i>
+                            
+                                <a href="/tags/hyper-v">Hyper-V</a>
+                                &nbsp;
+                            
+                                <a href="/tags/vm">VM</a>
+                                &nbsp;
+                            
+                        
+                    </div>
+                </div>
             </div>
-            <div class="toc" id="toc-static">
-                <details>
-                    <summary>
-                        <div class="toc-title">
-                            <span>Contents</span>
-                            <span><i class="details icon fas fa-angle-down"></i></span>
-                        </div>
-                    </summary>
-                    <div class="toc-content" id="toc-content-static"><nav id="TableOfContents">
-  <ul>
-    <li><a href="#hyper-v-使用体验">Hyper-V 使用体验</a>
-      <ul>
-        <li><a href="#为什么要用hyper-v">为什么要用Hyper-V</a></li>
-        <li><a href="#hyper-v好不好用">Hyper-V好不好用</a></li>
-      </ul>
-    </li>
-    <li><a href="#hyper-v-创建和克隆vm">Hyper-V 创建和克隆VM</a>
-      <ul>
-        <li><a href="#创建vm">创建VM</a></li>
-        <li><a href="#克隆vm">克隆VM</a></li>
-      </ul>
-    </li>
-    <li><a href="#hyper-v-nat网络搭建总结">Hyper-V NAT网络搭建总结</a>
-      <ul>
-        <li><a href="#默认的nat网络">默认的NAT网络</a></li>
-        <li><a href="#自定义nat网络">自定义NAT网络</a></li>
-      </ul>
-    </li>
-  </ul>
-</nav></div>
-                </details>
-            </div><div class="content" id="content"><h2 id="hyper-v-使用体验">Hyper-V 使用体验</h2>
+            
+            <div class="post-body-wrapper">
+                <div class="post-body">
+                    <h2 id="hyper-v-使用体验">Hyper-V 使用体验</h2>
 <p>Hyper-V是 Windows10 内置的虚拟机软件，没想到我会用到它。</p>
 <h3 id="为什么要用hyper-v">为什么要用Hyper-V</h3>
 <ol>
@@ -153,14 +764,7 @@ Hyper-V Default Switch &#43; VM DHCP 的组合默认有了NAT功能，满足以�
 <h2 id="hyper-v-创建和克隆vm">Hyper-V 创建和克隆VM</h2>
 <h3 id="创建vm">创建VM</h3>
 <p>从<code>*.iso</code>文件创建VM。</p>
-<p><img
-        class="lazyload"
-        src="/svg/loading.min.svg"
-        data-sizes="auto"
-        data-srcset="../../images/465F25A3-07A1-4DB7-90CE-FD02376D4C92.png, ../../images/465F25A3-07A1-4DB7-90CE-FD02376D4C92.png 1.5x, ../../images/465F25A3-07A1-4DB7-90CE-FD02376D4C92.png 2x"
-        data-src="../../images/465F25A3-07A1-4DB7-90CE-FD02376D4C92.png"
-        alt="465F25A3-07A1-4DB7-90CE-FD02376D4C92"
-        title="465F25A3-07A1-4DB7-90CE-FD02376D4C92" /></p>
+<p><img src="../../images/465F25A3-07A1-4DB7-90CE-FD02376D4C92.png" alt="465F25A3-07A1-4DB7-90CE-FD02376D4C92"></p>
 <ol>
 <li>注意，Linux VM，不启用Windows Secure Boot。</li>
 <li>更多选项里，设置VM的名称和交换机。</li>
@@ -168,22 +772,8 @@ Hyper-V Default Switch &#43; VM DHCP 的组合默认有了NAT功能，满足以�
 </ol>
 <h3 id="克隆vm">克隆VM</h3>
 <p>从硬盘文件创建VM。</p>
-<p><img
-        class="lazyload"
-        src="/svg/loading.min.svg"
-        data-sizes="auto"
-        data-srcset="../../images/03603F71-9B97-4ABC-8D1F-91F6CBB6602E.png, ../../images/03603F71-9B97-4ABC-8D1F-91F6CBB6602E.png 1.5x, ../../images/03603F71-9B97-4ABC-8D1F-91F6CBB6602E.png 2x"
-        data-src="../../images/03603F71-9B97-4ABC-8D1F-91F6CBB6602E.png"
-        alt="03603F71-9B97-4ABC-8D1F-91F6CBB6602E"
-        title="03603F71-9B97-4ABC-8D1F-91F6CBB6602E" /></p>
-<p><img
-        class="lazyload"
-        src="/svg/loading.min.svg"
-        data-sizes="auto"
-        data-srcset="../../images/3C85F0B5-0763-468F-9ABC-2FC35AF20235.png, ../../images/3C85F0B5-0763-468F-9ABC-2FC35AF20235.png 1.5x, ../../images/3C85F0B5-0763-468F-9ABC-2FC35AF20235.png 2x"
-        data-src="../../images/3C85F0B5-0763-468F-9ABC-2FC35AF20235.png"
-        alt="3C85F0B5-0763-468F-9ABC-2FC35AF20235"
-        title="3C85F0B5-0763-468F-9ABC-2FC35AF20235" /></p>
+<p><img src="../../images/03603F71-9B97-4ABC-8D1F-91F6CBB6602E.png" alt="03603F71-9B97-4ABC-8D1F-91F6CBB6602E"></p>
+<p><img src="../../images/3C85F0B5-0763-468F-9ABC-2FC35AF20235.png" alt="3C85F0B5-0763-468F-9ABC-2FC35AF20235"></p>
 <ol>
 <li>克隆是为了减少重复配置一些基础环境的工作量。</li>
 <li>不像VirtualBox那样有直观的克隆按钮。摸索出的克隆功能是这样的：就是从VM硬盘创建VM。</li>
@@ -208,72 +798,29 @@ Hyper-V Default Switch &#43; VM DHCP 的组合默认有了NAT功能，满足以�
 <p>但是：</p>
 <ol>
 <li>每次重启，Default Switch的IP都会变，Windows10 物理机上的网卡IPv4配置无法让他不变。</li>
-<li>ping <a href="http://baidu.com/" target="_blank" rel="noopener noreffer">baidu.com</a>
- 启动过程特别慢，估计跟DNS有关。</li>
+<li>ping <a href="http://baidu.com/">baidu.com</a> 启动过程特别慢，估计跟DNS有关。</li>
 <li>VM设置静态IP，无法访问互联网，NAT就失效了。</li>
 </ol>
 <h3 id="自定义nat网络">自定义NAT网络</h3>
 <p>网络拓扑，摘自互联网。</p>
-<p><img
-        class="lazyload"
-        src="/svg/loading.min.svg"
-        data-sizes="auto"
-        data-srcset="../../images/6EAD4887-1785-47EF-A527-7FF21A70F2DF.png, ../../images/6EAD4887-1785-47EF-A527-7FF21A70F2DF.png 1.5x, ../../images/6EAD4887-1785-47EF-A527-7FF21A70F2DF.png 2x"
-        data-src="../../images/6EAD4887-1785-47EF-A527-7FF21A70F2DF.png"
-        alt="6EAD4887-1785-47EF-A527-7FF21A70F2DF"
-        title="6EAD4887-1785-47EF-A527-7FF21A70F2DF" /></p>
+<p><img src="../../images/6EAD4887-1785-47EF-A527-7FF21A70F2DF.png" alt="6EAD4887-1785-47EF-A527-7FF21A70F2DF"></p>
 <ol>
 <li>Hyper-V 管理器中创建一个新的交换机， 并在VM中启用这个交换机。</li>
 </ol>
-<p><img
-        class="lazyload"
-        src="/svg/loading.min.svg"
-        data-sizes="auto"
-        data-srcset="../../images/7FF4F0E4-B0D8-4A2E-8D64-668837898471.png, ../../images/7FF4F0E4-B0D8-4A2E-8D64-668837898471.png 1.5x, ../../images/7FF4F0E4-B0D8-4A2E-8D64-668837898471.png 2x"
-        data-src="../../images/7FF4F0E4-B0D8-4A2E-8D64-668837898471.png"
-        alt="7FF4F0E4-B0D8-4A2E-8D64-668837898471"
-        title="7FF4F0E4-B0D8-4A2E-8D64-668837898471" /></p>
-<p><img
-        class="lazyload"
-        src="/svg/loading.min.svg"
-        data-sizes="auto"
-        data-srcset="../../images/D33768BD-BFD7-4D57-B6B4-CB9A82CDD4AF.png, ../../images/D33768BD-BFD7-4D57-B6B4-CB9A82CDD4AF.png 1.5x, ../../images/D33768BD-BFD7-4D57-B6B4-CB9A82CDD4AF.png 2x"
-        data-src="../../images/D33768BD-BFD7-4D57-B6B4-CB9A82CDD4AF.png"
-        alt="D33768BD-BFD7-4D57-B6B4-CB9A82CDD4AF"
-        title="D33768BD-BFD7-4D57-B6B4-CB9A82CDD4AF" /></p>
+<p><img src="../../images/7FF4F0E4-B0D8-4A2E-8D64-668837898471.png" alt="7FF4F0E4-B0D8-4A2E-8D64-668837898471"></p>
+<p><img src="../../images/D33768BD-BFD7-4D57-B6B4-CB9A82CDD4AF.png" alt="D33768BD-BFD7-4D57-B6B4-CB9A82CDD4AF"></p>
 <ol start="2">
 <li>定义一个C类网络，192.168.246.0，默认网关是192.168.246.1，这个网关地址也会在在物理机网卡上配置的。</li>
 </ol>
 <p>Ubuntu 18 配置静态IP，搜索关键词Ubuntu netplan即可。不赘述。必须加上nameservers，使用默认的nameserver无法解析域名。</p>
-<p><img
-        class="lazyload"
-        src="/svg/loading.min.svg"
-        data-sizes="auto"
-        data-srcset="../../images/6186B767-AD19-45FC-81F7-4D7E2DDB0116.png, ../../images/6186B767-AD19-45FC-81F7-4D7E2DDB0116.png 1.5x, ../../images/6186B767-AD19-45FC-81F7-4D7E2DDB0116.png 2x"
-        data-src="../../images/6186B767-AD19-45FC-81F7-4D7E2DDB0116.png"
-        alt="6186B767-AD19-45FC-81F7-4D7E2DDB0116"
-        title="6186B767-AD19-45FC-81F7-4D7E2DDB0116" /></p>
+<p><img src="../../images/6186B767-AD19-45FC-81F7-4D7E2DDB0116.png" alt="6186B767-AD19-45FC-81F7-4D7E2DDB0116"></p>
 <ol start="3">
 <li>把上面的网关地址填到Windows的这个虚拟网卡上。</li>
 </ol>
 <p>如果不是填网关地址，网络不通。所以，windows在这里的角色是网关的作用。</p>
-<p><img
-        class="lazyload"
-        src="/svg/loading.min.svg"
-        data-sizes="auto"
-        data-srcset="../../images/7C3CCA08-E26D-46BE-8DBB-FD207C2AA497.png, ../../images/7C3CCA08-E26D-46BE-8DBB-FD207C2AA497.png 1.5x, ../../images/7C3CCA08-E26D-46BE-8DBB-FD207C2AA497.png 2x"
-        data-src="../../images/7C3CCA08-E26D-46BE-8DBB-FD207C2AA497.png"
-        alt="7C3CCA08-E26D-46BE-8DBB-FD207C2AA497"
-        title="7C3CCA08-E26D-46BE-8DBB-FD207C2AA497" /></p>
+<p><img src="../../images/7C3CCA08-E26D-46BE-8DBB-FD207C2AA497.png" alt="7C3CCA08-E26D-46BE-8DBB-FD207C2AA497"></p>
 <p>ifconfig/ipconfig如下：</p>
-<p><img
-        class="lazyload"
-        src="/svg/loading.min.svg"
-        data-sizes="auto"
-        data-srcset="../../images/94315174-B7F8-4747-B042-555A903E28DA.png, ../../images/94315174-B7F8-4747-B042-555A903E28DA.png 1.5x, ../../images/94315174-B7F8-4747-B042-555A903E28DA.png 2x"
-        data-src="../../images/94315174-B7F8-4747-B042-555A903E28DA.png"
-        alt="94315174-B7F8-4747-B042-555A903E28DA"
-        title="94315174-B7F8-4747-B042-555A903E28DA" /></p>
+<p><img src="../../images/94315174-B7F8-4747-B042-555A903E28DA.png" alt="94315174-B7F8-4747-B042-555A903E28DA"></p>
 <ol start="4">
 <li>最后命令行设置NAT</li>
 </ol>
@@ -282,69 +829,59 @@ Hyper-V Default Switch &#43; VM DHCP 的组合默认有了NAT功能，满足以�
 </code></pre><p>参考：</p>
 <ol>
 <li>Hyper V NAT 网络设置 固定IP <a href="https://www.cnblogs.com/wswind/p/11007613.html">https://www.cnblogs.com/wswind/p/11007613.html</a></li>
-<li>使用hyper-v搭建nat内部网络（与上篇雷同，太多命令行，容易误操作） <a href="http://kael-aiur.com/%e9%bb%91%e7%a7%91%e6%8a%80/%e4%bd%bf%e7%94%a8hyper-v%e6%90%ad%e5%bb%banat%e5%86%85%e9%83%a8%e7%bd%91%e7%bb%9c.html" target="_blank" rel="noopener noreffer">http://kael-aiur.com/%E9%BB%91%E7%A7%91%E6%8A%80/%E4%BD%BF%E7%94%A8hyper-v%E6%90%AD%E5%BB%BAnat%E5%86%85%E9%83%A8%E7%BD%91%E7%BB%9C.html</a>
-</li>
+<li>使用hyper-v搭建nat内部网络（与上篇雷同，太多命令行，容易误操作） <a href="http://kael-aiur.com/%E9%BB%91%E7%A7%91%E6%8A%80/%E4%BD%BF%E7%94%A8hyper-v%E6%90%AD%E5%BB%BAnat%E5%86%85%E9%83%A8%E7%BD%91%E7%BB%9C.html">http://kael-aiur.com/%E9%BB%91%E7%A7%91%E6%8A%80/%E4%BD%BF%E7%94%A8hyper-v%E6%90%AD%E5%BB%BAnat%E5%86%85%E9%83%A8%E7%BD%91%E7%BB%9C.html</a></li>
 </ol>
 <p>遗留问题：</p>
 <ol>
 <li>Windows VPN对NAT有影响，相当于断网了。</li>
 </ol>
-</div><div class="post-footer" id="post-footer">
-    <div class="post-info">
-        <div class="post-info-line">
-            <div class="post-info-mod">
-                <span>The article was updated on 2020-03-03</span>
+
+                    
+                    <HR width="100%" id="EOF">
+                    <p style="color:#777;">Last modified on 2020-03-03</p>
+                    
+                </div>
             </div>
-            <div class="post-info-license"></div>
-        </div>
-        <div class="post-info-line">
-            <div class="post-info-md"></div>
-            <div class="post-info-share">
-                <span></span>
+            
+            
+            <nav class="post-pagination">
+
+                
+                <a class="newer-posts" href="https://xujiahua.github.io/posts/github-pages-restart/">
+                    Next<br>Github pages重新开始：使用Hugo、Typora
+                </a>
+                
+                
+                
+                <a class="older-posts" href="https://xujiahua.github.io/posts/go-modules/">
+                    Previous<br>使用Go Modules
+                </a>
+                
+            </nav>
+            <div class="post-comment-wrapper">
+                
+
+
+
+
+
+
             </div>
         </div>
     </div>
-
-    <div class="post-info-more">
-        <section><span>
-                        <a href="/tags/hyper-v">
-                            <i class="fas fa-tag fa-fw"></i>Hyper-V
-                        </a>
-                    </span>&nbsp;<span>
-                        <a href="/tags/vm">
-                            <i class="fas fa-tag fa-fw"></i>VM
-                        </a>
-                    </span>&nbsp;</section>
-        <section>
-            <span><a href="javascript:window.history.back();">Back</a></span>&nbsp;|&nbsp;<span><a href="/">Home</a></span>
-        </section>
-    </div>
-
-    <div class="post-nav"><a href="https://xujiahua.github.io/posts/go-modules/" class="prev" rel="prev" title="使用Go Modules"><i class="fas fa-angle-left fa-fw"></i>使用Go Modules</a>
-            <a href="https://xujiahua.github.io/posts/github-pages-restart/" class="next" rel="next" title="Github pages重新开始：使用Hugo、Typora">Github pages重新开始：使用Hugo、Typora<i class="fas fa-angle-right fa-fw"></i></a></div>
 </div>
-<div class="comment"></div>
-    </article></div>
-            </main><footer class="footer">
-    <div class="copyright"><div class="copyright-line">Powered by <a href="https://gohugo.io/" target="_blank" rel="external nofollow noopener noreffer">Hugo</a> | Theme - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="external nofollow noopener noreffer">LoveIt<i class="far fa-heart fa-fw"></i></a>
-        </div>
 
-        <div class="copyright-line"><i class="far fa-copyright fa-fw"></i><span itemprop="copyrightYear">2020</span></div>
-    </div>
-</footer>
-</div><a href="#" class="dynamic-to-top animated faster" id="dynamic-to-top">
-            <span>&nbsp;</span>
-        </a><script>
-        document.addEventListener('DOMContentLoaded', function () {
-            lightGallery(document.getElementById('content'), {
-                selector: '.lightgallery',
-                speed: 400,
-                hideBarsDelay: 2000,
-                thumbnail: true,
-                exThumbImage: 'data-thumbnail',
-                thumbWidth: 80,
-                thumbContHeight: 80,
-            });
-        });
-    </script><link rel="stylesheet" href="/lib/lightgallery/lightgallery.min.a0f67639490aba5d9a250783c0aa0ed69f83a6f151fb0d7b9fb617c9dbc54565.css" integrity="sha256-oPZ2OUkKul2aJQeDwKoO1p&#43;DpvFR&#43;w17n7YXydvFRWU="><script src="/lib/smooth-scroll/smooth-scroll.polyfills.min.54590077ee163035c3dd38dc034e9f6915ecbe680dd832f449afa21672cab116.js" integrity="sha256-VFkAd&#43;4WMDXD3TjcA06faRXsvmgN2DL0Sa&#43;iFnLKsRY="></script><script src="/lib/sharer/sharer.min.9c88f86c7f0820287113f6236200459832693656e80d7556cc80a93dfbd45813.js" integrity="sha256-nIj4bH8IIChxE/YjYgBFmDJpNlboDXVWzICpPfvUWBM="></script><script src="/lib/lazysizes/lazysizes.min.876b4c12685e991d88378c1b6dd3638fd2da0c88f3c24da1ada950c1f26604e1.js" integrity="sha256-h2tMEmhemR2IN4wbbdNjj9LaDIjzwk2hralQwfJmBOE="></script><script src="/lib/lightgallery/lightgallery.min.7a84c63ab156d68e4a7269487c9c65a4eb34b0c7864f2d3fd2b87f7c664480d3.js" integrity="sha256-eoTGOrFW1o5KcmlIfJxlpOs0sMeGTy0/0rh/fGZEgNM="></script><script src="/lib/lightgallery/lg-thumbnail.min.eab31af8f90835b7ab674b2dd2474841039bc01022aa312f80dde6e22fde58d7.js" integrity="sha256-6rMa&#43;PkINberZ0st0kdIQQObwBAiqjEvgN3m4i/eWNc="></script><script src="/lib/lightgallery/lg-zoom.min.e3a7e6bb4a69f8627654ba9e0ab1252971bcfb400538dbb0605db9a3342ce5b9.js" integrity="sha256-46fmu0pp&#43;GJ2VLqeCrElKXG8&#43;0AFONuwYF25ozQs5bk="></script><script src="/js/theme.min.1482fc67bfa2c3b8cebe476d0037b9321b5b7a8a1525b547b94143948be90e9e.js" integrity="sha256-FIL8Z7&#43;iw7jOvkdtADe5MhtbeooVJbVHuUFDlIvpDp4="></script></body>
+            </div><div id="single-column-footer">
+Hugo Theme <a href="https://github.com/amazingrise/hugo-theme-diary">Diary</a> by <a href="https://amazingrise.net">Rise</a>
+<br>
+Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopener">Makito</a>'s <a href="https://github.com/SumiMakito/hexo-theme-journal/" target="_blank" rel="noreferrer noopener">Journal.</a> <br>
+<br>
+
+&copy;
+	
+	2020 许嘉华的博客
+	</div>
+    	</div>
+    <script src="https://xujiahua.github.io//js/journal.js"></script>
+    </body>
 </html>

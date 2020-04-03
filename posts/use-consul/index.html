@@ -1,149 +1,1582 @@
 <!DOCTYPE html>
-<html lang="zh-cn">
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta name="robots" content="noodp" />
-        <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1">
-        <title>Consul调研 | 许嘉华的博客</title>
-        <meta name="Description" content=""><meta property="og:title" content="Consul调研" />
-<meta property="og:description" content="Consul简介 Consul 是 HashiCorp 公司推出的开源分布式服务发现与配置系统。
- 服务发现。特别是搭配Consul Connect（Service Mesh），可达到一种无侵入式的服务发现和客户端负载均衡。 Key/Value 存储 作为配置中心。 使用 Raft 算法来保证一致性。 支持多数据中心。 支持健康检查：服务注册的时候可以提供健康检查项，服务发现会过滤掉不健康的service。 支持 http 和 dns 协议接口。 Web 管理界面。 没有长连接，轮询方式可能不够及时。  核心概念  consul agent server：维护核心状态并参与leader选举。server节点一般建议3个或是5个，测试用1个即可。写压力大的集群，考虑升级服务器实例的配置和低延迟的存储。（TIP For write-heavy clusters, consider scaling vertically with larger machine instances and lower latency storage. https://learn.hashicorp.com/consul/datacenter-deploy/reference-architecture） consul agent client：与其他agent联通，并消息中转。每个主机都有一个agent的好处是，只要与本地agent通信，不用设置CONSUL_HTTP_ADDR，代码也不用指定这个地址。方便无脑操作。(In a multi-agent Consul datacenter, each service would register with its local Consul client, and the clients would forward the registration to the Consul servers, which maintain the service catalog." />
-<meta property="og:type" content="article" />
-<meta property="og:url" content="https://xujiahua.github.io/posts/use-consul/" />
-<meta property="article:published_time" content="2020-03-26T09:01:38+08:00" />
-<meta property="article:modified_time" content="2020-03-26T09:01:38+08:00" />
-<meta name="twitter:card" content="summary"/>
-<meta name="twitter:title" content="Consul调研"/>
-<meta name="twitter:description" content="Consul简介 Consul 是 HashiCorp 公司推出的开源分布式服务发现与配置系统。
- 服务发现。特别是搭配Consul Connect（Service Mesh），可达到一种无侵入式的服务发现和客户端负载均衡。 Key/Value 存储 作为配置中心。 使用 Raft 算法来保证一致性。 支持多数据中心。 支持健康检查：服务注册的时候可以提供健康检查项，服务发现会过滤掉不健康的service。 支持 http 和 dns 协议接口。 Web 管理界面。 没有长连接，轮询方式可能不够及时。  核心概念  consul agent server：维护核心状态并参与leader选举。server节点一般建议3个或是5个，测试用1个即可。写压力大的集群，考虑升级服务器实例的配置和低延迟的存储。（TIP For write-heavy clusters, consider scaling vertically with larger machine instances and lower latency storage. https://learn.hashicorp.com/consul/datacenter-deploy/reference-architecture） consul agent client：与其他agent联通，并消息中转。每个主机都有一个agent的好处是，只要与本地agent通信，不用设置CONSUL_HTTP_ADDR，代码也不用指定这个地址。方便无脑操作。(In a multi-agent Consul datacenter, each service would register with its local Consul client, and the clients would forward the registration to the Consul servers, which maintain the service catalog."/>
+<html><head>
+<title>Consul调研</title>
+
+<meta charset="utf-8">
+<meta name="X-UA-Compatible" content="IE=edge">
+<meta name="google-site-verification" content="">
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport">
+<meta content="telephone=no" name="format-detection">
+<meta name="description" content="">
+<meta name="renderer" content="webkit">
 <meta name="theme-color" content="#ffffff">
-<meta name="msapplication-TileColor" content="#da532c">
-<link rel="canonical" href="https://xujiahua.github.io/posts/use-consul/" />
-<link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
-<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
-<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
-<link rel="manifest" href="/site.webmanifest">
-<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="prev" href="https://xujiahua.github.io/posts/docker-network/" /><link rel="next" href="https://xujiahua.github.io/posts/use-docker-machine/" /><link rel="stylesheet" href="/lib/fontawesome-free/all.min.9a680b90260b5106d79f4075491ab31daafa7429eff686453c40b58357309649.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk="><link rel="stylesheet" href="/lib/animate/animate.min.3c770e90f98eb21b0c042fafb49755af93306fbaf42e449524f94fae9fc83295.css" integrity="sha256-PHcOkPmOshsMBC&#43;vtJdVr5Mwb7r0LkSVJPlPrp/IMpU="><link rel="stylesheet" href="/css/style.min.e8ca640cf5b1714eaa34bc21e8e2d0e79ae9cc05a934f6ee78a318487d7c515b.css" integrity="sha256-6MpkDPWxcU6qNLwh6OLQ55rpzAWpNPbueKMYSH18UVs=">
-<script type="application/ld+json">
-    {
-        "@context": "http://schema.org",
-        "@type": "BlogPosting",
-        "headline": "Consul调研",
-        "mainEntityOfPage": {
-            "@type": "WebPage",
-            "@id": "https:\/\/xujiahua.github.io\/posts\/use-consul\/"
-        },"genre": "posts","keywords": "Service Mesh, consul","wordcount":  371 ,
-        "url": "https:\/\/xujiahua.github.io\/posts\/use-consul\/","datePublished": "2020-03-26T09:01:38\x2b08:00","dateModified": "2020-03-26T09:01:38\x2b08:00","description": ""
-    }
-    </script></head>
-    <body><script>
-            if (!window.localStorage || !window.localStorage.getItem('theme')) {window.isDark = '' === 'dark';} else {
-                window.isDark = (window.localStorage && window.localStorage.getItem('theme')) === 'dark';
-            }
-            window.isDark && document.body.classList.add('dark-theme');
-        </script><div class="wrapper"><header class="desktop" id="header-desktop">
-    <div class="header-wrapper">
-        <div class="header-title animated bounceIn">
-            <a href="/">许嘉华的博客</a>
-        </div>
-        <div class="menu"><a class="menu-item" href="/posts/">Posts</a><a class="menu-item" href="/tags/">Tags</a><a class="menu-item" href="/categories/">Categories</a><a class="menu-item" href="/about/">About</a><a href="javascript:void(0);" class="theme-switch" title="Switch Theme">
-                <i class="fas fa-adjust fa-rotate-180 fa-fw"></i>
-            </a>
-        </div>
-    </div>
-</header><header class="mobile" id="header-mobile">
-    <div class="header-wrapper">
-        <div class="header-container">
-            <div class="header-title animated bounceIn">
-                <a href="/">许嘉华的博客</a>
-            </div>
-            <div class="menu-toggle" id="menu-toggle-mobile">
-                <span></span><span></span><span></span>
-            </div>
-        </div>
-        <div class="menu" id="menu-mobile"><a class="menu-item" href="/posts/" title="">Posts</a><a class="menu-item" href="/tags/" title="">Tags</a><a class="menu-item" href="/categories/" title="">Categories</a><a class="menu-item" href="/about/" title="">About</a><a href="javascript:void(0);" class="theme-switch" title="Switch Theme">
-                <i class="fas fa-adjust fa-rotate-180 fa-fw"></i>
-            </a>
-        </div>
-    </div>
-</header>
+
+
+
+
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+	ga('create', 'UA-162706610-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+
+
+
+<script src="/vendor/js/jquery.min.js" ></script>
+<script src="/vendor/js/popper.min.js" ></script>
+<script src="/vendor/js/bootstrap.min.js" ></script>
+<script src="/vendor/js/smooth-scroll.polyfills.min.js" ></script>
+<link type="text/css" rel="stylesheet" href="/vendor/css/bootstrap.min.css">
+<script src="/vendor/js/vue.min.js" ></script>
+
+
+
+
+<link rel="stylesheet" href="https://xujiahua.github.io/scss/journal.min.5c667e74038e21ddbb9024b67930f8544e02af62491281cf73fdb817eec2947e.css" integrity="sha256-XGZ&#43;dAOOId27kCS2eTD4VE4Cr2JJEoHPc/24F&#43;7ClH4=" media="screen">
+
+<script src="https://xujiahua.github.io//js/loadCSS.js"></script>
+<script src="https://xujiahua.github.io//js/table.js"></script>
+
+
+<script src="https://xujiahua.github.io//js/toc.js"></script>
+
 
 <script>
-    window.desktopHeaderMode =  null ;
-    window.mobileHeaderMode =  null ;
+    loadCSS("https://fonts.googleapis.com/css?family=Lora|Montserrat|Fira+Mono|Noto+Serif+SC|Material+Icons");
 </script>
-<main class="main">
-                <div class="container"><article class="page single"><h1 class="single-title animated flipInX">Consul调研</h1><div class="post-meta">
-            <div class="post-meta-line"><span class="post-author">
-                    <a class="author" href="/" rel="author" target="_blank">
-                        <i class="fas fa-user-circle fa-fw"></i>Author
-                    </a>
-                </span></div>
-            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i><time datetime=2020-03-26>2020-03-26</time>&nbsp;
-                <i class="fas fa-pencil-alt fa-fw"></i>about 371 words&nbsp;
-                <i class="far fa-clock fa-fw"></i>2 min&nbsp;</div>
-        </div><div class="toc" id="toc-auto">
-                <h2 class="toc-title">Contents</h2>
-                <div class="toc-content always-active" id="toc-content-auto"></div>
+
+
+
+
+
+
+</head><body>
+    	<div id="app"><div ref="sideContainer" class="side-container">
+    
+    <a class="a-block nav-head false" href="https://xujiahua.github.io/">
+    
+        <div class="nav-title">
+            许嘉华的博客
+        </div>
+        
+    </a>
+
+    <div class="nav-link-list">
+        
+        
+            
+            
+            
+                
+            
+            
+            
+            <a class="a-block nav-link-item active" href="/posts">
+                Archive
+            </a>
+            
+        
+            
+            
+            
+            
+            
+            <a class="a-block nav-link-item false" href="/categories">
+                Categories
+            </a>
+            
+        
+            
+            
+            
+            
+            
+            <a class="a-block nav-link-item false" href="/tags">
+                Tags
+            </a>
+            
+        
+            
+            
+            
+            
+            
+            <a class="a-block nav-link-item false" href="/index.xml">
+                RSS Feed
+            </a>
+            
+        
+    </div>
+
+    
+
+    <div class="nav-footer">
+        
+Hugo Theme <a href="https://github.com/amazingrise/hugo-theme-diary">Diary</a> by <a href="https://amazingrise.net">Rise</a>
+<br>
+Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopener">Makito</a>'s <a href="https://github.com/SumiMakito/hexo-theme-journal/" target="_blank" rel="noreferrer noopener">Journal.</a> <br>
+<br>
+
+&copy;
+	
+	2020 许嘉华的博客
+	
+    </div>
+    
+</div><div ref="extraContainer" class="extra-container">
+    
+    <div class="toc animated-visibility" :class="{ invisible: scrollY <= 140 }">
+
+
+	<div class="toc-content">
+	
+		
+		
+		
+		<center>- CATALOG -</center>
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#consul%e7%ae%80%e4%bb%8b" v-on:click="closeDrawer" id="consul简介-nav">
+										 Consul简介
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e6%a0%b8%e5%bf%83%e6%a6%82%e5%bf%b5" v-on:click="closeDrawer" id="核心概念-nav">
+										 核心概念
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e5%85%a5%e9%97%a8%e8%b5%84%e6%96%99" v-on:click="closeDrawer" id="入门资料-nav">
+										 入门资料
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#consul-%e6%9c%8d%e5%8a%a1%e5%8f%91%e7%8e%b0" v-on:click="closeDrawer" id="consul-服务发现-nav">
+										 Consul 服务发现
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e5%be%ae%e6%9c%8d%e5%8a%a1%e4%b8%8e%e6%9c%8d%e5%8a%a1%e5%8f%91%e7%8e%b0" v-on:click="closeDrawer" id="微服务与服务发现-nav">
+										 微服务与服务发现
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e6%9c%8d%e5%8a%a1%e6%b3%a8%e5%86%8c" v-on:click="closeDrawer" id="服务注册-nav">
+										 服务注册
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e5%81%a5%e5%ba%b7%e6%a3%80%e6%9f%a5" v-on:click="closeDrawer" id="健康检查-nav">
+										 健康检查
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e6%9c%8d%e5%8a%a1%e5%8f%91%e7%8e%b0" v-on:click="closeDrawer" id="服务发现-nav">
+										 服务发现
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e7%a4%ba%e4%be%8b%e4%bb%a3%e7%a0%81" v-on:click="closeDrawer" id="示例代码-nav">
+										 示例代码
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e4%b8%80%e4%ba%9b%e9%97%ae%e9%a2%98" v-on:click="closeDrawer" id="一些问题-nav">
+										 一些问题
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e5%8f%82%e8%80%83" v-on:click="closeDrawer" id="参考-nav">
+										 参考
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e5%ae%9e%e8%b7%b5%e5%9f%ba%e4%ba%8econsul%e7%9a%84nginx%e5%8a%a8%e6%80%81upstream" v-on:click="closeDrawer" id="实践基于consul的nginx动态upstream-nav">
+										 实践：基于consul的nginx动态upstream
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e4%bd%bf%e7%94%a8-consul-dns%e6%8e%a5%e5%8f%a3" v-on:click="closeDrawer" id="使用-consul-dns接口-nav">
+										 使用 consul DNS接口
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e4%bd%bf%e7%94%a8-consul-template--%e5%8a%a8%e6%80%81%e7%94%9f%e6%88%90upstream%e6%96%87%e4%bb%b6" v-on:click="closeDrawer" id="使用-consul-template--动态生成upstream文件-nav">
+										 使用 consul-template 动态生成upstream文件
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e5%8f%82%e8%80%83-1" v-on:click="closeDrawer" id="参考-1-nav">
+										 参考
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e4%bd%bf%e7%94%a8-nginx-module" v-on:click="closeDrawer" id="使用-nginx-module-nav">
+										 使用 nginx module
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#service-mesh-%e7%ae%80%e5%8d%95%e4%bb%8b%e7%bb%8d" v-on:click="closeDrawer" id="service-mesh-简单介绍-nav">
+										 Service Mesh 简单介绍
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#consul-connect" v-on:click="closeDrawer" id="consul-connect-nav">
+										 Consul Connect
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e7%a4%ba%e4%be%8b-consul-101" v-on:click="closeDrawer" id="示例-consul-101-nav">
+										 示例 consul-101
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e5%9f%ba%e4%ba%8e-consul-connect-%e7%9a%84%e6%9c%8d%e5%8a%a1%e5%8f%91%e7%8e%b0%e6%80%9d%e8%b7%af%e6%95%b4%e7%90%86" v-on:click="closeDrawer" id="基于-consul-connect-的服务发现思路整理-nav">
+										 基于 Consul Connect 的服务发现思路整理
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#consul-connect-with-envoy" v-on:click="closeDrawer" id="consul-connect-with-envoy-nav">
+										 Consul Connect with Envoy
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#envoy" v-on:click="closeDrawer" id="envoy-nav">
+										 Envoy
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#demo-todo" v-on:click="closeDrawer" id="demo-todo-nav">
+										 DEMO TODO
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e9%85%8d%e7%bd%ae%e4%b8%ad%e5%bf%83" v-on:click="closeDrawer" id="配置中心-nav">
+										 配置中心
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#viper-remote" v-on:click="closeDrawer" id="viper-remote-nav">
+										 viper remote
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+	</div>
+
+</div>
+    
+    <div class="pagination">
+        <a id="globalBackToTop" class="pagination-action animated-visibility" href="#top" :class="{ invisible: scrollY == 0 }">
+            <i class="material-icons pagination-action-icon">
+                keyboard_arrow_up
+            </i>
+        </a>
+        
+    </div>
+</div><div class="single-column-drawer-container" ref="drawer"
+     v-bind:class="{ 'single-column-drawer-container-active': isDrawerOpen }">
+    <div class="drawer-content">
+        <div class="drawer-menu">
+            
+            
+                
+                
+                
+                    
+                
+                
+                
+                <a class="a-block drawer-menu-item active" href="/posts">
+                    Archive
+                </a>
+                
+            
+                
+                
+                
+                
+                
+                <a class="a-block drawer-menu-item false" href="/categories">
+                    Categories
+                </a>
+                
+            
+                
+                
+                
+                
+                
+                <a class="a-block drawer-menu-item false" href="/tags">
+                    Tags
+                </a>
+                
+            
+                
+                
+                
+                
+                
+                <a class="a-block drawer-menu-item false" href="/index.xml">
+                    RSS Feed
+                </a>
+                
+            
+            
+            <div class="toc">
+
+
+	<div class="toc-content">
+	
+		
+		
+		
+		<center>- CATALOG -</center>
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#consul%e7%ae%80%e4%bb%8b" v-on:click="closeDrawer" id="consul简介-nav">
+										 Consul简介
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e6%a0%b8%e5%bf%83%e6%a6%82%e5%bf%b5" v-on:click="closeDrawer" id="核心概念-nav">
+										 核心概念
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e5%85%a5%e9%97%a8%e8%b5%84%e6%96%99" v-on:click="closeDrawer" id="入门资料-nav">
+										 入门资料
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#consul-%e6%9c%8d%e5%8a%a1%e5%8f%91%e7%8e%b0" v-on:click="closeDrawer" id="consul-服务发现-nav">
+										 Consul 服务发现
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e5%be%ae%e6%9c%8d%e5%8a%a1%e4%b8%8e%e6%9c%8d%e5%8a%a1%e5%8f%91%e7%8e%b0" v-on:click="closeDrawer" id="微服务与服务发现-nav">
+										 微服务与服务发现
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e6%9c%8d%e5%8a%a1%e6%b3%a8%e5%86%8c" v-on:click="closeDrawer" id="服务注册-nav">
+										 服务注册
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e5%81%a5%e5%ba%b7%e6%a3%80%e6%9f%a5" v-on:click="closeDrawer" id="健康检查-nav">
+										 健康检查
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e6%9c%8d%e5%8a%a1%e5%8f%91%e7%8e%b0" v-on:click="closeDrawer" id="服务发现-nav">
+										 服务发现
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e7%a4%ba%e4%be%8b%e4%bb%a3%e7%a0%81" v-on:click="closeDrawer" id="示例代码-nav">
+										 示例代码
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e4%b8%80%e4%ba%9b%e9%97%ae%e9%a2%98" v-on:click="closeDrawer" id="一些问题-nav">
+										 一些问题
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e5%8f%82%e8%80%83" v-on:click="closeDrawer" id="参考-nav">
+										 参考
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e5%ae%9e%e8%b7%b5%e5%9f%ba%e4%ba%8econsul%e7%9a%84nginx%e5%8a%a8%e6%80%81upstream" v-on:click="closeDrawer" id="实践基于consul的nginx动态upstream-nav">
+										 实践：基于consul的nginx动态upstream
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e4%bd%bf%e7%94%a8-consul-dns%e6%8e%a5%e5%8f%a3" v-on:click="closeDrawer" id="使用-consul-dns接口-nav">
+										 使用 consul DNS接口
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e4%bd%bf%e7%94%a8-consul-template--%e5%8a%a8%e6%80%81%e7%94%9f%e6%88%90upstream%e6%96%87%e4%bb%b6" v-on:click="closeDrawer" id="使用-consul-template--动态生成upstream文件-nav">
+										 使用 consul-template 动态生成upstream文件
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e5%8f%82%e8%80%83-1" v-on:click="closeDrawer" id="参考-1-nav">
+										 参考
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e4%bd%bf%e7%94%a8-nginx-module" v-on:click="closeDrawer" id="使用-nginx-module-nav">
+										 使用 nginx module
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#service-mesh-%e7%ae%80%e5%8d%95%e4%bb%8b%e7%bb%8d" v-on:click="closeDrawer" id="service-mesh-简单介绍-nav">
+										 Service Mesh 简单介绍
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#consul-connect" v-on:click="closeDrawer" id="consul-connect-nav">
+										 Consul Connect
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e7%a4%ba%e4%be%8b-consul-101" v-on:click="closeDrawer" id="示例-consul-101-nav">
+										 示例 consul-101
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e5%9f%ba%e4%ba%8e-consul-connect-%e7%9a%84%e6%9c%8d%e5%8a%a1%e5%8f%91%e7%8e%b0%e6%80%9d%e8%b7%af%e6%95%b4%e7%90%86" v-on:click="closeDrawer" id="基于-consul-connect-的服务发现思路整理-nav">
+										 基于 Consul Connect 的服务发现思路整理
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#consul-connect-with-envoy" v-on:click="closeDrawer" id="consul-connect-with-envoy-nav">
+										 Consul Connect with Envoy
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#envoy" v-on:click="closeDrawer" id="envoy-nav">
+										 Envoy
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#demo-todo" v-on:click="closeDrawer" id="demo-todo-nav">
+										 DEMO TODO
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e9%85%8d%e7%bd%ae%e4%b8%ad%e5%bf%83" v-on:click="closeDrawer" id="配置中心-nav">
+										 配置中心
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#viper-remote" v-on:click="closeDrawer" id="viper-remote-nav">
+										 viper remote
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+	</div>
+
+</div>
+            
+        </div>
+    </div>
+</div>
+<transition name="fade">
+    <div v-bind:class="{ 'single-column-drawer-mask': mounted }" v-if="isDrawerOpen" v-on:click="toggleDrawer"></div>
+</transition>
+<nav ref="navBar" class="navbar sticky-top navbar-light single-column-nav-container">
+    <div ref="navBackground" class="nav-background"></div>
+    <div class="container container-narrow nav-content">
+        <button id="nav_dropdown_btn" class="nav-dropdown-toggle" type="button" v-on:click="toggleDrawer">
+            <i class="material-icons">
+                menu
+            </i>
+        </button>
+        <a ref="navTitle" class="navbar-brand" href="https://xujiahua.github.io/">
+            许嘉华的博客
+        </a>
+    </div>
+</nav>
+<div class="single-column-header-container" ref="pageHead"
+     v-bind:style="{ transform: 'translateZ(0px) translateY('+.3*scrollY+'px)', opacity: 1-navOpacity }">
+    <a href="https://xujiahua.github.io/">
+        <div class="single-column-header-title">许嘉华的博客</div>
+        
+
+    </a>
+</div>
+            <div id="content">
+<div ref="streamContainer" class="stream-container">
+    <div class="post-list-container post-list-container-shadow">
+        <div class="post">
+            
+            
+            
+
+            <div class="post-head-wrapper-text-only"
+                 style="background-image: url('/')">
+                <div class="post-title">
+                    Consul调研
+                    
+                    <div class="post-meta">
+                        
+                        <time itemprop="datePublished">
+                            2020-03-26 09:01
+                        </time>
+                        
+
+                        
+
+                        
+                            <i class="material-icons" style="">label</i>
+                            
+                                <a href="/tags/service-mesh">Service Mesh</a>
+                                &nbsp;
+                            
+                                <a href="/tags/consul">consul</a>
+                                &nbsp;
+                            
+                        
+                    </div>
+                </div>
             </div>
-            <div class="toc" id="toc-static">
-                <details>
-                    <summary>
-                        <div class="toc-title">
-                            <span>Contents</span>
-                            <span><i class="details icon fas fa-angle-down"></i></span>
-                        </div>
-                    </summary>
-                    <div class="toc-content" id="toc-content-static"><nav id="TableOfContents">
-  <ul>
-    <li><a href="#consul简介">Consul简介</a>
-      <ul>
-        <li><a href="#核心概念">核心概念</a></li>
-      </ul>
-    </li>
-    <li><a href="#入门资料">入门资料</a></li>
-    <li><a href="#consul-服务发现">Consul 服务发现</a>
-      <ul>
-        <li><a href="#微服务与服务发现">微服务与服务发现</a></li>
-        <li><a href="#服务注册">服务注册</a></li>
-        <li><a href="#健康检查">健康检查</a></li>
-        <li><a href="#服务发现">服务发现</a></li>
-        <li><a href="#示例代码">示例代码</a></li>
-        <li><a href="#一些问题">一些问题</a></li>
-        <li><a href="#参考">参考</a></li>
-      </ul>
-    </li>
-    <li><a href="#实践基于consul的nginx动态upstream">实践：基于consul的nginx动态upstream</a>
-      <ul>
-        <li><a href="#使用-consul-dns接口">使用 consul DNS接口</a></li>
-        <li><a href="#使用-consul-template--动态生成upstream文件">使用 consul-template  动态生成upstream文件</a></li>
-        <li><a href="#使用-nginx-module">使用 nginx module</a></li>
-      </ul>
-    </li>
-    <li><a href="#service-mesh-简单介绍">Service Mesh 简单介绍</a></li>
-    <li><a href="#consul-connect">Consul Connect</a>
-      <ul>
-        <li><a href="#示例-consul-101">示例 consul-101</a></li>
-        <li><a href="#基于-consul-connect-的服务发现思路整理">基于 Consul Connect 的服务发现思路整理</a></li>
-      </ul>
-    </li>
-    <li><a href="#consul-connect-with-envoy">Consul Connect with Envoy</a>
-      <ul>
-        <li><a href="#envoy">Envoy</a></li>
-        <li><a href="#demo-todo">DEMO TODO</a></li>
-      </ul>
-    </li>
-    <li><a href="#配置中心">配置中心</a>
-      <ul>
-        <li><a href="#viper-remote">viper remote</a></li>
-      </ul>
-    </li>
-  </ul>
-</nav></div>
-                </details>
-            </div><div class="content" id="content"><h2 id="consul简介">Consul简介</h2>
+            
+            <div class="post-body-wrapper">
+                <div class="post-body">
+                    <h2 id="consul简介">Consul简介</h2>
 <p>Consul 是 HashiCorp 公司推出的开源分布式服务发现与配置系统。</p>
 <ul>
 <li>服务发现。特别是搭配Consul Connect（Service Mesh），可达到一种无侵入式的服务发现和客户端负载均衡。</li>
@@ -177,14 +1610,7 @@
 <li>还是配置在静态文件，但配置的是一个负载均衡器比如nginx的地址。其实就是把动态增减服务实例的问题转嫁到了负载均衡器上。调用方也少了做负载均衡的工作。关于nginx处理动态增减服务实例的解决方案，可以参考下节「实践：基于consul的nginx动态upstream」。</li>
 <li>从某中心服务器取，或是轮询或是被通知的方式知道了最新的服务地址。consul 就是这里的中心服务器（集群）。</li>
 </ol>
-<p><img
-        class="lazyload"
-        src="/svg/loading.min.svg"
-        data-sizes="auto"
-        data-srcset="../../images/image-20200326114005444.png, ../../images/image-20200326114005444.png 1.5x, ../../images/image-20200326114005444.png 2x"
-        data-src="../../images/image-20200326114005444.png"
-        alt="image-20200326114005444"
-        title="image-20200326114005444" /></p>
+<p><img src="../../images/image-20200326114005444.png" alt="image-20200326114005444"></p>
 <h3 id="服务注册">服务注册</h3>
 <p>Consul有2种方式注册服务：</p>
 <ol>
@@ -216,48 +1642,19 @@
 <p>以下两种实践参考这个youtube视频：https://www.youtube.com/watch?v=KgTtQnXrnMk。简单提重点。</p>
 <h3 id="使用-consul-dns接口">使用 consul DNS接口</h3>
 <p>nginx的resolver关键字指定consul的DNS地址：</p>
-<p><img
-        class="lazyload"
-        src="/svg/loading.min.svg"
-        data-sizes="auto"
-        data-srcset="../../images/130267C9-FCE9-4543-9152-C0C1F89DCAB3.png, ../../images/130267C9-FCE9-4543-9152-C0C1F89DCAB3.png 1.5x, ../../images/130267C9-FCE9-4543-9152-C0C1F89DCAB3.png 2x"
-        data-src="../../images/130267C9-FCE9-4543-9152-C0C1F89DCAB3.png"
-        alt="130267C9-FCE9-4543-9152-C0C1F89DCAB3"
-        title="130267C9-FCE9-4543-9152-C0C1F89DCAB3" /></p>
+<p><img src="../../images/130267C9-FCE9-4543-9152-C0C1F89DCAB3.png" alt="130267C9-FCE9-4543-9152-C0C1F89DCAB3"></p>
 <h3 id="使用-consul-template--动态生成upstream文件">使用 consul-template  动态生成upstream文件</h3>
 <p>创建模板：</p>
-<p><img
-        class="lazyload"
-        src="/svg/loading.min.svg"
-        data-sizes="auto"
-        data-srcset="../../images/image-20200326104914256.png, ../../images/image-20200326104914256.png 1.5x, ../../images/image-20200326104914256.png 2x"
-        data-src="../../images/image-20200326104914256.png"
-        alt="image-20200326104914256"
-        title="image-20200326104914256" /></p>
+<p><img src="../../images/image-20200326104914256.png" alt="image-20200326104914256"></p>
 <p>在模板中定义upstream：</p>
-<p><img
-        class="lazyload"
-        src="/svg/loading.min.svg"
-        data-sizes="auto"
-        data-srcset="../../images/5A462C56-1A76-4222-8C7A-4041E2775F98.png, ../../images/5A462C56-1A76-4222-8C7A-4041E2775F98.png 1.5x, ../../images/5A462C56-1A76-4222-8C7A-4041E2775F98.png 2x"
-        data-src="../../images/5A462C56-1A76-4222-8C7A-4041E2775F98.png"
-        alt="5A462C56-1A76-4222-8C7A-4041E2775F98"
-        title="5A462C56-1A76-4222-8C7A-4041E2775F98" /></p>
+<p><img src="../../images/5A462C56-1A76-4222-8C7A-4041E2775F98.png" alt="5A462C56-1A76-4222-8C7A-4041E2775F98"></p>
 <p>根据consul配置信息，刷新nginx配置（然后nginx reload，并自行配置定时刷新周期）：</p>
-<p><img
-        class="lazyload"
-        src="/svg/loading.min.svg"
-        data-sizes="auto"
-        data-srcset="../../images/3C4C8A0F-B629-4215-84FB-2C4D86344FDE.png, ../../images/3C4C8A0F-B629-4215-84FB-2C4D86344FDE.png 1.5x, ../../images/3C4C8A0F-B629-4215-84FB-2C4D86344FDE.png 2x"
-        data-src="../../images/3C4C8A0F-B629-4215-84FB-2C4D86344FDE.png"
-        alt="3C4C8A0F-B629-4215-84FB-2C4D86344FDE"
-        title="3C4C8A0F-B629-4215-84FB-2C4D86344FDE" /></p>
+<p><img src="../../images/3C4C8A0F-B629-4215-84FB-2C4D86344FDE.png" alt="3C4C8A0F-B629-4215-84FB-2C4D86344FDE"></p>
 <p>业务程序如果也支持动态reload，业务程序的服务发现也能像以上nginx的做法一样。</p>
 <h4 id="参考-1">参考</h4>
 <ol>
 <li>consul-template <a href="https://learn.hashicorp.com/consul/developer-configuration/consul-template">https://learn.hashicorp.com/consul/developer-configuration/consul-template</a></li>
-<li>Manage local application configuration files using templates and data from etcd or consul 与consul-template的思路是一样的 <a href="https://github.com/kelseyhightower/confd" target="_blank" rel="noopener noreffer">https://github.com/kelseyhightower/conf</a>
-</li>
+<li>Manage local application configuration files using templates and data from etcd or consul 与consul-template的思路是一样的 <a href="https://github.com/kelseyhightower/confd">https://github.com/kelseyhightower/conf</a></li>
 </ol>
 <h3 id="使用-nginx-module">使用 nginx module</h3>
 <p>An nginx module for setting backends from Consul services.  <a href="https://github.com/hashicorp/ngx_http_consul_backend_module">https://github.com/hashicorp/ngx_http_consul_backend_module</a></p>
@@ -265,14 +1662,7 @@
 <p>Service Mesh是微服务治理的一种模式。</p>
 <p>核心理念就是将业务逻辑无关的代码下沉到基础设施。</p>
 <p>Service Mesh 的代理实例会完成完整的服务间通信的调用流程，如服务发现、负载均衡等基本功能，熔断、限流、重试等容错功能，以及各种高级路由功能，安全方面的认证、授权、鉴权、加密等，最后将请求发送给目标服务。最终表现为Sidecar模式，实现和传统类库类似甚至比传统类库更完备的功能。</p>
-<p><img
-        class="lazyload"
-        src="/svg/loading.min.svg"
-        data-sizes="auto"
-        data-srcset="../../images/service-mesh-generic-topology_social.png, ../../images/service-mesh-generic-topology_social.png 1.5x, ../../images/service-mesh-generic-topology_social.png 2x"
-        data-src="../../images/service-mesh-generic-topology_social.png"
-        alt="“Service Mesh”的图片搜索结果"
-        title="“Service Mesh”的图片搜索结果" /></p>
+<p><img src="../../images/service-mesh-generic-topology_social.png" alt="“Service Mesh”的图片搜索结果"></p>
 <p>（来源互联网）</p>
 <p>sidecar是一种不侵入代码的方式，sidecar服务劫持了原服务的流量，sidecar服务与原服务之间使用lo网卡通信。 Connect proxies are typically deployed as &ldquo;sidecars&rdquo; that run on the same node as the single service instance that they handle traffic for. They might be on the same VM or running as a separate container in the same network namespace.   <a href="https://www.consul.io/docs/connect/registration/sidecar-service.html">https://www.consul.io/docs/connect/registration/sidecar-service.html</a></p>
 <p>Service Mesh比较成熟的技术有</p>
@@ -310,14 +1700,7 @@
 <li>4）counting sidecar与counting服务通信。</li>
 <li>5）response，同一个通信链路原路返回。</li>
 </ol>
-<p><img
-        class="lazyload"
-        src="/svg/loading.min.svg"
-        data-sizes="auto"
-        data-srcset="../../images/image-20200326120134716.png, ../../images/image-20200326120134716.png 1.5x, ../../images/image-20200326120134716.png 2x"
-        data-src="../../images/image-20200326120134716.png"
-        alt="image-20200326120134716"
-        title="image-20200326120134716" /></p>
+<p><img src="../../images/image-20200326120134716.png" alt="image-20200326120134716"></p>
 <h2 id="consul-connect-with-envoy">Consul Connect with Envoy</h2>
 <p>生产环境，sidecar proxy使用Envoy。Consul comes with a L4 proxy for testing purposes, and first-class support for Envoy, which you should use for production deployments and layer 7 traffic management.</p>
 <h3 id="envoy">Envoy</h3>
@@ -329,70 +1712,54 @@
 <h3 id="viper-remote">viper remote</h3>
 <p>viper支持从consul/etcd取配置信息。 <a href="https://github.com/spf13/viper#remote-keyvalue-store-support">https://github.com/spf13/viper#remote-keyvalue-store-support</a></p>
 <p>consul/etcd没有长连接啊，没有通知，只能定时轮询。Viper内置的库也是HTTP请求。每5秒，去取下最新的配置。</p>
-<p><img
-        class="lazyload"
-        src="/svg/loading.min.svg"
-        data-sizes="auto"
-        data-srcset="../../images/249E330D-4932-4EC4-BB01-A9E3931D3301.png, ../../images/249E330D-4932-4EC4-BB01-A9E3931D3301.png 1.5x, ../../images/249E330D-4932-4EC4-BB01-A9E3931D3301.png 2x"
-        data-src="../../images/249E330D-4932-4EC4-BB01-A9E3931D3301.png"
-        alt="249E330D-4932-4EC4-BB01-A9E3931D3301"
-        title="249E330D-4932-4EC4-BB01-A9E3931D3301" /></p>
-</div><div class="post-footer" id="post-footer">
-    <div class="post-info">
-        <div class="post-info-line">
-            <div class="post-info-mod">
-                <span>The article was updated on 2020-03-26</span>
+<p><img src="../../images/249E330D-4932-4EC4-BB01-A9E3931D3301.png" alt="249E330D-4932-4EC4-BB01-A9E3931D3301"></p>
+
+                    
+                    <HR width="100%" id="EOF">
+                    <p style="color:#777;">Last modified on 2020-03-26</p>
+                    
+                </div>
             </div>
-            <div class="post-info-license"></div>
-        </div>
-        <div class="post-info-line">
-            <div class="post-info-md"></div>
-            <div class="post-info-share">
-                <span></span>
+            
+            
+            <nav class="post-pagination">
+
+                
+                <a class="newer-posts" href="https://xujiahua.github.io/posts/use-docker-machine/">
+                    Next<br>使用 Docker Machine
+                </a>
+                
+                
+                
+                <a class="older-posts" href="https://xujiahua.github.io/posts/docker-network/">
+                    Previous<br>Docker Network小结
+                </a>
+                
+            </nav>
+            <div class="post-comment-wrapper">
+                
+
+
+
+
+
+
             </div>
         </div>
     </div>
-
-    <div class="post-info-more">
-        <section><span>
-                        <a href="/tags/service-mesh">
-                            <i class="fas fa-tag fa-fw"></i>Service Mesh
-                        </a>
-                    </span>&nbsp;<span>
-                        <a href="/tags/consul">
-                            <i class="fas fa-tag fa-fw"></i>consul
-                        </a>
-                    </span>&nbsp;</section>
-        <section>
-            <span><a href="javascript:window.history.back();">Back</a></span>&nbsp;|&nbsp;<span><a href="/">Home</a></span>
-        </section>
-    </div>
-
-    <div class="post-nav"><a href="https://xujiahua.github.io/posts/docker-network/" class="prev" rel="prev" title="Docker Network小结"><i class="fas fa-angle-left fa-fw"></i>Docker Network小结</a>
-            <a href="https://xujiahua.github.io/posts/use-docker-machine/" class="next" rel="next" title="使用 Docker Machine">使用 Docker Machine<i class="fas fa-angle-right fa-fw"></i></a></div>
 </div>
-<div class="comment"></div>
-    </article></div>
-            </main><footer class="footer">
-    <div class="copyright"><div class="copyright-line">Powered by <a href="https://gohugo.io/" target="_blank" rel="external nofollow noopener noreffer">Hugo</a> | Theme - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="external nofollow noopener noreffer">LoveIt<i class="far fa-heart fa-fw"></i></a>
-        </div>
 
-        <div class="copyright-line"><i class="far fa-copyright fa-fw"></i><span itemprop="copyrightYear">2020</span></div>
-    </div>
-</footer>
-</div><a href="#" class="dynamic-to-top animated faster" id="dynamic-to-top">
-            <span>&nbsp;</span>
-        </a><script>
-        document.addEventListener('DOMContentLoaded', function () {
-            lightGallery(document.getElementById('content'), {
-                selector: '.lightgallery',
-                speed: 400,
-                hideBarsDelay: 2000,
-                thumbnail: true,
-                exThumbImage: 'data-thumbnail',
-                thumbWidth: 80,
-                thumbContHeight: 80,
-            });
-        });
-    </script><link rel="stylesheet" href="/lib/lightgallery/lightgallery.min.a0f67639490aba5d9a250783c0aa0ed69f83a6f151fb0d7b9fb617c9dbc54565.css" integrity="sha256-oPZ2OUkKul2aJQeDwKoO1p&#43;DpvFR&#43;w17n7YXydvFRWU="><script src="/lib/smooth-scroll/smooth-scroll.polyfills.min.54590077ee163035c3dd38dc034e9f6915ecbe680dd832f449afa21672cab116.js" integrity="sha256-VFkAd&#43;4WMDXD3TjcA06faRXsvmgN2DL0Sa&#43;iFnLKsRY="></script><script src="/lib/sharer/sharer.min.9c88f86c7f0820287113f6236200459832693656e80d7556cc80a93dfbd45813.js" integrity="sha256-nIj4bH8IIChxE/YjYgBFmDJpNlboDXVWzICpPfvUWBM="></script><script src="/lib/lazysizes/lazysizes.min.876b4c12685e991d88378c1b6dd3638fd2da0c88f3c24da1ada950c1f26604e1.js" integrity="sha256-h2tMEmhemR2IN4wbbdNjj9LaDIjzwk2hralQwfJmBOE="></script><script src="/lib/lightgallery/lightgallery.min.7a84c63ab156d68e4a7269487c9c65a4eb34b0c7864f2d3fd2b87f7c664480d3.js" integrity="sha256-eoTGOrFW1o5KcmlIfJxlpOs0sMeGTy0/0rh/fGZEgNM="></script><script src="/lib/lightgallery/lg-thumbnail.min.eab31af8f90835b7ab674b2dd2474841039bc01022aa312f80dde6e22fde58d7.js" integrity="sha256-6rMa&#43;PkINberZ0st0kdIQQObwBAiqjEvgN3m4i/eWNc="></script><script src="/lib/lightgallery/lg-zoom.min.e3a7e6bb4a69f8627654ba9e0ab1252971bcfb400538dbb0605db9a3342ce5b9.js" integrity="sha256-46fmu0pp&#43;GJ2VLqeCrElKXG8&#43;0AFONuwYF25ozQs5bk="></script><script src="/js/theme.min.1482fc67bfa2c3b8cebe476d0037b9321b5b7a8a1525b547b94143948be90e9e.js" integrity="sha256-FIL8Z7&#43;iw7jOvkdtADe5MhtbeooVJbVHuUFDlIvpDp4="></script></body>
+            </div><div id="single-column-footer">
+Hugo Theme <a href="https://github.com/amazingrise/hugo-theme-diary">Diary</a> by <a href="https://amazingrise.net">Rise</a>
+<br>
+Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopener">Makito</a>'s <a href="https://github.com/SumiMakito/hexo-theme-journal/" target="_blank" rel="noreferrer noopener">Journal.</a> <br>
+<br>
+
+&copy;
+	
+	2020 许嘉华的博客
+	</div>
+    	</div>
+    <script src="https://xujiahua.github.io//js/journal.js"></script>
+    </body>
 </html>

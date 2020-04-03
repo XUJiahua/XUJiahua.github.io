@@ -1,41 +1,189 @@
-<urlset
-    xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
-    xmlns:xhtml="http://www.w3.org/1999/xhtml"
-    ><url>
-            <loc>https://xujiahua.github.io/posts/use-fluentd/</loc><lastmod>2020-04-02T16:58:23&#43;08:00</lastmod></url><url>
-            <loc>https://xujiahua.github.io/posts/</loc><lastmod>2020-04-02T16:58:23&#43;08:00</lastmod></url><url>
-            <loc>https://xujiahua.github.io/</loc><lastmod>2020-04-02T16:58:23&#43;08:00</lastmod></url><url>
-            <loc>https://xujiahua.github.io/tags/docker/</loc><lastmod>2020-03-31T09:53:05&#43;08:00</lastmod></url><url>
-            <loc>https://xujiahua.github.io/tags/</loc><lastmod>2020-03-31T09:53:05&#43;08:00</lastmod></url><url>
-            <loc>https://xujiahua.github.io/posts/use-docker-machine/</loc><lastmod>2020-03-31T09:53:05&#43;08:00</lastmod></url><url>
-            <loc>https://xujiahua.github.io/tags/consul/</loc><lastmod>2020-03-26T09:01:38&#43;08:00</lastmod></url><url>
-            <loc>https://xujiahua.github.io/posts/use-consul/</loc><lastmod>2020-03-26T09:01:38&#43;08:00</lastmod></url><url>
-            <loc>https://xujiahua.github.io/tags/service-mesh/</loc><lastmod>2020-03-26T09:01:38&#43;08:00</lastmod></url><url>
-            <loc>https://xujiahua.github.io/posts/docker-network/</loc><lastmod>2020-03-21T14:10:40&#43;08:00</lastmod></url><url>
-            <loc>https://xujiahua.github.io/tags/network/</loc><lastmod>2020-03-21T14:10:40&#43;08:00</lastmod></url><url>
-            <loc>https://xujiahua.github.io/tags/go/</loc><lastmod>2020-03-20T15:24:22&#43;08:00</lastmod></url><url>
-            <loc>https://xujiahua.github.io/posts/go-web-project/</loc><lastmod>2020-03-20T15:24:22&#43;08:00</lastmod></url><url>
-            <loc>https://xujiahua.github.io/tags/golang/</loc><lastmod>2020-03-20T15:24:22&#43;08:00</lastmod></url><url>
-            <loc>https://xujiahua.github.io/tags/web/</loc><lastmod>2020-03-20T15:24:22&#43;08:00</lastmod></url><url>
-            <loc>https://xujiahua.github.io/tags/bug/</loc><lastmod>2020-03-12T15:17:36&#43;08:00</lastmod></url><url>
-            <loc>https://xujiahua.github.io/tags/go-router/</loc><lastmod>2020-03-12T15:17:36&#43;08:00</lastmod></url><url>
-            <loc>https://xujiahua.github.io/posts/slash-in-url-path/</loc><lastmod>2020-03-12T15:17:36&#43;08:00</lastmod></url><url>
-            <loc>https://xujiahua.github.io/tags/%E4%B8%93%E5%88%A9/</loc><lastmod>2020-03-11T11:25:09&#43;08:00</lastmod></url><url>
-            <loc>https://xujiahua.github.io/posts/patent/</loc><lastmod>2020-03-11T11:25:09&#43;08:00</lastmod></url><url>
-            <loc>https://xujiahua.github.io/tags/github-pages/</loc><lastmod>2020-03-10T11:24:49&#43;08:00</lastmod></url><url>
-            <loc>https://xujiahua.github.io/posts/github-pages-restart/</loc><lastmod>2020-03-10T11:24:49&#43;08:00</lastmod></url><url>
-            <loc>https://xujiahua.github.io/tags/hugo/</loc><lastmod>2020-03-10T11:24:49&#43;08:00</lastmod></url><url>
-            <loc>https://xujiahua.github.io/tags/typora/</loc><lastmod>2020-03-10T11:24:49&#43;08:00</lastmod></url><url>
-            <loc>https://xujiahua.github.io/tags/hyper-v/</loc><lastmod>2020-03-03T22:13:23&#43;08:00</lastmod></url><url>
-            <loc>https://xujiahua.github.io/posts/use-hyper-v/</loc><lastmod>2020-03-03T22:13:23&#43;08:00</lastmod></url><url>
-            <loc>https://xujiahua.github.io/tags/vm/</loc><lastmod>2020-03-03T22:13:23&#43;08:00</lastmod></url><url>
-            <loc>https://xujiahua.github.io/posts/go-modules/</loc><lastmod>2020-02-28T15:05:18&#43;08:00</lastmod></url><url>
-            <loc>https://xujiahua.github.io/tags/%E4%BE%9D%E8%B5%96%E7%AE%A1%E7%90%86/</loc><lastmod>2020-02-28T15:05:18&#43;08:00</lastmod></url><url>
-            <loc>https://xujiahua.github.io/tags/5g/</loc><lastmod>2020-02-22T23:32:14&#43;08:00</lastmod></url><url>
-            <loc>https://xujiahua.github.io/posts/5g/</loc><lastmod>2020-02-22T23:32:14&#43;08:00</lastmod></url><url>
-            <loc>https://xujiahua.github.io/tags/implicit/</loc><lastmod>2020-02-11T14:34:27&#43;08:00</lastmod></url><url>
-            <loc>https://xujiahua.github.io/posts/recsys-implicit/</loc><lastmod>2020-02-11T14:34:27&#43;08:00</lastmod></url><url>
-            <loc>https://xujiahua.github.io/tags/recsys/</loc><lastmod>2020-02-11T14:34:27&#43;08:00</lastmod></url><url>
-            <loc>https://xujiahua.github.io/tags/%E6%B5%8B%E8%AF%84/</loc><lastmod>2020-02-11T14:34:27&#43;08:00</lastmod></url><url>
-            <loc>https://xujiahua.github.io/about/</loc><priority>0</priority></url><url>
-            <loc>https://xujiahua.github.io/categories/</loc></url></urlset>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+  xmlns:xhtml="http://www.w3.org/1999/xhtml">
+  
+  <url>
+    <loc>https://xujiahua.github.io/posts/use-fluentd/</loc>
+    <lastmod>2020-04-02T16:58:23+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://xujiahua.github.io/posts/</loc>
+    <lastmod>2020-04-02T16:58:23+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://xujiahua.github.io/</loc>
+    <lastmod>2020-04-02T16:58:23+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://xujiahua.github.io/tags/docker/</loc>
+    <lastmod>2020-03-31T09:53:05+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://xujiahua.github.io/tags/</loc>
+    <lastmod>2020-03-31T09:53:05+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://xujiahua.github.io/posts/use-docker-machine/</loc>
+    <lastmod>2020-03-31T09:53:05+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://xujiahua.github.io/tags/consul/</loc>
+    <lastmod>2020-03-26T09:01:38+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://xujiahua.github.io/posts/use-consul/</loc>
+    <lastmod>2020-03-26T09:01:38+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://xujiahua.github.io/tags/service-mesh/</loc>
+    <lastmod>2020-03-26T09:01:38+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://xujiahua.github.io/posts/docker-network/</loc>
+    <lastmod>2020-03-21T14:10:40+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://xujiahua.github.io/tags/network/</loc>
+    <lastmod>2020-03-21T14:10:40+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://xujiahua.github.io/tags/go/</loc>
+    <lastmod>2020-03-20T15:24:22+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://xujiahua.github.io/posts/go-web-project/</loc>
+    <lastmod>2020-03-20T15:24:22+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://xujiahua.github.io/tags/golang/</loc>
+    <lastmod>2020-03-20T15:24:22+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://xujiahua.github.io/tags/web/</loc>
+    <lastmod>2020-03-20T15:24:22+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://xujiahua.github.io/tags/bug/</loc>
+    <lastmod>2020-03-12T15:17:36+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://xujiahua.github.io/tags/go-router/</loc>
+    <lastmod>2020-03-12T15:17:36+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://xujiahua.github.io/posts/slash-in-url-path/</loc>
+    <lastmod>2020-03-12T15:17:36+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://xujiahua.github.io/tags/%E4%B8%93%E5%88%A9/</loc>
+    <lastmod>2020-03-11T11:25:09+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://xujiahua.github.io/posts/patent/</loc>
+    <lastmod>2020-03-11T11:25:09+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://xujiahua.github.io/tags/github-pages/</loc>
+    <lastmod>2020-03-10T11:24:49+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://xujiahua.github.io/posts/github-pages-restart/</loc>
+    <lastmod>2020-03-10T11:24:49+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://xujiahua.github.io/tags/hugo/</loc>
+    <lastmod>2020-03-10T11:24:49+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://xujiahua.github.io/tags/typora/</loc>
+    <lastmod>2020-03-10T11:24:49+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://xujiahua.github.io/tags/hyper-v/</loc>
+    <lastmod>2020-03-03T22:13:23+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://xujiahua.github.io/posts/use-hyper-v/</loc>
+    <lastmod>2020-03-03T22:13:23+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://xujiahua.github.io/tags/vm/</loc>
+    <lastmod>2020-03-03T22:13:23+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://xujiahua.github.io/posts/go-modules/</loc>
+    <lastmod>2020-02-28T15:05:18+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://xujiahua.github.io/tags/%E4%BE%9D%E8%B5%96%E7%AE%A1%E7%90%86/</loc>
+    <lastmod>2020-02-28T15:05:18+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://xujiahua.github.io/tags/5g/</loc>
+    <lastmod>2020-02-22T23:32:14+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://xujiahua.github.io/posts/5g/</loc>
+    <lastmod>2020-02-22T23:32:14+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://xujiahua.github.io/tags/implicit/</loc>
+    <lastmod>2020-02-11T14:34:27+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://xujiahua.github.io/posts/recsys-implicit/</loc>
+    <lastmod>2020-02-11T14:34:27+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://xujiahua.github.io/tags/recsys/</loc>
+    <lastmod>2020-02-11T14:34:27+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://xujiahua.github.io/tags/%E6%B5%8B%E8%AF%84/</loc>
+    <lastmod>2020-02-11T14:34:27+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://xujiahua.github.io/about/</loc>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://xujiahua.github.io/categories/</loc>
+  </url>
+  
+</urlset>
