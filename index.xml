@@ -327,7 +327,35 @@ td-agent 30602 30596  9 17:10 ?        00:00:00 /opt/td-agent/embedded/bin/ruby 
 &lt;p&gt;&lt;img src=&#34;../../images/image-20200401161206429.png&#34; alt=&#34;image-20200401161206429&#34;&gt;&lt;/p&gt;
 &lt;p&gt;code：&lt;/p&gt;
 &lt;p&gt;&lt;a href=&#34;https://github.com/GoogleCloudPlatform/golang-samples/blob/master/vision/detect/README.md&#34;&gt;https://github.com/GoogleCloudPlatform/golang-samples/blob/master/vision/detect/README.md&lt;/a&gt;&lt;/p&gt;
-&lt;h2 id=&#34;natural-language-api-文本内容识别&#34;&gt;Natural Language API： 文本内容识别&lt;/h2&gt;
+&lt;h3 id=&#34;请求次数限制&#34;&gt;请求次数限制&lt;/h3&gt;
+&lt;p&gt;对请求内容大小有限制外，需要注意请求配额，每分钟请求数1800，QPS也就是30。如果无法满足需求，需要在平台申请增加配额。&lt;/p&gt;
+&lt;p&gt;使用默认配额，业务上需要考虑采样数据，再调用Vision API。&lt;/p&gt;
+&lt;p&gt;参考 &lt;a href=&#34;https://cloud.google.com/vision/quotas?hl=zh-cn&#34;&gt;https://cloud.google.com/vision/quotas?hl=zh-cn&lt;/a&gt;&lt;/p&gt;
+&lt;h3 id=&#34;请求响应时间&#34;&gt;请求响应时间&lt;/h3&gt;
+&lt;p&gt;请求响应时间，取决于两个因素：&lt;/p&gt;
+&lt;h4 id=&#34;上传数据大小&#34;&gt;上传数据大小&lt;/h4&gt;
+&lt;p&gt;越大越慢。&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;手机拍照软件生成的图像一般3M，建议图像压缩后上传。&lt;/li&gt;
+&lt;li&gt;考虑gcloud上先存储图像文件。参考 &lt;a href=&#34;https://medium.com/bankify-tech-blog/how-to-optimize-the-speed-of-google-vision-api-cdc5e452104b&#34;&gt;https://medium.com/bankify-tech-blog/how-to-optimize-the-speed-of-google-vision-api-cdc5e452104b&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h4 id=&#34;vision-api本身&#34;&gt;Vision API本身&lt;/h4&gt;
+&lt;p&gt;对一张249K的图像进行简单压测。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;$ ll demo/trump.jpg 
+-rw-r--r--  &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt; jiahua  staff   249K Apr  &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt; 14:14 demo/trump.jpg
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Go benchmark。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;BenchmarkDetectSafeSearchForFile&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;b&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;testing&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;B&lt;/span&gt;) {
+	&lt;span style=&#34;color:#66d9ef&#34;&gt;for&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;i&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;:=&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;;&lt;span style=&#34;color:#a6e22e&#34;&gt;i&lt;/span&gt;&amp;lt;&lt;span style=&#34;color:#a6e22e&#34;&gt;b&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;N&lt;/span&gt;;&lt;span style=&#34;color:#a6e22e&#34;&gt;i&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;++&lt;/span&gt;{
+		&lt;span style=&#34;color:#a6e22e&#34;&gt;result&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;err&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;:=&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;DetectSafeSearchForFile&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;demo/trump.jpg&amp;#34;&lt;/span&gt;)
+		&lt;span style=&#34;color:#a6e22e&#34;&gt;assert&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Equal&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;b&lt;/span&gt;, &lt;span style=&#34;color:#66d9ef&#34;&gt;nil&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;err&lt;/span&gt;)
+		&lt;span style=&#34;color:#a6e22e&#34;&gt;spew&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Dump&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;result&lt;/span&gt;)
+	}
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;识别图像大概需要1秒。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;$ go test -v -bench&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;DetectSafeSearchForFile -benchtime&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;30s
+
+BenchmarkDetectSafeSearchForFile-8            &lt;span style=&#34;color:#ae81ff&#34;&gt;33&lt;/span&gt;        &lt;span style=&#34;color:#ae81ff&#34;&gt;1011378355&lt;/span&gt; ns/op
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;natural-language-api-文本内容识别&#34;&gt;Natural Language API： 文本内容识别&lt;/h2&gt;
 &lt;p&gt;&lt;a href=&#34;https://cloud.google.com/natural-language/docs/how-to?hl=zh-cn&#34;&gt;https://cloud.google.com/natural-language/docs/how-to?hl=zh-cn&lt;/a&gt;&lt;/p&gt;
 &lt;h3 id=&#34;内容分类&#34;&gt;内容分类&lt;/h3&gt;
 &lt;p&gt;内容分类没有我们关注的敏感内容分类。&lt;/p&gt;

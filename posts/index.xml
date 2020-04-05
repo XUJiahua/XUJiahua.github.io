@@ -66,10 +66,13 @@ Vision API：图像内容识别  Google Vision API的模型已经有审核内容
 DEMO 创建服务账号、创建密钥，自动下载json文件：
 code：
 https://github.com/GoogleCloudPlatform/golang-samples/blob/master/vision/detect/README.md
-Natural Language API： 文本内容识别 https://cloud.google.com/natural-language/docs/how-to?hl=zh-cn
-内容分类 内容分类没有我们关注的敏感内容分类。
-参考：https://cloud.google.com/natural-language/docs/categories?hl=zh-cn
-通过简单的关键字过滤吧。</description>
+请求次数限制 对请求内容大小有限制外，需要注意请求配额，每分钟请求数1800，QPS也就是30。如果无法满足需求，需要在平台申请增加配额。
+使用默认配额，业务上需要考虑采样数据，再调用Vision API。
+参考 https://cloud.google.com/vision/quotas?hl=zh-cn
+请求响应时间 请求响应时间，取决于两个因素：
+上传数据大小 越大越慢。
+ 手机拍照软件生成的图像一般3M，建议图像压缩后上传。 考虑gcloud上先存储图像文件。参考 https://medium.com/bankify-tech-blog/how-to-optimize-the-speed-of-google-vision-api-cdc5e452104b  Vision API本身 对一张249K的图像进行简单压测。
+$ ll demo/trump.jpg -rw-r--r-- 1 jiahua staff 249K Apr 1 14:14 demo/trump.</description>
     </item>
     
     <item>
