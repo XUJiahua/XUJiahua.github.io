@@ -6,7 +6,7 @@
     <description>Recent content in Tags on 许嘉华的博客</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Fri, 10 Apr 2020 10:07:16 +0800</lastBuildDate>
+    <lastBuildDate>Fri, 10 Apr 2020 16:41:53 +0800</lastBuildDate>
     
 	<atom:link href="https://xujiahua.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
     
@@ -14,9 +14,27 @@
     <item>
       <title>BI</title>
       <link>https://xujiahua.github.io/tags/bi/</link>
-      <pubDate>Fri, 10 Apr 2020 10:07:16 +0800</pubDate>
+      <pubDate>Fri, 10 Apr 2020 16:41:53 +0800</pubDate>
       
       <guid>https://xujiahua.github.io/tags/bi/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Metabase</title>
+      <link>https://xujiahua.github.io/tags/metabase/</link>
+      <pubDate>Fri, 10 Apr 2020 16:41:53 +0800</pubDate>
+      
+      <guid>https://xujiahua.github.io/tags/metabase/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Spark</title>
+      <link>https://xujiahua.github.io/tags/spark/</link>
+      <pubDate>Fri, 10 Apr 2020 16:41:53 +0800</pubDate>
+      
+      <guid>https://xujiahua.github.io/tags/spark/</guid>
       <description></description>
     </item>
     
@@ -26,15 +44,6 @@
       <pubDate>Fri, 10 Apr 2020 10:07:16 +0800</pubDate>
       
       <guid>https://xujiahua.github.io/tags/cdh/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Spark</title>
-      <link>https://xujiahua.github.io/tags/spark/</link>
-      <pubDate>Fri, 10 Apr 2020 10:07:16 +0800</pubDate>
-      
-      <guid>https://xujiahua.github.io/tags/spark/</guid>
       <description></description>
     </item>
     

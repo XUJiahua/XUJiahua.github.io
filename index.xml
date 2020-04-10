@@ -5,9 +5,140 @@
     <description>Recent content on 许嘉华的博客</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Fri, 10 Apr 2020 10:07:16 +0800</lastBuildDate>
+    <lastBuildDate>Fri, 10 Apr 2020 16:41:53 +0800</lastBuildDate>
     
         <atom:link href="https://xujiahua.github.io/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    
+        <item>
+        <title>Metabase &#43; Spark SQL</title>
+        <link>https://xujiahua.github.io/posts/bi-metabase-spark-sql/</link>
+        <pubDate>Fri, 10 Apr 2020 16:41:53 +0800</pubDate>
+        
+        <guid>https://xujiahua.github.io/posts/bi-metabase-spark-sql/</guid>
+        <description>许嘉华的博客 https://xujiahua.github.io/posts/bi-metabase-spark-sql/ -&lt;p&gt;这是大数据 BI 平台的第二步，BI 工具的搭建。假设已经配置好 Spark SQL JDBC Server，并启用了Kerberos。参考  &lt;a href=&#34;https://xujiahua.github.io/posts/spark-thrift-server-cdh/&#34;&gt;https://xujiahua.github.io/posts/spark-thrift-server-cdh/&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;这里，我们选择了开源产品 Metabase。&lt;/p&gt;
+&lt;p&gt;最终，大数据 BI 平台，是由 1) 以Metabase作为BI可视化，2) 由HDFS（分布式存储） + parquet（列式数据存储格式） + Spark SQL（数据库批处理引擎）组合的OLAP数据库组成。&lt;/p&gt;
+&lt;h2 id=&#34;metabase-简介&#34;&gt;Metabase 简介&lt;/h2&gt;
+&lt;p&gt;Metabase is the easy, open source way for everyone in your company to ask questions and learn from data.&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://www.metabase.com/&#34;&gt;https://www.metabase.com/&lt;/a&gt;&lt;/p&gt;
+&lt;h3 id=&#34;数据库支持&#34;&gt;数据库支持&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;BigQuery&lt;/li&gt;
+&lt;li&gt;Druid&lt;/li&gt;
+&lt;li&gt;Google Analytics&lt;/li&gt;
+&lt;li&gt;H2&lt;/li&gt;
+&lt;li&gt;MongoDB&lt;/li&gt;
+&lt;li&gt;MySQL/MariaDB&lt;/li&gt;
+&lt;li&gt;PostgreSQL&lt;/li&gt;
+&lt;li&gt;Presto&lt;/li&gt;
+&lt;li&gt;Amazon Redshift&lt;/li&gt;
+&lt;li&gt;Snowflake&lt;/li&gt;
+&lt;li&gt;Spark SQL&lt;/li&gt;
+&lt;li&gt;SQLite&lt;/li&gt;
+&lt;li&gt;SQL Server&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;a href=&#34;https://www.metabase.com/docs/latest/faq/setup/which-databases-does-metabase-support.html&#34;&gt;https://www.metabase.com/docs/latest/faq/setup/which-databases-does-metabase-support.html&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;这里有我们需要的Spark SQL，我们的大数据集群可以支持。比较遗憾的是没有Impala。&lt;/p&gt;
+&lt;h2 id=&#34;metabase-安装&#34;&gt;Metabase 安装&lt;/h2&gt;
+&lt;h3 id=&#34;mysql&#34;&gt;MySQL&lt;/h3&gt;
+&lt;p&gt;使用MySQL作为元数据存储。复用之前CDH的MySQL实例。&lt;/p&gt;
+&lt;p&gt;创建数据库、用户。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-SQL&#34; data-lang=&#34;SQL&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;-- 登录
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;mysql &lt;span style=&#34;color:#f92672&#34;&gt;-&lt;/span&gt;u metabase &lt;span style=&#34;color:#f92672&#34;&gt;-&lt;/span&gt;p
+&lt;span style=&#34;color:#75715e&#34;&gt;-- 适合MySQL5.7及以上版本，支持更大的max key length。一个字符使用四个字节。
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;CREATE&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;DATABASE&lt;/span&gt; metabase CHARACTER &lt;span style=&#34;color:#66d9ef&#34;&gt;SET&lt;/span&gt; utf8mb4 &lt;span style=&#34;color:#66d9ef&#34;&gt;COLLATE&lt;/span&gt; utf8mb4_unicode_ci;
+&lt;span style=&#34;color:#75715e&#34;&gt;-- 适合MySQL5.6及以下版本。一个字符使用3个字节。
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;CREATE&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;DATABASE&lt;/span&gt; metabase CHARACTER &lt;span style=&#34;color:#66d9ef&#34;&gt;SET&lt;/span&gt; utf8 &lt;span style=&#34;color:#66d9ef&#34;&gt;COLLATE&lt;/span&gt; utf8_unicode_ci;
+
+&lt;span style=&#34;color:#75715e&#34;&gt;-- % 表示不限制host
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;CREATE&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;USER&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;metabase&amp;#39;&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;@&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;%&amp;#39;&lt;/span&gt; IDENTIFIED &lt;span style=&#34;color:#66d9ef&#34;&gt;BY&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;metabase&amp;#39;&lt;/span&gt;;
+&lt;span style=&#34;color:#66d9ef&#34;&gt;GRANT&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;ALL&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;ON&lt;/span&gt; metabase.&lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;TO&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;metabase&amp;#39;&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;@&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;%&amp;#39;&lt;/span&gt;;
+
+FLUSH &lt;span style=&#34;color:#66d9ef&#34;&gt;PRIVILEGES&lt;/span&gt;;
+&lt;span style=&#34;color:#75715e&#34;&gt;-- https://dev.mysql.com/doc/refman/5.7/en/grant.html
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h4 id=&#34;常见问题&#34;&gt;常见问题&lt;/h4&gt;
+&lt;p&gt;mysql 5.7与5.6的区别。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;767 bytes is the &lt;a href=&#34;http://dev.mysql.com/doc/refman/5.1/en/create-index.html&#34;&gt;stated prefix limitation&lt;/a&gt; for InnoDB tables in MySQL version 5.6 (and prior versions). It&amp;rsquo;s 1,000 bytes long for MyISAM tables. In MySQL version 5.7 and upwards this limit has been increased to 3072 bytes.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;Caused by: java.sql.SQLException: Specified key was too long; max key length is 767 bytes&lt;/p&gt;
+&lt;p&gt;Caused by: liquibase.exception.DatabaseException: (conn=175553) Specified key was too long; max key length is 767 bytes [Failed SQL: CREATE TABLE &lt;code&gt;metabase&lt;/code&gt;.&lt;code&gt;core_organization&lt;/code&gt; (&lt;code&gt;id&lt;/code&gt; INT AUTO_INCREMENT NOT NULL, &lt;code&gt;slug&lt;/code&gt; VARCHAR(254) NOT NULL, &lt;code&gt;name&lt;/code&gt; VARCHAR(254) NOT NULL, &lt;code&gt;description&lt;/code&gt; TEXT NULL, &lt;code&gt;logo_url&lt;/code&gt; VARCHAR(254) NULL, &lt;code&gt;inherits&lt;/code&gt; BIT(1) NOT NULL, CONSTRAINT &lt;code&gt;PK_CORE_ORGANIZATION&lt;/code&gt; PRIMARY KEY (&lt;code&gt;id&lt;/code&gt;), UNIQUE (&lt;code&gt;slug&lt;/code&gt;))]&lt;/p&gt;
+&lt;h3 id=&#34;metabase&#34;&gt;Metabase&lt;/h3&gt;
+&lt;p&gt;下载metabase。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# 以 /opt/metabase 为工作目录&lt;/span&gt;
+mkdir /opt/metabase &lt;span style=&#34;color:#f92672&#34;&gt;&amp;amp;&amp;amp;&lt;/span&gt; cd /opt/metabase
+&lt;span style=&#34;color:#75715e&#34;&gt;# 下载最新版本的metabase，参考 https://www.metabase.com/start/jar.html&lt;/span&gt;
+wget https://downloads.metabase.com/v0.35.1/metabase.jar
+&lt;span style=&#34;color:#75715e&#34;&gt;# 创建插件目录&lt;/span&gt; 
+mkdir plugins
+&lt;span style=&#34;color:#75715e&#34;&gt;# Spark SQL的驱动，不使用默认的&lt;/span&gt;
+wget https://s3.amazonaws.com/sparksql-deps/metabase-sparksql-deps-1.2.1.spark2-standalone.jar -O plugins/metabase-sparksql-deps-1.2.1.spark2-standalone.jar
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;启动脚本 start.sh。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;#!/usr/bin/bash
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;
+export MB_DB_TYPE&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;mysql
+export MB_DB_DBNAME&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;metabase
+export MB_DB_PORT&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;3306&lt;/span&gt;
+export MB_DB_USER&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;metabase
+export MB_DB_PASS&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;metabase
+export MB_DB_HOST&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;172.31.0.100
+
+kinit -kt hive.xh-hd2-peggy-dost000003.keytab hive/xh-hd2-peggy-dost000003@PEGGY.LING
+
+mkdir -p logs
+
+nohup java -Djavax.security.auth.useSubjectCredsOnly&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;false -jar metabase.jar  &amp;gt;&amp;gt; logs/metabase.log 2&amp;gt;&amp;amp;&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt; &amp;amp;
+
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;停止脚本 stop.sh。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;#!/usr/bin/bash
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;
+ps -ef | grep &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;metabase.jar&amp;#39;&lt;/span&gt; | grep -v &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;grep&amp;#39;&lt;/span&gt; | awk &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;{print $2}&amp;#39;&lt;/span&gt; | xargs kill -9
+
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;文件夹结构如下。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;webapp@xh-hd2-peggy-dost000003 metabase&lt;span style=&#34;color:#f92672&#34;&gt;]&lt;/span&gt;$ tree
+├── hive.xh-hd2-peggy-dost000003.keytab
+├── logs
+│   └── metabase.log
+├── metabase.jar
+├── plugins
+│   ├── metabase-sparksql-deps-1.2.1.spark2-standalone.jar
+│   ├── sparksql.metabase-driver.jar
+│   ├── ...
+├── start.sh
+└── stop.sh
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;参考：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Metabase搭建手册：使用SparkSQL连接Hive &lt;a href=&#34;https://webcache.googleusercontent.com/search?q=cache:DcmHXWOc9woJ:https://immm.in/archives/24.html+&amp;amp;cd=5&amp;amp;hl=zh-CN&amp;amp;ct=clnk&amp;amp;gl=hk&#34;&gt;https://webcache.googleusercontent.com/search?q=cache:DcmHXWOc9woJ:https://immm.in/archives/24.html+&amp;amp;cd=5&amp;amp;hl=zh-CN&amp;amp;ct=clnk&amp;amp;gl=hk&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h4 id=&#34;配置-spark-sql-连接&#34;&gt;配置 Spark SQL 连接&lt;/h4&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200410180255501.png&#34; alt=&#34;image-20200410180255501&#34;&gt;&lt;/p&gt;
+&lt;p&gt;保存没有报错，就是成功了。&lt;/p&gt;
+&lt;h4 id=&#34;常见问题-1&#34;&gt;常见问题&lt;/h4&gt;
+&lt;ol&gt;
+&lt;li&gt;使用默认的spark sql驱动报错：Unrecognized Hadoop major version number: 3.1.1&lt;/li&gt;
+&lt;li&gt;使用metabase-sparksql-deps-1.2.1.spark2-standalone.jar这个驱动报错，然而beeline连接是没问题的： transport.TSaslTransport :: SASL negotiation failure
+javax.security.sasl.SaslException: GSS initiate failed [Caused by GSSException: No valid credentials provided (Mechanism level: Failed to find any Kerberos tgt)]&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;第一个问题，忽略，使用另外的驱动。&lt;/p&gt;
+&lt;p&gt;第二个问题需要设置Java参数 &lt;code&gt;-Djavax.security.auth.useSubjectCredsOnly=false&lt;/code&gt;。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200410173734177.png&#34; alt=&#34;image-20200410173734177&#34;&gt;&lt;/p&gt;
+&lt;p&gt;参考：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;How to connnect sparksql in Kerberos enviroment &lt;a href=&#34;https://discourse.metabase.com/t/how-to-connnect-sparksql-in-kerberos-enviroment/8290/2&#34;&gt;https://discourse.metabase.com/t/how-to-connnect-sparksql-in-kerberos-enviroment/8290/2&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;javax.security.sasl.SaslException: GSS initiate failed [Caused by GSSException: No valid credentials provided https://stackoverflow.com/questions/32205087/javax-security-sasl-saslexception-gss-initiate-failed-caused-by-gssexception&lt;/li&gt;
+&lt;li&gt;Below are listed some problems that may occur when attempting a login, and suggestions for solving them. &lt;a href=&#34;https://docs.oracle.com/javase/7/docs/technotes/guides/security/jgss/tutorials/Troubleshooting.html&#34;&gt;https://docs.oracle.com/javase/7/docs/technotes/guides/security/jgss/tutorials/Troubleshooting.html&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2 id=&#34;与-superset-比较&#34;&gt;与 Superset 比较&lt;/h2&gt;
+&lt;p&gt;Superset是另外一个开源的BI工具。但是使用过程中体验不佳：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;不支持多表JOIN。这个不能忍。&lt;/li&gt;
+&lt;li&gt;外观丑陋。&lt;/li&gt;
+&lt;li&gt;小bug多。&lt;/li&gt;
+&lt;/ol&gt;
+- https://xujiahua.github.io/posts/bi-metabase-spark-sql/ - </description>
+        </item>
     
     
     
@@ -1414,35 +1545,6 @@ func main() {
 &lt;p&gt;&lt;img src=&#34;../../images/image-20200312174326015.png&#34; alt=&#34;image-20200312174326015&#34;&gt;&lt;/p&gt;
 &lt;p&gt;不完美，但至少不需要让调用者改代码了。以后接口设计还是把请求参数放Body里，稳一点。&lt;/p&gt;
 - https://xujiahua.github.io/posts/slash-in-url-path/ - </description>
-        </item>
-    
-    
-    
-        <item>
-        <title>专利申请流程小结</title>
-        <link>https://xujiahua.github.io/posts/patent/</link>
-        <pubDate>Wed, 11 Mar 2020 11:25:09 +0800</pubDate>
-        
-        <guid>https://xujiahua.github.io/posts/patent/</guid>
-        <description>许嘉华的博客 https://xujiahua.github.io/posts/patent/ -&lt;p&gt;去年憋的一篇专利，到申请公布阶段了，算是去年研究区块链的副成果。https://patents.google.com/patent/CN110807211。整理下专利申请流程。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/01C8BAF0-B9C7-4F08-9575-38AF85AC4F14.png&#34; alt=&#34;01C8BAF0-B9C7-4F08-9575-38AF85AC4F14&#34;&gt;&lt;/p&gt;
-&lt;h2 id=&#34;专利申请流程&#34;&gt;专利申请流程&lt;/h2&gt;
-&lt;p&gt;主要流程如下图，来自网络。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/7CA0DB1A-692F-481B-BFA3-987F503E1E39.png&#34; alt=&#34;7CA0DB1A-692F-481B-BFA3-987F503E1E39&#34;&gt;&lt;/p&gt;
-&lt;h3 id=&#34;技术成果生成&#34;&gt;技术成果生成&lt;/h3&gt;
-&lt;p&gt;有可以申请专利的点，这个因人而异。基于点子，写个草稿。&lt;/p&gt;
-&lt;h3 id=&#34;申请专利&#34;&gt;申请专利&lt;/h3&gt;
-&lt;p&gt;找一个专利代理，让他们提供专利稿的修改意见。反复迭代直到专利代理觉得没问题了。&lt;/p&gt;
-&lt;p&gt;之后专利代理会出具一份「专利申请受理通知书」，你再交点钱，可能还会有税费减免。&lt;/p&gt;
-&lt;p&gt;我遇到了专利代理看不大懂专利的情况，僵持了一段时间，后面换了一家顺畅好多。&lt;/p&gt;
-&lt;h3 id=&#34;专利申请公布&#34;&gt;专利申请公布&lt;/h3&gt;
-&lt;p&gt;这个时间点叫做：申请公布日。&lt;/p&gt;
-&lt;p&gt;说明初审过了。实用新型和外观发明的话，直接就授权了，而发明还需要实质审查。&lt;/p&gt;
-&lt;p&gt;&amp;ldquo;初步审查合格后，实用新型和外观就直接授权了，而发明还要经过实质审查，检索国内外的资料，确认没有相同的才会授权，所以发明的含金量会高很多，因此发明专利审查的时间也会是比较长的，一般从申请到拿证书都需要2-3年，而实用、外观这两项专利一年能拿到。&amp;rdquo;&lt;/p&gt;
-&lt;h3 id=&#34;专利授权公告&#34;&gt;专利授权公告&lt;/h3&gt;
-&lt;p&gt;这个时间点叫做：授权公告日。&lt;/p&gt;
-&lt;p&gt;说明正式审查完了。这时候才算是真正拥有专利。&lt;/p&gt;
-- https://xujiahua.github.io/posts/patent/ - </description>
         </item>
     
     

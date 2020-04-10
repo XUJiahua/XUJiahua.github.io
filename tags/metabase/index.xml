@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Spark on 许嘉华的博客</title>
-    <link>https://xujiahua.github.io/tags/spark/</link>
-    <description>Recent content in Spark on 许嘉华的博客</description>
+    <title>Metabase on 许嘉华的博客</title>
+    <link>https://xujiahua.github.io/tags/metabase/</link>
+    <description>Recent content in Metabase on 许嘉华的博客</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
     <lastBuildDate>Fri, 10 Apr 2020 16:41:53 +0800</lastBuildDate>
     
-	<atom:link href="https://xujiahua.github.io/tags/spark/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://xujiahua.github.io/tags/metabase/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
@@ -25,17 +25,6 @@ https://www.metabase.com/
 数据库支持  BigQuery Druid Google Analytics H2 MongoDB MySQL/MariaDB PostgreSQL Presto Amazon Redshift Snowflake Spark SQL SQLite SQL Server  https://www.metabase.com/docs/latest/faq/setup/which-databases-does-metabase-support.html
 这里有我们需要的Spark SQL，我们的大数据集群可以支持。比较遗憾的是没有Impala。
 Metabase 安装 MySQL 使用MySQL作为元数据存储。复用之前CDH的MySQL实例。</description>
-    </item>
-    
-    <item>
-      <title>CDH6 启用 Spark Thrift Server</title>
-      <link>https://xujiahua.github.io/posts/spark-thrift-server-cdh/</link>
-      <pubDate>Fri, 10 Apr 2020 10:07:16 +0800</pubDate>
-      
-      <guid>https://xujiahua.github.io/posts/spark-thrift-server-cdh/</guid>
-      <description>很遗憾，CDH版本的Spark阉割了Thrift Server。（可能与自家产品Impala有竞争关系的原因。）
-参考 https://docs.cloudera.com/documentation/enterprise/6/6.3/topics/spark.html#spark__d99299e107
-# ll /opt/cloudera/parcels/CDH/lib/spark/sbin/ total 84 -rwxr-xr-x 1 root root 2803 Nov 9 00:05 slaves.sh -rwxr-xr-x 1 root root 1429 Nov 9 00:05 spark-config.sh -rwxr-xr-x 1 root root 5689 Nov 9 00:05 spark-daemon.sh -rwxr-xr-x 1 root root 1262 Nov 9 00:05 spark-daemons.sh -rwxr-xr-x 1 root root 1190 Nov 9 00:05 start-all.sh -rwxr-xr-x 1 root root 1274 Nov 9 00:05 start-history-server.sh -rwxr-xr-x 1 root root 2050 Nov 9 00:05 start-master.</description>
     </item>
     
   </channel>
