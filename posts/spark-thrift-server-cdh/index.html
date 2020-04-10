@@ -1092,8 +1092,9 @@ Beeline version 1.2.1.spark2 by Apache Hive
 | product       |
 +---------------+--+
 <span style="color:#ae81ff">3</span> rows selected <span style="color:#f92672">(</span>0.091 seconds<span style="color:#f92672">)</span>
-</code></pre></div><h3 id="yarn-运行">YARN 运行</h3>
-<p>TODO</p>
+</code></pre></div><p>至此，Thrift Server的启用就完成了。</p>
+<h3 id="yarn-运行">YARN 运行</h3>
+<p>失败了，TODO</p>
 <pre><code>sbin/start-thriftserver.sh --hiveconf hive.server2.authentication.kerberos.keytab hive.keytab --hiveconf hive.server2.thrift.port=10001 --queue root.zm_yarn_pool.development  --master yarn --executor-memory 4g --executor-cores 2 --num-executors 20
 
 2020-04-09 17:56:19 INFO  Client:54 - Requesting a new application from cluster with 5 NodeManagers
