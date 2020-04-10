@@ -827,7 +827,7 @@ mkdir /opt/metabase <span style="color:#f92672">&amp;&amp;</span> cd /opt/metaba
 wget https://downloads.metabase.com/v0.35.1/metabase.jar
 <span style="color:#75715e"># 创建插件目录</span> 
 mkdir plugins
-<span style="color:#75715e"># Spark SQL的驱动，不使用默认的</span>
+<span style="color:#75715e"># Spark SQL的驱动，jar包内置的有问题</span>
 wget https://s3.amazonaws.com/sparksql-deps/metabase-sparksql-deps-1.2.1.spark2-standalone.jar -O plugins/metabase-sparksql-deps-1.2.1.spark2-standalone.jar
 </code></pre></div><p>启动脚本 start.sh。</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e">#!/usr/bin/bash
@@ -871,11 +871,17 @@ ps -ef | grep <span style="color:#e6db74">&#39;metabase.jar&#39;</span> | grep -
 <p>保存没有报错，就是成功了。</p>
 <h4 id="常见问题-1">常见问题</h4>
 <ol>
-<li>使用默认的spark sql驱动报错：Unrecognized Hadoop major version number: 3.1.1</li>
+<li>使用内置的驱动报错：Unrecognized Hadoop major version number: 3.1.1</li>
 <li>使用metabase-sparksql-deps-1.2.1.spark2-standalone.jar这个驱动报错，然而beeline连接是没问题的： transport.TSaslTransport :: SASL negotiation failure
 javax.security.sasl.SaslException: GSS initiate failed [Caused by GSSException: No valid credentials provided (Mechanism level: Failed to find any Kerberos tgt)]</li>
 </ol>
-<p>第一个问题，忽略，使用另外的驱动。</p>
+<p>第一个问题，暂时忽略，使用其他驱动。</p>
+<p>按理说，https://github.com/metabase/sparksql-deps 已经合并到 <a href="https://github.com/metabase/metabase/tree/v0.35.1/modules/drivers/sparksql">https://github.com/metabase/metabase/tree/v0.35.1/modules/drivers/sparksql</a> 了。内置驱动就能用才对。</p>
+<p>能看到依赖hadoop-common包的版本差异。还得细看。</p>
+<p><img src="../../images/image-20200411071918161.png" alt="image-20200411071918161"></p>
+<p>依赖的hadoop版本是3.1.0。</p>
+<p><img src="../../images/image-20200411072135265.png" alt="image-20200411072135265"></p>
+<p>内置Driver依赖3.1.1。报错信息也是包含3.1.1，是否切到3.1.0，重新打包就可以了？</p>
 <p>第二个问题需要设置Java参数 <code>-Djavax.security.auth.useSubjectCredsOnly=false</code>。</p>
 <p><img src="../../images/image-20200410173734177.png" alt="image-20200410173734177"></p>
 <p>参考：</p>
