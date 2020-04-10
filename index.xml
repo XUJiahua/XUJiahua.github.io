@@ -5,9 +5,246 @@
     <description>Recent content on 许嘉华的博客</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Fri, 03 Apr 2020 15:43:07 +0800</lastBuildDate>
+    <lastBuildDate>Fri, 10 Apr 2020 10:07:16 +0800</lastBuildDate>
     
         <atom:link href="https://xujiahua.github.io/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    
+        <item>
+        <title>CDH6 启用 Spark Thrift Server</title>
+        <link>https://xujiahua.github.io/posts/spark-thrift-server-cdh/</link>
+        <pubDate>Fri, 10 Apr 2020 10:07:16 +0800</pubDate>
+        
+        <guid>https://xujiahua.github.io/posts/spark-thrift-server-cdh/</guid>
+        <description>许嘉华的博客 https://xujiahua.github.io/posts/spark-thrift-server-cdh/ -&lt;p&gt;很遗憾，CDH版本的Spark阉割了Thrift Server。（可能与自家产品Impala有竞争关系的原因。）&lt;/p&gt;
+&lt;p&gt;参考 &lt;a href=&#34;https://docs.cloudera.com/documentation/enterprise/6/6.3/topics/spark.html#spark__d99299e107&#34;&gt;https://docs.cloudera.com/documentation/enterprise/6/6.3/topics/spark.html#spark__d99299e107&lt;/a&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;# ll /opt/cloudera/parcels/CDH/lib/spark/sbin/
+total 84
+-rwxr-xr-x 1 root root 2803 Nov  9 00:05 slaves.sh
+-rwxr-xr-x 1 root root 1429 Nov  9 00:05 spark-config.sh
+-rwxr-xr-x 1 root root 5689 Nov  9 00:05 spark-daemon.sh
+-rwxr-xr-x 1 root root 1262 Nov  9 00:05 spark-daemons.sh
+-rwxr-xr-x 1 root root 1190 Nov  9 00:05 start-all.sh
+-rwxr-xr-x 1 root root 1274 Nov  9 00:05 start-history-server.sh
+-rwxr-xr-x 1 root root 2050 Nov  9 00:05 start-master.sh
+-rwxr-xr-x 1 root root 1877 Nov  9 00:05 start-mesos-dispatcher.sh
+-rwxr-xr-x 1 root root 1423 Nov  9 00:05 start-mesos-shuffle-service.sh
+-rwxr-xr-x 1 root root 1279 Nov  9 00:05 start-shuffle-service.sh
+-rwxr-xr-x 1 root root 3151 Nov  9 00:05 start-slave.sh
+-rwxr-xr-x 1 root root 1527 Nov  9 00:05 start-slaves.sh
+-rwxr-xr-x 1 root root 1478 Nov  9 00:05 stop-all.sh
+-rwxr-xr-x 1 root root 1056 Nov  9 00:05 stop-history-server.sh
+-rwxr-xr-x 1 root root 1080 Nov  9 00:05 stop-master.sh
+-rwxr-xr-x 1 root root 1227 Nov  9 00:05 stop-mesos-dispatcher.sh
+-rwxr-xr-x 1 root root 1084 Nov  9 00:05 stop-mesos-shuffle-service.sh
+-rwxr-xr-x 1 root root 1067 Nov  9 00:05 stop-shuffle-service.sh
+-rwxr-xr-x 1 root root 1557 Nov  9 00:05 stop-slave.sh
+-rwxr-xr-x 1 root root 1064 Nov  9 00:05 stop-slaves.sh
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;可见，没有Thrift Server的启动脚本。&lt;/p&gt;
+&lt;p&gt;借鉴网上资料（CDH 6成功启动spark-thrift服务 &lt;a href=&#34;https://blog.csdn.net/qq_34864753/article/details/102729859&#34;&gt;https://blog.csdn.net/qq_34864753/article/details/102729859&lt;/a&gt;），在不修改CDH Spark的前提下，我们需要启动一个独立的Spark Thrift Server。&lt;/p&gt;
+&lt;p&gt;还需要考虑CDH Kerberos认证的问题。&lt;/p&gt;
+&lt;h2 id=&#34;spark-thrift-server-简介&#34;&gt;Spark Thrift Server 简介&lt;/h2&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/sparksqlthriftserver.png&#34; alt=&#34;Spark SQL Thrift Server&#34;&gt;&lt;/p&gt;
+&lt;p&gt;Spark Thrift Server是Spark社区基于HiveServer2实现的一个Thrift服务。旨在无缝兼容HiveServer2。&lt;/p&gt;
+&lt;p&gt;因为Spark Thrift Server的接口和协议都和HiveServer2完全一致，因此我们部署好Spark Thrift Server后，可以直接使用hive的beeline访问Spark Thrift Server执行相关语句。&lt;/p&gt;
+&lt;p&gt;Spark Thrift Server的目的也只是取代HiveServer2，因此它依旧可以和Hive Metastore进行交互，获取到hive的元数据。&lt;/p&gt;
+&lt;p&gt;参考 &lt;a href=&#34;https://www.jianshu.com/p/b719c6415411&#34;&gt;https://www.jianshu.com/p/b719c6415411&lt;/a&gt;&lt;/p&gt;
+&lt;h2 id=&#34;apache-spark配置&#34;&gt;Apache Spark配置&lt;/h2&gt;
+&lt;h3 id=&#34;下载官方版本&#34;&gt;下载官方版本&lt;/h3&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;cd /opt
+wget https://archive.apache.org/dist/spark/spark-2.4.0/spark-2.4.0-bin-hadoop2.7.tgz
+cd spark-2.4.0-bin-hadoop2.7 &lt;span style=&#34;color:#f92672&#34;&gt;&amp;amp;&amp;amp;&lt;/span&gt; ln -s &lt;span style=&#34;color:#e6db74&#34;&gt;`&lt;/span&gt;pwd&lt;span style=&#34;color:#e6db74&#34;&gt;`&lt;/span&gt; /opt/spark
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;spark配置文件&#34;&gt;Spark配置文件&lt;/h3&gt;
+&lt;p&gt;通过软链接的方式复用Hive的配置。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;ln -s /etc/hive/conf/hive-site.xml /opt/spark/conf/hive-site.xml
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;最后配置文件夹长这样。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# ll /opt/spark/conf/&lt;/span&gt;
+-rw-r--r-- &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt; webapp webapp  &lt;span style=&#34;color:#ae81ff&#34;&gt;996&lt;/span&gt; Oct &lt;span style=&#34;color:#ae81ff&#34;&gt;29&lt;/span&gt;  &lt;span style=&#34;color:#ae81ff&#34;&gt;2018&lt;/span&gt; docker.properties.template
+-rw-r--r-- &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt; webapp webapp &lt;span style=&#34;color:#ae81ff&#34;&gt;1105&lt;/span&gt; Oct &lt;span style=&#34;color:#ae81ff&#34;&gt;29&lt;/span&gt;  &lt;span style=&#34;color:#ae81ff&#34;&gt;2018&lt;/span&gt; fairscheduler.xml.template
+lrwxrwxrwx &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt; root   root     &lt;span style=&#34;color:#ae81ff&#34;&gt;28&lt;/span&gt; Apr  &lt;span style=&#34;color:#ae81ff&#34;&gt;9&lt;/span&gt; 11:05 hive-site.xml -&amp;gt; /etc/hive/conf/hive-site.xml
+-rw-r--r-- &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt; webapp webapp &lt;span style=&#34;color:#ae81ff&#34;&gt;2025&lt;/span&gt; Oct &lt;span style=&#34;color:#ae81ff&#34;&gt;29&lt;/span&gt;  &lt;span style=&#34;color:#ae81ff&#34;&gt;2018&lt;/span&gt; log4j.properties.template
+-rw-r--r-- &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt; webapp webapp &lt;span style=&#34;color:#ae81ff&#34;&gt;7801&lt;/span&gt; Oct &lt;span style=&#34;color:#ae81ff&#34;&gt;29&lt;/span&gt;  &lt;span style=&#34;color:#ae81ff&#34;&gt;2018&lt;/span&gt; metrics.properties.template
+-rw-r--r-- &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt; webapp webapp  &lt;span style=&#34;color:#ae81ff&#34;&gt;865&lt;/span&gt; Oct &lt;span style=&#34;color:#ae81ff&#34;&gt;29&lt;/span&gt;  &lt;span style=&#34;color:#ae81ff&#34;&gt;2018&lt;/span&gt; slaves.template
+-rw-r--r-- &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt; webapp webapp &lt;span style=&#34;color:#ae81ff&#34;&gt;1292&lt;/span&gt; Oct &lt;span style=&#34;color:#ae81ff&#34;&gt;29&lt;/span&gt;  &lt;span style=&#34;color:#ae81ff&#34;&gt;2018&lt;/span&gt; spark-defaults.conf.template
+-rwxr-xr-x &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt; webapp webapp &lt;span style=&#34;color:#ae81ff&#34;&gt;4221&lt;/span&gt; Oct &lt;span style=&#34;color:#ae81ff&#34;&gt;29&lt;/span&gt;  &lt;span style=&#34;color:#ae81ff&#34;&gt;2018&lt;/span&gt; spark-env.sh.template
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h4 id=&#34;spark配置文件配置方式&#34;&gt;Spark配置文件配置方式&lt;/h4&gt;
+&lt;ol&gt;
+&lt;li&gt;默认配置路径：&lt;code&gt;$SPARK_HOME/conf&lt;/code&gt;，如果&lt;code&gt;$SPARK_HOME&lt;/code&gt;不存在，脚本中会把脚本上层目录当做&lt;code&gt;$SPARK_HOME&lt;/code&gt;。&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;$SPARK_CONF_DIR&lt;/code&gt;，可以指定SPARK配置文件夹。&lt;/li&gt;
+&lt;li&gt;Spark classpath，如果&lt;code&gt;hdfs-site.xml&lt;/code&gt; &lt;code&gt;core-site.xml&lt;/code&gt;在classpath，Spark可以读取。&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;$HADOOP_CONF_DIR&lt;/code&gt;，一般是&lt;code&gt;/etc/hadoop/conf&lt;/code&gt;目录，读Hadoop配置信息。&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;$YARN_CONF_DIR&lt;/code&gt;，一般也是&lt;code&gt;/etc/hadoop/conf&lt;/code&gt;目录。&lt;/li&gt;
+&lt;li&gt;命令行中可以覆盖以上配置文件中的具体参数。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;参考 &lt;a href=&#34;https://spark.apache.org/docs/latest/configuration.html#inheriting-hadoop-cluster-configuration&#34;&gt;https://spark.apache.org/docs/latest/configuration.html#inheriting-hadoop-cluster-configuration&lt;/a&gt;&lt;/p&gt;
+&lt;h3 id=&#34;spark-lib修改&#34;&gt;Spark lib修改&lt;/h3&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;cd /opt/spark
+rm -rf jars/hadoop-yarn-*
+cp /opt/cloudera/parcels/CDH-6.3.2-1.cdh6.3.2.p0.1605554/jars/hadoop-yarn-* jars/
+cp /opt/cloudera/parcels/CDH-6.3.2-1.cdh6.3.2.p0.1605554/jars/hive-shims-scheduler-2.1.1-cdh6.3.2.jar jars/
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;kerberos-认证&#34;&gt;Kerberos 认证&lt;/h2&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200410140136660.png&#34; alt=&#34;image-20200410140136660&#34;&gt;&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;图中的三个角色，在Kerkeros认证体系下都对应一个principal。Kerberos principal相当于用户名，keytab相当于密码。权限配置，依靠hive与hdfs本身。&lt;/li&gt;
+&lt;li&gt;JDBC客户端与Spark JDBC Server需要使用Kerberos认证。JDBC客户端需要拥有principal/keytab对。我们手动创建。&lt;/li&gt;
+&lt;li&gt;Spark JDBC Server与Hive metastore需要使用Kerberos认证。JDBC服务端需要拥有principal/keytab对。我们手动创建。&lt;/li&gt;
+&lt;li&gt;Hive metastore也拥有自己的principal/keytab对，不过这个已经由CDH托管了。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;常见Kerberos错误：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;org.apache.hive.service.ServiceException: Unable to login to kerberos with given principal/keytab / Caused by: java.io.IOException: HiveServer2 Kerberos principal or keytab is not correctly configured&lt;/li&gt;
+&lt;li&gt;Caused by: java.io.IOException: Login failure for &lt;a href=&#34;mailto:hive/xh-hd2-peggy-dost000003@PEGGY.LING&#34;&gt;hive/xh-hd2-peggy-dost000003@PEGGY.LING&lt;/a&gt; from keytab hive.keytab: javax.security.auth.login.LoginException: Unable to obtain password from user&lt;/li&gt;
+&lt;li&gt;SASL negotiation failure
+javax.security.sasl.SaslException: GSS initiate failed [Caused by GSSException: No valid credentials provided (Mechanism level: Failed to find any Kerberos tgt)]&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3 id=&#34;创建-spark-jdbc-server-的-principal&#34;&gt;创建 Spark JDBC Server 的 Principal&lt;/h3&gt;
+&lt;p&gt;因为复用了Hive的配置文件，待创建的principal的名字需要满足配置中的规范。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;webapp@xh-hd2-peggy-dost000004 spark&lt;span style=&#34;color:#f92672&#34;&gt;]&lt;/span&gt;$ cat conf/hive-site.xml
+...
+  &amp;lt;property&amp;gt;
+    &amp;lt;name&amp;gt;hive.server2.authentication.kerberos.principal&amp;lt;/name&amp;gt;
+    &amp;lt;value&amp;gt;hive/_HOST@PEGGY.LING&amp;lt;/value&amp;gt;
+  &amp;lt;/property&amp;gt;
+... 
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;在Kerberos服务器创建 principal及导出 keytab，同步到Spark JDBC Server所在机器。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# create principal&lt;/span&gt;
+kadmin.local addprinc -randkey hive/xh-hd2-peggy-dost000004
+&lt;span style=&#34;color:#75715e&#34;&gt;# export keytab&lt;/span&gt;
+kadmin.local ktadd -k hive.xh-hd2-peggy-dost000004.keytab hive/xh-hd2-peggy-dost000004
+&lt;span style=&#34;color:#75715e&#34;&gt;# 验证是否OK&lt;/span&gt;
+kinit -kt hive.xh-hd2-peggy-dost000004.keytab hive/xh-hd2-peggy-dost000004@PEGGY.LING
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;启动-spark-jdbc-server&#34;&gt;启动 Spark JDBC Server&lt;/h3&gt;
+&lt;p&gt;启动脚本如下。因为配置文件里没有指定keytab的路径，需要通过&lt;code&gt;--hiveconf&lt;/code&gt;指定。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;#!/usr/bin/bash
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;
+export JAVA_HOME&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;/usr/java/jdk1.8.0_181-cloudera
+export PATH&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;$PATH:$JAVA_HOME/bin
+export HADOOP_CONF_DIR&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;/etc/hadoop/conf
+
+kinit -kt hive.xh-hd2-peggy-dost000004.keytab hive/xh-hd2-peggy-dost000004@PEGGY.LING
+
+sbin/start-thriftserver.sh &lt;span style=&#34;color:#ae81ff&#34;&gt;\
+&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;&lt;/span&gt;--hiveconf hive.server2.authentication.kerberos.keytab hive.xh-hd2-peggy-dost000004.keytab
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;也可以参考这篇文章：&lt;/p&gt;
+&lt;p&gt;Configuring Spark Thrift Server with Kerberos &lt;a href=&#34;https://mapr.com/docs/61/Spark/ConfiguringSparkSQLThriftServer_Kerberos.html&#34;&gt;https://mapr.com/docs/61/Spark/ConfiguringSparkSQLThriftServer_Kerberos.html&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;TODO: kinit得到的ticket配置的有效期是24h。过了24h，怎么自动重置？&lt;/p&gt;
+&lt;h3 id=&#34;创建-jdbc-client-的-principal&#34;&gt;创建 JDBC Client 的 Principal&lt;/h3&gt;
+&lt;p&gt;在Kerberos服务器创建 principal及导出 keytab，同步到 JDBC Client 所在机器。这里对principal的名称没有严格要求。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# create principal&lt;/span&gt;
+kadmin.local addprinc -randkey hive/xh-hd2-peggy-dost000003
+&lt;span style=&#34;color:#75715e&#34;&gt;# export keytab&lt;/span&gt;
+kadmin.local ktadd -k hive.xh-hd2-peggy-dost000003.keytab hive/xh-hd2-peggy-dost000003 
+&lt;span style=&#34;color:#75715e&#34;&gt;# 验证是否OK&lt;/span&gt;
+kinit -kt hive.xh-hd2-peggy-dost000003.keytab hive/xh-hd2-peggy-dost000003@PEGGY.LING
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;启动-jdbc-client&#34;&gt;启动 JDBC Client&lt;/h3&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;webapp@xh-hd2-peggy-dost000003 spark&lt;span style=&#34;color:#f92672&#34;&gt;]&lt;/span&gt;$ kinit -kt hive.xh-hd2-peggy-dost000003.keytab hive/xh-hd2-peggy-dost000003@PEGGY.LING
+
+&lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;webapp@xh-hd2-peggy-dost000003 spark&lt;span style=&#34;color:#f92672&#34;&gt;]&lt;/span&gt;$ bin/beeline -u &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;jdbc:hive2://xh-hd2-peggy-dost000004:10000/default;principal=hive/xh-hd2-peggy-dost000004@PEGGY.LING&amp;#34;&lt;/span&gt;
+Connecting to jdbc:hive2://xh-hd2-peggy-dost000004:10000/default;principal&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;hive/xh-hd2-peggy-dost000004@PEGGY.LING
+2020-04-10 16:09:01 INFO  Utils:310 - Supplied authorities: xh-hd2-peggy-dost000004:10000
+2020-04-10 16:09:01 INFO  Utils:397 - Resolved authority: xh-hd2-peggy-dost000004:10000
+2020-04-10 16:09:01 INFO  HiveConnection:203 - Will try to open client transport with JDBC Uri: jdbc:hive2://xh-hd2-peggy-dost000004:10000/default;principal&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;hive/xh-hd2-peggy-dost000004@PEGGY.LING
+Connected to: Spark SQL &lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;version 2.4.0&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt;
+Driver: Hive JDBC &lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;version 1.2.1.spark2&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt;
+Transaction isolation: TRANSACTION_REPEATABLE_READ
+Beeline version 1.2.1.spark2 by Apache Hive
+0: jdbc:hive2://xh-hd2-peggy-dost000004:10000&amp;gt; show databases;
++---------------+--+
+| databaseName  |
++---------------+--+
+| db1           |
+| default       |
+| product       |
++---------------+--+
+&lt;span style=&#34;color:#ae81ff&#34;&gt;3&lt;/span&gt; rows selected &lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;0.091 seconds&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;yarn-运行&#34;&gt;YARN 运行&lt;/h3&gt;
+&lt;p&gt;TODO&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;sbin/start-thriftserver.sh --hiveconf hive.server2.authentication.kerberos.keytab hive.keytab --hiveconf hive.server2.thrift.port=10001 --queue root.zm_yarn_pool.development  --master yarn --executor-memory 4g --executor-cores 2 --num-executors 20
+
+2020-04-09 17:56:19 INFO  Client:54 - Requesting a new application from cluster with 5 NodeManagers
+Exception in thread &amp;quot;main&amp;quot; java.lang.NoClassDefFoundError: org/apache/hadoop/util/FastNumberFormat
+        at org.apache.hadoop.yarn.api.records.ApplicationId.toString(ApplicationId.java:104)
+        at org.apache.spark.deploy.yarn.Client$.org$apache$spark$deploy$yarn$Client$$getAppStagingDir(Client.scala:1222)
+        at org.apache.spark.deploy.yarn.Client.org$apache$spark$deploy$yarn$Client$$cleanupStagingDirInternal$1(Client.scala:206)
+        at org.apache.spark.deploy.yarn.Client.cleanupStagingDir(Client.scala:226)
+        at org.apache.spark.deploy.yarn.Client.submitApplication(Client.scala:191)
+        at org.apache.spark.scheduler.cluster.YarnClientSchedulerBackend.start(YarnClientSchedulerBackend.scala:57)
+        at org.apache.spark.scheduler.TaskSchedulerImpl.start(TaskSchedulerImpl.scala:178)
+        at org.apache.spark.SparkContext.&amp;lt;init&amp;gt;(SparkContext.scala:501)
+        at org.apache.spark.SparkContext$.getOrCreate(SparkContext.scala:2520)
+        at org.apache.spark.sql.SparkSession$Builder$$anonfun$7.apply(SparkSession.scala:935)
+        at org.apache.spark.sql.SparkSession$Builder$$anonfun$7.apply(SparkSession.scala:926)
+        at scala.Option.getOrElse(Option.scala:121)
+&lt;/code&gt;&lt;/pre&gt;&lt;h2 id=&#34;外传cdh是如何管理hadoop配置文件的&#34;&gt;【外传】CDH是如何管理Hadoop配置文件的&lt;/h2&gt;
+&lt;p&gt;以下结果都是通过观察实践所得。&lt;/p&gt;
+&lt;p&gt;以Hive为例，&lt;code&gt;/etc/hive/conf&lt;/code&gt;下的配置文件由CDH生成。（CDH管理界面上可以修改这些配置。）&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# ll /etc/hive/conf/&lt;/span&gt;
+total &lt;span style=&#34;color:#ae81ff&#34;&gt;64&lt;/span&gt;
+-rw-r--r-- &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt; root root   &lt;span style=&#34;color:#ae81ff&#34;&gt;21&lt;/span&gt; Dec &lt;span style=&#34;color:#ae81ff&#34;&gt;31&lt;/span&gt; 15:02 __cloudera_generation__
+-rw-r--r-- &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt; root root   &lt;span style=&#34;color:#ae81ff&#34;&gt;70&lt;/span&gt; Dec &lt;span style=&#34;color:#ae81ff&#34;&gt;31&lt;/span&gt; 15:02 __cloudera_metadata__
+-rw-r--r-- &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt; root root &lt;span style=&#34;color:#ae81ff&#34;&gt;3846&lt;/span&gt; Dec &lt;span style=&#34;color:#ae81ff&#34;&gt;31&lt;/span&gt; 15:02 core-site.xml
+-rw-r--r-- &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt; root root  &lt;span style=&#34;color:#ae81ff&#34;&gt;617&lt;/span&gt; Dec &lt;span style=&#34;color:#ae81ff&#34;&gt;31&lt;/span&gt; 15:02 hadoop-env.sh
+-rw-r--r-- &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt; root root &lt;span style=&#34;color:#ae81ff&#34;&gt;3839&lt;/span&gt; Dec &lt;span style=&#34;color:#ae81ff&#34;&gt;31&lt;/span&gt; 15:02 hdfs-site.xml
+-rw-r--r-- &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt; root root &lt;span style=&#34;color:#ae81ff&#34;&gt;2655&lt;/span&gt; Dec &lt;span style=&#34;color:#ae81ff&#34;&gt;31&lt;/span&gt; 15:02 hive-env.sh
+-rw-r--r-- &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt; root root &lt;span style=&#34;color:#ae81ff&#34;&gt;6925&lt;/span&gt; Dec &lt;span style=&#34;color:#ae81ff&#34;&gt;31&lt;/span&gt; 15:02 hive-site.xml
+...
+
+&lt;span style=&#34;color:#75715e&#34;&gt;# head /etc/hive/conf/hive-site.xml&lt;/span&gt;
+&amp;lt;?xml version&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;1.0&amp;#34;&lt;/span&gt; encoding&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;UTF-8&amp;#34;&lt;/span&gt;?&amp;gt;
+
+&amp;lt;!--Autogenerated by Cloudera Manager--&amp;gt;
+&amp;lt;configuration&amp;gt;
+  &amp;lt;property&amp;gt;
+    &amp;lt;name&amp;gt;hive.metastore.uris&amp;lt;/name&amp;gt;
+    &amp;lt;value&amp;gt;thrift://xh-hd2-peggy-dost001:9083&amp;lt;/value&amp;gt;
+  &amp;lt;/property&amp;gt;
+  &amp;lt;property&amp;gt;
+    &amp;lt;name&amp;gt;hive.metastore.client.socket.timeout&amp;lt;/name&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;我们的集群是开启了Kerberos认证的。但是上述配置文件里没见principal的keytab路径配置。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# grep keytab /etc/hive/conf/hive-site.xml&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;也就是说，&lt;code&gt;/etc/hive/conf&lt;/code&gt;不是真正在被使用的配置文件。&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;/var/run/cloudera-scm-agent/process/&lt;/code&gt; 这个目录中有所有CDH监控的进程，包括我们关注的Hive进程。&lt;/p&gt;
+&lt;p&gt;参考 &lt;a href=&#34;https://community.cloudera.com/t5/Support-Questions/Location-of-keytab-files/td-p/33716&#34;&gt;https://community.cloudera.com/t5/Support-Questions/Location-of-keytab-files/td-p/33716&lt;/a&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;# ls /var/run/cloudera-scm-agent/process/*hive*
+/var/run/cloudera-scm-agent/process/954-hive-HIVEMETASTORE:
+cloudera-monitor.properties        config.zip     creds.localjceks  hdfs-site.xml  hive-log4j2.properties  logs       redaction-rules.json  service-metrics.properties  supervisor_status
+cloudera-stack-monitor.properties  core-site.xml  exit_code         hive.keytab    hive-site.xml           proc.json  sentry-site.xml       supervisor.conf             yarn-conf
+
+/var/run/cloudera-scm-agent/process/955-hive-HIVESERVER2:
+cloudera-monitor.properties        config.zip     exit_code           hdfs-site.xml  hive-log4j2.properties  logs                         navigator.lineage.client.properties  redaction-rules.json  service-metrics.properties  supervisor.conf    yarn-conf
+cloudera-stack-monitor.properties  core-site.xml  fair-scheduler.xml  hive.keytab    hive-site.xml           navigator.client.properties  proc.json                            sentry-site.xml       spark-defaults.conf         supervisor_status
+
+/var/run/cloudera-scm-agent/process/956-hive-WEBHCAT:
+cloudera-monitor.properties        config.zip     exit_code      hive-site.xml  logs       redaction-rules.json        supervisor.conf    webhcat-default.xml       webhcat-site.xml
+cloudera-stack-monitor.properties  core-site.xml  hdfs-site.xml  HTTP.keytab    proc.json  service-metrics.properties  supervisor_status  webhcat-log4j.properties  yarn-conf
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;这里Hive有三个进程，metastore，hiveserver2，WEBHCAT。可见principal对应的keytab，这里的 &lt;code&gt;hive.keytab&lt;/code&gt;，也是在这里维护着。配置文件也是在&lt;code&gt;/etc/hive/conf&lt;/code&gt;基础上作了改动，比如keytab路径的设置。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;root 954-hive-HIVEMETASTORE&lt;span style=&#34;color:#f92672&#34;&gt;]&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# grep kerberos hive-site.xml&lt;/span&gt;
+    &amp;lt;name&amp;gt;hive.metastore.kerberos.principal&amp;lt;/name&amp;gt;
+    &amp;lt;name&amp;gt;hive.metastore.kerberos.keytab.file&amp;lt;/name&amp;gt;
+    &amp;lt;value&amp;gt;kerberos&amp;lt;/value&amp;gt;
+    
+&lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;root 955-hive-HIVESERVER2&lt;span style=&#34;color:#f92672&#34;&gt;]&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# grep kerberos hive-site.xml&lt;/span&gt;
+    &amp;lt;value&amp;gt;kerberos&amp;lt;/value&amp;gt;
+    &amp;lt;name&amp;gt;hive.metastore.kerberos.principal&amp;lt;/name&amp;gt;
+    &amp;lt;name&amp;gt;hive.server2.authentication.kerberos.principal&amp;lt;/name&amp;gt;
+    &amp;lt;name&amp;gt;hive.server2.authentication.kerberos.keytab&amp;lt;/name&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;HiveMetaStore与HiveServer2使用的keytab是不同的。一个principal对应多个keytab么？TODO：可能是因为加密随机的原因？？？&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;root@xh-hd2-peggy-dost001 955-hive-HIVESERVER2&lt;span style=&#34;color:#f92672&#34;&gt;]&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# md5sum hive.keytab&lt;/span&gt;
+523357eec4f542b7b3df7ec52cee43b2  hive.keytab
+
+&lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;root@xh-hd2-peggy-dost001 954-hive-HIVEMETASTORE&lt;span style=&#34;color:#f92672&#34;&gt;]&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# md5sum hive.keytab&lt;/span&gt;
+3c6f52333067518ae4bdce1e99878857  hive.keytab
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;TODO：实验发现，导出两次，之前的keytab就失效了！进入知识盲区。&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;[root@xh-hd2-peggy-rost01 ~]# kadmin.local addprinc -randkey hive/xh-hd2-peggy-dost000003
+[root@xh-hd2-peggy-rost01 ~]# kadmin.local ktadd -k hive.xh-hd2-peggy-dost000003.keytab hive/xh-hd2-peggy-dost000003
+[root@xh-hd2-peggy-rost01 ~]# mv hive.xh-hd2-peggy-dost000003.keytab hive.xh-hd2-peggy-dost000003.keytab.bak
+[root@xh-hd2-peggy-rost01 ~]# kadmin.local ktadd -k hive.xh-hd2-peggy-dost000003.keytab hive/xh-hd2-peggy-dost000003
+[root@xh-hd2-peggy-rost01 ~]# kinit -kt hive.xh-hd2-peggy-dost000003.keytab hive/xh-hd2-peggy-dost000003@PEGGY.LING
+[root@xh-hd2-peggy-rost01 ~]# kinit -kt hive.xh-hd2-peggy-dost000003.keytab.bak hive/xh-hd2-peggy-dost000003@PEGGY.LING
+kinit: Password incorrect while getting initial credentials
+&lt;/code&gt;&lt;/pre&gt;- https://xujiahua.github.io/posts/spark-thrift-server-cdh/ - </description>
+        </item>
     
     
     
@@ -135,7 +372,7 @@ root@ubuntu-parallel:~# docker logs journald_logging_driver
         <pubDate>Thu, 02 Apr 2020 16:58:23 +0800</pubDate>
         
         <guid>https://xujiahua.github.io/posts/use-fluentd/</guid>
-        <description>许嘉华的博客 https://xujiahua.github.io/posts/use-fluentd/ -&lt;p&gt;以收集Docker容器日志的例子，介绍下Fluentd的用法。&lt;/p&gt;
+        <description>许嘉华的博客 https://xujiahua.github.io/posts/use-fluentd/ -&lt;p&gt;以收集Docker容器日志的例子，介绍下Fluentd的用法。不考虑logstash，太占服务器资源了。&lt;/p&gt;
 &lt;h2 id=&#34;安装-fluentd&#34;&gt;安装 Fluentd&lt;/h2&gt;
 &lt;p&gt;Ubuntu 18.04上的安装命令（https://docs.fluentd.org/installation/install-by-deb）：&lt;/p&gt;
 &lt;pre&gt;&lt;code&gt;root@ubuntu-parallel:~# curl -L https://toolbelt.treasuredata.com/sh/install-ubuntu-bionic-td-agent3.sh | sh
@@ -351,7 +588,7 @@ td-agent 30602 30596  9 17:10 ?        00:00:00 /opt/td-agent/embedded/bin/ruby 
 		&lt;span style=&#34;color:#a6e22e&#34;&gt;spew&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Dump&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;result&lt;/span&gt;)
 	}
 }
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;识别图像大概需要1秒。&lt;/p&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;识别图像大概需要1秒。实际业务中使用，建议异步处理，事后处理，不然太影响正常体验了。&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;$ go test -v -bench&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;DetectSafeSearchForFile -benchtime&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;30s
 
 BenchmarkDetectSafeSearchForFile-8            &lt;span style=&#34;color:#ae81ff&#34;&gt;33&lt;/span&gt;        &lt;span style=&#34;color:#ae81ff&#34;&gt;1011378355&lt;/span&gt; ns/op
@@ -1205,109 +1442,6 @@ func main() {
 &lt;p&gt;这个时间点叫做：授权公告日。&lt;/p&gt;
 &lt;p&gt;说明正式审查完了。这时候才算是真正拥有专利。&lt;/p&gt;
 - https://xujiahua.github.io/posts/patent/ - </description>
-        </item>
-    
-    
-    
-        <item>
-        <title>Github pages重新开始：使用Hugo、Typora</title>
-        <link>https://xujiahua.github.io/posts/github-pages-restart/</link>
-        <pubDate>Tue, 10 Mar 2020 11:24:49 +0800</pubDate>
-        
-        <guid>https://xujiahua.github.io/posts/github-pages-restart/</guid>
-        <description>许嘉华的博客 https://xujiahua.github.io/posts/github-pages-restart/ -&lt;h2 id=&#34;重新开始github-pages&#34;&gt;重新开始GitHub pages&lt;/h2&gt;
-&lt;p&gt;曾使用&lt;code&gt;GitHub pages&lt;/code&gt; + &lt;code&gt; jekyll&lt;/code&gt; 写过一段时间博客，没啥营养。&lt;/p&gt;
-&lt;p&gt;打算重新开始：&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;把我记录在Evernote和Typora中的资料迁移到&lt;code&gt;GitHub pages&lt;/code&gt;上。&lt;/li&gt;
-&lt;li&gt;另外做一些Web形式的小工具，挂载在一个子目录里，方便平时使用。&lt;/li&gt;
-&lt;/ol&gt;
-&lt;h2 id=&#34;hugo--typora&#34;&gt;Hugo + Typora&lt;/h2&gt;
-&lt;p&gt;打算如下：&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;Markdown文件还是使用Typora写。用过MWeb、Typora，Typora使用感受更好些（这么好用还不要钱）。&lt;/li&gt;
-&lt;li&gt;Hugo作为静态网站生成，创建一个博客模板。&lt;/li&gt;
-&lt;/ol&gt;
-&lt;h3 id=&#34;hugo-quickstart&#34;&gt;Hugo quickstart&lt;/h3&gt;
-&lt;pre&gt;&lt;code&gt;# 安装hugo（其实是Go编译的二进制文件）
-brew install hugo
-
-# 创建site
-hugo new site quickstart
-
-# 通过git submodule的方式下载主题
-git init
-git submodule -b master add https://github.com/dillonzq/LoveIt themes/LoveIt
-
-# 更新config.toml，配置主题参数，见loveit配置
-
-# 创建博客，创建的posts在content目录下。文件格式为：content/&amp;lt;CATEGORY&amp;gt;/&amp;lt;FILE&amp;gt;.&amp;lt;FORMAT&amp;gt;
-# hugo new 会采用 archetypes/default.md作为模板，把一些共性配置放在这个模板里吧。
-hugo new posts/my-first-post.md
-
-# 本地看blog效果，-D表示草稿状态的博客也显示
-hugo server -D
-
-# 生成静态网站到./public/，也可以指定目录
-hugo -D
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;挑选了一个比较实用的主题 &lt;a href=&#34;https://hugoloveit.com/&#34;&gt;https://hugoloveit.com/&lt;/a&gt;&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;比较基本的posts, tags, categories&lt;/li&gt;
-&lt;li&gt;文章页面右边可显示文章的目录表&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;参考：&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;&lt;a href=&#34;https://gohugo.io/getting-started/quick-start/&#34;&gt;https://gohugo.io/getting-started/quick-start/&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;https://hugoloveit.com/theme-documentation-basics/&#34;&gt;https://hugoloveit.com/theme-documentation-basics/&lt;/a&gt;&lt;/li&gt;
-&lt;/ol&gt;
-&lt;h3 id=&#34;图片文件夹的配置&#34;&gt;图片文件夹的配置&lt;/h3&gt;
-&lt;p&gt;Typora的贴图功能很方便：配置好图片文件夹，从剪贴板粘贴图像会自动将图片保存到图片文件夹，并自动命名。&lt;/p&gt;
-&lt;p&gt;&lt;code&gt;hugo&lt;/code&gt;管理静态资源的方式跟Typora默认是不适配的，需要做些调整。&lt;/p&gt;
-&lt;h5 id=&#34;长话短说&#34;&gt;长话短说&lt;/h5&gt;
-&lt;ol&gt;
-&lt;li&gt;&lt;code&gt;hugo&lt;/code&gt;项目中，创建&lt;code&gt;static/images&lt;/code&gt;文件夹，并且软链接到项目根目录下：&lt;/li&gt;
-&lt;/ol&gt;
-&lt;pre&gt;&lt;code&gt;mkdir -p static/images &amp;amp;&amp;amp; ln -s `pwd`/static/images images
-&lt;/code&gt;&lt;/pre&gt;&lt;ol start=&#34;2&#34;&gt;
-&lt;li&gt;Typora打开content目录，并做配置如下。之后，像平常那样用Typora写文字吧。&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image-20200310184153667.png&#34; alt=&#34;image-20200310184153667&#34;&gt;&lt;/p&gt;
-&lt;h5 id=&#34;在根目录建images软链接的理由&#34;&gt;在根目录建&lt;code&gt;images&lt;/code&gt;软链接的理由&lt;/h5&gt;
-&lt;p&gt;一些信息和思路：&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;&lt;code&gt;hugo&lt;/code&gt;的静态资源放在static目录下。&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;hugo&lt;/code&gt;生成静态文件，static目录会将其下的文件、文件夹平移到目标网站目录的根目录，比如&lt;code&gt;static/images/1.png&lt;/code&gt;，平移后为&lt;code&gt;images/1.png&lt;/code&gt;。html里使用&lt;code&gt;/images/*&lt;/code&gt;的方式引用。（可查看public文件夹的目录结构）&lt;/li&gt;
-&lt;li&gt;hugo static目录下的资源目录不能是软链接，WTF。Unsupported symlink found &lt;a href=&#34;https://github.com/gohugoio/hugo/issues/6225&#34;&gt;https://github.com/gohugoio/hugo/issues/6225&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;万幸Typora可以用软链接。&lt;/li&gt;
-&lt;li&gt;一篇post，在浏览器和文件系统上的目录结构是不同的。以最末层的文件夹为&lt;code&gt;./&lt;/code&gt;。浏览器下目录结构如下：&lt;/li&gt;
-&lt;/ol&gt;
-&lt;pre&gt;&lt;code&gt;/ =&amp;gt; ../.. 举例来说，以图片文件夹名称为`image`为例，`../../images/*` = `/images/*`
-	/posts/ =&amp;gt; ../
-		/posts/post_name/ =&amp;gt; ./
-&lt;/code&gt;&lt;/pre&gt;&lt;ol start=&#34;6&#34;&gt;
-&lt;li&gt;文件系统下的目录结构：&lt;/li&gt;
-&lt;/ol&gt;
-&lt;pre&gt;&lt;code&gt;hugo-blogger =&amp;gt; ../../
-	content =&amp;gt; ../
-		posts =&amp;gt; ./
-			post_name
-&lt;/code&gt;&lt;/pre&gt;&lt;ol start=&#34;7&#34;&gt;
-&lt;li&gt;所以为了能让文件系统和浏览器上都显示图像，&lt;code&gt;images&lt;/code&gt;软链接放在项目根目录下比较合适。&lt;/li&gt;
-&lt;/ol&gt;
-&lt;h3 id=&#34;github-pages&#34;&gt;GitHub pages&lt;/h3&gt;
-&lt;p&gt;静态文件输出到xujiahua.github.io上去。&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;git submodule add -b master https://github.com/XUJiahua/XUJiahua.github.io.git public
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;复用这里的deploy脚本。https://gohugo.io/hosting-and-deployment/hosting-on-github/#put-it-into-a-script&lt;/p&gt;
-&lt;h4 id=&#34;图片资源404的问题&#34;&gt;图片资源404的问题&lt;/h4&gt;
-&lt;p&gt;_images文件夹下的资源404了。太奇怪了，路径OK，也没大小问题。过了很久还是不见效。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image-20200312190900210.png&#34; alt=&#34;image-20200312190900210&#34;&gt;&lt;/p&gt;
-&lt;p&gt;尝试在images文件夹下放了个1.txt，理论上链接应该是 &lt;a href=&#34;https://xujiahua.github.io/images/1.txt&#34;&gt;https://xujiahua.github.io/images/1.txt&lt;/a&gt;，一开始也是404。过了半小时OK了。&lt;/p&gt;
-&lt;p&gt;结论是，_images文件夹取名可能有问题。那就改用images。&lt;/p&gt;
-&lt;p&gt;参考：&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;&lt;a href=&#34;https://gohugo.io/hosting-and-deployment/hosting-on-github/&#34;&gt;https://gohugo.io/hosting-and-deployment/hosting-on-github/&lt;/a&gt;&lt;/li&gt;
-&lt;/ol&gt;
-- https://xujiahua.github.io/posts/github-pages-restart/ - </description>
         </item>
     
     

@@ -1025,7 +1025,7 @@ Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopene
 		<span style="color:#a6e22e">spew</span>.<span style="color:#a6e22e">Dump</span>(<span style="color:#a6e22e">result</span>)
 	}
 }
-</code></pre></div><p>识别图像大概需要1秒。</p>
+</code></pre></div><p>识别图像大概需要1秒。实际业务中使用，建议异步处理，事后处理，不然太影响正常体验了。</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ go test -v -bench<span style="color:#f92672">=</span>DetectSafeSearchForFile -benchtime<span style="color:#f92672">=</span>30s
 
 BenchmarkDetectSafeSearchForFile-8            <span style="color:#ae81ff">33</span>        <span style="color:#ae81ff">1011378355</span> ns/op

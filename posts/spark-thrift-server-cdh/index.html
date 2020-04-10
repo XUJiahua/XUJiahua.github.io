@@ -1,0 +1,1229 @@
+<!DOCTYPE html>
+<html><head>
+<title>CDH6 启用 Spark Thrift Server</title>
+
+<meta charset="utf-8">
+<meta name="X-UA-Compatible" content="IE=edge">
+<meta name="google-site-verification" content="">
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport">
+<meta content="telephone=no" name="format-detection">
+<meta name="description" content="">
+<meta name="renderer" content="webkit">
+<meta name="theme-color" content="#ffffff">
+
+
+
+
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+	ga('create', 'UA-162706610-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+
+
+
+<script src="/vendor/js/jquery.min.js" ></script>
+<script src="/vendor/js/popper.min.js" ></script>
+<script src="/vendor/js/bootstrap.min.js" ></script>
+<script src="/vendor/js/smooth-scroll.polyfills.min.js" ></script>
+<link type="text/css" rel="stylesheet" href="/vendor/css/bootstrap.min.css">
+<script src="/vendor/js/vue.min.js" ></script>
+
+
+
+
+<link rel="stylesheet" href="https://xujiahua.github.io/scss/journal.min.5c667e74038e21ddbb9024b67930f8544e02af62491281cf73fdb817eec2947e.css" integrity="sha256-XGZ&#43;dAOOId27kCS2eTD4VE4Cr2JJEoHPc/24F&#43;7ClH4=" media="screen">
+
+<script src="https://xujiahua.github.io//js/loadCSS.js"></script>
+<script src="https://xujiahua.github.io//js/table.js"></script>
+
+
+<script src="https://xujiahua.github.io//js/toc.js"></script>
+
+
+<script>
+    loadCSS("https://fonts.googleapis.com/css?family=Lora|Montserrat|Fira+Mono|Noto+Serif+SC|Material+Icons");
+</script>
+
+
+
+
+
+
+</head><body>
+    	<div id="app"><div ref="sideContainer" class="side-container">
+    
+    <a class="a-block nav-head false" href="https://xujiahua.github.io/">
+    
+        <div class="nav-title">
+            许嘉华的博客
+        </div>
+        
+    </a>
+
+    <div class="nav-link-list">
+        
+        
+            
+            
+            
+                
+            
+            
+            
+            <a class="a-block nav-link-item active" href="/posts">
+                Archive
+            </a>
+            
+        
+            
+            
+            
+            
+            
+            <a class="a-block nav-link-item false" href="/categories">
+                Categories
+            </a>
+            
+        
+            
+            
+            
+            
+            
+            <a class="a-block nav-link-item false" href="/tags">
+                Tags
+            </a>
+            
+        
+            
+            
+            
+            
+            
+            <a class="a-block nav-link-item false" href="/index.xml">
+                RSS Feed
+            </a>
+            
+        
+    </div>
+
+    
+
+    <div class="nav-footer">
+        
+Hugo Theme <a href="https://github.com/amazingrise/hugo-theme-diary">Diary</a> by <a href="https://amazingrise.net">Rise</a>
+<br>
+Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopener">Makito</a>'s <a href="https://github.com/SumiMakito/hexo-theme-journal/" target="_blank" rel="noreferrer noopener">Journal.</a> <br>
+<br>
+
+&copy;
+	
+	2020 许嘉华的博客
+	
+    </div>
+    
+</div><div ref="extraContainer" class="extra-container">
+    
+    <div class="toc animated-visibility" :class="{ invisible: scrollY <= 140 }">
+
+
+	<div class="toc-content">
+	
+		
+		
+		
+		<center>- CATALOG -</center>
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#spark-thrift-server-%e7%ae%80%e4%bb%8b" v-on:click="closeDrawer" id="spark-thrift-server-简介-nav">
+										 Spark Thrift Server 简介
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#apache-spark%e9%85%8d%e7%bd%ae" v-on:click="closeDrawer" id="apache-spark配置-nav">
+										 Apache Spark配置
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e4%b8%8b%e8%bd%bd%e5%ae%98%e6%96%b9%e7%89%88%e6%9c%ac" v-on:click="closeDrawer" id="下载官方版本-nav">
+										 下载官方版本
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#spark%e9%85%8d%e7%bd%ae%e6%96%87%e4%bb%b6" v-on:click="closeDrawer" id="spark配置文件-nav">
+										 Spark配置文件
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#spark%e9%85%8d%e7%bd%ae%e6%96%87%e4%bb%b6%e9%85%8d%e7%bd%ae%e6%96%b9%e5%bc%8f" v-on:click="closeDrawer" id="spark配置文件配置方式-nav">
+										 Spark配置文件配置方式
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#spark-lib%e4%bf%ae%e6%94%b9" v-on:click="closeDrawer" id="spark-lib修改-nav">
+										 Spark lib修改
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#kerberos-%e8%ae%a4%e8%af%81" v-on:click="closeDrawer" id="kerberos-认证-nav">
+										 Kerberos 认证
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e5%88%9b%e5%bb%ba-spark-jdbc-server-%e7%9a%84-principal" v-on:click="closeDrawer" id="创建-spark-jdbc-server-的-principal-nav">
+										 创建 Spark JDBC Server 的 Principal
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e5%90%af%e5%8a%a8-spark-jdbc-server" v-on:click="closeDrawer" id="启动-spark-jdbc-server-nav">
+										 启动 Spark JDBC Server
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e5%88%9b%e5%bb%ba-jdbc-client-%e7%9a%84-principal" v-on:click="closeDrawer" id="创建-jdbc-client-的-principal-nav">
+										 创建 JDBC Client 的 Principal
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e5%90%af%e5%8a%a8-jdbc-client" v-on:click="closeDrawer" id="启动-jdbc-client-nav">
+										 启动 JDBC Client
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#yarn-%e8%bf%90%e8%a1%8c" v-on:click="closeDrawer" id="yarn-运行-nav">
+										 YARN 运行
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e5%a4%96%e4%bc%a0cdh%e6%98%af%e5%a6%82%e4%bd%95%e7%ae%a1%e7%90%86hadoop%e9%85%8d%e7%bd%ae%e6%96%87%e4%bb%b6%e7%9a%84" v-on:click="closeDrawer" id="外传cdh是如何管理hadoop配置文件的-nav">
+										 【外传】CDH是如何管理Hadoop配置文件的
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+	</div>
+
+</div>
+    
+    <div class="pagination">
+        <a id="globalBackToTop" class="pagination-action animated-visibility" href="#top" :class="{ invisible: scrollY == 0 }">
+            <i class="material-icons pagination-action-icon">
+                keyboard_arrow_up
+            </i>
+        </a>
+        
+    </div>
+</div><div class="single-column-drawer-container" ref="drawer"
+     v-bind:class="{ 'single-column-drawer-container-active': isDrawerOpen }">
+    <div class="drawer-content">
+        <div class="drawer-menu">
+            
+            
+                
+                
+                
+                    
+                
+                
+                
+                <a class="a-block drawer-menu-item active" href="/posts">
+                    Archive
+                </a>
+                
+            
+                
+                
+                
+                
+                
+                <a class="a-block drawer-menu-item false" href="/categories">
+                    Categories
+                </a>
+                
+            
+                
+                
+                
+                
+                
+                <a class="a-block drawer-menu-item false" href="/tags">
+                    Tags
+                </a>
+                
+            
+                
+                
+                
+                
+                
+                <a class="a-block drawer-menu-item false" href="/index.xml">
+                    RSS Feed
+                </a>
+                
+            
+            
+            <div class="toc">
+
+
+	<div class="toc-content">
+	
+		
+		
+		
+		<center>- CATALOG -</center>
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#spark-thrift-server-%e7%ae%80%e4%bb%8b" v-on:click="closeDrawer" id="spark-thrift-server-简介-nav">
+										 Spark Thrift Server 简介
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#apache-spark%e9%85%8d%e7%bd%ae" v-on:click="closeDrawer" id="apache-spark配置-nav">
+										 Apache Spark配置
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e4%b8%8b%e8%bd%bd%e5%ae%98%e6%96%b9%e7%89%88%e6%9c%ac" v-on:click="closeDrawer" id="下载官方版本-nav">
+										 下载官方版本
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#spark%e9%85%8d%e7%bd%ae%e6%96%87%e4%bb%b6" v-on:click="closeDrawer" id="spark配置文件-nav">
+										 Spark配置文件
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#spark%e9%85%8d%e7%bd%ae%e6%96%87%e4%bb%b6%e9%85%8d%e7%bd%ae%e6%96%b9%e5%bc%8f" v-on:click="closeDrawer" id="spark配置文件配置方式-nav">
+										 Spark配置文件配置方式
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#spark-lib%e4%bf%ae%e6%94%b9" v-on:click="closeDrawer" id="spark-lib修改-nav">
+										 Spark lib修改
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#kerberos-%e8%ae%a4%e8%af%81" v-on:click="closeDrawer" id="kerberos-认证-nav">
+										 Kerberos 认证
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e5%88%9b%e5%bb%ba-spark-jdbc-server-%e7%9a%84-principal" v-on:click="closeDrawer" id="创建-spark-jdbc-server-的-principal-nav">
+										 创建 Spark JDBC Server 的 Principal
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e5%90%af%e5%8a%a8-spark-jdbc-server" v-on:click="closeDrawer" id="启动-spark-jdbc-server-nav">
+										 启动 Spark JDBC Server
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e5%88%9b%e5%bb%ba-jdbc-client-%e7%9a%84-principal" v-on:click="closeDrawer" id="创建-jdbc-client-的-principal-nav">
+										 创建 JDBC Client 的 Principal
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e5%90%af%e5%8a%a8-jdbc-client" v-on:click="closeDrawer" id="启动-jdbc-client-nav">
+										 启动 JDBC Client
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#yarn-%e8%bf%90%e8%a1%8c" v-on:click="closeDrawer" id="yarn-运行-nav">
+										 YARN 运行
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e5%a4%96%e4%bc%a0cdh%e6%98%af%e5%a6%82%e4%bd%95%e7%ae%a1%e7%90%86hadoop%e9%85%8d%e7%bd%ae%e6%96%87%e4%bb%b6%e7%9a%84" v-on:click="closeDrawer" id="外传cdh是如何管理hadoop配置文件的-nav">
+										 【外传】CDH是如何管理Hadoop配置文件的
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+	</div>
+
+</div>
+            
+        </div>
+    </div>
+</div>
+<transition name="fade">
+    <div v-bind:class="{ 'single-column-drawer-mask': mounted }" v-if="isDrawerOpen" v-on:click="toggleDrawer"></div>
+</transition>
+<nav ref="navBar" class="navbar sticky-top navbar-light single-column-nav-container">
+    <div ref="navBackground" class="nav-background"></div>
+    <div class="container container-narrow nav-content">
+        <button id="nav_dropdown_btn" class="nav-dropdown-toggle" type="button" v-on:click="toggleDrawer">
+            <i class="material-icons">
+                menu
+            </i>
+        </button>
+        <a ref="navTitle" class="navbar-brand" href="https://xujiahua.github.io/">
+            许嘉华的博客
+        </a>
+    </div>
+</nav>
+<div class="single-column-header-container" ref="pageHead"
+     v-bind:style="{ transform: 'translateZ(0px) translateY('+.3*scrollY+'px)', opacity: 1-navOpacity }">
+    <a href="https://xujiahua.github.io/">
+        <div class="single-column-header-title">许嘉华的博客</div>
+        
+
+    </a>
+</div>
+            <div id="content">
+<div ref="streamContainer" class="stream-container">
+    <div class="post-list-container post-list-container-shadow">
+        <div class="post">
+            
+            
+            
+
+            <div class="post-head-wrapper-text-only"
+                 style="background-image: url('/')">
+                <div class="post-title">
+                    CDH6 启用 Spark Thrift Server
+                    
+                    <div class="post-meta">
+                        
+                        <time itemprop="datePublished">
+                            2020-04-10 10:07
+                        </time>
+                        
+
+                        
+
+                        
+                    </div>
+                </div>
+            </div>
+            
+            <div class="post-body-wrapper">
+                <div class="post-body">
+                    <p>很遗憾，CDH版本的Spark阉割了Thrift Server。（可能与自家产品Impala有竞争关系的原因。）</p>
+<p>参考 <a href="https://docs.cloudera.com/documentation/enterprise/6/6.3/topics/spark.html#spark__d99299e107">https://docs.cloudera.com/documentation/enterprise/6/6.3/topics/spark.html#spark__d99299e107</a></p>
+<pre><code># ll /opt/cloudera/parcels/CDH/lib/spark/sbin/
+total 84
+-rwxr-xr-x 1 root root 2803 Nov  9 00:05 slaves.sh
+-rwxr-xr-x 1 root root 1429 Nov  9 00:05 spark-config.sh
+-rwxr-xr-x 1 root root 5689 Nov  9 00:05 spark-daemon.sh
+-rwxr-xr-x 1 root root 1262 Nov  9 00:05 spark-daemons.sh
+-rwxr-xr-x 1 root root 1190 Nov  9 00:05 start-all.sh
+-rwxr-xr-x 1 root root 1274 Nov  9 00:05 start-history-server.sh
+-rwxr-xr-x 1 root root 2050 Nov  9 00:05 start-master.sh
+-rwxr-xr-x 1 root root 1877 Nov  9 00:05 start-mesos-dispatcher.sh
+-rwxr-xr-x 1 root root 1423 Nov  9 00:05 start-mesos-shuffle-service.sh
+-rwxr-xr-x 1 root root 1279 Nov  9 00:05 start-shuffle-service.sh
+-rwxr-xr-x 1 root root 3151 Nov  9 00:05 start-slave.sh
+-rwxr-xr-x 1 root root 1527 Nov  9 00:05 start-slaves.sh
+-rwxr-xr-x 1 root root 1478 Nov  9 00:05 stop-all.sh
+-rwxr-xr-x 1 root root 1056 Nov  9 00:05 stop-history-server.sh
+-rwxr-xr-x 1 root root 1080 Nov  9 00:05 stop-master.sh
+-rwxr-xr-x 1 root root 1227 Nov  9 00:05 stop-mesos-dispatcher.sh
+-rwxr-xr-x 1 root root 1084 Nov  9 00:05 stop-mesos-shuffle-service.sh
+-rwxr-xr-x 1 root root 1067 Nov  9 00:05 stop-shuffle-service.sh
+-rwxr-xr-x 1 root root 1557 Nov  9 00:05 stop-slave.sh
+-rwxr-xr-x 1 root root 1064 Nov  9 00:05 stop-slaves.sh
+</code></pre><p>可见，没有Thrift Server的启动脚本。</p>
+<p>借鉴网上资料（CDH 6成功启动spark-thrift服务 <a href="https://blog.csdn.net/qq_34864753/article/details/102729859">https://blog.csdn.net/qq_34864753/article/details/102729859</a>），在不修改CDH Spark的前提下，我们需要启动一个独立的Spark Thrift Server。</p>
+<p>还需要考虑CDH Kerberos认证的问题。</p>
+<h2 id="spark-thrift-server-简介">Spark Thrift Server 简介</h2>
+<p><img src="../../images/sparksqlthriftserver.png" alt="Spark SQL Thrift Server"></p>
+<p>Spark Thrift Server是Spark社区基于HiveServer2实现的一个Thrift服务。旨在无缝兼容HiveServer2。</p>
+<p>因为Spark Thrift Server的接口和协议都和HiveServer2完全一致，因此我们部署好Spark Thrift Server后，可以直接使用hive的beeline访问Spark Thrift Server执行相关语句。</p>
+<p>Spark Thrift Server的目的也只是取代HiveServer2，因此它依旧可以和Hive Metastore进行交互，获取到hive的元数据。</p>
+<p>参考 <a href="https://www.jianshu.com/p/b719c6415411">https://www.jianshu.com/p/b719c6415411</a></p>
+<h2 id="apache-spark配置">Apache Spark配置</h2>
+<h3 id="下载官方版本">下载官方版本</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">cd /opt
+wget https://archive.apache.org/dist/spark/spark-2.4.0/spark-2.4.0-bin-hadoop2.7.tgz
+cd spark-2.4.0-bin-hadoop2.7 <span style="color:#f92672">&amp;&amp;</span> ln -s <span style="color:#e6db74">`</span>pwd<span style="color:#e6db74">`</span> /opt/spark
+</code></pre></div><h3 id="spark配置文件">Spark配置文件</h3>
+<p>通过软链接的方式复用Hive的配置。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">ln -s /etc/hive/conf/hive-site.xml /opt/spark/conf/hive-site.xml
+</code></pre></div><p>最后配置文件夹长这样。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e"># ll /opt/spark/conf/</span>
+-rw-r--r-- <span style="color:#ae81ff">1</span> webapp webapp  <span style="color:#ae81ff">996</span> Oct <span style="color:#ae81ff">29</span>  <span style="color:#ae81ff">2018</span> docker.properties.template
+-rw-r--r-- <span style="color:#ae81ff">1</span> webapp webapp <span style="color:#ae81ff">1105</span> Oct <span style="color:#ae81ff">29</span>  <span style="color:#ae81ff">2018</span> fairscheduler.xml.template
+lrwxrwxrwx <span style="color:#ae81ff">1</span> root   root     <span style="color:#ae81ff">28</span> Apr  <span style="color:#ae81ff">9</span> 11:05 hive-site.xml -&gt; /etc/hive/conf/hive-site.xml
+-rw-r--r-- <span style="color:#ae81ff">1</span> webapp webapp <span style="color:#ae81ff">2025</span> Oct <span style="color:#ae81ff">29</span>  <span style="color:#ae81ff">2018</span> log4j.properties.template
+-rw-r--r-- <span style="color:#ae81ff">1</span> webapp webapp <span style="color:#ae81ff">7801</span> Oct <span style="color:#ae81ff">29</span>  <span style="color:#ae81ff">2018</span> metrics.properties.template
+-rw-r--r-- <span style="color:#ae81ff">1</span> webapp webapp  <span style="color:#ae81ff">865</span> Oct <span style="color:#ae81ff">29</span>  <span style="color:#ae81ff">2018</span> slaves.template
+-rw-r--r-- <span style="color:#ae81ff">1</span> webapp webapp <span style="color:#ae81ff">1292</span> Oct <span style="color:#ae81ff">29</span>  <span style="color:#ae81ff">2018</span> spark-defaults.conf.template
+-rwxr-xr-x <span style="color:#ae81ff">1</span> webapp webapp <span style="color:#ae81ff">4221</span> Oct <span style="color:#ae81ff">29</span>  <span style="color:#ae81ff">2018</span> spark-env.sh.template
+</code></pre></div><h4 id="spark配置文件配置方式">Spark配置文件配置方式</h4>
+<ol>
+<li>默认配置路径：<code>$SPARK_HOME/conf</code>，如果<code>$SPARK_HOME</code>不存在，脚本中会把脚本上层目录当做<code>$SPARK_HOME</code>。</li>
+<li><code>$SPARK_CONF_DIR</code>，可以指定SPARK配置文件夹。</li>
+<li>Spark classpath，如果<code>hdfs-site.xml</code> <code>core-site.xml</code>在classpath，Spark可以读取。</li>
+<li><code>$HADOOP_CONF_DIR</code>，一般是<code>/etc/hadoop/conf</code>目录，读Hadoop配置信息。</li>
+<li><code>$YARN_CONF_DIR</code>，一般也是<code>/etc/hadoop/conf</code>目录。</li>
+<li>命令行中可以覆盖以上配置文件中的具体参数。</li>
+</ol>
+<p>参考 <a href="https://spark.apache.org/docs/latest/configuration.html#inheriting-hadoop-cluster-configuration">https://spark.apache.org/docs/latest/configuration.html#inheriting-hadoop-cluster-configuration</a></p>
+<h3 id="spark-lib修改">Spark lib修改</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">cd /opt/spark
+rm -rf jars/hadoop-yarn-*
+cp /opt/cloudera/parcels/CDH-6.3.2-1.cdh6.3.2.p0.1605554/jars/hadoop-yarn-* jars/
+cp /opt/cloudera/parcels/CDH-6.3.2-1.cdh6.3.2.p0.1605554/jars/hive-shims-scheduler-2.1.1-cdh6.3.2.jar jars/
+</code></pre></div><h2 id="kerberos-认证">Kerberos 认证</h2>
+<p><img src="../../images/image-20200410140136660.png" alt="image-20200410140136660"></p>
+<ol>
+<li>图中的三个角色，在Kerkeros认证体系下都对应一个principal。Kerberos principal相当于用户名，keytab相当于密码。权限配置，依靠hive与hdfs本身。</li>
+<li>JDBC客户端与Spark JDBC Server需要使用Kerberos认证。JDBC客户端需要拥有principal/keytab对。我们手动创建。</li>
+<li>Spark JDBC Server与Hive metastore需要使用Kerberos认证。JDBC服务端需要拥有principal/keytab对。我们手动创建。</li>
+<li>Hive metastore也拥有自己的principal/keytab对，不过这个已经由CDH托管了。</li>
+</ol>
+<p>常见Kerberos错误：</p>
+<ol>
+<li>org.apache.hive.service.ServiceException: Unable to login to kerberos with given principal/keytab / Caused by: java.io.IOException: HiveServer2 Kerberos principal or keytab is not correctly configured</li>
+<li>Caused by: java.io.IOException: Login failure for <a href="mailto:hive/xh-hd2-peggy-dost000003@PEGGY.LING">hive/xh-hd2-peggy-dost000003@PEGGY.LING</a> from keytab hive.keytab: javax.security.auth.login.LoginException: Unable to obtain password from user</li>
+<li>SASL negotiation failure
+javax.security.sasl.SaslException: GSS initiate failed [Caused by GSSException: No valid credentials provided (Mechanism level: Failed to find any Kerberos tgt)]</li>
+</ol>
+<h3 id="创建-spark-jdbc-server-的-principal">创建 Spark JDBC Server 的 Principal</h3>
+<p>因为复用了Hive的配置文件，待创建的principal的名字需要满足配置中的规范。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#f92672">[</span>webapp@xh-hd2-peggy-dost000004 spark<span style="color:#f92672">]</span>$ cat conf/hive-site.xml
+...
+  &lt;property&gt;
+    &lt;name&gt;hive.server2.authentication.kerberos.principal&lt;/name&gt;
+    &lt;value&gt;hive/_HOST@PEGGY.LING&lt;/value&gt;
+  &lt;/property&gt;
+... 
+</code></pre></div><p>在Kerberos服务器创建 principal及导出 keytab，同步到Spark JDBC Server所在机器。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e"># create principal</span>
+kadmin.local addprinc -randkey hive/xh-hd2-peggy-dost000004
+<span style="color:#75715e"># export keytab</span>
+kadmin.local ktadd -k hive.xh-hd2-peggy-dost000004.keytab hive/xh-hd2-peggy-dost000004
+<span style="color:#75715e"># 验证是否OK</span>
+kinit -kt hive.xh-hd2-peggy-dost000004.keytab hive/xh-hd2-peggy-dost000004@PEGGY.LING
+</code></pre></div><h3 id="启动-spark-jdbc-server">启动 Spark JDBC Server</h3>
+<p>启动脚本如下。因为配置文件里没有指定keytab的路径，需要通过<code>--hiveconf</code>指定。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e">#!/usr/bin/bash
+</span><span style="color:#75715e"></span>
+export JAVA_HOME<span style="color:#f92672">=</span>/usr/java/jdk1.8.0_181-cloudera
+export PATH<span style="color:#f92672">=</span>$PATH:$JAVA_HOME/bin
+export HADOOP_CONF_DIR<span style="color:#f92672">=</span>/etc/hadoop/conf
+
+kinit -kt hive.xh-hd2-peggy-dost000004.keytab hive/xh-hd2-peggy-dost000004@PEGGY.LING
+
+sbin/start-thriftserver.sh <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>--hiveconf hive.server2.authentication.kerberos.keytab hive.xh-hd2-peggy-dost000004.keytab
+</code></pre></div><p>也可以参考这篇文章：</p>
+<p>Configuring Spark Thrift Server with Kerberos <a href="https://mapr.com/docs/61/Spark/ConfiguringSparkSQLThriftServer_Kerberos.html">https://mapr.com/docs/61/Spark/ConfiguringSparkSQLThriftServer_Kerberos.html</a></p>
+<p>TODO: kinit得到的ticket配置的有效期是24h。过了24h，怎么自动重置？</p>
+<h3 id="创建-jdbc-client-的-principal">创建 JDBC Client 的 Principal</h3>
+<p>在Kerberos服务器创建 principal及导出 keytab，同步到 JDBC Client 所在机器。这里对principal的名称没有严格要求。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e"># create principal</span>
+kadmin.local addprinc -randkey hive/xh-hd2-peggy-dost000003
+<span style="color:#75715e"># export keytab</span>
+kadmin.local ktadd -k hive.xh-hd2-peggy-dost000003.keytab hive/xh-hd2-peggy-dost000003 
+<span style="color:#75715e"># 验证是否OK</span>
+kinit -kt hive.xh-hd2-peggy-dost000003.keytab hive/xh-hd2-peggy-dost000003@PEGGY.LING
+</code></pre></div><h3 id="启动-jdbc-client">启动 JDBC Client</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#f92672">[</span>webapp@xh-hd2-peggy-dost000003 spark<span style="color:#f92672">]</span>$ kinit -kt hive.xh-hd2-peggy-dost000003.keytab hive/xh-hd2-peggy-dost000003@PEGGY.LING
+
+<span style="color:#f92672">[</span>webapp@xh-hd2-peggy-dost000003 spark<span style="color:#f92672">]</span>$ bin/beeline -u <span style="color:#e6db74">&#34;jdbc:hive2://xh-hd2-peggy-dost000004:10000/default;principal=hive/xh-hd2-peggy-dost000004@PEGGY.LING&#34;</span>
+Connecting to jdbc:hive2://xh-hd2-peggy-dost000004:10000/default;principal<span style="color:#f92672">=</span>hive/xh-hd2-peggy-dost000004@PEGGY.LING
+2020-04-10 16:09:01 INFO  Utils:310 - Supplied authorities: xh-hd2-peggy-dost000004:10000
+2020-04-10 16:09:01 INFO  Utils:397 - Resolved authority: xh-hd2-peggy-dost000004:10000
+2020-04-10 16:09:01 INFO  HiveConnection:203 - Will try to open client transport with JDBC Uri: jdbc:hive2://xh-hd2-peggy-dost000004:10000/default;principal<span style="color:#f92672">=</span>hive/xh-hd2-peggy-dost000004@PEGGY.LING
+Connected to: Spark SQL <span style="color:#f92672">(</span>version 2.4.0<span style="color:#f92672">)</span>
+Driver: Hive JDBC <span style="color:#f92672">(</span>version 1.2.1.spark2<span style="color:#f92672">)</span>
+Transaction isolation: TRANSACTION_REPEATABLE_READ
+Beeline version 1.2.1.spark2 by Apache Hive
+0: jdbc:hive2://xh-hd2-peggy-dost000004:10000&gt; show databases;
++---------------+--+
+| databaseName  |
++---------------+--+
+| db1           |
+| default       |
+| product       |
++---------------+--+
+<span style="color:#ae81ff">3</span> rows selected <span style="color:#f92672">(</span>0.091 seconds<span style="color:#f92672">)</span>
+</code></pre></div><h3 id="yarn-运行">YARN 运行</h3>
+<p>TODO</p>
+<pre><code>sbin/start-thriftserver.sh --hiveconf hive.server2.authentication.kerberos.keytab hive.keytab --hiveconf hive.server2.thrift.port=10001 --queue root.zm_yarn_pool.development  --master yarn --executor-memory 4g --executor-cores 2 --num-executors 20
+
+2020-04-09 17:56:19 INFO  Client:54 - Requesting a new application from cluster with 5 NodeManagers
+Exception in thread &quot;main&quot; java.lang.NoClassDefFoundError: org/apache/hadoop/util/FastNumberFormat
+        at org.apache.hadoop.yarn.api.records.ApplicationId.toString(ApplicationId.java:104)
+        at org.apache.spark.deploy.yarn.Client$.org$apache$spark$deploy$yarn$Client$$getAppStagingDir(Client.scala:1222)
+        at org.apache.spark.deploy.yarn.Client.org$apache$spark$deploy$yarn$Client$$cleanupStagingDirInternal$1(Client.scala:206)
+        at org.apache.spark.deploy.yarn.Client.cleanupStagingDir(Client.scala:226)
+        at org.apache.spark.deploy.yarn.Client.submitApplication(Client.scala:191)
+        at org.apache.spark.scheduler.cluster.YarnClientSchedulerBackend.start(YarnClientSchedulerBackend.scala:57)
+        at org.apache.spark.scheduler.TaskSchedulerImpl.start(TaskSchedulerImpl.scala:178)
+        at org.apache.spark.SparkContext.&lt;init&gt;(SparkContext.scala:501)
+        at org.apache.spark.SparkContext$.getOrCreate(SparkContext.scala:2520)
+        at org.apache.spark.sql.SparkSession$Builder$$anonfun$7.apply(SparkSession.scala:935)
+        at org.apache.spark.sql.SparkSession$Builder$$anonfun$7.apply(SparkSession.scala:926)
+        at scala.Option.getOrElse(Option.scala:121)
+</code></pre><h2 id="外传cdh是如何管理hadoop配置文件的">【外传】CDH是如何管理Hadoop配置文件的</h2>
+<p>以下结果都是通过观察实践所得。</p>
+<p>以Hive为例，<code>/etc/hive/conf</code>下的配置文件由CDH生成。（CDH管理界面上可以修改这些配置。）</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e"># ll /etc/hive/conf/</span>
+total <span style="color:#ae81ff">64</span>
+-rw-r--r-- <span style="color:#ae81ff">1</span> root root   <span style="color:#ae81ff">21</span> Dec <span style="color:#ae81ff">31</span> 15:02 __cloudera_generation__
+-rw-r--r-- <span style="color:#ae81ff">1</span> root root   <span style="color:#ae81ff">70</span> Dec <span style="color:#ae81ff">31</span> 15:02 __cloudera_metadata__
+-rw-r--r-- <span style="color:#ae81ff">1</span> root root <span style="color:#ae81ff">3846</span> Dec <span style="color:#ae81ff">31</span> 15:02 core-site.xml
+-rw-r--r-- <span style="color:#ae81ff">1</span> root root  <span style="color:#ae81ff">617</span> Dec <span style="color:#ae81ff">31</span> 15:02 hadoop-env.sh
+-rw-r--r-- <span style="color:#ae81ff">1</span> root root <span style="color:#ae81ff">3839</span> Dec <span style="color:#ae81ff">31</span> 15:02 hdfs-site.xml
+-rw-r--r-- <span style="color:#ae81ff">1</span> root root <span style="color:#ae81ff">2655</span> Dec <span style="color:#ae81ff">31</span> 15:02 hive-env.sh
+-rw-r--r-- <span style="color:#ae81ff">1</span> root root <span style="color:#ae81ff">6925</span> Dec <span style="color:#ae81ff">31</span> 15:02 hive-site.xml
+...
+
+<span style="color:#75715e"># head /etc/hive/conf/hive-site.xml</span>
+&lt;?xml version<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;1.0&#34;</span> encoding<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;UTF-8&#34;</span>?&gt;
+
+&lt;!--Autogenerated by Cloudera Manager--&gt;
+&lt;configuration&gt;
+  &lt;property&gt;
+    &lt;name&gt;hive.metastore.uris&lt;/name&gt;
+    &lt;value&gt;thrift://xh-hd2-peggy-dost001:9083&lt;/value&gt;
+  &lt;/property&gt;
+  &lt;property&gt;
+    &lt;name&gt;hive.metastore.client.socket.timeout&lt;/name&gt;
+</code></pre></div><p>我们的集群是开启了Kerberos认证的。但是上述配置文件里没见principal的keytab路径配置。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e"># grep keytab /etc/hive/conf/hive-site.xml</span>
+</code></pre></div><p>也就是说，<code>/etc/hive/conf</code>不是真正在被使用的配置文件。</p>
+<p><code>/var/run/cloudera-scm-agent/process/</code> 这个目录中有所有CDH监控的进程，包括我们关注的Hive进程。</p>
+<p>参考 <a href="https://community.cloudera.com/t5/Support-Questions/Location-of-keytab-files/td-p/33716">https://community.cloudera.com/t5/Support-Questions/Location-of-keytab-files/td-p/33716</a></p>
+<pre><code># ls /var/run/cloudera-scm-agent/process/*hive*
+/var/run/cloudera-scm-agent/process/954-hive-HIVEMETASTORE:
+cloudera-monitor.properties        config.zip     creds.localjceks  hdfs-site.xml  hive-log4j2.properties  logs       redaction-rules.json  service-metrics.properties  supervisor_status
+cloudera-stack-monitor.properties  core-site.xml  exit_code         hive.keytab    hive-site.xml           proc.json  sentry-site.xml       supervisor.conf             yarn-conf
+
+/var/run/cloudera-scm-agent/process/955-hive-HIVESERVER2:
+cloudera-monitor.properties        config.zip     exit_code           hdfs-site.xml  hive-log4j2.properties  logs                         navigator.lineage.client.properties  redaction-rules.json  service-metrics.properties  supervisor.conf    yarn-conf
+cloudera-stack-monitor.properties  core-site.xml  fair-scheduler.xml  hive.keytab    hive-site.xml           navigator.client.properties  proc.json                            sentry-site.xml       spark-defaults.conf         supervisor_status
+
+/var/run/cloudera-scm-agent/process/956-hive-WEBHCAT:
+cloudera-monitor.properties        config.zip     exit_code      hive-site.xml  logs       redaction-rules.json        supervisor.conf    webhcat-default.xml       webhcat-site.xml
+cloudera-stack-monitor.properties  core-site.xml  hdfs-site.xml  HTTP.keytab    proc.json  service-metrics.properties  supervisor_status  webhcat-log4j.properties  yarn-conf
+</code></pre><p>这里Hive有三个进程，metastore，hiveserver2，WEBHCAT。可见principal对应的keytab，这里的 <code>hive.keytab</code>，也是在这里维护着。配置文件也是在<code>/etc/hive/conf</code>基础上作了改动，比如keytab路径的设置。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#f92672">[</span>root 954-hive-HIVEMETASTORE<span style="color:#f92672">]</span><span style="color:#75715e"># grep kerberos hive-site.xml</span>
+    &lt;name&gt;hive.metastore.kerberos.principal&lt;/name&gt;
+    &lt;name&gt;hive.metastore.kerberos.keytab.file&lt;/name&gt;
+    &lt;value&gt;kerberos&lt;/value&gt;
+    
+<span style="color:#f92672">[</span>root 955-hive-HIVESERVER2<span style="color:#f92672">]</span><span style="color:#75715e"># grep kerberos hive-site.xml</span>
+    &lt;value&gt;kerberos&lt;/value&gt;
+    &lt;name&gt;hive.metastore.kerberos.principal&lt;/name&gt;
+    &lt;name&gt;hive.server2.authentication.kerberos.principal&lt;/name&gt;
+    &lt;name&gt;hive.server2.authentication.kerberos.keytab&lt;/name&gt;
+</code></pre></div><p>HiveMetaStore与HiveServer2使用的keytab是不同的。一个principal对应多个keytab么？TODO：可能是因为加密随机的原因？？？</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#f92672">[</span>root@xh-hd2-peggy-dost001 955-hive-HIVESERVER2<span style="color:#f92672">]</span><span style="color:#75715e"># md5sum hive.keytab</span>
+523357eec4f542b7b3df7ec52cee43b2  hive.keytab
+
+<span style="color:#f92672">[</span>root@xh-hd2-peggy-dost001 954-hive-HIVEMETASTORE<span style="color:#f92672">]</span><span style="color:#75715e"># md5sum hive.keytab</span>
+3c6f52333067518ae4bdce1e99878857  hive.keytab
+</code></pre></div><p>TODO：实验发现，导出两次，之前的keytab就失效了！进入知识盲区。</p>
+<pre><code>[root@xh-hd2-peggy-rost01 ~]# kadmin.local addprinc -randkey hive/xh-hd2-peggy-dost000003
+[root@xh-hd2-peggy-rost01 ~]# kadmin.local ktadd -k hive.xh-hd2-peggy-dost000003.keytab hive/xh-hd2-peggy-dost000003
+[root@xh-hd2-peggy-rost01 ~]# mv hive.xh-hd2-peggy-dost000003.keytab hive.xh-hd2-peggy-dost000003.keytab.bak
+[root@xh-hd2-peggy-rost01 ~]# kadmin.local ktadd -k hive.xh-hd2-peggy-dost000003.keytab hive/xh-hd2-peggy-dost000003
+[root@xh-hd2-peggy-rost01 ~]# kinit -kt hive.xh-hd2-peggy-dost000003.keytab hive/xh-hd2-peggy-dost000003@PEGGY.LING
+[root@xh-hd2-peggy-rost01 ~]# kinit -kt hive.xh-hd2-peggy-dost000003.keytab.bak hive/xh-hd2-peggy-dost000003@PEGGY.LING
+kinit: Password incorrect while getting initial credentials
+</code></pre>
+                    
+                    <HR width="100%" id="EOF">
+                    <p style="color:#777;">Last modified on 2020-04-10</p>
+                    
+                </div>
+            </div>
+            
+            
+            <nav class="post-pagination">
+
+                
+                <a class="newer-posts">
+                    Next<br>No newer posts.
+                </a>
+                
+                
+                
+                <a class="older-posts" href="https://xujiahua.github.io/posts/docker-logging/">
+                    Previous<br>Docker日志驱动小结
+                </a>
+                
+            </nav>
+            <div class="post-comment-wrapper">
+                
+
+
+
+
+
+
+            </div>
+        </div>
+    </div>
+</div>
+
+            </div><div id="single-column-footer">
+Hugo Theme <a href="https://github.com/amazingrise/hugo-theme-diary">Diary</a> by <a href="https://amazingrise.net">Rise</a>
+<br>
+Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopener">Makito</a>'s <a href="https://github.com/SumiMakito/hexo-theme-journal/" target="_blank" rel="noreferrer noopener">Journal.</a> <br>
+<br>
+
+&copy;
+	
+	2020 许嘉华的博客
+	</div>
+    	</div>
+    <script src="https://xujiahua.github.io//js/journal.js"></script>
+    </body>
+</html>
