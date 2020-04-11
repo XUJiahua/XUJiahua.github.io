@@ -265,7 +265,7 @@ sbin/start-thriftserver.sh &lt;span style=&#34;color:#ae81ff&#34;&gt;\
 &lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;&lt;/span&gt;--hiveconf hive.server2.authentication.kerberos.keytab hive.xh-hd2-peggy-dost000004.keytab
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;也可以参考这篇文章：&lt;/p&gt;
 &lt;p&gt;Configuring Spark Thrift Server with Kerberos &lt;a href=&#34;https://mapr.com/docs/61/Spark/ConfiguringSparkSQLThriftServer_Kerberos.html&#34;&gt;https://mapr.com/docs/61/Spark/ConfiguringSparkSQLThriftServer_Kerberos.html&lt;/a&gt;&lt;/p&gt;
-&lt;p&gt;TODO: kinit得到的ticket配置的有效期是24h。过了24h，怎么自动重置？&lt;/p&gt;
+&lt;p&gt;TODO: kinit得到的ticket的有效期是24h。过了24h，怎么自动重置？crontab建个定时任务刷新吧。不知道CDH是怎么处理这个问题的。&lt;/p&gt;
 &lt;h3 id=&#34;创建-jdbc-client-的-principal&#34;&gt;创建 JDBC Client 的 Principal&lt;/h3&gt;
 &lt;p&gt;在Kerberos服务器创建 principal及导出 keytab，同步到 JDBC Client 所在机器。这里对principal的名称没有严格要求。&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# create principal&lt;/span&gt;
