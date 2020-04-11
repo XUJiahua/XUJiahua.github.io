@@ -773,7 +773,7 @@ Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopene
                 <div class="post-body">
                     <p>这是大数据 BI 平台的第二步，BI 工具的搭建。假设已经配置好 Spark SQL JDBC Server，并启用了Kerberos。参考  <a href="https://xujiahua.github.io/posts/spark-thrift-server-cdh/">https://xujiahua.github.io/posts/spark-thrift-server-cdh/</a></p>
 <p>这里，我们选择了开源产品 Metabase。</p>
-<p>最终，大数据 BI 平台，是由 1) 以Metabase作为BI可视化，2) 由HDFS（分布式存储） + parquet（列式数据存储格式） + Spark SQL（数据库批处理引擎）组合的OLAP数据库组成。</p>
+<p>最终，大数据 BI 平台，是由 1) 以Metabase作为BI可视化，2) 由HDFS（分布式文件存储） + parquet（列式数据存储格式）+ Hive metastore（SQL表结构信息维护） + Spark SQL（批处理引擎）组合的OLAP数据库组成。</p>
 <h2 id="metabase-简介">Metabase 简介</h2>
 <p>Metabase is the easy, open source way for everyone in your company to ask questions and learn from data.</p>
 <p><a href="https://www.metabase.com/">https://www.metabase.com/</a></p>
