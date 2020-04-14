@@ -6,10 +6,28 @@
     <description>Recent content in Posts on 许嘉华的博客</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Fri, 10 Apr 2020 16:41:53 +0800</lastBuildDate>
+    <lastBuildDate>Tue, 14 Apr 2020 09:53:35 +0800</lastBuildDate>
     
 	<atom:link href="https://xujiahua.github.io/posts/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>k8s 应用日志收集</title>
+      <link>https://xujiahua.github.io/posts/20200414-k8s-logging/</link>
+      <pubDate>Tue, 14 Apr 2020 09:53:35 +0800</pubDate>
+      
+      <guid>https://xujiahua.github.io/posts/20200414-k8s-logging/</guid>
+      <description>k8s 日志收集架构 以下是比较一般、普适的架构。更多参考：Kubernetes 日志架构 https://kubernetes.io/zh/docs/concepts/cluster-administration/logging/
+ 容器化应用将日志写入stdout、stderr。 Docker容器引擎将stdout、stderr流重定向到日志驱动，比如默认的json-file。 json-file日志驱动将日志写入到（宿主机上的）文件。 日志收集工具以DaemonSet的形式安装在每个节点。 日志收集工具监听文件变化，并将日志写入到日志中心服务。  k8s 日志收集细节 实战 可以直接参考以下教程：minikube创建了一个Kubernetes集群，Fluentd收集日志，存入ElasticSearch，使用Kibana查看日志。
+ Logging in Kubernetes with Elasticsearch, Kibana, and Fluentd https://mherman.org/blog/logging-in-kubernetes-with-elasticsearch-Kibana-fluentd/  在Kibana上看收集到的日志。能看到日志收集工具也采集了容器、镜像、Pod有关的信息。这些上下文信息能让人定位到是哪个应用在生产日志。
+fluentd 收集上下文信息 Docker json-file 日志驱动写文件，并不记录上下文信息。 https://docs.docker.com/config/containers/logging/json-file/
+{&amp;quot;log&amp;quot;:&amp;quot;Log line is here\n&amp;quot;,&amp;quot;stream&amp;quot;:&amp;quot;stdout&amp;quot;,&amp;quot;time&amp;quot;:&amp;quot;2019-01-01T11:11:11.111111111Z&amp;quot;} 上文中使用的日志收集镜像是 fluent/fluentd-kubernetes-daemonset:v1.3-debian-elasticsearch。
+具体代码路径在此 https://github.com/fluent/fluentd-kubernetes-daemonset/tree/master/docker-image/v1.3/debian-elasticsearch
+收集容器目录下的日志。
+使用kubernetes_metadata这个第三方插件获取容器相关的上下文信息。这里是通过请求API server得到metadata的。
+kubernetes_metadata 插件地址 https://github.com/fabric8io/fluent-plugin-kubernetes_metadata_filter
+插件中有缓存metadata的选项，不用担心每处理一条日志，就要向API server发送请求。</description>
+    </item>
     
     <item>
       <title>Metabase &#43; Spark SQL</title>
@@ -53,7 +71,7 @@ credit: https://jaxenter.com/docker-logging-gotchas-137049.html
 写入文件的日志格式长这样：{&amp;quot;log&amp;quot;:&amp;quot;Log line is here\n&amp;quot;,&amp;quot;stream&amp;quot;:&amp;quot;stdout&amp;quot;,&amp;quot;time&amp;quot;:&amp;quot;2019-01-01T11:11:11.111111111Z&amp;quot;}，每一行是一个json文件，log字段为容器原来输出的每行内容。
 默认配置，创建的容器的信息在这个目录下： /var/lib/docker/containers。
 实验 root@ubuntu-parallel:~# docker run --name default_logging_driver hello-world root@ubuntu-parallel:~# cd /var/lib/docker/containers/$(docker ps --no-trunc -aqf &amp;#34;name=default_logging_driver&amp;#34;) root@ubuntu-parallel:~# cat $(docker ps --no-trunc -aqf &amp;#34;name=default_logging_driver&amp;#34;)-json.log {&amp;#34;log&amp;#34;:&amp;#34;\n&amp;#34;,&amp;#34;stream&amp;#34;:&amp;#34;stdout&amp;#34;,&amp;#34;time&amp;#34;:&amp;#34;2020-04-02T01:46:54.096347888Z&amp;#34;} {&amp;#34;log&amp;#34;:&amp;#34;Hello from Docker!\n&amp;#34;,&amp;#34;stream&amp;#34;:&amp;#34;stdout&amp;#34;,&amp;#34;time&amp;#34;:&amp;#34;2020-04-02T01:46:54.096377382Z&amp;#34;} {&amp;#34;log&amp;#34;:&amp;#34;This message shows that your installation appears to be working correctly.\n&amp;#34;,&amp;#34;stream&amp;#34;:&amp;#34;stdout&amp;#34;,&amp;#34;time&amp;#34;:&amp;#34;2020-04-02T01:46:54.096381118Z&amp;#34;} {&amp;#34;log&amp;#34;:&amp;#34;\n&amp;#34;,&amp;#34;stream&amp;#34;:&amp;#34;stdout&amp;#34;,&amp;#34;time&amp;#34;:&amp;#34;2020-04-02T01:46:54.096383725Z&amp;#34;} https://docs.docker.com/config/containers/logging/json-file/
-怎么记录更多上下文信息 未有定论，TODO。
+怎么记录更多上下文信息 json-file本身是没有上下文信息的。
 翻看文档，能够记录的上下文信息非常有限，基本上是没有。有限的上下文信息包括容器ID，因为日志文件名包含了容器ID。但是容器ID也就够区分哪些日志是在一个进程实例，仅此而已。不知道进程到底是哪个服务。
 如果能记录下镜像名称就好很多。
 其他驱动可以记录一些上下文信息，https://docs.docker.com/config/containers/logging/log_tags/，倒是json-file不支持。issue https://github.com/moby/moby/issues/19803

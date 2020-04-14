@@ -883,6 +883,7 @@ javax.security.sasl.SaslException: GSS initiate failed [Caused by GSSException: 
 <p><img src="../../images/image-20200411072135265.png" alt="image-20200411072135265"></p>
 <p>内置Driver依赖3.1.1。报错信息也是包含3.1.1，是否切到3.1.0，重新打包就可以了？</p>
 <p>第二个问题需要设置Java参数 <code>-Djavax.security.auth.useSubjectCredsOnly=false</code>。</p>
+<p>通过底层机制获取凭证信息，而不是通过应用执行认证操作。</p>
 <p><img src="../../images/image-20200410173734177.png" alt="image-20200410173734177"></p>
 <p>参考：</p>
 <ol>
@@ -894,8 +895,11 @@ javax.security.sasl.SaslException: GSS initiate failed [Caused by GSSException: 
 <p>Superset是另外一个开源的BI工具。但是使用过程中体验不佳：</p>
 <ol>
 <li>不支持多表JOIN。这个不能忍。</li>
-<li>外观丑陋。</li>
-<li>小bug多。</li>
+<li>直接写SQL，数据没法可视化。效率有点低下。</li>
+<li>外观丑陋。FlaskAppbuilder生成的前后端架子。</li>
+<li>Table源如果改了，建议删掉再添加，不然会有各种意外。</li>
+<li>交互体验差。自定义SELECT COUNT(cookie) as pv，死活搞不定。正确的使用方式是设置label，体验不直观。</li>
+<li>小bug多。用起来太容易烦躁了。对身心健康不好。</li>
 </ol>
 
                     
@@ -909,8 +913,8 @@ javax.security.sasl.SaslException: GSS initiate failed [Caused by GSSException: 
             <nav class="post-pagination">
 
                 
-                <a class="newer-posts">
-                    Next<br>No newer posts.
+                <a class="newer-posts" href="https://xujiahua.github.io/posts/20200414-k8s-logging/">
+                    Next<br>k8s 应用日志收集
                 </a>
                 
                 

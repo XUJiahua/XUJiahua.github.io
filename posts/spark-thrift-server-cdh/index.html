@@ -388,6 +388,37 @@ Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopene
 						
 							<ul>
 						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#kinit-ticket%e8%bf%87%e6%9c%9f%e9%97%ae%e9%a2%98" v-on:click="closeDrawer" id="kinit-ticket过期问题-nav">
+										 kinit ticket过期问题
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
 						
 								<li>
 				 					<a href="#%e5%88%9b%e5%bb%ba-jdbc-client-%e7%9a%84-principal" v-on:click="closeDrawer" id="创建-jdbc-client-的-principal-nav">
@@ -798,6 +829,37 @@ Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopene
 						
 							<ul>
 						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#kinit-ticket%e8%bf%87%e6%9c%9f%e9%97%ae%e9%a2%98" v-on:click="closeDrawer" id="kinit-ticket过期问题-nav">
+										 kinit ticket过期问题
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
 						
 								<li>
 				 					<a href="#%e5%88%9b%e5%bb%ba-jdbc-client-%e7%9a%84-principal" v-on:click="closeDrawer" id="创建-jdbc-client-的-principal-nav">
@@ -1074,6 +1136,21 @@ sbin/start-thriftserver.sh <span style="color:#ae81ff">\
 </span><span style="color:#ae81ff"></span>--hiveconf hive.server2.authentication.kerberos.keytab hive.xh-hd2-peggy-dost000004.keytab
 </code></pre></div><p>也可以参考这篇文章：</p>
 <p>Configuring Spark Thrift Server with Kerberos <a href="https://mapr.com/docs/61/Spark/ConfiguringSparkSQLThriftServer_Kerberos.html">https://mapr.com/docs/61/Spark/ConfiguringSparkSQLThriftServer_Kerberos.html</a></p>
+<h4 id="kinit-ticket过期问题">kinit ticket过期问题</h4>
+<p>Spark进程会自动处理Kerberos ticket renewal操作。</p>
+<p>默认的ticket_lifetime 1d，renew_lifetime 7d。上次kinit是04/10。</p>
+<pre><code>[webapp@xh-hd2-peggy-dost000004 spark]$ klist
+Ticket cache: FILE:/tmp/krb5cc_1000
+Default principal: hive/xh-hd2-peggy-dost000004@PEGGY.LING
+
+Valid starting       Expires              Service principal
+04/13/2020 01:32:45  04/14/2020 01:32:45  krbtgt/PEGGY.LING@PEGGY.LING
+	renew until 04/17/2020 15:56:45
+</code></pre><p>就看7天后会怎么样了。renew周期过了，会重建么？理论上是可以的。</p>
+<p>看到Spark代码中已经有kerberos集成了，包括登录啥的。</p>
+<p>spark/sql/hive-thriftserver/v2.3.5/src/main/java/org/apache/hive/service/auth/HiveAuthFactory.java</p>
+<p><img src="../../images/image-20200413110032646.png" alt="image-20200413110032646"></p>
+<p><img src="../../images/image-20200413105917167.png" alt="image-20200413105917167"></p>
 <p>TODO: kinit得到的ticket的有效期是24h。过了24h，怎么自动重置？crontab建个定时任务刷新吧。不知道CDH是怎么处理这个问题的。</p>
 <h3 id="创建-jdbc-client-的-principal">创建 JDBC Client 的 Principal</h3>
 <p>在Kerberos服务器创建 principal及导出 keytab，同步到 JDBC Client 所在机器。这里对principal的名称没有严格要求。</p>

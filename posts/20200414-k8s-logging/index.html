@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html><head>
+<title>k8s 应用日志收集</title>
+
+<meta charset="utf-8">
+<meta name="X-UA-Compatible" content="IE=edge">
+<meta name="google-site-verification" content="">
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport">
+<meta content="telephone=no" name="format-detection">
+<meta name="description" content="">
+<meta name="renderer" content="webkit">
+<meta name="theme-color" content="#ffffff">
+
+
+
+
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+	ga('create', 'UA-162706610-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+
+
+
+<script src="/vendor/js/jquery.min.js" ></script>
+<script src="/vendor/js/popper.min.js" ></script>
+<script src="/vendor/js/bootstrap.min.js" ></script>
+<script src="/vendor/js/smooth-scroll.polyfills.min.js" ></script>
+<link type="text/css" rel="stylesheet" href="/vendor/css/bootstrap.min.css">
+<script src="/vendor/js/vue.min.js" ></script>
+
+
+
+
+<link rel="stylesheet" href="https://xujiahua.github.io/scss/journal.min.5c667e74038e21ddbb9024b67930f8544e02af62491281cf73fdb817eec2947e.css" integrity="sha256-XGZ&#43;dAOOId27kCS2eTD4VE4Cr2JJEoHPc/24F&#43;7ClH4=" media="screen">
+
+<script src="https://xujiahua.github.io//js/loadCSS.js"></script>
+<script src="https://xujiahua.github.io//js/table.js"></script>
+
+
+<script src="https://xujiahua.github.io//js/toc.js"></script>
+
+
+<script>
+    loadCSS("https://fonts.googleapis.com/css?family=Lora|Montserrat|Fira+Mono|Noto+Serif+SC|Material+Icons");
+</script>
+
+
+
+
+
+
+</head><body>
+    	<div id="app"><div ref="sideContainer" class="side-container">
+    
+    <a class="a-block nav-head false" href="https://xujiahua.github.io/">
+    
+        <div class="nav-title">
+            许嘉华的博客
+        </div>
+        
+    </a>
+
+    <div class="nav-link-list">
+        
+        
+            
+            
+            
+                
+            
+            
+            
+            <a class="a-block nav-link-item active" href="/posts">
+                Archive
+            </a>
+            
+        
+            
+            
+            
+            
+            
+            <a class="a-block nav-link-item false" href="/categories">
+                Categories
+            </a>
+            
+        
+            
+            
+            
+            
+            
+            <a class="a-block nav-link-item false" href="/tags">
+                Tags
+            </a>
+            
+        
+            
+            
+            
+            
+            
+            <a class="a-block nav-link-item false" href="/index.xml">
+                RSS Feed
+            </a>
+            
+        
+    </div>
+
+    
+
+    <div class="nav-footer">
+        
+Hugo Theme <a href="https://github.com/amazingrise/hugo-theme-diary">Diary</a> by <a href="https://amazingrise.net">Rise</a>
+<br>
+Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopener">Makito</a>'s <a href="https://github.com/SumiMakito/hexo-theme-journal/" target="_blank" rel="noreferrer noopener">Journal.</a> <br>
+<br>
+
+&copy;
+	
+	2020 许嘉华的博客
+	
+    </div>
+    
+</div><div ref="extraContainer" class="extra-container">
+    
+    <div class="toc animated-visibility" :class="{ invisible: scrollY <= 140 }">
+
+
+	<div class="toc-content">
+	
+		
+		
+		
+		<center>- CATALOG -</center>
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#k8s-%e6%97%a5%e5%bf%97%e6%94%b6%e9%9b%86%e6%9e%b6%e6%9e%84" v-on:click="closeDrawer" id="k8s-日志收集架构-nav">
+										 k8s 日志收集架构
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#k8s-%e6%97%a5%e5%bf%97%e6%94%b6%e9%9b%86%e7%bb%86%e8%8a%82" v-on:click="closeDrawer" id="k8s-日志收集细节-nav">
+										 k8s 日志收集细节
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e5%ae%9e%e6%88%98" v-on:click="closeDrawer" id="实战-nav">
+										 实战
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#fluentd-%e6%94%b6%e9%9b%86%e4%b8%8a%e4%b8%8b%e6%96%87%e4%bf%a1%e6%81%af" v-on:click="closeDrawer" id="fluentd-收集上下文信息-nav">
+										 fluentd 收集上下文信息
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+	</div>
+
+</div>
+    
+    <div class="pagination">
+        <a id="globalBackToTop" class="pagination-action animated-visibility" href="#top" :class="{ invisible: scrollY == 0 }">
+            <i class="material-icons pagination-action-icon">
+                keyboard_arrow_up
+            </i>
+        </a>
+        
+    </div>
+</div><div class="single-column-drawer-container" ref="drawer"
+     v-bind:class="{ 'single-column-drawer-container-active': isDrawerOpen }">
+    <div class="drawer-content">
+        <div class="drawer-menu">
+            
+            
+                
+                
+                
+                    
+                
+                
+                
+                <a class="a-block drawer-menu-item active" href="/posts">
+                    Archive
+                </a>
+                
+            
+                
+                
+                
+                
+                
+                <a class="a-block drawer-menu-item false" href="/categories">
+                    Categories
+                </a>
+                
+            
+                
+                
+                
+                
+                
+                <a class="a-block drawer-menu-item false" href="/tags">
+                    Tags
+                </a>
+                
+            
+                
+                
+                
+                
+                
+                <a class="a-block drawer-menu-item false" href="/index.xml">
+                    RSS Feed
+                </a>
+                
+            
+            
+            <div class="toc">
+
+
+	<div class="toc-content">
+	
+		
+		
+		
+		<center>- CATALOG -</center>
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#k8s-%e6%97%a5%e5%bf%97%e6%94%b6%e9%9b%86%e6%9e%b6%e6%9e%84" v-on:click="closeDrawer" id="k8s-日志收集架构-nav">
+										 k8s 日志收集架构
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#k8s-%e6%97%a5%e5%bf%97%e6%94%b6%e9%9b%86%e7%bb%86%e8%8a%82" v-on:click="closeDrawer" id="k8s-日志收集细节-nav">
+										 k8s 日志收集细节
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e5%ae%9e%e6%88%98" v-on:click="closeDrawer" id="实战-nav">
+										 实战
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#fluentd-%e6%94%b6%e9%9b%86%e4%b8%8a%e4%b8%8b%e6%96%87%e4%bf%a1%e6%81%af" v-on:click="closeDrawer" id="fluentd-收集上下文信息-nav">
+										 fluentd 收集上下文信息
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+	</div>
+
+</div>
+            
+        </div>
+    </div>
+</div>
+<transition name="fade">
+    <div v-bind:class="{ 'single-column-drawer-mask': mounted }" v-if="isDrawerOpen" v-on:click="toggleDrawer"></div>
+</transition>
+<nav ref="navBar" class="navbar sticky-top navbar-light single-column-nav-container">
+    <div ref="navBackground" class="nav-background"></div>
+    <div class="container container-narrow nav-content">
+        <button id="nav_dropdown_btn" class="nav-dropdown-toggle" type="button" v-on:click="toggleDrawer">
+            <i class="material-icons">
+                menu
+            </i>
+        </button>
+        <a ref="navTitle" class="navbar-brand" href="https://xujiahua.github.io/">
+            许嘉华的博客
+        </a>
+    </div>
+</nav>
+<div class="single-column-header-container" ref="pageHead"
+     v-bind:style="{ transform: 'translateZ(0px) translateY('+.3*scrollY+'px)', opacity: 1-navOpacity }">
+    <a href="https://xujiahua.github.io/">
+        <div class="single-column-header-title">许嘉华的博客</div>
+        
+
+    </a>
+</div>
+            <div id="content">
+<div ref="streamContainer" class="stream-container">
+    <div class="post-list-container post-list-container-shadow">
+        <div class="post">
+            
+            
+            
+
+            <div class="post-head-wrapper-text-only"
+                 style="background-image: url('/')">
+                <div class="post-title">
+                    k8s 应用日志收集
+                    
+                    <div class="post-meta">
+                        
+                        <time itemprop="datePublished">
+                            2020-04-14 09:53
+                        </time>
+                        
+
+                        
+
+                        
+                            <i class="material-icons" style="">label</i>
+                            
+                                <a href="/tags/docker">Docker</a>
+                                &nbsp;
+                            
+                                <a href="/tags/logging">logging</a>
+                                &nbsp;
+                            
+                                <a href="/tags/k8s">k8s</a>
+                                &nbsp;
+                            
+                        
+                    </div>
+                </div>
+            </div>
+            
+            <div class="post-body-wrapper">
+                <div class="post-body">
+                    <h2 id="k8s-日志收集架构">k8s 日志收集架构</h2>
+<p>以下是比较一般、普适的架构。更多参考：Kubernetes 日志架构 <a href="https://kubernetes.io/zh/docs/concepts/cluster-administration/logging/">https://kubernetes.io/zh/docs/concepts/cluster-administration/logging/</a></p>
+<p><img src="../../images/logging-with-node-agent.png" alt="使用节点日志记录代理"></p>
+<ol>
+<li>容器化应用将日志写入<code>stdout</code>、<code>stderr</code>。</li>
+<li>Docker容器引擎将<code>stdout</code>、<code>stderr</code>流重定向到日志驱动，比如默认的json-file。</li>
+<li>json-file日志驱动将日志写入到（宿主机上的）文件。</li>
+<li>日志收集工具以DaemonSet的形式安装在每个节点。</li>
+<li>日志收集工具监听文件变化，并将日志写入到日志中心服务。</li>
+</ol>
+<h2 id="k8s-日志收集细节">k8s 日志收集细节</h2>
+<h3 id="实战">实战</h3>
+<p>可以直接参考以下教程：minikube创建了一个Kubernetes集群，Fluentd收集日志，存入ElasticSearch，使用Kibana查看日志。</p>
+<ol>
+<li>Logging in Kubernetes with Elasticsearch, Kibana, and Fluentd <a href="https://mherman.org/blog/logging-in-kubernetes-with-elasticsearch-Kibana-fluentd/">https://mherman.org/blog/logging-in-kubernetes-with-elasticsearch-Kibana-fluentd/</a></li>
+</ol>
+<p>在Kibana上看收集到的日志。能看到日志收集工具也采集了容器、镜像、Pod有关的信息。这些上下文信息能让人定位到是哪个应用在生产日志。</p>
+<p><img src="../../images/image-20200414104511399.png" alt="image-20200414104511399"></p>
+<h3 id="fluentd-收集上下文信息">fluentd 收集上下文信息</h3>
+<p>Docker <code>json-file</code> 日志驱动写文件，并不记录上下文信息。 <a href="https://docs.docker.com/config/containers/logging/json-file/">https://docs.docker.com/config/containers/logging/json-file/</a></p>
+<pre><code>{&quot;log&quot;:&quot;Log line is here\n&quot;,&quot;stream&quot;:&quot;stdout&quot;,&quot;time&quot;:&quot;2019-01-01T11:11:11.111111111Z&quot;}
+</code></pre><p>上文中使用的日志收集镜像是 <code>fluent/fluentd-kubernetes-daemonset:v1.3-debian-elasticsearch</code>。</p>
+<p>具体代码路径在此 <a href="https://github.com/fluent/fluentd-kubernetes-daemonset/tree/master/docker-image/v1.3/debian-elasticsearch">https://github.com/fluent/fluentd-kubernetes-daemonset/tree/master/docker-image/v1.3/debian-elasticsearch</a></p>
+<p>收集容器目录下的日志。</p>
+<p><img src="../../images/image-20200414105706563.png" alt="image-20200414105706563"></p>
+<p>使用<code>kubernetes_metadata</code>这个第三方插件获取容器相关的上下文信息。这里是通过请求API server得到metadata的。</p>
+<p><img src="../../images/image-20200414105752287.png" alt="image-20200414105752287"></p>
+<p><code>kubernetes_metadata</code> 插件地址 <a href="https://github.com/fabric8io/fluent-plugin-kubernetes_metadata_filter">https://github.com/fabric8io/fluent-plugin-kubernetes_metadata_filter</a></p>
+<p>插件中有缓存metadata的选项，不用担心每处理一条日志，就要向API server发送请求。</p>
+<p><img src="../../images/image-20200414111028867.png" alt="image-20200414111028867"></p>
+
+                    
+                    <HR width="100%" id="EOF">
+                    <p style="color:#777;">Last modified on 2020-04-14</p>
+                    
+                </div>
+            </div>
+            
+            
+            <nav class="post-pagination">
+
+                
+                <a class="newer-posts">
+                    Next<br>No newer posts.
+                </a>
+                
+                
+                
+                <a class="older-posts" href="https://xujiahua.github.io/posts/bi-metabase-spark-sql/">
+                    Previous<br>Metabase &#43; Spark SQL
+                </a>
+                
+            </nav>
+            <div class="post-comment-wrapper">
+                
+
+
+
+
+
+
+            </div>
+        </div>
+    </div>
+</div>
+
+            </div><div id="single-column-footer">
+Hugo Theme <a href="https://github.com/amazingrise/hugo-theme-diary">Diary</a> by <a href="https://amazingrise.net">Rise</a>
+<br>
+Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopener">Makito</a>'s <a href="https://github.com/SumiMakito/hexo-theme-journal/" target="_blank" rel="noreferrer noopener">Journal.</a> <br>
+<br>
+
+&copy;
+	
+	2020 许嘉华的博客
+	</div>
+    	</div>
+    <script src="https://xujiahua.github.io//js/journal.js"></script>
+    </body>
+</html>

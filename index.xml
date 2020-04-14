@@ -5,9 +5,50 @@
     <description>Recent content on 许嘉华的博客</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Fri, 10 Apr 2020 16:41:53 +0800</lastBuildDate>
+    <lastBuildDate>Tue, 14 Apr 2020 09:53:35 +0800</lastBuildDate>
     
         <atom:link href="https://xujiahua.github.io/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    
+        <item>
+        <title>k8s 应用日志收集</title>
+        <link>https://xujiahua.github.io/posts/20200414-k8s-logging/</link>
+        <pubDate>Tue, 14 Apr 2020 09:53:35 +0800</pubDate>
+        
+        <guid>https://xujiahua.github.io/posts/20200414-k8s-logging/</guid>
+        <description>许嘉华的博客 https://xujiahua.github.io/posts/20200414-k8s-logging/ -&lt;h2 id=&#34;k8s-日志收集架构&#34;&gt;k8s 日志收集架构&lt;/h2&gt;
+&lt;p&gt;以下是比较一般、普适的架构。更多参考：Kubernetes 日志架构 &lt;a href=&#34;https://kubernetes.io/zh/docs/concepts/cluster-administration/logging/&#34;&gt;https://kubernetes.io/zh/docs/concepts/cluster-administration/logging/&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/logging-with-node-agent.png&#34; alt=&#34;使用节点日志记录代理&#34;&gt;&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;容器化应用将日志写入&lt;code&gt;stdout&lt;/code&gt;、&lt;code&gt;stderr&lt;/code&gt;。&lt;/li&gt;
+&lt;li&gt;Docker容器引擎将&lt;code&gt;stdout&lt;/code&gt;、&lt;code&gt;stderr&lt;/code&gt;流重定向到日志驱动，比如默认的json-file。&lt;/li&gt;
+&lt;li&gt;json-file日志驱动将日志写入到（宿主机上的）文件。&lt;/li&gt;
+&lt;li&gt;日志收集工具以DaemonSet的形式安装在每个节点。&lt;/li&gt;
+&lt;li&gt;日志收集工具监听文件变化，并将日志写入到日志中心服务。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2 id=&#34;k8s-日志收集细节&#34;&gt;k8s 日志收集细节&lt;/h2&gt;
+&lt;h3 id=&#34;实战&#34;&gt;实战&lt;/h3&gt;
+&lt;p&gt;可以直接参考以下教程：minikube创建了一个Kubernetes集群，Fluentd收集日志，存入ElasticSearch，使用Kibana查看日志。&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Logging in Kubernetes with Elasticsearch, Kibana, and Fluentd &lt;a href=&#34;https://mherman.org/blog/logging-in-kubernetes-with-elasticsearch-Kibana-fluentd/&#34;&gt;https://mherman.org/blog/logging-in-kubernetes-with-elasticsearch-Kibana-fluentd/&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;在Kibana上看收集到的日志。能看到日志收集工具也采集了容器、镜像、Pod有关的信息。这些上下文信息能让人定位到是哪个应用在生产日志。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200414104511399.png&#34; alt=&#34;image-20200414104511399&#34;&gt;&lt;/p&gt;
+&lt;h3 id=&#34;fluentd-收集上下文信息&#34;&gt;fluentd 收集上下文信息&lt;/h3&gt;
+&lt;p&gt;Docker &lt;code&gt;json-file&lt;/code&gt; 日志驱动写文件，并不记录上下文信息。 &lt;a href=&#34;https://docs.docker.com/config/containers/logging/json-file/&#34;&gt;https://docs.docker.com/config/containers/logging/json-file/&lt;/a&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;{&amp;quot;log&amp;quot;:&amp;quot;Log line is here\n&amp;quot;,&amp;quot;stream&amp;quot;:&amp;quot;stdout&amp;quot;,&amp;quot;time&amp;quot;:&amp;quot;2019-01-01T11:11:11.111111111Z&amp;quot;}
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;上文中使用的日志收集镜像是 &lt;code&gt;fluent/fluentd-kubernetes-daemonset:v1.3-debian-elasticsearch&lt;/code&gt;。&lt;/p&gt;
+&lt;p&gt;具体代码路径在此 &lt;a href=&#34;https://github.com/fluent/fluentd-kubernetes-daemonset/tree/master/docker-image/v1.3/debian-elasticsearch&#34;&gt;https://github.com/fluent/fluentd-kubernetes-daemonset/tree/master/docker-image/v1.3/debian-elasticsearch&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;收集容器目录下的日志。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200414105706563.png&#34; alt=&#34;image-20200414105706563&#34;&gt;&lt;/p&gt;
+&lt;p&gt;使用&lt;code&gt;kubernetes_metadata&lt;/code&gt;这个第三方插件获取容器相关的上下文信息。这里是通过请求API server得到metadata的。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200414105752287.png&#34; alt=&#34;image-20200414105752287&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;kubernetes_metadata&lt;/code&gt; 插件地址 &lt;a href=&#34;https://github.com/fabric8io/fluent-plugin-kubernetes_metadata_filter&#34;&gt;https://github.com/fabric8io/fluent-plugin-kubernetes_metadata_filter&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;插件中有缓存metadata的选项，不用担心每处理一条日志，就要向API server发送请求。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200414111028867.png&#34; alt=&#34;image-20200414111028867&#34;&gt;&lt;/p&gt;
+- https://xujiahua.github.io/posts/20200414-k8s-logging/ - </description>
+        </item>
     
     
     
@@ -129,6 +170,7 @@ javax.security.sasl.SaslException: GSS initiate failed [Caused by GSSException: 
 &lt;p&gt;&lt;img src=&#34;../../images/image-20200411072135265.png&#34; alt=&#34;image-20200411072135265&#34;&gt;&lt;/p&gt;
 &lt;p&gt;内置Driver依赖3.1.1。报错信息也是包含3.1.1，是否切到3.1.0，重新打包就可以了？&lt;/p&gt;
 &lt;p&gt;第二个问题需要设置Java参数 &lt;code&gt;-Djavax.security.auth.useSubjectCredsOnly=false&lt;/code&gt;。&lt;/p&gt;
+&lt;p&gt;通过底层机制获取凭证信息，而不是通过应用执行认证操作。&lt;/p&gt;
 &lt;p&gt;&lt;img src=&#34;../../images/image-20200410173734177.png&#34; alt=&#34;image-20200410173734177&#34;&gt;&lt;/p&gt;
 &lt;p&gt;参考：&lt;/p&gt;
 &lt;ol&gt;
@@ -140,8 +182,11 @@ javax.security.sasl.SaslException: GSS initiate failed [Caused by GSSException: 
 &lt;p&gt;Superset是另外一个开源的BI工具。但是使用过程中体验不佳：&lt;/p&gt;
 &lt;ol&gt;
 &lt;li&gt;不支持多表JOIN。这个不能忍。&lt;/li&gt;
-&lt;li&gt;外观丑陋。&lt;/li&gt;
-&lt;li&gt;小bug多。&lt;/li&gt;
+&lt;li&gt;直接写SQL，数据没法可视化。效率有点低下。&lt;/li&gt;
+&lt;li&gt;外观丑陋。FlaskAppbuilder生成的前后端架子。&lt;/li&gt;
+&lt;li&gt;Table源如果改了，建议删掉再添加，不然会有各种意外。&lt;/li&gt;
+&lt;li&gt;交互体验差。自定义SELECT COUNT(cookie) as pv，死活搞不定。正确的使用方式是设置label，体验不直观。&lt;/li&gt;
+&lt;li&gt;小bug多。用起来太容易烦躁了。对身心健康不好。&lt;/li&gt;
 &lt;/ol&gt;
 - https://xujiahua.github.io/posts/bi-metabase-spark-sql/ - </description>
         </item>
@@ -265,6 +310,21 @@ sbin/start-thriftserver.sh &lt;span style=&#34;color:#ae81ff&#34;&gt;\
 &lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;&lt;/span&gt;--hiveconf hive.server2.authentication.kerberos.keytab hive.xh-hd2-peggy-dost000004.keytab
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;也可以参考这篇文章：&lt;/p&gt;
 &lt;p&gt;Configuring Spark Thrift Server with Kerberos &lt;a href=&#34;https://mapr.com/docs/61/Spark/ConfiguringSparkSQLThriftServer_Kerberos.html&#34;&gt;https://mapr.com/docs/61/Spark/ConfiguringSparkSQLThriftServer_Kerberos.html&lt;/a&gt;&lt;/p&gt;
+&lt;h4 id=&#34;kinit-ticket过期问题&#34;&gt;kinit ticket过期问题&lt;/h4&gt;
+&lt;p&gt;Spark进程会自动处理Kerberos ticket renewal操作。&lt;/p&gt;
+&lt;p&gt;默认的ticket_lifetime 1d，renew_lifetime 7d。上次kinit是04/10。&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;[webapp@xh-hd2-peggy-dost000004 spark]$ klist
+Ticket cache: FILE:/tmp/krb5cc_1000
+Default principal: hive/xh-hd2-peggy-dost000004@PEGGY.LING
+
+Valid starting       Expires              Service principal
+04/13/2020 01:32:45  04/14/2020 01:32:45  krbtgt/PEGGY.LING@PEGGY.LING
+	renew until 04/17/2020 15:56:45
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;就看7天后会怎么样了。renew周期过了，会重建么？理论上是可以的。&lt;/p&gt;
+&lt;p&gt;看到Spark代码中已经有kerberos集成了，包括登录啥的。&lt;/p&gt;
+&lt;p&gt;spark/sql/hive-thriftserver/v2.3.5/src/main/java/org/apache/hive/service/auth/HiveAuthFactory.java&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200413110032646.png&#34; alt=&#34;image-20200413110032646&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200413105917167.png&#34; alt=&#34;image-20200413105917167&#34;&gt;&lt;/p&gt;
 &lt;p&gt;TODO: kinit得到的ticket的有效期是24h。过了24h，怎么自动重置？crontab建个定时任务刷新吧。不知道CDH是怎么处理这个问题的。&lt;/p&gt;
 &lt;h3 id=&#34;创建-jdbc-client-的-principal&#34;&gt;创建 JDBC Client 的 Principal&lt;/h3&gt;
 &lt;p&gt;在Kerberos服务器创建 principal及导出 keytab，同步到 JDBC Client 所在机器。这里对principal的名称没有严格要求。&lt;/p&gt;
@@ -414,7 +474,7 @@ root@ubuntu-parallel:~# cat &lt;span style=&#34;color:#66d9ef&#34;&gt;$(&lt;/spa
 &lt;span style=&#34;color:#f92672&#34;&gt;{&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;log&amp;#34;&lt;/span&gt;:&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;\n&amp;#34;&lt;/span&gt;,&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;stream&amp;#34;&lt;/span&gt;:&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;stdout&amp;#34;&lt;/span&gt;,&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;time&amp;#34;&lt;/span&gt;:&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;2020-04-02T01:46:54.096383725Z&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;}&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;a href=&#34;https://docs.docker.com/config/containers/logging/json-file/&#34;&gt;https://docs.docker.com/config/containers/logging/json-file/&lt;/a&gt;&lt;/p&gt;
 &lt;h3 id=&#34;怎么记录更多上下文信息&#34;&gt;怎么记录更多上下文信息&lt;/h3&gt;
-&lt;p&gt;未有定论，TODO。&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;json-file&lt;/code&gt;本身是没有上下文信息的。&lt;/p&gt;
 &lt;p&gt;翻看文档，能够记录的上下文信息非常有限，基本上是没有。有限的上下文信息包括容器ID，因为日志文件名包含了容器ID。但是容器ID也就够区分哪些日志是在一个进程实例，仅此而已。不知道进程到底是哪个服务。&lt;/p&gt;
 &lt;p&gt;如果能记录下镜像名称就好很多。&lt;/p&gt;
 &lt;p&gt;其他驱动可以记录一些上下文信息，https://docs.docker.com/config/containers/logging/log_tags/，倒是json-file不支持。issue &lt;a href=&#34;https://github.com/moby/moby/issues/19803&#34;&gt;https://github.com/moby/moby/issues/19803&lt;/a&gt;&lt;/p&gt;
@@ -1470,87 +1530,6 @@ ENTRYPOINT [&amp;quot;./app&amp;quot;, &amp;quot;serve&amp;quot;]
 &lt;p&gt;&lt;code&gt;app serve &lt;/code&gt;&lt;/p&gt;
 &lt;p&gt;启动web server，并加入web server优雅退出的功能。&lt;/p&gt;
 - https://xujiahua.github.io/posts/go-web-project/ - </description>
-        </item>
-    
-    
-    
-        <item>
-        <title>Go库对URL Path中%2F的处理</title>
-        <link>https://xujiahua.github.io/posts/slash-in-url-path/</link>
-        <pubDate>Thu, 12 Mar 2020 15:17:36 +0800</pubDate>
-        
-        <guid>https://xujiahua.github.io/posts/slash-in-url-path/</guid>
-        <description>许嘉华的博客 https://xujiahua.github.io/posts/slash-in-url-path/ -&lt;h2 id=&#34;问题描述&#34;&gt;问题描述&lt;/h2&gt;
-&lt;ol&gt;
-&lt;li&gt;有同事反馈Go项目的接口404了。看了下nginx日志，只有部分请求404了，404请求的显著特征是URL里有&lt;code&gt;%2F&lt;/code&gt;，也就是&lt;code&gt;/&lt;/code&gt;的转义。&lt;/li&gt;
-&lt;li&gt;接口定义是这样的：&lt;code&gt;/api/xxx/{mid}/{uid}&lt;/code&gt;。mid、uid是URL path的一部分。从现象来看，程序没处理好转义字符，因为多了一个path部分，路由不匹配了，404。&lt;/li&gt;
-&lt;li&gt;nginx的URL记录是&lt;code&gt;%2F&lt;/code&gt;，其实调用方传的是微信ID，比如&lt;code&gt;IEd5W/jqsdF9qpuagQscEg==&lt;/code&gt;。调用方在发请求之前对ID已经做好了转义。&lt;/li&gt;
-&lt;/ol&gt;
-&lt;h2 id=&#34;go内置库不区分2f和&#34;&gt;Go内置库：不区分&lt;code&gt;%2F&lt;/code&gt;和&lt;code&gt;/&lt;/code&gt;&lt;/h2&gt;
-&lt;p&gt;An application cannot distinguish between &amp;ldquo;/&amp;rdquo; used as a path segment delimiter and &amp;ldquo;/&amp;rdquo; encoded in a path segment.&lt;/p&gt;
-&lt;p&gt;这个问题由来已久了，看着官方也不打算解决了，见这个issue：https://github.com/golang/go/issues/3659&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;If your app needs to assign special meaning, the
-server can reprocess req.RequestURI as it sees fit, and the client can
-issue requests using &amp;amp;url.URL{Opaque: rawURI}.
-&lt;/code&gt;&lt;/pre&gt;&lt;ol&gt;
-&lt;li&gt;reprocess req.RequestURI 就是让你别用内置路由库了。&lt;/li&gt;
-&lt;li&gt;issue requests using &amp;amp;url.URL{Opaque: rawURI}. 试了，问题没解决。客户端不管怎么做，最终都是以HTTP协议输出的。&lt;code&gt;GET http://www.google.com/index.html HTTP/1.1&lt;/code&gt; 服务端代码最终解析的还是中间的那段URL文本。照理就不通啊。&lt;/li&gt;
-&lt;/ol&gt;
-&lt;h3 id=&#34;源码角度&#34;&gt;源码角度&lt;/h3&gt;
-&lt;p&gt;&lt;code&gt;url.URL&lt;/code&gt;的定义，明确指出Path字段存储的是decode之后的数据，所以&lt;code&gt;%2F&lt;/code&gt;在这里已经被转义成了&lt;code&gt;/&lt;/code&gt;，跟之前的Path意义完全不同了。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image-20200312154454662.png&#34; alt=&#34;image-20200312154454662&#34;&gt;&lt;/p&gt;
-&lt;p&gt;&lt;code&gt;http.ServeMux&lt;/code&gt;也是依赖Path进行路由的。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image-20200312155554309.png&#34; alt=&#34;image-20200312155554309&#34;&gt;&lt;/p&gt;
-&lt;p&gt;而http.Request中的URL字段是怎么从HTTP协议中解析出来的呢，从http.ListenAndServe顺藤摸瓜。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image-20200312163138455.png&#34; alt=&#34;image-20200312163138455&#34;&gt;&lt;/p&gt;
-&lt;p&gt;最后还是在parse rawurl字符串，红框里会做path的转义操作，坑之所在。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image-20200312164058458.png&#34; alt=&#34;image-20200312164058458&#34;&gt;&lt;/p&gt;
-&lt;p&gt;使用Go内置的http路由，代码都写死了：URL解析代码中，Path一定是decode后的数据；路由代码中使用Path来路由。问题得不到解决。&lt;/p&gt;
-&lt;h2 id=&#34;gorillamux-useencodedpath&#34;&gt;gorilla/mux: UseEncodedPath()&lt;/h2&gt;
-&lt;p&gt;&lt;a href=&#34;http://www.gorillatoolkit.org/pkg/mux&#34;&gt;http://www.gorillatoolkit.org/pkg/mux&lt;/a&gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image-20200312170420310.png&#34; alt=&#34;image-20200312170420310&#34;&gt;&lt;/p&gt;
-&lt;p&gt;使用这个方法就可以基于encoded Path进行路由了。例子如下：&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;package main
-
-import (
-	&amp;quot;fmt&amp;quot;
-	&amp;quot;io/ioutil&amp;quot;
-	&amp;quot;log&amp;quot;
-	&amp;quot;net/http&amp;quot;
-	&amp;quot;net/http/httptest&amp;quot;
-
-	&amp;quot;github.com/gorilla/mux&amp;quot;
-)
-
-func main() {
-	router := mux.NewRouter().UseEncodedPath() # 创建router的时候设置
-	router.NewRoute().Name(&amp;quot;test&amp;quot;).Methods(&amp;quot;GET&amp;quot;).Path(&amp;quot;/test/{name}&amp;quot;).HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprint(w, mux.Vars(r))
-	})
-	server := httptest.NewServer(router)
-	defer server.Close()
-
-	res, err := http.Get(server.URL + &amp;quot;/test/bob%2Fvanderlen&amp;quot;)
-	if err != nil {
-		log.Fatal(err)
-	}
-	greeting, err := ioutil.ReadAll(res.Body)
-	res.Body.Close()
-	if err != nil {
-		log.Fatal(err)
-	}
-	fmt.Printf(&amp;quot;%s&amp;quot;, greeting)
-}
-&lt;/code&gt;&lt;/pre&gt;&lt;h3 id=&#34;源码角度-1&#34;&gt;源码角度&lt;/h3&gt;
-&lt;p&gt;通过flag来控制是否用encode过的还是decode过的Path。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image-20200312171317394.png&#34; alt=&#34;image-20200312171317394&#34;&gt;&lt;/p&gt;
-&lt;h2 id=&#34;还不完美&#34;&gt;还不完美&lt;/h2&gt;
-&lt;p&gt;期望取到的数据是&lt;code&gt; IEd5W/jqsdF9qpuagQscEg==&lt;/code&gt;。然而，Path变量的取值仍然是根据标志位来的。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image-20200312173633090.png&#34; alt=&#34;image-20200312173633090&#34;&gt;&lt;/p&gt;
-&lt;p&gt;也就是说，即使让请求找到了路由，还是取不到真正的值。还得对URL Path进行手动decode才能用其中的值。让人崩溃，好多地方要改。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image-20200312174326015.png&#34; alt=&#34;image-20200312174326015&#34;&gt;&lt;/p&gt;
-&lt;p&gt;不完美，但至少不需要让调用者改代码了。以后接口设计还是把请求参数放Body里，稳一点。&lt;/p&gt;
-- https://xujiahua.github.io/posts/slash-in-url-path/ - </description>
         </item>
     
     
