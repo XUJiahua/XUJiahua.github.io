@@ -598,6 +598,33 @@ Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopene
 					
 				
 			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e5%ae%b9%e5%99%a8%e4%b8%8a%e4%b8%8b%e6%96%87%e4%bf%a1%e6%81%af" v-on:click="closeDrawer" id="容器上下文信息-nav">
+										 容器上下文信息
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
 	</div>
 
 </div>
@@ -1125,6 +1152,33 @@ Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopene
 					
 				
 			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e5%ae%b9%e5%99%a8%e4%b8%8a%e4%b8%8b%e6%96%87%e4%bf%a1%e6%81%af" v-on:click="closeDrawer" id="容器上下文信息-nav">
+										 容器上下文信息
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
 	</div>
 
 </div>
@@ -1324,7 +1378,25 @@ td-agent 30602 30596  9 17:10 ?        00:00:00 /opt/td-agent/embedded/bin/ruby 
 </code></pre><h4 id="kibana日志分析">kibana日志分析</h4>
 <p>因为ES的日志已经是JSON格式输出的，所以也不需要额外造数据了。</p>
 <p><img src="../../images/image-20200403001746670.png" alt="image-20200403001746670"></p>
-
+<h3 id="容器上下文信息">容器上下文信息</h3>
+<p>可以考虑这个filter插件 <a href="https://github.com/zsoltf/fluent-plugin-docker_metadata_elastic_filter">https://github.com/zsoltf/fluent-plugin-docker_metadata_elastic_filter</a></p>
+<pre><code>&lt;filter docker.var.lib.docker.containers.*.*.log&gt;
+  type docker_metadata_elastic
+&lt;/filter&gt;
+</code></pre><p>新增 docker  结构体，包含镜像名称。</p>
+<pre><code>{
+  &quot;log&quot;: &quot;2015/05/05 19:54:41 \n&quot;,
+  &quot;stream&quot;: &quot;stderr&quot;,
+  &quot;docker&quot;: {
+    &quot;id&quot;: &quot;df14e0d5ae4c07284fa636d739c8fc2e6b52bc344658de7d3f08c36a2e804115&quot;,
+    &quot;name&quot;: &quot;k8s_fabric8-console-container.efbd6e64_fabric8-console-controller-9knhj_default_8ae2f621-f360-11e4-8d12-54ee7527188d_7ec9aa3e&quot;,
+    &quot;container_hostname&quot;: &quot;fabric8-console-controller-9knhj&quot;,
+    &quot;image&quot;: &quot;fabric8/hawtio-kubernetes:latest&quot;,
+    &quot;image_id&quot;: &quot;b2bd1a24a68356b2f30128e6e28e672c1ef92df0d9ec01ec0c7faea5d77d2303&quot;,
+    &quot;labels&quot;: {}
+  }
+}
+</code></pre>
                     
                     <HR width="100%" id="EOF">
                     <p style="color:#777;">Last modified on 2020-04-02</p>
