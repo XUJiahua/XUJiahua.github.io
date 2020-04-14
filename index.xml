@@ -54,11 +54,11 @@
     
         <item>
         <title>Metabase &#43; Spark SQL</title>
-        <link>https://xujiahua.github.io/posts/bi-metabase-spark-sql/</link>
+        <link>https://xujiahua.github.io/posts/20200410-metabase-spark-sql/</link>
         <pubDate>Fri, 10 Apr 2020 16:41:53 +0800</pubDate>
         
-        <guid>https://xujiahua.github.io/posts/bi-metabase-spark-sql/</guid>
-        <description>许嘉华的博客 https://xujiahua.github.io/posts/bi-metabase-spark-sql/ -&lt;p&gt;这是大数据 BI 平台的第二步，BI 工具的搭建。假设已经配置好 Spark SQL JDBC Server，并启用了Kerberos。参考  &lt;a href=&#34;https://xujiahua.github.io/posts/spark-thrift-server-cdh/&#34;&gt;https://xujiahua.github.io/posts/spark-thrift-server-cdh/&lt;/a&gt;&lt;/p&gt;
+        <guid>https://xujiahua.github.io/posts/20200410-metabase-spark-sql/</guid>
+        <description>许嘉华的博客 https://xujiahua.github.io/posts/20200410-metabase-spark-sql/ -&lt;p&gt;这是大数据 BI 平台的第二步，BI 工具的搭建。假设已经配置好 Spark SQL JDBC Server，并启用了Kerberos。参考  &lt;a href=&#34;https://xujiahua.github.io/posts/20200410-spark-thrift-server-cdh/&#34;&gt;https://xujiahua.github.io/posts/20200410-spark-thrift-server-cdh/&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt;这里，我们选择了开源产品 Metabase。&lt;/p&gt;
 &lt;p&gt;最终，大数据 BI 平台，是由 1) 以Metabase作为BI可视化，2) 由HDFS（分布式文件存储） + parquet（列式数据存储格式）+ Hive metastore（SQL表结构信息维护） + Spark SQL（批处理引擎）组合的OLAP数据库组成。&lt;/p&gt;
 &lt;h2 id=&#34;metabase-简介&#34;&gt;Metabase 简介&lt;/h2&gt;
@@ -86,9 +86,7 @@
 &lt;h3 id=&#34;mysql&#34;&gt;MySQL&lt;/h3&gt;
 &lt;p&gt;使用MySQL作为元数据存储。复用之前CDH的MySQL实例。&lt;/p&gt;
 &lt;p&gt;创建数据库、用户。&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-SQL&#34; data-lang=&#34;SQL&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;-- 登录
-&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;mysql &lt;span style=&#34;color:#f92672&#34;&gt;-&lt;/span&gt;u metabase &lt;span style=&#34;color:#f92672&#34;&gt;-&lt;/span&gt;p
-&lt;span style=&#34;color:#75715e&#34;&gt;-- 适合MySQL5.7及以上版本，支持更大的max key length。一个字符使用四个字节。
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-SQL&#34; data-lang=&#34;SQL&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;-- 适合MySQL5.7及以上版本，支持更大的max key length。一个字符使用四个字节。
 &lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;CREATE&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;DATABASE&lt;/span&gt; metabase CHARACTER &lt;span style=&#34;color:#66d9ef&#34;&gt;SET&lt;/span&gt; utf8mb4 &lt;span style=&#34;color:#66d9ef&#34;&gt;COLLATE&lt;/span&gt; utf8mb4_unicode_ci;
 &lt;span style=&#34;color:#75715e&#34;&gt;-- 适合MySQL5.6及以下版本。一个字符使用3个字节。
 &lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;CREATE&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;DATABASE&lt;/span&gt; metabase CHARACTER &lt;span style=&#34;color:#66d9ef&#34;&gt;SET&lt;/span&gt; utf8 &lt;span style=&#34;color:#66d9ef&#34;&gt;COLLATE&lt;/span&gt; utf8_unicode_ci;
@@ -164,7 +162,7 @@ javax.security.sasl.SaslException: GSS initiate failed [Caused by GSSException: 
 &lt;/ol&gt;
 &lt;p&gt;第一个问题，暂时忽略，使用其他驱动。&lt;/p&gt;
 &lt;p&gt;按理说，https://github.com/metabase/sparksql-deps 已经合并到 &lt;a href=&#34;https://github.com/metabase/metabase/tree/v0.35.1/modules/drivers/sparksql&#34;&gt;https://github.com/metabase/metabase/tree/v0.35.1/modules/drivers/sparksql&lt;/a&gt; 了。内置驱动就能用才对。&lt;/p&gt;
-&lt;p&gt;能看到依赖hadoop-common包的版本差异。还得细看。&lt;/p&gt;
+&lt;p&gt;能看到依赖hadoop-common包的版本差异。TODO: 还得细看。&lt;/p&gt;
 &lt;p&gt;&lt;img src=&#34;../../images/image-20200411071918161.png&#34; alt=&#34;image-20200411071918161&#34;&gt;&lt;/p&gt;
 &lt;p&gt;依赖的hadoop版本是3.1.0。&lt;/p&gt;
 &lt;p&gt;&lt;img src=&#34;../../images/image-20200411072135265.png&#34; alt=&#34;image-20200411072135265&#34;&gt;&lt;/p&gt;
@@ -188,18 +186,18 @@ javax.security.sasl.SaslException: GSS initiate failed [Caused by GSSException: 
 &lt;li&gt;交互体验差。自定义SELECT COUNT(cookie) as pv，死活搞不定。正确的使用方式是设置label，体验不直观。&lt;/li&gt;
 &lt;li&gt;小bug多。用起来太容易烦躁了。对身心健康不好。&lt;/li&gt;
 &lt;/ol&gt;
-- https://xujiahua.github.io/posts/bi-metabase-spark-sql/ - </description>
+- https://xujiahua.github.io/posts/20200410-metabase-spark-sql/ - </description>
         </item>
     
     
     
         <item>
         <title>CDH6 启用 Spark Thrift Server</title>
-        <link>https://xujiahua.github.io/posts/spark-thrift-server-cdh/</link>
+        <link>https://xujiahua.github.io/posts/20200410-spark-thrift-server-cdh/</link>
         <pubDate>Fri, 10 Apr 2020 10:07:16 +0800</pubDate>
         
-        <guid>https://xujiahua.github.io/posts/spark-thrift-server-cdh/</guid>
-        <description>许嘉华的博客 https://xujiahua.github.io/posts/spark-thrift-server-cdh/ -&lt;p&gt;很遗憾，CDH版本的Spark阉割了Thrift Server。（可能与自家产品Impala有竞争关系的原因。）&lt;/p&gt;
+        <guid>https://xujiahua.github.io/posts/20200410-spark-thrift-server-cdh/</guid>
+        <description>许嘉华的博客 https://xujiahua.github.io/posts/20200410-spark-thrift-server-cdh/ -&lt;p&gt;很遗憾，CDH版本的Spark阉割了Thrift Server。（可能与自家产品Impala有竞争关系的原因。）&lt;/p&gt;
 &lt;p&gt;参考 &lt;a href=&#34;https://docs.cloudera.com/documentation/enterprise/6/6.3/topics/spark.html#spark__d99299e107&#34;&gt;https://docs.cloudera.com/documentation/enterprise/6/6.3/topics/spark.html#spark__d99299e107&lt;/a&gt;&lt;/p&gt;
 &lt;pre&gt;&lt;code&gt;# ll /opt/cloudera/parcels/CDH/lib/spark/sbin/
 total 84
@@ -311,7 +309,7 @@ sbin/start-thriftserver.sh &lt;span style=&#34;color:#ae81ff&#34;&gt;\
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;也可以参考这篇文章：&lt;/p&gt;
 &lt;p&gt;Configuring Spark Thrift Server with Kerberos &lt;a href=&#34;https://mapr.com/docs/61/Spark/ConfiguringSparkSQLThriftServer_Kerberos.html&#34;&gt;https://mapr.com/docs/61/Spark/ConfiguringSparkSQLThriftServer_Kerberos.html&lt;/a&gt;&lt;/p&gt;
 &lt;h4 id=&#34;kinit-ticket过期问题&#34;&gt;kinit ticket过期问题&lt;/h4&gt;
-&lt;p&gt;Spark进程会自动处理Kerberos ticket renewal操作。&lt;/p&gt;
+&lt;p&gt;Spark Thrift Server 进程会自动处理Kerberos ticket renewal操作。&lt;/p&gt;
 &lt;p&gt;默认的ticket_lifetime 1d，renew_lifetime 7d。上次kinit是04/10。&lt;/p&gt;
 &lt;pre&gt;&lt;code&gt;[webapp@xh-hd2-peggy-dost000004 spark]$ klist
 Ticket cache: FILE:/tmp/krb5cc_1000
@@ -325,7 +323,6 @@ Valid starting       Expires              Service principal
 &lt;p&gt;spark/sql/hive-thriftserver/v2.3.5/src/main/java/org/apache/hive/service/auth/HiveAuthFactory.java&lt;/p&gt;
 &lt;p&gt;&lt;img src=&#34;../../images/image-20200413110032646.png&#34; alt=&#34;image-20200413110032646&#34;&gt;&lt;/p&gt;
 &lt;p&gt;&lt;img src=&#34;../../images/image-20200413105917167.png&#34; alt=&#34;image-20200413105917167&#34;&gt;&lt;/p&gt;
-&lt;p&gt;TODO: kinit得到的ticket的有效期是24h。过了24h，怎么自动重置？crontab建个定时任务刷新吧。不知道CDH是怎么处理这个问题的。&lt;/p&gt;
 &lt;h3 id=&#34;创建-jdbc-client-的-principal&#34;&gt;创建 JDBC Client 的 Principal&lt;/h3&gt;
 &lt;p&gt;在Kerberos服务器创建 principal及导出 keytab，同步到 JDBC Client 所在机器。这里对principal的名称没有严格要求。&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# create principal&lt;/span&gt;
@@ -441,7 +438,7 @@ cloudera-stack-monitor.properties  core-site.xml  hdfs-site.xml  HTTP.keytab    
 [root@xh-hd2-peggy-rost01 ~]# kinit -kt hive.xh-hd2-peggy-dost000003.keytab hive/xh-hd2-peggy-dost000003@PEGGY.LING
 [root@xh-hd2-peggy-rost01 ~]# kinit -kt hive.xh-hd2-peggy-dost000003.keytab.bak hive/xh-hd2-peggy-dost000003@PEGGY.LING
 kinit: Password incorrect while getting initial credentials
-&lt;/code&gt;&lt;/pre&gt;- https://xujiahua.github.io/posts/spark-thrift-server-cdh/ - </description>
+&lt;/code&gt;&lt;/pre&gt;- https://xujiahua.github.io/posts/20200410-spark-thrift-server-cdh/ - </description>
         </item>
     
     
@@ -552,7 +549,7 @@ root@ubuntu-parallel:~# docker logs journald_logging_driver
 &lt;h2 id=&#34;fluentd&#34;&gt;Fluentd&lt;/h2&gt;
 &lt;p&gt;通过服务请求，让docker吐日志到fluentd进程。https://docs.docker.com/config/containers/logging/fluentd/&lt;/p&gt;
 &lt;p&gt;使用包括fluentd在很多日志驱动，因为日志写入到远程服务器，会导致&lt;code&gt;docker logs&lt;/code&gt;， &lt;code&gt;kubectl logs&lt;/code&gt;不可用。&lt;/p&gt;
-&lt;p&gt;Fluentd是一个挺灵活的工具，可以让fluentd主动监听容器目录下的日志文件。参考另一篇文章 &lt;a href=&#34;https://xujiahua.github.io/posts/use-fluentd/&#34;&gt;https://xujiahua.github.io/posts/use-fluentd/&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;Fluentd是一个挺灵活的工具，可以让fluentd主动监听容器目录下的日志文件。参考另一篇文章 &lt;a href=&#34;https://xujiahua.github.io/posts/20200402-use-fluentd/&#34;&gt;https://xujiahua.github.io/posts/20200402-use-fluentd/&lt;/a&gt;&lt;/p&gt;
 &lt;h2 id=&#34;总结&#34;&gt;总结&lt;/h2&gt;
 &lt;p&gt;为了兼容可使用&lt;code&gt;docker logs&lt;/code&gt; ，&lt;code&gt;kubectl logs&lt;/code&gt;，必须使用写本地文件的日志驱动。而json格式更方便工具（比如fluentd，logstash）解析，所以json-file是首选。&lt;/p&gt;
 &lt;p&gt;然后使用日志收集工具集中采集docker容器日志。k8s中日志收集策略，一般是在每台服务器上以DaemonSet的形式安装logging agent，监听本地文件、文件夹，将日志转发到日志中心。&lt;/p&gt;
@@ -573,11 +570,11 @@ root@ubuntu-parallel:~# docker logs journald_logging_driver
     
         <item>
         <title>Fluentd实战</title>
-        <link>https://xujiahua.github.io/posts/use-fluentd/</link>
+        <link>https://xujiahua.github.io/posts/20200402-use-fluentd/</link>
         <pubDate>Thu, 02 Apr 2020 16:58:23 +0800</pubDate>
         
-        <guid>https://xujiahua.github.io/posts/use-fluentd/</guid>
-        <description>许嘉华的博客 https://xujiahua.github.io/posts/use-fluentd/ -&lt;p&gt;以收集Docker容器日志的例子，介绍下Fluentd的用法。不考虑logstash，太占服务器资源了。&lt;/p&gt;
+        <guid>https://xujiahua.github.io/posts/20200402-use-fluentd/</guid>
+        <description>许嘉华的博客 https://xujiahua.github.io/posts/20200402-use-fluentd/ -&lt;p&gt;以收集Docker容器日志的例子，介绍下Fluentd的用法。不考虑logstash，太占服务器资源了。&lt;/p&gt;
 &lt;h2 id=&#34;安装-fluentd&#34;&gt;安装 Fluentd&lt;/h2&gt;
 &lt;p&gt;Ubuntu 18.04上的安装命令（https://docs.fluentd.org/installation/install-by-deb）：&lt;/p&gt;
 &lt;pre&gt;&lt;code&gt;root@ubuntu-parallel:~# curl -L https://toolbelt.treasuredata.com/sh/install-ubuntu-bionic-td-agent3.sh | sh
@@ -734,7 +731,7 @@ td-agent 30602 30596  9 17:10 ?        00:00:00 /opt/td-agent/embedded/bin/ruby 
     &amp;quot;labels&amp;quot;: {}
   }
 }
-&lt;/code&gt;&lt;/pre&gt;- https://xujiahua.github.io/posts/use-fluentd/ - </description>
+&lt;/code&gt;&lt;/pre&gt;- https://xujiahua.github.io/posts/20200402-use-fluentd/ - </description>
         </item>
     
     

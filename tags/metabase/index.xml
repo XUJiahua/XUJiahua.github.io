@@ -13,11 +13,11 @@
     
     <item>
       <title>Metabase &#43; Spark SQL</title>
-      <link>https://xujiahua.github.io/posts/bi-metabase-spark-sql/</link>
+      <link>https://xujiahua.github.io/posts/20200410-metabase-spark-sql/</link>
       <pubDate>Fri, 10 Apr 2020 16:41:53 +0800</pubDate>
       
-      <guid>https://xujiahua.github.io/posts/bi-metabase-spark-sql/</guid>
-      <description>这是大数据 BI 平台的第二步，BI 工具的搭建。假设已经配置好 Spark SQL JDBC Server，并启用了Kerberos。参考 https://xujiahua.github.io/posts/spark-thrift-server-cdh/
+      <guid>https://xujiahua.github.io/posts/20200410-metabase-spark-sql/</guid>
+      <description>这是大数据 BI 平台的第二步，BI 工具的搭建。假设已经配置好 Spark SQL JDBC Server，并启用了Kerberos。参考 https://xujiahua.github.io/posts/20200410-spark-thrift-server-cdh/
 这里，我们选择了开源产品 Metabase。
 最终，大数据 BI 平台，是由 1) 以Metabase作为BI可视化，2) 由HDFS（分布式文件存储） + parquet（列式数据存储格式）+ Hive metastore（SQL表结构信息维护） + Spark SQL（批处理引擎）组合的OLAP数据库组成。
 Metabase 简介 Metabase is the easy, open source way for everyone in your company to ask questions and learn from data.

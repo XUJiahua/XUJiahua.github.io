@@ -13,11 +13,11 @@
     
     <item>
       <title>Metabase &#43; Spark SQL</title>
-      <link>https://xujiahua.github.io/posts/bi-metabase-spark-sql/</link>
+      <link>https://xujiahua.github.io/posts/20200410-metabase-spark-sql/</link>
       <pubDate>Fri, 10 Apr 2020 16:41:53 +0800</pubDate>
       
-      <guid>https://xujiahua.github.io/posts/bi-metabase-spark-sql/</guid>
-      <description>这是大数据 BI 平台的第二步，BI 工具的搭建。假设已经配置好 Spark SQL JDBC Server，并启用了Kerberos。参考 https://xujiahua.github.io/posts/spark-thrift-server-cdh/
+      <guid>https://xujiahua.github.io/posts/20200410-metabase-spark-sql/</guid>
+      <description>这是大数据 BI 平台的第二步，BI 工具的搭建。假设已经配置好 Spark SQL JDBC Server，并启用了Kerberos。参考 https://xujiahua.github.io/posts/20200410-spark-thrift-server-cdh/
 这里，我们选择了开源产品 Metabase。
 最终，大数据 BI 平台，是由 1) 以Metabase作为BI可视化，2) 由HDFS（分布式文件存储） + parquet（列式数据存储格式）+ Hive metastore（SQL表结构信息维护） + Spark SQL（批处理引擎）组合的OLAP数据库组成。
 Metabase 简介 Metabase is the easy, open source way for everyone in your company to ask questions and learn from data.
@@ -29,10 +29,10 @@ Metabase 安装 MySQL 使用MySQL作为元数据存储。复用之前CDH的MySQL
     
     <item>
       <title>CDH6 启用 Spark Thrift Server</title>
-      <link>https://xujiahua.github.io/posts/spark-thrift-server-cdh/</link>
+      <link>https://xujiahua.github.io/posts/20200410-spark-thrift-server-cdh/</link>
       <pubDate>Fri, 10 Apr 2020 10:07:16 +0800</pubDate>
       
-      <guid>https://xujiahua.github.io/posts/spark-thrift-server-cdh/</guid>
+      <guid>https://xujiahua.github.io/posts/20200410-spark-thrift-server-cdh/</guid>
       <description>很遗憾，CDH版本的Spark阉割了Thrift Server。（可能与自家产品Impala有竞争关系的原因。）
 参考 https://docs.cloudera.com/documentation/enterprise/6/6.3/topics/spark.html#spark__d99299e107
 # ll /opt/cloudera/parcels/CDH/lib/spark/sbin/ total 84 -rwxr-xr-x 1 root root 2803 Nov 9 00:05 slaves.sh -rwxr-xr-x 1 root root 1429 Nov 9 00:05 spark-config.sh -rwxr-xr-x 1 root root 5689 Nov 9 00:05 spark-daemon.sh -rwxr-xr-x 1 root root 1262 Nov 9 00:05 spark-daemons.sh -rwxr-xr-x 1 root root 1190 Nov 9 00:05 start-all.sh -rwxr-xr-x 1 root root 1274 Nov 9 00:05 start-history-server.sh -rwxr-xr-x 1 root root 2050 Nov 9 00:05 start-master.</description>

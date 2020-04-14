@@ -1025,7 +1025,7 @@ root@ubuntu-parallel:~# docker logs journald_logging_driver
 <h2 id="fluentd">Fluentd</h2>
 <p>通过服务请求，让docker吐日志到fluentd进程。https://docs.docker.com/config/containers/logging/fluentd/</p>
 <p>使用包括fluentd在很多日志驱动，因为日志写入到远程服务器，会导致<code>docker logs</code>， <code>kubectl logs</code>不可用。</p>
-<p>Fluentd是一个挺灵活的工具，可以让fluentd主动监听容器目录下的日志文件。参考另一篇文章 <a href="https://xujiahua.github.io/posts/use-fluentd/">https://xujiahua.github.io/posts/use-fluentd/</a></p>
+<p>Fluentd是一个挺灵活的工具，可以让fluentd主动监听容器目录下的日志文件。参考另一篇文章 <a href="https://xujiahua.github.io/posts/20200402-use-fluentd/">https://xujiahua.github.io/posts/20200402-use-fluentd/</a></p>
 <h2 id="总结">总结</h2>
 <p>为了兼容可使用<code>docker logs</code> ，<code>kubectl logs</code>，必须使用写本地文件的日志驱动。而json格式更方便工具（比如fluentd，logstash）解析，所以json-file是首选。</p>
 <p>然后使用日志收集工具集中采集docker容器日志。k8s中日志收集策略，一般是在每台服务器上以DaemonSet的形式安装logging agent，监听本地文件、文件夹，将日志转发到日志中心。</p>
@@ -1051,13 +1051,13 @@ root@ubuntu-parallel:~# docker logs journald_logging_driver
             <nav class="post-pagination">
 
                 
-                <a class="newer-posts" href="https://xujiahua.github.io/posts/spark-thrift-server-cdh/">
+                <a class="newer-posts" href="https://xujiahua.github.io/posts/20200410-spark-thrift-server-cdh/">
                     Next<br>CDH6 启用 Spark Thrift Server
                 </a>
                 
                 
                 
-                <a class="older-posts" href="https://xujiahua.github.io/posts/use-fluentd/">
+                <a class="older-posts" href="https://xujiahua.github.io/posts/20200402-use-fluentd/">
                     Previous<br>Fluentd实战
                 </a>
                 

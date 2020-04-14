@@ -13,10 +13,10 @@
     
     <item>
       <title>CDH6 启用 Spark Thrift Server</title>
-      <link>https://xujiahua.github.io/posts/spark-thrift-server-cdh/</link>
+      <link>https://xujiahua.github.io/posts/20200410-spark-thrift-server-cdh/</link>
       <pubDate>Fri, 10 Apr 2020 10:07:16 +0800</pubDate>
       
-      <guid>https://xujiahua.github.io/posts/spark-thrift-server-cdh/</guid>
+      <guid>https://xujiahua.github.io/posts/20200410-spark-thrift-server-cdh/</guid>
       <description>很遗憾，CDH版本的Spark阉割了Thrift Server。（可能与自家产品Impala有竞争关系的原因。）
 参考 https://docs.cloudera.com/documentation/enterprise/6/6.3/topics/spark.html#spark__d99299e107
 # ll /opt/cloudera/parcels/CDH/lib/spark/sbin/ total 84 -rwxr-xr-x 1 root root 2803 Nov 9 00:05 slaves.sh -rwxr-xr-x 1 root root 1429 Nov 9 00:05 spark-config.sh -rwxr-xr-x 1 root root 5689 Nov 9 00:05 spark-daemon.sh -rwxr-xr-x 1 root root 1262 Nov 9 00:05 spark-daemons.sh -rwxr-xr-x 1 root root 1190 Nov 9 00:05 start-all.sh -rwxr-xr-x 1 root root 1274 Nov 9 00:05 start-history-server.sh -rwxr-xr-x 1 root root 2050 Nov 9 00:05 start-master.</description>
