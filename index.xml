@@ -29,7 +29,7 @@
 &lt;/ol&gt;
 &lt;h2 id=&#34;k8s-日志收集细节&#34;&gt;k8s 日志收集细节&lt;/h2&gt;
 &lt;h3 id=&#34;实战&#34;&gt;实战&lt;/h3&gt;
-&lt;p&gt;可以直接参考以下教程：minikube创建了一个Kubernetes集群，Fluentd收集日志，存入ElasticSearch，使用Kibana查看日志。&lt;/p&gt;
+&lt;p&gt;可以直接参考以下教程：minikube创建了一个Kubernetes集群，Fluentd收集日志，存入ElasticSearch，使用Kibana查看日志。典型的EFK技术栈。&lt;/p&gt;
 &lt;ol&gt;
 &lt;li&gt;Logging in Kubernetes with Elasticsearch, Kibana, and Fluentd &lt;a href=&#34;https://mherman.org/blog/logging-in-kubernetes-with-elasticsearch-Kibana-fluentd/&#34;&gt;https://mherman.org/blog/logging-in-kubernetes-with-elasticsearch-Kibana-fluentd/&lt;/a&gt;&lt;/li&gt;
 &lt;/ol&gt;
