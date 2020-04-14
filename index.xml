@@ -479,6 +479,20 @@ root@ubuntu-parallel:~# cat &lt;span style=&#34;color:#66d9ef&#34;&gt;$(&lt;/spa
 &lt;p&gt;同样的思路，&lt;code&gt;fluentd&lt;/code&gt;也有不少通过docker daemon查询或是解析容器目录下&lt;code&gt;config.v2.json&lt;/code&gt;获取metadata的 filter 插件。&lt;/p&gt;
 &lt;p&gt;&lt;img src=&#34;../../images/image-20200414112709859.png&#34; alt=&#34;image-20200414112709859&#34;&gt;&lt;/p&gt;
 &lt;p&gt;参考 &lt;a href=&#34;https://www.fluentd.org/plugins&#34;&gt;https://www.fluentd.org/plugins&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;比如这个 &lt;a href=&#34;https://github.com/zsoltf/fluent-plugin-docker_metadata_elastic_filter&#34;&gt;https://github.com/zsoltf/fluent-plugin-docker_metadata_elastic_filter&lt;/a&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;{
+  &amp;quot;log&amp;quot;: &amp;quot;2015/05/05 19:54:41 \n&amp;quot;,
+  &amp;quot;stream&amp;quot;: &amp;quot;stderr&amp;quot;,
+  &amp;quot;docker&amp;quot;: {
+    &amp;quot;id&amp;quot;: &amp;quot;df14e0d5ae4c07284fa636d739c8fc2e6b52bc344658de7d3f08c36a2e804115&amp;quot;,
+    &amp;quot;name&amp;quot;: &amp;quot;k8s_fabric8-console-container.efbd6e64_fabric8-console-controller-9knhj_default_8ae2f621-f360-11e4-8d12-54ee7527188d_7ec9aa3e&amp;quot;,
+    &amp;quot;container_hostname&amp;quot;: &amp;quot;fabric8-console-controller-9knhj&amp;quot;,
+    &amp;quot;image&amp;quot;: &amp;quot;fabric8/hawtio-kubernetes:latest&amp;quot;,
+    &amp;quot;image_id&amp;quot;: &amp;quot;b2bd1a24a68356b2f30128e6e28e672c1ef92df0d9ec01ec0c7faea5d77d2303&amp;quot;,
+    &amp;quot;labels&amp;quot;: {}
+  }
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;新增了docker结构体，镜像名称也能收集到了 。&lt;/p&gt;
 &lt;h2 id=&#34;local&#34;&gt;local&lt;/h2&gt;
 &lt;p&gt;&lt;code&gt;--log-driver&lt;/code&gt;指定日志驱动。&lt;/p&gt;
 &lt;p&gt;cat输出local文件，部分结果乱码。挺不方便日志解析的。&lt;/p&gt;
