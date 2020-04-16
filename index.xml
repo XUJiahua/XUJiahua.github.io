@@ -5,9 +5,82 @@
     <description>Recent content on 许嘉华的博客</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Tue, 14 Apr 2020 09:53:35 +0800</lastBuildDate>
+    <lastBuildDate>Thu, 16 Apr 2020 11:33:18 +0800</lastBuildDate>
     
         <atom:link href="https://xujiahua.github.io/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    
+        <item>
+        <title>机器学习在线推理部署方案：Cortex</title>
+        <link>https://xujiahua.github.io/posts/20200416-cortex/</link>
+        <pubDate>Thu, 16 Apr 2020 11:33:18 +0800</pubDate>
+        
+        <guid>https://xujiahua.github.io/posts/20200416-cortex/</guid>
+        <description>许嘉华的博客 https://xujiahua.github.io/posts/20200416-cortex/ -&lt;h2 id=&#34;cortex-介绍&#34;&gt;Cortex 介绍&lt;/h2&gt;
+&lt;p&gt;官方网站：Deploy machine learning models in production &lt;a href=&#34;https://www.cortex.dev/&#34;&gt;https://www.cortex.dev/&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;GitHub &lt;a href=&#34;https://github.com/cortexlabs/cortex&#34;&gt;https://github.com/cortexlabs/cortex&lt;/a&gt;&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;The CLI sends configuration and code to the cluster every time you run &lt;code&gt;cortex deploy&lt;/code&gt;. Each model is loaded into a Docker container, along with any Python packages and request handling code. The model is exposed as a web service using Elastic Load Balancing (ELB), TensorFlow Serving, and ONNX Runtime. The containers are orchestrated on Elastic Kubernetes Service (EKS) while logs and metrics are streamed to CloudWatch.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;CLI工具将配置文件和代码推送到集群。模型连同Python依赖包和请求处理的代码被Docker容器打包。使用AWS ELB等暴露出Web服务。容器使用AWS EKS编排，日志和指标会推送到AWS CloudWatch。&lt;/p&gt;
+&lt;h3 id=&#34;key-features&#34;&gt;Key Features&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Multi framework:&lt;/strong&gt; Cortex supports TensorFlow, PyTorch, scikit-learn, XGBoost, and more. 支持主流的机器学习、深度学习框架&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Autoscaling:&lt;/strong&gt; Cortex automatically scales APIs to handle production workloads.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;CPU / GPU support:&lt;/strong&gt; Cortex can run inference on CPU or GPU infrastructure. CPU/GPU都支持。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Spot instances:&lt;/strong&gt; Cortex supports EC2 spot instances.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Rolling updates:&lt;/strong&gt; Cortex updates deployed APIs without any downtime. 依赖k8s的能力。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Log streaming:&lt;/strong&gt; Cortex streams logs from deployed models to your CLI. 依赖CloudWatch的能力。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Prediction monitoring:&lt;/strong&gt; Cortex monitors network metrics and tracks predictions.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Minimal configuration:&lt;/strong&gt; Cortex deployments are defined in a single &lt;code&gt;cortex.yaml&lt;/code&gt; file.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;我的体验&#34;&gt;我的体验&lt;/h3&gt;
+&lt;ol&gt;
+&lt;li&gt;与AWS深度绑定。对私有云、国内公有云不够友好了。&lt;/li&gt;
+&lt;li&gt;依赖Kubernetes服务。&lt;/li&gt;
+&lt;li&gt;依赖云存储服务，比如S3、OSS。cortex deploy的建议：cortex will zip files and upload them to the cluster; we recommend that you upload large files/directories (e.g. models) to s3 and download them in your api&amp;rsquo;s &lt;strong&gt;init&lt;/strong&gt; function,&lt;/li&gt;
+&lt;li&gt;有一套Python API服务的模板，并使用Docker封装。比如 &lt;a href=&#34;https://github.com/cortexlabs/cortex/blob/master/images/python-serve/Dockerfile&#34;&gt;https://github.com/cortexlabs/cortex/blob/master/images/python-serve/Dockerfile&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;推理Predictor类按照Cortex定义的接口规范实现，所在目录挂载到 /mnt/project 目录。&lt;/li&gt;
+&lt;li&gt;启动容器，预置脚本会安装&lt;code&gt;requirement.txt&lt;/code&gt;，并动态加载Predictor类。&lt;/li&gt;
+&lt;li&gt;使用者只需要处理模型训练和按照规范定义Predictor类。重复的API定义、部署、扩容，都已经被隐藏掉了。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2 id=&#34;代码结构&#34;&gt;代码结构&lt;/h2&gt;
+&lt;ol&gt;
+&lt;li&gt;cli 目录：客户端。deploy操作，就是把本地的配置文件压缩成zip包上传。&lt;/li&gt;
+&lt;li&gt;pkg/operator 目录：服务端。deploy接口在此：zip包会上传到S3，编程的方式申请k8s资源（deployment, service, virtualService），直接向k8s API server发送请求。&lt;/li&gt;
+&lt;li&gt;pkg/lib 目录：比较核心的Go代码。&lt;/li&gt;
+&lt;li&gt;pkg/workloads/cortex/downloader 目录：在k8s中作为InitContainer，用于下载配置文件到Pod中。&lt;/li&gt;
+&lt;li&gt;pkg/workloads 目录：推理服务的代码，比较通用。pkg/workloads/cortex/serve/run.sh 留了个口子 &lt;code&gt;/mnt/project&lt;/code&gt;，每个服务个性化的部分留给开发者（遵从规范）。&lt;/li&gt;
+&lt;li&gt;images 目录：镜像文件。包括 operator 的镜像文件，也包括推理服务的。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;具体看看创建推理服务容器的过程。&lt;/p&gt;
+&lt;p&gt;申请 K8s Deployment。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200416151230669.png&#34; alt=&#34;image-20200416151230669&#34;&gt;&lt;/p&gt;
+&lt;p&gt;这里分为三大类。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200416151318515.png&#34; alt=&#34;image-20200416151318515&#34;&gt;&lt;/p&gt;
+&lt;p&gt;关注PythonPredictorType。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200416151537448.png&#34; alt=&#34;image-20200416151537448&#34;&gt;&lt;/p&gt;
+&lt;p&gt;传入 InitContainer （代码见 pkg/workloads/cortex/downloader）的参数如下，将S3上存储的配置信息和predictor文件等下载到Pod中的 &lt;code&gt;/mnt/project&lt;/code&gt;目录（&lt;code&gt;_emptyDirMountPath = &amp;quot;/mnt&amp;quot;&lt;/code&gt;）。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200416152324873.png&#34; alt=&#34;image-20200416152324873&#34;&gt;&lt;/p&gt;
+&lt;p&gt;因为Pod内容器共享存储空间，这样推理服务容器就能读取到 &lt;code&gt;/mnt/project&lt;/code&gt;了。&lt;/p&gt;
+&lt;h2 id=&#34;cortex-镜像体验&#34;&gt;cortex 镜像体验&lt;/h2&gt;
+&lt;p&gt;下载地址 &lt;a href=&#34;https://hub.docker.com/r/cortexlabs/python-serve/tags&#34;&gt;https://hub.docker.com/r/cortexlabs/python-serve/tags&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;容器内代码也是依赖S3的，不修改还不能直接使用🤣。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200416161622829.png&#34; alt=&#34;image-20200416161622829&#34;&gt;&lt;/p&gt;
+&lt;p&gt;到此为止吧。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;docker run -e CORTEX_SERVING_PORT&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;5000&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;\
+&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;&lt;/span&gt;        -e CORTEX_WORKERS_PER_REPLICA&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;8&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;\
+&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;&lt;/span&gt;        -e CORTEX_MAX_WORKER_CONCURRENCY&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;8&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;\
+&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;&lt;/span&gt;        -e CORTEX_THREADS_PER_WORKER&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;\
+&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;&lt;/span&gt;        -e CORTEX_SO_MAX_CONN&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;2048&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;\
+&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;&lt;/span&gt;        -e CORTEX_CACHE_DIR&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;/mnt/spec &lt;span style=&#34;color:#ae81ff&#34;&gt;\
+&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;&lt;/span&gt;        -e CORTEX_VERSION&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;0.15.1 &lt;span style=&#34;color:#ae81ff&#34;&gt;\
+&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;&lt;/span&gt;        -v &lt;span style=&#34;color:#e6db74&#34;&gt;`&lt;/span&gt;pwd&lt;span style=&#34;color:#e6db74&#34;&gt;`&lt;/span&gt;:/mnt/project &lt;span style=&#34;color:#ae81ff&#34;&gt;\
+&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;&lt;/span&gt;        -v &lt;span style=&#34;color:#e6db74&#34;&gt;`&lt;/span&gt;pwd&lt;span style=&#34;color:#e6db74&#34;&gt;`&lt;/span&gt;:/mnt/spec &lt;span style=&#34;color:#ae81ff&#34;&gt;\
+&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;&lt;/span&gt;        -p 5000:5000 cortexlabs/python-serve:0.15.1
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;- https://xujiahua.github.io/posts/20200416-cortex/ - </description>
+        </item>
     
     
     
@@ -445,11 +518,11 @@ kinit: Password incorrect while getting initial credentials
     
         <item>
         <title>Docker日志驱动小结</title>
-        <link>https://xujiahua.github.io/posts/docker-logging/</link>
+        <link>https://xujiahua.github.io/posts/20200403-docker-logging/</link>
         <pubDate>Fri, 03 Apr 2020 15:43:07 +0800</pubDate>
         
-        <guid>https://xujiahua.github.io/posts/docker-logging/</guid>
-        <description>许嘉华的博客 https://xujiahua.github.io/posts/docker-logging/ -&lt;p&gt;&lt;code&gt;docker logs&lt;/code&gt;， &lt;code&gt;kubectl logs&lt;/code&gt;能看到Docker容器的标准输出、标准错误，方便定位问题。而 &lt;code&gt;xxx logs&lt;/code&gt;之所以能看到，是因为标准输出、标准错误存储在每个容器独有的日志文件中。&lt;/p&gt;
+        <guid>https://xujiahua.github.io/posts/20200403-docker-logging/</guid>
+        <description>许嘉华的博客 https://xujiahua.github.io/posts/20200403-docker-logging/ -&lt;p&gt;&lt;code&gt;docker logs&lt;/code&gt;， &lt;code&gt;kubectl logs&lt;/code&gt;能看到Docker容器的标准输出、标准错误，方便定位问题。而 &lt;code&gt;xxx logs&lt;/code&gt;之所以能看到，是因为标准输出、标准错误存储在每个容器独有的日志文件中。&lt;/p&gt;
 &lt;p&gt;另外日志量大了，用&lt;code&gt;docker logs&lt;/code&gt;看历史数据不大合适。我们就需要考虑将日志存储到日志中心去。&lt;/p&gt;
 &lt;p&gt;Docker默认支持如下日志驱动。有直接写文件的，有使用云服务的。下面简单介绍下。&lt;/p&gt;
 &lt;p&gt;&lt;img src=&#34;../../images/Screen-Shot-2017-09-11-at-3.08.50-PM.png&#34; alt=&#34;img&#34;&gt;&lt;/p&gt;
@@ -549,7 +622,7 @@ root@ubuntu-parallel:~# docker logs journald_logging_driver
 &lt;h2 id=&#34;fluentd&#34;&gt;Fluentd&lt;/h2&gt;
 &lt;p&gt;通过服务请求，让docker吐日志到fluentd进程。https://docs.docker.com/config/containers/logging/fluentd/&lt;/p&gt;
 &lt;p&gt;使用包括fluentd在很多日志驱动，因为日志写入到远程服务器，会导致&lt;code&gt;docker logs&lt;/code&gt;， &lt;code&gt;kubectl logs&lt;/code&gt;不可用。&lt;/p&gt;
-&lt;p&gt;Fluentd是一个挺灵活的工具，可以让fluentd主动监听容器目录下的日志文件。参考另一篇文章 &lt;a href=&#34;https://xujiahua.github.io/posts/20200402-use-fluentd/&#34;&gt;https://xujiahua.github.io/posts/20200402-use-fluentd/&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;Fluentd是一个挺灵活的工具，可以让fluentd主动监听容器目录下的日志文件。参考另一篇文章 &lt;a href=&#34;https://xujiahua.github.io/posts/use-fluentd/&#34;&gt;https://xujiahua.github.io/posts/use-fluentd/&lt;/a&gt;&lt;/p&gt;
 &lt;h2 id=&#34;总结&#34;&gt;总结&lt;/h2&gt;
 &lt;p&gt;为了兼容可使用&lt;code&gt;docker logs&lt;/code&gt; ，&lt;code&gt;kubectl logs&lt;/code&gt;，必须使用写本地文件的日志驱动。而json格式更方便工具（比如fluentd，logstash）解析，所以json-file是首选。&lt;/p&gt;
 &lt;p&gt;然后使用日志收集工具集中采集docker容器日志。k8s中日志收集策略，一般是在每台服务器上以DaemonSet的形式安装logging agent，监听本地文件、文件夹，将日志转发到日志中心。&lt;/p&gt;
@@ -563,7 +636,7 @@ root@ubuntu-parallel:~# docker logs journald_logging_driver
 &lt;li&gt;应用要么写入文件、要么写入标准输出，这个应该很方便做成可配置的。对程序来说，都有共同的抽象，io.Writer。&lt;/li&gt;
 &lt;/ol&gt;
 &lt;p&gt;应用日志如果是写到文件的，需要考虑通过数据卷，挂载等将日志与容器分离。采集挂载目录上的日志文件，以前怎么收集，现在还是怎么收集。还是建议写标准输出，这是目前的最佳实践。&lt;/p&gt;
-- https://xujiahua.github.io/posts/docker-logging/ - </description>
+- https://xujiahua.github.io/posts/20200403-docker-logging/ - </description>
         </item>
     
     
@@ -825,11 +898,11 @@ BenchmarkDetectSafeSearchForFile-8            &lt;span style=&#34;color:#ae81ff&
     
         <item>
         <title>使用 Docker Machine</title>
-        <link>https://xujiahua.github.io/posts/use-docker-machine/</link>
+        <link>https://xujiahua.github.io/posts/20200331-use-docker-machine/</link>
         <pubDate>Tue, 31 Mar 2020 09:53:05 +0800</pubDate>
         
-        <guid>https://xujiahua.github.io/posts/use-docker-machine/</guid>
-        <description>许嘉华的博客 https://xujiahua.github.io/posts/use-docker-machine/ -&lt;h2 id=&#34;简介&#34;&gt;简介&lt;/h2&gt;
+        <guid>https://xujiahua.github.io/posts/20200331-use-docker-machine/</guid>
+        <description>许嘉华的博客 https://xujiahua.github.io/posts/20200331-use-docker-machine/ -&lt;h2 id=&#34;简介&#34;&gt;简介&lt;/h2&gt;
 &lt;p&gt;Docker Machine lets you create Docker hosts on your computer, on cloud providers, and inside your own data center. It creates servers, installs Docker on them, then configures the Docker client to talk to them.&lt;/p&gt;
 &lt;p&gt;参考：&lt;/p&gt;
 &lt;ol&gt;
@@ -855,18 +928,18 @@ BenchmarkDetectSafeSearchForFile-8            &lt;span style=&#34;color:#ae81ff&
 &lt;li&gt;通过eval &amp;ldquo;$(docker-machine env default)&amp;quot;，覆盖环境变量DOCKER_HOST，使得本地docker client访问VM内的docker daemon。&lt;/li&gt;
 &lt;li&gt;更多实用命令，参考 &lt;a href=&#34;https://docs.docker.com/machine/get-started/&#34;&gt;https://docs.docker.com/machine/get-started/&lt;/a&gt;&lt;/li&gt;
 &lt;/ol&gt;
-- https://xujiahua.github.io/posts/use-docker-machine/ - </description>
+- https://xujiahua.github.io/posts/20200331-use-docker-machine/ - </description>
         </item>
     
     
     
         <item>
         <title>Consul调研</title>
-        <link>https://xujiahua.github.io/posts/use-consul/</link>
+        <link>https://xujiahua.github.io/posts/20200326-use-consul/</link>
         <pubDate>Thu, 26 Mar 2020 09:01:38 +0800</pubDate>
         
-        <guid>https://xujiahua.github.io/posts/use-consul/</guid>
-        <description>许嘉华的博客 https://xujiahua.github.io/posts/use-consul/ -&lt;h2 id=&#34;consul简介&#34;&gt;Consul简介&lt;/h2&gt;
+        <guid>https://xujiahua.github.io/posts/20200326-use-consul/</guid>
+        <description>许嘉华的博客 https://xujiahua.github.io/posts/20200326-use-consul/ -&lt;h2 id=&#34;consul简介&#34;&gt;Consul简介&lt;/h2&gt;
 &lt;p&gt;Consul 是 HashiCorp 公司推出的开源分布式服务发现与配置系统。&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;服务发现。特别是搭配Consul Connect（Service Mesh），可达到一种无侵入式的服务发现和客户端负载均衡。&lt;/li&gt;
@@ -1003,18 +1076,18 @@ BenchmarkDetectSafeSearchForFile-8            &lt;span style=&#34;color:#ae81ff&
 &lt;p&gt;viper支持从consul/etcd取配置信息。 &lt;a href=&#34;https://github.com/spf13/viper#remote-keyvalue-store-support&#34;&gt;https://github.com/spf13/viper#remote-keyvalue-store-support&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt;consul/etcd没有长连接啊，没有通知，只能定时轮询。Viper内置的库也是HTTP请求。每5秒，去取下最新的配置。&lt;/p&gt;
 &lt;p&gt;&lt;img src=&#34;../../images/249E330D-4932-4EC4-BB01-A9E3931D3301.png&#34; alt=&#34;249E330D-4932-4EC4-BB01-A9E3931D3301&#34;&gt;&lt;/p&gt;
-- https://xujiahua.github.io/posts/use-consul/ - </description>
+- https://xujiahua.github.io/posts/20200326-use-consul/ - </description>
         </item>
     
     
     
         <item>
         <title>Docker Network小结</title>
-        <link>https://xujiahua.github.io/posts/docker-network/</link>
+        <link>https://xujiahua.github.io/posts/20200321-docker-network/</link>
         <pubDate>Sat, 21 Mar 2020 14:10:40 +0800</pubDate>
         
-        <guid>https://xujiahua.github.io/posts/docker-network/</guid>
-        <description>许嘉华的博客 https://xujiahua.github.io/posts/docker-network/ -&lt;p&gt;Docker网络非常值得学习。对Docker不熟的同学，建议先看一些入门资料。&lt;/p&gt;
+        <guid>https://xujiahua.github.io/posts/20200321-docker-network/</guid>
+        <description>许嘉华的博客 https://xujiahua.github.io/posts/20200321-docker-network/ -&lt;p&gt;Docker网络非常值得学习。对Docker不熟的同学，建议先看一些入门资料。&lt;/p&gt;
 &lt;h2 id=&#34;docker-学习资料&#34;&gt;Docker 学习资料&lt;/h2&gt;
 &lt;ol&gt;
 &lt;li&gt;Docker — 从入门到实践  &lt;a href=&#34;https://www.yuque.com/grasilife/docker&#34;&gt;https://www.yuque.com/grasilife/docker&lt;/a&gt;&lt;/li&gt;
@@ -1357,201 +1430,7 @@ root@node02:~# docker run -it busybox
 &lt;li&gt;不侵入docker容器。这是比weave优雅的地方。&lt;/li&gt;
 &lt;li&gt;整体思路，先划分一个大的网段，为每台加入的主机从大的网段里分配小的网段，为docker容器从小网段里分配IP。&lt;/li&gt;
 &lt;/ol&gt;
-- https://xujiahua.github.io/posts/docker-network/ - </description>
-        </item>
-    
-    
-    
-        <item>
-        <title>Go Web 项目框架</title>
-        <link>https://xujiahua.github.io/posts/go-web-project/</link>
-        <pubDate>Fri, 20 Mar 2020 15:24:22 +0800</pubDate>
-        
-        <guid>https://xujiahua.github.io/posts/go-web-project/</guid>
-        <description>许嘉华的博客 https://xujiahua.github.io/posts/go-web-project/ -&lt;h2 id=&#34;常用开源库&#34;&gt;常用开源库&lt;/h2&gt;
-&lt;h3 id=&#34;依赖包管理-go-modules&#34;&gt;依赖包管理 Go Modules&lt;/h3&gt;
-&lt;p&gt;Go Modules。Go 从1.11版本开始支持，Go 1.14被认为是生产可用了。个人用过最方便的Go依赖包管理工具了。&lt;/p&gt;
-&lt;p&gt;版本管理中维护 &lt;code&gt;go.mod&lt;/code&gt;/&lt;code&gt;go.sum&lt;/code&gt; 两个文件。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image-20200320152954581.png&#34; alt=&#34;image-20200320152954581&#34;&gt;&lt;/p&gt;
-&lt;h4 id=&#34;参考&#34;&gt;参考&lt;/h4&gt;
-&lt;ol&gt;
-&lt;li&gt;Using Go Modules &lt;a href=&#34;https://blog.golang.org/using-go-modules&#34;&gt;https://blog.golang.org/using-go-modules&lt;/a&gt;&lt;/li&gt;
-&lt;/ol&gt;
-&lt;h3 id=&#34;命令行框架-corba&#34;&gt;命令行框架 Corba&lt;/h3&gt;
-&lt;p&gt;Corba。第一次看到，是在翻看 Hyperledger Fabric 的时候。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/ad566232-814f-11e5-9cd0-aa101788c117.png&#34; alt=&#34;cobra logo&#34;&gt;&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;子命令，嵌套的子命令。&lt;/li&gt;
-&lt;li&gt;增强版本的flags。&lt;/li&gt;
-&lt;li&gt;项目模板的生成工具。&lt;/li&gt;
-&lt;li&gt;生成工具也自动引入了Viper这个包。Corba与Viper由一个作者开发，两个项目配合使用非常方便。&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;建议使用Cobra命令行工具生成项目模板。&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;  ▾ appName/
-    ▾ cmd/
-        add.go
-        your.go
-        commands.go
-        here.go
-      main.go
-&lt;/code&gt;&lt;/pre&gt;&lt;h4 id=&#34;参考-1&#34;&gt;参考&lt;/h4&gt;
-&lt;ol&gt;
-&lt;li&gt;A Commander for modern Go CLI interactions &lt;a href=&#34;https://github.com/spf13/cobra&#34;&gt;https://github.com/spf13/cobra&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;Cobra Generator &lt;a href=&#34;https://github.com/spf13/cobra/blob/master/cobra/README.md&#34;&gt;https://github.com/spf13/cobra/blob/master/cobra/README.md&lt;/a&gt;&lt;/li&gt;
-&lt;/ol&gt;
-&lt;h3 id=&#34;配置管理-viper&#34;&gt;配置管理 Viper&lt;/h3&gt;
-&lt;p&gt;Viper。常常与Corba搭配使用。抄一段官方简介：&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/998df88a-8151-11e5-9448-4736db51020d.png&#34; alt=&#34;viper logo&#34;&gt;&lt;/p&gt;
-&lt;p&gt;Viper is a complete configuration solution for Go applications including 12-Factor apps. It is designed to work within an application, and can handle all types of configuration needs and formats. It supports:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;setting defaults 设置默认值。示例：&lt;code&gt;viper.SetDefault(&amp;quot;subject&amp;quot;, &amp;quot;World&amp;quot;)&lt;/code&gt;&lt;/li&gt;
-&lt;li&gt;reading from JSON, TOML, YAML, HCL, envfile and Java properties config files 支持各种配置文件格式，TOML比较合我口味。在使用viper之前的配置文件读取方式，一般都是配置文件对应一个Go的model，通过反序列化读入程序。现在看来非常粗糙。&lt;/li&gt;
-&lt;li&gt;live watching and re-reading of config files (optional)&lt;/li&gt;
-&lt;li&gt;reading from environment variables 读取环境变量。代码和配置严格分离，配置文件算是一种不错的选择，12-Factor更推荐将应用的配置存储于环境变量中，参考：https://12factor.net/zh_cn/config&lt;/li&gt;
-&lt;li&gt;reading from remote config systems (etcd or Consul), and watching changes 读配置中心。&lt;/li&gt;
-&lt;li&gt;reading from command line flags 示例：&lt;code&gt;viper.BindPFlag(&amp;quot;subject&amp;quot;, helloCmd.Flags().Lookup(&amp;quot;subject&amp;quot;))&lt;/code&gt;&lt;/li&gt;
-&lt;li&gt;reading from buffer&lt;/li&gt;
-&lt;li&gt;setting explicit values&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;Viper can be thought of as a registry for all of your applications configuration needs.&lt;/p&gt;
-&lt;h4 id=&#34;关于读环境变量&#34;&gt;关于读环境变量&lt;/h4&gt;
-&lt;p&gt;AutomaticEnv is a powerful helper especially when combined with SetEnvPrefix. When called, Viper will check for an environment variable any time a viper.Get request is made. &lt;strong&gt;It will apply the following rules. It will check for a environment variable with a name matching the key uppercased&lt;/strong&gt; and prefixed with the EnvPrefix if set.&lt;/p&gt;
-&lt;p&gt;环境变量名是有要求的，默认是大写+下划线组合。如果设置了EnvPrefix，环境变量名需要加上前缀加下划线。&lt;/p&gt;
-&lt;p&gt;vip.GetXXX(var) 这里的var倒是大小写随意的，因为viper内部统一小写处理。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image-20200321181144230.png&#34; alt=&#34;image-20200321181144230&#34;&gt;&lt;/p&gt;
-&lt;p&gt;如果环境变量名并不满足组合怎么办呢。使用BindEnv，绑定key与环境变量名之间的关系，而不是使用默认的约定。&lt;/p&gt;
-&lt;p&gt;&lt;code&gt;BindEnv&lt;/code&gt; takes one or two parameters. The first parameter is the key name, the second is the name of the environment variable. The name of the environment variable is case sensitive. If the ENV variable name is not provided, then Viper will automatically assume that the ENV variable matches the following format: prefix + &amp;ldquo;_&amp;rdquo; + the key name in ALL CAPS. &lt;strong&gt;When you explicitly provide the ENV variable name (the second parameter), it does not automatically add the prefix.&lt;/strong&gt; For example if the second parameter is &amp;ldquo;id&amp;rdquo;, Viper will look for the ENV variable &amp;ldquo;ID&amp;rdquo;.&lt;/p&gt;
-&lt;h4 id=&#34;参考-2&#34;&gt;参考&lt;/h4&gt;
-&lt;ol&gt;
-&lt;li&gt;Go configuration with fangs &lt;a href=&#34;https://github.com/spf13/viper&#34;&gt;https://github.com/spf13/viper&lt;/a&gt;&lt;/li&gt;
-&lt;/ol&gt;
-&lt;h3 id=&#34;日志-logrus&#34;&gt;日志 logrus&lt;/h3&gt;
-&lt;p&gt;Logrus提供的日志功能很丰富。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/687474703a2f2f692e696d6775722e636f6d2f68546556776d4a2e706e67.png&#34; alt=&#34;:walrus:&#34;&gt;&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;JSON、TEXT格式输出。JSON很方便解析，配合ES存储日志。&lt;/li&gt;
-&lt;/ol&gt;
-&lt;h4 id=&#34;参考-3&#34;&gt;参考&lt;/h4&gt;
-&lt;ol&gt;
-&lt;li&gt;Structured, pluggable logging for Go. &lt;a href=&#34;https://github.com/sirupsen/logrus&#34;&gt;https://github.com/sirupsen/logrus&lt;/a&gt;&lt;/li&gt;
-&lt;/ol&gt;
-&lt;h3 id=&#34;路由库--grollia-mux&#34;&gt;路由库  grollia mux&lt;/h3&gt;
-&lt;p&gt;摘抄官方：&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/68747470733a2f2f636c6f75642d63646e2e7175657374696f6e61626c652e73657276696365732f676f72696c6c612d69636f6e2d36342e706e67.png&#34; alt=&#34;Gorilla Logo&#34;&gt;&lt;/p&gt;
-&lt;p&gt;Package &lt;code&gt;gorilla/mux&lt;/code&gt; implements a request router and dispatcher for matching incoming requests to their respective handler.&lt;/p&gt;
-&lt;p&gt;The name mux stands for &amp;ldquo;HTTP request multiplexer&amp;rdquo;. Like the standard &lt;code&gt;http.ServeMux&lt;/code&gt;, &lt;code&gt;mux.Router&lt;/code&gt; matches incoming requests against a list of registered routes and calls a handler for the route that matches the URL or other conditions. The main features are:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;It implements the &lt;code&gt;http.Handler&lt;/code&gt; interface so it is compatible with the standard &lt;code&gt;http.ServeMux&lt;/code&gt;. Go 提供的http.Handler 接口太具有扩展性了。&lt;/li&gt;
-&lt;li&gt;Requests can be matched based on URL host, path, path prefix, schemes, header and query values, HTTP methods or using custom matchers. 丰富的路由匹配规则，host、path、header、query string都可以。&lt;/li&gt;
-&lt;li&gt;URL hosts, paths and query values can have variables with an optional regular expression.&lt;/li&gt;
-&lt;li&gt;Registered URLs can be built, or &amp;ldquo;reversed&amp;rdquo;, which helps maintaining references to resources.&lt;/li&gt;
-&lt;li&gt;Routes can be used as subrouters: nested routes are only tested if the parent route matches. This is useful to define groups of routes that share common conditions like a host, a path prefix or other repeated attributes. As a bonus, this optimizes request matching. 分组功能，RESTful接口按照实体分组，很实用。&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;可以搭配同系列的middleware项目使用：https://github.com/gorilla/handlers。&lt;/p&gt;
-&lt;h4 id=&#34;参考-4&#34;&gt;参考&lt;/h4&gt;
-&lt;ol&gt;
-&lt;li&gt;A powerful HTTP router and URL matcher for building Go web servers &lt;a href=&#34;https://github.com/gorilla/mux&#34;&gt;https://github.com/gorilla/mux&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;A collection of useful middleware for Go HTTP services &amp;amp; web applications &lt;a href=&#34;https://github.com/gorilla/handlers&#34;&gt;https://github.com/gorilla/handlers&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;Web Server Graceful Shutdown &lt;a href=&#34;https://github.com/gorilla/mux#graceful-shutdown&#34;&gt;https://github.com/gorilla/mux#graceful-shutdown&lt;/a&gt;&lt;/li&gt;
-&lt;/ol&gt;
-&lt;h3 id=&#34;orm-gorm&#34;&gt;ORM gorm&lt;/h3&gt;
-&lt;p&gt;文档很丰富。功能很实用。摘抄官方文档：&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;Full-Featured ORM (almost)&lt;/li&gt;
-&lt;li&gt;Associations (Has One, Has Many, Belongs To, Many To Many, Polymorphism)&lt;/li&gt;
-&lt;li&gt;Hooks (Before/After Create/Save/Update/Delete/Find)&lt;/li&gt;
-&lt;li&gt;Preloading (eager loading)&lt;/li&gt;
-&lt;li&gt;Transactions&lt;/li&gt;
-&lt;li&gt;Composite Primary Key&lt;/li&gt;
-&lt;li&gt;SQL Builder&lt;/li&gt;
-&lt;li&gt;Auto Migrations 自动创建表结构。&lt;/li&gt;
-&lt;li&gt;Logger&lt;/li&gt;
-&lt;li&gt;Extendable, write Plugins based on GORM callbacks&lt;/li&gt;
-&lt;li&gt;Every feature comes with tests&lt;/li&gt;
-&lt;li&gt;Developer Friendly&lt;/li&gt;
-&lt;/ul&gt;
-&lt;h4 id=&#34;参考-5&#34;&gt;参考&lt;/h4&gt;
-&lt;ol&gt;
-&lt;li&gt;GORM Guides &lt;a href=&#34;https://gorm.io/docs/&#34;&gt;https://gorm.io/docs/&lt;/a&gt;&lt;/li&gt;
-&lt;/ol&gt;
-&lt;h3 id=&#34;http-client-grequests&#34;&gt;HTTP client grequests&lt;/h3&gt;
-&lt;p&gt;号称 Python Requests 的Go clone。用着不错。&lt;/p&gt;
-&lt;h4 id=&#34;参考-6&#34;&gt;参考&lt;/h4&gt;
-&lt;ol&gt;
-&lt;li&gt;A Go &amp;ldquo;clone&amp;rdquo; of the great and famous Requests library &lt;a href=&#34;https://github.com/levigross/grequests&#34;&gt;https://github.com/levigross/grequests&lt;/a&gt;&lt;/li&gt;
-&lt;/ol&gt;
-&lt;h3 id=&#34;errors-githubcompkgerrors&#34;&gt;Errors github.com/pkg/errors&lt;/h3&gt;
-&lt;p&gt;内置的errors太弱了。返回了error，但是呢，没有返回上下文信息。这个库解决的是这个问题。&lt;/p&gt;
-&lt;h4 id=&#34;参考-7&#34;&gt;参考&lt;/h4&gt;
-&lt;ol&gt;
-&lt;li&gt;Simple error handling primitives &lt;a href=&#34;https://github.com/pkg/errors&#34;&gt;https://github.com/pkg/errors&lt;/a&gt;&lt;/li&gt;
-&lt;/ol&gt;
-&lt;h3 id=&#34;依赖注入框架-wire&#34;&gt;依赖注入框架 wire&lt;/h3&gt;
-&lt;p&gt;基于代码生成的依赖注入框架。小项目没必要使用。&lt;/p&gt;
-&lt;h3 id=&#34;rpc框架-grpc&#34;&gt;RPC框架 gRPC&lt;/h3&gt;
-&lt;p&gt;跨进程，跨语言通信。&lt;/p&gt;
-&lt;h2 id=&#34;常用工具&#34;&gt;常用工具&lt;/h2&gt;
-&lt;h3 id=&#34;makefile&#34;&gt;Makefile&lt;/h3&gt;
-&lt;p&gt;将常用的命令放在Makefile里管理。比如格式化代码 ，编译，打包，开发环境运行等等，并维护好依赖关系。&lt;/p&gt;
-&lt;p&gt;不要写一堆.sh脚本了。&lt;/p&gt;
-&lt;h3 id=&#34;docker&#34;&gt;Docker&lt;/h3&gt;
-&lt;p&gt;维护一份Dockerfile，项目交付物通过制作成Docker镜像分发。比如：&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;# Dockerfile
-FROM alpine:latest
-WORKDIR /app
-COPY ./dist .
-ENTRYPOINT [&amp;quot;./app&amp;quot;, &amp;quot;serve&amp;quot;]
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;可以通过Docker来构建Go项目（一个两阶段的Dockerfile）。也可以像我这样，在宿主机就构建好，Dockerfile只需要COPY编译产物即可。&lt;/p&gt;
-&lt;h3 id=&#34;swagger&#34;&gt;Swagger&lt;/h3&gt;
-&lt;p&gt;目前没有方便的生成方法，得手写注释！&lt;/p&gt;
-&lt;h2 id=&#34;项目结构&#34;&gt;项目结构&lt;/h2&gt;
-&lt;p&gt;Go web项目结构没有定式，每个人的风格都不一样。参考了这个系列文章，觉得不错，特别是第二篇。&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;Go Web Application Structure - Part 1 &lt;a href=&#34;https://aaf.engineering/go-web-application-structure-pt-1/&#34;&gt;https://aaf.engineering/go-web-application-structure-pt-1/&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;strong&gt;Go Web Application Structure - Part 2 - Routing/Serving&lt;/strong&gt; &lt;a href=&#34;https://aaf.engineering/go-web-application-structure-part-2/&#34;&gt;https://aaf.engineering/go-web-application-structure-part-2/&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;Go Web Application Structure - Part 3 - The Database &lt;a href=&#34;https://aaf.engineering/go-web-application-structure-part-3/&#34;&gt;https://aaf.engineering/go-web-application-structure-part-3/&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;Go Web Application Structure - Part 4 - Database Migrations &amp;amp; Business Logic &lt;a href=&#34;https://aaf.engineering/go-web-application-structure-part-4/&#34;&gt;https://aaf.engineering/go-web-application-structure-part-4/&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;code &lt;a href=&#34;https://github.com/theaaf/todos&#34;&gt;https://github.com/theaaf/todos&lt;/a&gt;&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;层级调用链：cmd -&amp;gt; api -&amp;gt; app -&amp;gt; db。model/config横切，其它层共享之。&lt;/p&gt;
-&lt;h3 id=&#34;model-database-models&#34;&gt;model: database models&lt;/h3&gt;
-&lt;p&gt;模型实体，通过分析需求建模，合理的建模便于后期维护。&lt;/p&gt;
-&lt;p&gt;横切层。其他每层都会用到。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image-20200320170405357.png&#34; alt=&#34;image-20200320170405357&#34;&gt;&lt;/p&gt;
-&lt;h3 id=&#34;config&#34;&gt;config&lt;/h3&gt;
-&lt;p&gt;横切层。&lt;/p&gt;
-&lt;p&gt;并没有自己独立的包，而是其他每层都可以根据需要，有一个自己独立的Config结构体。通过一个全局的Viper变量，取出该层关心的配置变量（或是从配置文件，或是从环境变量）。&lt;/p&gt;
-&lt;p&gt;比如数据层的config：&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image-20200320170301550.png&#34; alt=&#34;image-20200320170301550&#34;&gt;&lt;/p&gt;
-&lt;h3 id=&#34;db-database-operations&#34;&gt;db: database operations&lt;/h3&gt;
-&lt;p&gt;数据持久化层，底层。CRUD操作的封装。通过“构造函数”做依赖注入，方便单元测试。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image-20200320170627650.png&#34; alt=&#34;image-20200320170627650&#34;&gt;&lt;/p&gt;
-&lt;h3 id=&#34;app-business-logic&#34;&gt;app: business logic&lt;/h3&gt;
-&lt;p&gt;业务逻辑层，中层，核心层。调用数据层，及其他底层服务，比如S3云存储等。&lt;/p&gt;
-&lt;h4 id=&#34;三类错误&#34;&gt;三类错误&lt;/h4&gt;
-&lt;p&gt;该层方法返回的错误可以分三类。&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;ValidationError 输入不正确，校验不通过，比如手机号长度不对。对应的HTTP状态码：400。&lt;/li&gt;
-&lt;li&gt;UserError 认证错误，比如用户登录失败，用户没有权限。对应的HTTP状态码：401, 403。&lt;/li&gt;
-&lt;li&gt;ServerError 系统错误，比如数据库连不上，也不需要特别定义ServerError：只要error不是ValidationError，UserError，就是ServerError。对应的HTTP状态码：500。&lt;/li&gt;
-&lt;li&gt;没有错误，那么对应的HTTP状态码就是200。&lt;/li&gt;
-&lt;/ol&gt;
-&lt;h3 id=&#34;api-api-controllers&#34;&gt;api: api controllers&lt;/h3&gt;
-&lt;p&gt;接口层。尽可能轻量，尽可能没有业务逻辑，只负责转译。通过调用业务逻辑层完成任务。将上述三分类错误映射到合适的状态码。&lt;/p&gt;
-&lt;h4 id=&#34;application-state-vs-request-state&#34;&gt;Application State vs. Request State&lt;/h4&gt;
-&lt;p&gt;请求入口函数需要为每个请求创建一个context（上下文）。context包含如下，摘抄原文。包含的字段需满足完成request的所需。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image-20200320181127465.png&#34; alt=&#34;image-20200320181127465&#34;&gt;&lt;/p&gt;
-&lt;h4 id=&#34;request-context-请求上下文信息&#34;&gt;(Request) Context 请求上下文信息&lt;/h4&gt;
-&lt;ol&gt;
-&lt;li&gt;Remote IP地址，显示于access log。使用logrus.WithField()。&lt;/li&gt;
-&lt;li&gt;Request ID，显示于access log。使用logrus.WithField()。&lt;/li&gt;
-&lt;li&gt;User，用于后续鉴权。如果有认证头信息（Auth Token），从数据库取出用户。&lt;/li&gt;
-&lt;/ol&gt;
-&lt;h3 id=&#34;cmd-command-line-methods&#34;&gt;cmd: command line methods&lt;/h3&gt;
-&lt;p&gt;使用Cobra生成子命令。&lt;/p&gt;
-&lt;p&gt;&lt;code&gt;app serve &lt;/code&gt;&lt;/p&gt;
-&lt;p&gt;启动web server，并加入web server优雅退出的功能。&lt;/p&gt;
-- https://xujiahua.github.io/posts/go-web-project/ - </description>
+- https://xujiahua.github.io/posts/20200321-docker-network/ - </description>
         </item>
     
     

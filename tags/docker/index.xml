@@ -31,10 +31,10 @@ kubernetes_metadata 插件地址 https://github.com/fabric8io/fluent-plugin-kube
     
     <item>
       <title>Docker日志驱动小结</title>
-      <link>https://xujiahua.github.io/posts/docker-logging/</link>
+      <link>https://xujiahua.github.io/posts/20200403-docker-logging/</link>
       <pubDate>Fri, 03 Apr 2020 15:43:07 +0800</pubDate>
       
-      <guid>https://xujiahua.github.io/posts/docker-logging/</guid>
+      <guid>https://xujiahua.github.io/posts/20200403-docker-logging/</guid>
       <description>docker logs， kubectl logs能看到Docker容器的标准输出、标准错误，方便定位问题。而 xxx logs之所以能看到，是因为标准输出、标准错误存储在每个容器独有的日志文件中。
 另外日志量大了，用docker logs看历史数据不大合适。我们就需要考虑将日志存储到日志中心去。
 Docker默认支持如下日志驱动。有直接写文件的，有使用云服务的。下面简单介绍下。
@@ -51,10 +51,10 @@ k8s的容器日志收集，上下文信息是由日志收集工具 fluentd 通�
     
     <item>
       <title>使用 Docker Machine</title>
-      <link>https://xujiahua.github.io/posts/use-docker-machine/</link>
+      <link>https://xujiahua.github.io/posts/20200331-use-docker-machine/</link>
       <pubDate>Tue, 31 Mar 2020 09:53:05 +0800</pubDate>
       
-      <guid>https://xujiahua.github.io/posts/use-docker-machine/</guid>
+      <guid>https://xujiahua.github.io/posts/20200331-use-docker-machine/</guid>
       <description>简介 Docker Machine lets you create Docker hosts on your computer, on cloud providers, and inside your own data center. It creates servers, installs Docker on them, then configures the Docker client to talk to them.
 参考：
  https://github.com/docker/machine https://docs.docker.com/machine/overview/  vs. Vagrant 与Vagrant的交集 目前使用 Vagrant 搭 Docker 环境的步骤如下：
@@ -65,10 +65,10 @@ docker-machine create -d virtualbox {host_name} VM的管理，vagrant命令需�
     
     <item>
       <title>Docker Network小结</title>
-      <link>https://xujiahua.github.io/posts/docker-network/</link>
+      <link>https://xujiahua.github.io/posts/20200321-docker-network/</link>
       <pubDate>Sat, 21 Mar 2020 14:10:40 +0800</pubDate>
       
-      <guid>https://xujiahua.github.io/posts/docker-network/</guid>
+      <guid>https://xujiahua.github.io/posts/20200321-docker-network/</guid>
       <description>Docker网络非常值得学习。对Docker不熟的同学，建议先看一些入门资料。
 Docker 学习资料  Docker — 从入门到实践 https://www.yuque.com/grasilife/docker Docker Kubernetes Lab Handbook https://docker-k8s-lab.readthedocs.io/en/latest/index.html 「Docker进阶与实战」华为Docker实践小组  单机网络 （建议在Linux系统上实验。）
 Docker安装完后，默认有三个（三种）网络。分别是默认的bridge模式，host模式，none模式。

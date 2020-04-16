@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html><head>
+<title>Go库对URL Path中%2F的处理</title>
+
+<meta charset="utf-8">
+<meta name="X-UA-Compatible" content="IE=edge">
+<meta name="google-site-verification" content="">
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport">
+<meta content="telephone=no" name="format-detection">
+<meta name="description" content="">
+<meta name="renderer" content="webkit">
+<meta name="theme-color" content="#ffffff">
+
+
+
+
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+	ga('create', 'UA-162706610-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+
+
+
+<script src="/vendor/js/jquery.min.js" ></script>
+<script src="/vendor/js/popper.min.js" ></script>
+<script src="/vendor/js/bootstrap.min.js" ></script>
+<script src="/vendor/js/smooth-scroll.polyfills.min.js" ></script>
+<link type="text/css" rel="stylesheet" href="/vendor/css/bootstrap.min.css">
+<script src="/vendor/js/vue.min.js" ></script>
+
+
+
+
+<link rel="stylesheet" href="https://xujiahua.github.io/scss/journal.min.5c667e74038e21ddbb9024b67930f8544e02af62491281cf73fdb817eec2947e.css" integrity="sha256-XGZ&#43;dAOOId27kCS2eTD4VE4Cr2JJEoHPc/24F&#43;7ClH4=" media="screen">
+
+<script src="https://xujiahua.github.io//js/loadCSS.js"></script>
+<script src="https://xujiahua.github.io//js/table.js"></script>
+
+
+<script src="https://xujiahua.github.io//js/toc.js"></script>
+
+
+<script>
+    loadCSS("https://fonts.googleapis.com/css?family=Lora|Montserrat|Fira+Mono|Noto+Serif+SC|Material+Icons");
+</script>
+
+
+
+
+
+
+</head><body>
+    	<div id="app"><div ref="sideContainer" class="side-container">
+    
+    <a class="a-block nav-head false" href="https://xujiahua.github.io/">
+    
+        <div class="nav-title">
+            许嘉华的博客
+        </div>
+        
+    </a>
+
+    <div class="nav-link-list">
+        
+        
+            
+            
+            
+                
+            
+            
+            
+            <a class="a-block nav-link-item active" href="/posts">
+                Archive
+            </a>
+            
+        
+            
+            
+            
+            
+            
+            <a class="a-block nav-link-item false" href="/categories">
+                Categories
+            </a>
+            
+        
+            
+            
+            
+            
+            
+            <a class="a-block nav-link-item false" href="/tags">
+                Tags
+            </a>
+            
+        
+            
+            
+            
+            
+            
+            <a class="a-block nav-link-item false" href="/index.xml">
+                RSS Feed
+            </a>
+            
+        
+    </div>
+
+    
+
+    <div class="nav-footer">
+        
+Hugo Theme <a href="https://github.com/amazingrise/hugo-theme-diary">Diary</a> by <a href="https://amazingrise.net">Rise</a>
+<br>
+Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopener">Makito</a>'s <a href="https://github.com/SumiMakito/hexo-theme-journal/" target="_blank" rel="noreferrer noopener">Journal.</a> <br>
+<br>
+
+&copy;
+	
+	2020 许嘉华的博客
+	
+    </div>
+    
+</div><div ref="extraContainer" class="extra-container">
+    
+    <div class="toc animated-visibility" :class="{ invisible: scrollY <= 140 }">
+
+
+	<div class="toc-content">
+	
+		
+		
+		
+		<center>- CATALOG -</center>
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e9%97%ae%e9%a2%98%e6%8f%8f%e8%bf%b0" v-on:click="closeDrawer" id="问题描述-nav">
+										 问题描述
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#go%e5%86%85%e7%bd%ae%e5%ba%93%e4%b8%8d%e5%8c%ba%e5%88%862f%e5%92%8c" v-on:click="closeDrawer" id="go内置库不区分2f和-nav">
+										 Go内置库：不区分%2F和/
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e6%ba%90%e7%a0%81%e8%a7%92%e5%ba%a6" v-on:click="closeDrawer" id="源码角度-nav">
+										 源码角度
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#gorillamux-useencodedpath" v-on:click="closeDrawer" id="gorillamux-useencodedpath-nav">
+										 gorilla/mux: UseEncodedPath()
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e6%ba%90%e7%a0%81%e8%a7%92%e5%ba%a6-1" v-on:click="closeDrawer" id="源码角度-1-nav">
+										 源码角度
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e8%bf%98%e4%b8%8d%e5%ae%8c%e7%be%8e" v-on:click="closeDrawer" id="还不完美-nav">
+										 还不完美
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+	</div>
+
+</div>
+    
+    <div class="pagination">
+        <a id="globalBackToTop" class="pagination-action animated-visibility" href="#top" :class="{ invisible: scrollY == 0 }">
+            <i class="material-icons pagination-action-icon">
+                keyboard_arrow_up
+            </i>
+        </a>
+        
+    </div>
+</div><div class="single-column-drawer-container" ref="drawer"
+     v-bind:class="{ 'single-column-drawer-container-active': isDrawerOpen }">
+    <div class="drawer-content">
+        <div class="drawer-menu">
+            
+            
+                
+                
+                
+                    
+                
+                
+                
+                <a class="a-block drawer-menu-item active" href="/posts">
+                    Archive
+                </a>
+                
+            
+                
+                
+                
+                
+                
+                <a class="a-block drawer-menu-item false" href="/categories">
+                    Categories
+                </a>
+                
+            
+                
+                
+                
+                
+                
+                <a class="a-block drawer-menu-item false" href="/tags">
+                    Tags
+                </a>
+                
+            
+                
+                
+                
+                
+                
+                <a class="a-block drawer-menu-item false" href="/index.xml">
+                    RSS Feed
+                </a>
+                
+            
+            
+            <div class="toc">
+
+
+	<div class="toc-content">
+	
+		
+		
+		
+		<center>- CATALOG -</center>
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e9%97%ae%e9%a2%98%e6%8f%8f%e8%bf%b0" v-on:click="closeDrawer" id="问题描述-nav">
+										 问题描述
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#go%e5%86%85%e7%bd%ae%e5%ba%93%e4%b8%8d%e5%8c%ba%e5%88%862f%e5%92%8c" v-on:click="closeDrawer" id="go内置库不区分2f和-nav">
+										 Go内置库：不区分%2F和/
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e6%ba%90%e7%a0%81%e8%a7%92%e5%ba%a6" v-on:click="closeDrawer" id="源码角度-nav">
+										 源码角度
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#gorillamux-useencodedpath" v-on:click="closeDrawer" id="gorillamux-useencodedpath-nav">
+										 gorilla/mux: UseEncodedPath()
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e6%ba%90%e7%a0%81%e8%a7%92%e5%ba%a6-1" v-on:click="closeDrawer" id="源码角度-1-nav">
+										 源码角度
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e8%bf%98%e4%b8%8d%e5%ae%8c%e7%be%8e" v-on:click="closeDrawer" id="还不完美-nav">
+										 还不完美
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+	</div>
+
+</div>
+            
+        </div>
+    </div>
+</div>
+<transition name="fade">
+    <div v-bind:class="{ 'single-column-drawer-mask': mounted }" v-if="isDrawerOpen" v-on:click="toggleDrawer"></div>
+</transition>
+<nav ref="navBar" class="navbar sticky-top navbar-light single-column-nav-container">
+    <div ref="navBackground" class="nav-background"></div>
+    <div class="container container-narrow nav-content">
+        <button id="nav_dropdown_btn" class="nav-dropdown-toggle" type="button" v-on:click="toggleDrawer">
+            <i class="material-icons">
+                menu
+            </i>
+        </button>
+        <a ref="navTitle" class="navbar-brand" href="https://xujiahua.github.io/">
+            许嘉华的博客
+        </a>
+    </div>
+</nav>
+<div class="single-column-header-container" ref="pageHead"
+     v-bind:style="{ transform: 'translateZ(0px) translateY('+.3*scrollY+'px)', opacity: 1-navOpacity }">
+    <a href="https://xujiahua.github.io/">
+        <div class="single-column-header-title">许嘉华的博客</div>
+        
+
+    </a>
+</div>
+            <div id="content">
+<div ref="streamContainer" class="stream-container">
+    <div class="post-list-container post-list-container-shadow">
+        <div class="post">
+            
+            
+            
+
+            <div class="post-head-wrapper-text-only"
+                 style="background-image: url('/')">
+                <div class="post-title">
+                    Go库对URL Path中%2F的处理
+                    
+                    <div class="post-meta">
+                        
+                        <time itemprop="datePublished">
+                            2020-03-12 15:17
+                        </time>
+                        
+
+                        
+
+                        
+                            <i class="material-icons" style="">label</i>
+                            
+                                <a href="/tags/go">Go</a>
+                                &nbsp;
+                            
+                                <a href="/tags/go-router">Go router</a>
+                                &nbsp;
+                            
+                                <a href="/tags/bug">Bug</a>
+                                &nbsp;
+                            
+                        
+                    </div>
+                </div>
+            </div>
+            
+            <div class="post-body-wrapper">
+                <div class="post-body">
+                    <h2 id="问题描述">问题描述</h2>
+<ol>
+<li>有同事反馈Go项目的接口404了。看了下nginx日志，只有部分请求404了，404请求的显著特征是URL里有<code>%2F</code>，也就是<code>/</code>的转义。</li>
+<li>接口定义是这样的：<code>/api/xxx/{mid}/{uid}</code>。mid、uid是URL path的一部分。从现象来看，程序没处理好转义字符，因为多了一个path部分，路由不匹配了，404。</li>
+<li>nginx的URL记录是<code>%2F</code>，其实调用方传的是微信ID，比如<code>IEd5W/jqsdF9qpuagQscEg==</code>。调用方在发请求之前对ID已经做好了转义。</li>
+</ol>
+<h2 id="go内置库不区分2f和">Go内置库：不区分<code>%2F</code>和<code>/</code></h2>
+<p>An application cannot distinguish between &ldquo;/&rdquo; used as a path segment delimiter and &ldquo;/&rdquo; encoded in a path segment.</p>
+<p>这个问题由来已久了，看着官方也不打算解决了，见这个issue：https://github.com/golang/go/issues/3659</p>
+<pre><code>If your app needs to assign special meaning, the
+server can reprocess req.RequestURI as it sees fit, and the client can
+issue requests using &amp;url.URL{Opaque: rawURI}.
+</code></pre><ol>
+<li>reprocess req.RequestURI 就是让你别用内置路由库了。</li>
+<li>issue requests using &amp;url.URL{Opaque: rawURI}. 试了，问题没解决。客户端不管怎么做，最终都是以HTTP协议输出的。<code>GET http://www.google.com/index.html HTTP/1.1</code> 服务端代码最终解析的还是中间的那段URL文本。照理就不通啊。</li>
+</ol>
+<h3 id="源码角度">源码角度</h3>
+<p><code>url.URL</code>的定义，明确指出Path字段存储的是decode之后的数据，所以<code>%2F</code>在这里已经被转义成了<code>/</code>，跟之前的Path意义完全不同了。</p>
+<p><img src="../../images/image-20200312154454662.png" alt="image-20200312154454662"></p>
+<p><code>http.ServeMux</code>也是依赖Path进行路由的。</p>
+<p><img src="../../images/image-20200312155554309.png" alt="image-20200312155554309"></p>
+<p>而http.Request中的URL字段是怎么从HTTP协议中解析出来的呢，从http.ListenAndServe顺藤摸瓜。</p>
+<p><img src="../../images/image-20200312163138455.png" alt="image-20200312163138455"></p>
+<p>最后还是在parse rawurl字符串，红框里会做path的转义操作，坑之所在。</p>
+<p><img src="../../images/image-20200312164058458.png" alt="image-20200312164058458"></p>
+<p>使用Go内置的http路由，代码都写死了：URL解析代码中，Path一定是decode后的数据；路由代码中使用Path来路由。问题得不到解决。</p>
+<h2 id="gorillamux-useencodedpath">gorilla/mux: UseEncodedPath()</h2>
+<p><a href="http://www.gorillatoolkit.org/pkg/mux">http://www.gorillatoolkit.org/pkg/mux</a></p>
+<p><img src="../../images/image-20200312170420310.png" alt="image-20200312170420310"></p>
+<p>使用这个方法就可以基于encoded Path进行路由了。例子如下：</p>
+<pre><code>package main
+
+import (
+	&quot;fmt&quot;
+	&quot;io/ioutil&quot;
+	&quot;log&quot;
+	&quot;net/http&quot;
+	&quot;net/http/httptest&quot;
+
+	&quot;github.com/gorilla/mux&quot;
+)
+
+func main() {
+	router := mux.NewRouter().UseEncodedPath() # 创建router的时候设置
+	router.NewRoute().Name(&quot;test&quot;).Methods(&quot;GET&quot;).Path(&quot;/test/{name}&quot;).HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprint(w, mux.Vars(r))
+	})
+	server := httptest.NewServer(router)
+	defer server.Close()
+
+	res, err := http.Get(server.URL + &quot;/test/bob%2Fvanderlen&quot;)
+	if err != nil {
+		log.Fatal(err)
+	}
+	greeting, err := ioutil.ReadAll(res.Body)
+	res.Body.Close()
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Printf(&quot;%s&quot;, greeting)
+}
+</code></pre><h3 id="源码角度-1">源码角度</h3>
+<p>通过flag来控制是否用encode过的还是decode过的Path。</p>
+<p><img src="../../images/image-20200312171317394.png" alt="image-20200312171317394"></p>
+<h2 id="还不完美">还不完美</h2>
+<p>期望取到的数据是<code> IEd5W/jqsdF9qpuagQscEg==</code>。然而，Path变量的取值仍然是根据标志位来的。</p>
+<p><img src="../../images/image-20200312173633090.png" alt="image-20200312173633090"></p>
+<p>也就是说，即使让请求找到了路由，还是取不到真正的值。还得对URL Path进行手动decode才能用其中的值。让人崩溃，好多地方要改。</p>
+<p><img src="../../images/image-20200312174326015.png" alt="image-20200312174326015"></p>
+<p>不完美，但至少不需要让调用者改代码了。以后接口设计还是把请求参数放Body里，稳一点。</p>
+
+                    
+                    <HR width="100%" id="EOF">
+                    <p style="color:#777;">Last modified on 2020-03-12</p>
+                    
+                </div>
+            </div>
+            
+            
+            <nav class="post-pagination">
+
+                
+                <a class="newer-posts" href="https://xujiahua.github.io/posts/20200320-go-web-project/">
+                    Next<br>Go Web 项目框架
+                </a>
+                
+                
+                
+                <a class="older-posts" href="https://xujiahua.github.io/posts/20200311-patent/">
+                    Previous<br>专利申请流程小结
+                </a>
+                
+            </nav>
+            <div class="post-comment-wrapper">
+                
+
+
+
+
+
+
+            </div>
+        </div>
+    </div>
+</div>
+
+            </div><div id="single-column-footer">
+Hugo Theme <a href="https://github.com/amazingrise/hugo-theme-diary">Diary</a> by <a href="https://amazingrise.net">Rise</a>
+<br>
+Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopener">Makito</a>'s <a href="https://github.com/SumiMakito/hexo-theme-journal/" target="_blank" rel="noreferrer noopener">Journal.</a> <br>
+<br>
+
+&copy;
+	
+	2020 许嘉华的博客
+	</div>
+    	</div>
+    <script src="https://xujiahua.github.io//js/journal.js"></script>
+    </body>
+</html>

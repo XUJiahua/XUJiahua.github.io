@@ -1,0 +1,2425 @@
+<!DOCTYPE html>
+<html><head>
+<title>Go Web 项目框架</title>
+
+<meta charset="utf-8">
+<meta name="X-UA-Compatible" content="IE=edge">
+<meta name="google-site-verification" content="">
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport">
+<meta content="telephone=no" name="format-detection">
+<meta name="description" content="">
+<meta name="renderer" content="webkit">
+<meta name="theme-color" content="#ffffff">
+
+
+
+
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+	ga('create', 'UA-162706610-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+
+
+
+<script src="/vendor/js/jquery.min.js" ></script>
+<script src="/vendor/js/popper.min.js" ></script>
+<script src="/vendor/js/bootstrap.min.js" ></script>
+<script src="/vendor/js/smooth-scroll.polyfills.min.js" ></script>
+<link type="text/css" rel="stylesheet" href="/vendor/css/bootstrap.min.css">
+<script src="/vendor/js/vue.min.js" ></script>
+
+
+
+
+<link rel="stylesheet" href="https://xujiahua.github.io/scss/journal.min.5c667e74038e21ddbb9024b67930f8544e02af62491281cf73fdb817eec2947e.css" integrity="sha256-XGZ&#43;dAOOId27kCS2eTD4VE4Cr2JJEoHPc/24F&#43;7ClH4=" media="screen">
+
+<script src="https://xujiahua.github.io//js/loadCSS.js"></script>
+<script src="https://xujiahua.github.io//js/table.js"></script>
+
+
+<script src="https://xujiahua.github.io//js/toc.js"></script>
+
+
+<script>
+    loadCSS("https://fonts.googleapis.com/css?family=Lora|Montserrat|Fira+Mono|Noto+Serif+SC|Material+Icons");
+</script>
+
+
+
+
+
+
+</head><body>
+    	<div id="app"><div ref="sideContainer" class="side-container">
+    
+    <a class="a-block nav-head false" href="https://xujiahua.github.io/">
+    
+        <div class="nav-title">
+            许嘉华的博客
+        </div>
+        
+    </a>
+
+    <div class="nav-link-list">
+        
+        
+            
+            
+            
+                
+            
+            
+            
+            <a class="a-block nav-link-item active" href="/posts">
+                Archive
+            </a>
+            
+        
+            
+            
+            
+            
+            
+            <a class="a-block nav-link-item false" href="/categories">
+                Categories
+            </a>
+            
+        
+            
+            
+            
+            
+            
+            <a class="a-block nav-link-item false" href="/tags">
+                Tags
+            </a>
+            
+        
+            
+            
+            
+            
+            
+            <a class="a-block nav-link-item false" href="/index.xml">
+                RSS Feed
+            </a>
+            
+        
+    </div>
+
+    
+
+    <div class="nav-footer">
+        
+Hugo Theme <a href="https://github.com/amazingrise/hugo-theme-diary">Diary</a> by <a href="https://amazingrise.net">Rise</a>
+<br>
+Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopener">Makito</a>'s <a href="https://github.com/SumiMakito/hexo-theme-journal/" target="_blank" rel="noreferrer noopener">Journal.</a> <br>
+<br>
+
+&copy;
+	
+	2020 许嘉华的博客
+	
+    </div>
+    
+</div><div ref="extraContainer" class="extra-container">
+    
+    <div class="toc animated-visibility" :class="{ invisible: scrollY <= 140 }">
+
+
+	<div class="toc-content">
+	
+		
+		
+		
+		<center>- CATALOG -</center>
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e5%b8%b8%e7%94%a8%e5%bc%80%e6%ba%90%e5%ba%93" v-on:click="closeDrawer" id="常用开源库-nav">
+										 常用开源库
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e4%be%9d%e8%b5%96%e5%8c%85%e7%ae%a1%e7%90%86-go-modules" v-on:click="closeDrawer" id="依赖包管理-go-modules-nav">
+										 依赖包管理 Go Modules
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e5%8f%82%e8%80%83" v-on:click="closeDrawer" id="参考-nav">
+										 参考
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e5%91%bd%e4%bb%a4%e8%a1%8c%e6%a1%86%e6%9e%b6-corba" v-on:click="closeDrawer" id="命令行框架-corba-nav">
+										 命令行框架 Corba
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e5%8f%82%e8%80%83-1" v-on:click="closeDrawer" id="参考-1-nav">
+										 参考
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e9%85%8d%e7%bd%ae%e7%ae%a1%e7%90%86-viper" v-on:click="closeDrawer" id="配置管理-viper-nav">
+										 配置管理 Viper
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e5%85%b3%e4%ba%8e%e8%af%bb%e7%8e%af%e5%a2%83%e5%8f%98%e9%87%8f" v-on:click="closeDrawer" id="关于读环境变量-nav">
+										 关于读环境变量
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e5%8f%82%e8%80%83-2" v-on:click="closeDrawer" id="参考-2-nav">
+										 参考
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e6%97%a5%e5%bf%97-logrus" v-on:click="closeDrawer" id="日志-logrus-nav">
+										 日志 logrus
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e5%8f%82%e8%80%83-3" v-on:click="closeDrawer" id="参考-3-nav">
+										 参考
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e8%b7%af%e7%94%b1%e5%ba%93--grollia-mux" v-on:click="closeDrawer" id="路由库--grollia-mux-nav">
+										 路由库 grollia mux
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e5%8f%82%e8%80%83-4" v-on:click="closeDrawer" id="参考-4-nav">
+										 参考
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#orm-gorm" v-on:click="closeDrawer" id="orm-gorm-nav">
+										 ORM gorm
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e5%8f%82%e8%80%83-5" v-on:click="closeDrawer" id="参考-5-nav">
+										 参考
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#http-client-grequests" v-on:click="closeDrawer" id="http-client-grequests-nav">
+										 HTTP client grequests
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e5%8f%82%e8%80%83-6" v-on:click="closeDrawer" id="参考-6-nav">
+										 参考
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#errors-githubcompkgerrors" v-on:click="closeDrawer" id="errors-githubcompkgerrors-nav">
+										 Errors github.com/pkg/errors
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e5%8f%82%e8%80%83-7" v-on:click="closeDrawer" id="参考-7-nav">
+										 参考
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e4%be%9d%e8%b5%96%e6%b3%a8%e5%85%a5%e6%a1%86%e6%9e%b6-wire" v-on:click="closeDrawer" id="依赖注入框架-wire-nav">
+										 依赖注入框架 wire
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#rpc%e6%a1%86%e6%9e%b6-grpc" v-on:click="closeDrawer" id="rpc框架-grpc-nav">
+										 RPC框架 gRPC
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e5%b8%b8%e7%94%a8%e5%b7%a5%e5%85%b7" v-on:click="closeDrawer" id="常用工具-nav">
+										 常用工具
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#makefile" v-on:click="closeDrawer" id="makefile-nav">
+										 Makefile
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#docker" v-on:click="closeDrawer" id="docker-nav">
+										 Docker
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#swagger" v-on:click="closeDrawer" id="swagger-nav">
+										 Swagger
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e9%a1%b9%e7%9b%ae%e7%bb%93%e6%9e%84" v-on:click="closeDrawer" id="项目结构-nav">
+										 项目结构
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#model-database-models" v-on:click="closeDrawer" id="model-database-models-nav">
+										 model: database models
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#config" v-on:click="closeDrawer" id="config-nav">
+										 config
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#db-database-operations" v-on:click="closeDrawer" id="db-database-operations-nav">
+										 db: database operations
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#app-business-logic" v-on:click="closeDrawer" id="app-business-logic-nav">
+										 app: business logic
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e4%b8%89%e7%b1%bb%e9%94%99%e8%af%af" v-on:click="closeDrawer" id="三类错误-nav">
+										 三类错误
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#api-api-controllers" v-on:click="closeDrawer" id="api-api-controllers-nav">
+										 api: api controllers
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#application-state-vs-request-state" v-on:click="closeDrawer" id="application-state-vs-request-state-nav">
+										 Application State vs. Request State
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#request-context-%e8%af%b7%e6%b1%82%e4%b8%8a%e4%b8%8b%e6%96%87%e4%bf%a1%e6%81%af" v-on:click="closeDrawer" id="request-context-请求上下文信息-nav">
+										 (Request) Context 请求上下文信息
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#cmd-command-line-methods" v-on:click="closeDrawer" id="cmd-command-line-methods-nav">
+										 cmd: command line methods
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+	</div>
+
+</div>
+    
+    <div class="pagination">
+        <a id="globalBackToTop" class="pagination-action animated-visibility" href="#top" :class="{ invisible: scrollY == 0 }">
+            <i class="material-icons pagination-action-icon">
+                keyboard_arrow_up
+            </i>
+        </a>
+        
+    </div>
+</div><div class="single-column-drawer-container" ref="drawer"
+     v-bind:class="{ 'single-column-drawer-container-active': isDrawerOpen }">
+    <div class="drawer-content">
+        <div class="drawer-menu">
+            
+            
+                
+                
+                
+                    
+                
+                
+                
+                <a class="a-block drawer-menu-item active" href="/posts">
+                    Archive
+                </a>
+                
+            
+                
+                
+                
+                
+                
+                <a class="a-block drawer-menu-item false" href="/categories">
+                    Categories
+                </a>
+                
+            
+                
+                
+                
+                
+                
+                <a class="a-block drawer-menu-item false" href="/tags">
+                    Tags
+                </a>
+                
+            
+                
+                
+                
+                
+                
+                <a class="a-block drawer-menu-item false" href="/index.xml">
+                    RSS Feed
+                </a>
+                
+            
+            
+            <div class="toc">
+
+
+	<div class="toc-content">
+	
+		
+		
+		
+		<center>- CATALOG -</center>
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e5%b8%b8%e7%94%a8%e5%bc%80%e6%ba%90%e5%ba%93" v-on:click="closeDrawer" id="常用开源库-nav">
+										 常用开源库
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e4%be%9d%e8%b5%96%e5%8c%85%e7%ae%a1%e7%90%86-go-modules" v-on:click="closeDrawer" id="依赖包管理-go-modules-nav">
+										 依赖包管理 Go Modules
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e5%8f%82%e8%80%83" v-on:click="closeDrawer" id="参考-nav">
+										 参考
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e5%91%bd%e4%bb%a4%e8%a1%8c%e6%a1%86%e6%9e%b6-corba" v-on:click="closeDrawer" id="命令行框架-corba-nav">
+										 命令行框架 Corba
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e5%8f%82%e8%80%83-1" v-on:click="closeDrawer" id="参考-1-nav">
+										 参考
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e9%85%8d%e7%bd%ae%e7%ae%a1%e7%90%86-viper" v-on:click="closeDrawer" id="配置管理-viper-nav">
+										 配置管理 Viper
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e5%85%b3%e4%ba%8e%e8%af%bb%e7%8e%af%e5%a2%83%e5%8f%98%e9%87%8f" v-on:click="closeDrawer" id="关于读环境变量-nav">
+										 关于读环境变量
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e5%8f%82%e8%80%83-2" v-on:click="closeDrawer" id="参考-2-nav">
+										 参考
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e6%97%a5%e5%bf%97-logrus" v-on:click="closeDrawer" id="日志-logrus-nav">
+										 日志 logrus
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e5%8f%82%e8%80%83-3" v-on:click="closeDrawer" id="参考-3-nav">
+										 参考
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e8%b7%af%e7%94%b1%e5%ba%93--grollia-mux" v-on:click="closeDrawer" id="路由库--grollia-mux-nav">
+										 路由库 grollia mux
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e5%8f%82%e8%80%83-4" v-on:click="closeDrawer" id="参考-4-nav">
+										 参考
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#orm-gorm" v-on:click="closeDrawer" id="orm-gorm-nav">
+										 ORM gorm
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e5%8f%82%e8%80%83-5" v-on:click="closeDrawer" id="参考-5-nav">
+										 参考
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#http-client-grequests" v-on:click="closeDrawer" id="http-client-grequests-nav">
+										 HTTP client grequests
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e5%8f%82%e8%80%83-6" v-on:click="closeDrawer" id="参考-6-nav">
+										 参考
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#errors-githubcompkgerrors" v-on:click="closeDrawer" id="errors-githubcompkgerrors-nav">
+										 Errors github.com/pkg/errors
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e5%8f%82%e8%80%83-7" v-on:click="closeDrawer" id="参考-7-nav">
+										 参考
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e4%be%9d%e8%b5%96%e6%b3%a8%e5%85%a5%e6%a1%86%e6%9e%b6-wire" v-on:click="closeDrawer" id="依赖注入框架-wire-nav">
+										 依赖注入框架 wire
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#rpc%e6%a1%86%e6%9e%b6-grpc" v-on:click="closeDrawer" id="rpc框架-grpc-nav">
+										 RPC框架 gRPC
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e5%b8%b8%e7%94%a8%e5%b7%a5%e5%85%b7" v-on:click="closeDrawer" id="常用工具-nav">
+										 常用工具
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#makefile" v-on:click="closeDrawer" id="makefile-nav">
+										 Makefile
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#docker" v-on:click="closeDrawer" id="docker-nav">
+										 Docker
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#swagger" v-on:click="closeDrawer" id="swagger-nav">
+										 Swagger
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e9%a1%b9%e7%9b%ae%e7%bb%93%e6%9e%84" v-on:click="closeDrawer" id="项目结构-nav">
+										 项目结构
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#model-database-models" v-on:click="closeDrawer" id="model-database-models-nav">
+										 model: database models
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#config" v-on:click="closeDrawer" id="config-nav">
+										 config
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#db-database-operations" v-on:click="closeDrawer" id="db-database-operations-nav">
+										 db: database operations
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#app-business-logic" v-on:click="closeDrawer" id="app-business-logic-nav">
+										 app: business logic
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e4%b8%89%e7%b1%bb%e9%94%99%e8%af%af" v-on:click="closeDrawer" id="三类错误-nav">
+										 三类错误
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#api-api-controllers" v-on:click="closeDrawer" id="api-api-controllers-nav">
+										 api: api controllers
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#application-state-vs-request-state" v-on:click="closeDrawer" id="application-state-vs-request-state-nav">
+										 Application State vs. Request State
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#request-context-%e8%af%b7%e6%b1%82%e4%b8%8a%e4%b8%8b%e6%96%87%e4%bf%a1%e6%81%af" v-on:click="closeDrawer" id="request-context-请求上下文信息-nav">
+										 (Request) Context 请求上下文信息
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#cmd-command-line-methods" v-on:click="closeDrawer" id="cmd-command-line-methods-nav">
+										 cmd: command line methods
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+	</div>
+
+</div>
+            
+        </div>
+    </div>
+</div>
+<transition name="fade">
+    <div v-bind:class="{ 'single-column-drawer-mask': mounted }" v-if="isDrawerOpen" v-on:click="toggleDrawer"></div>
+</transition>
+<nav ref="navBar" class="navbar sticky-top navbar-light single-column-nav-container">
+    <div ref="navBackground" class="nav-background"></div>
+    <div class="container container-narrow nav-content">
+        <button id="nav_dropdown_btn" class="nav-dropdown-toggle" type="button" v-on:click="toggleDrawer">
+            <i class="material-icons">
+                menu
+            </i>
+        </button>
+        <a ref="navTitle" class="navbar-brand" href="https://xujiahua.github.io/">
+            许嘉华的博客
+        </a>
+    </div>
+</nav>
+<div class="single-column-header-container" ref="pageHead"
+     v-bind:style="{ transform: 'translateZ(0px) translateY('+.3*scrollY+'px)', opacity: 1-navOpacity }">
+    <a href="https://xujiahua.github.io/">
+        <div class="single-column-header-title">许嘉华的博客</div>
+        
+
+    </a>
+</div>
+            <div id="content">
+<div ref="streamContainer" class="stream-container">
+    <div class="post-list-container post-list-container-shadow">
+        <div class="post">
+            
+            
+            
+
+            <div class="post-head-wrapper-text-only"
+                 style="background-image: url('/')">
+                <div class="post-title">
+                    Go Web 项目框架
+                    
+                    <div class="post-meta">
+                        
+                        <time itemprop="datePublished">
+                            2020-03-20 15:24
+                        </time>
+                        
+
+                        
+
+                        
+                            <i class="material-icons" style="">label</i>
+                            
+                                <a href="/tags/golang">Golang</a>
+                                &nbsp;
+                            
+                                <a href="/tags/web">Web</a>
+                                &nbsp;
+                            
+                        
+                    </div>
+                </div>
+            </div>
+            
+            <div class="post-body-wrapper">
+                <div class="post-body">
+                    <h2 id="常用开源库">常用开源库</h2>
+<h3 id="依赖包管理-go-modules">依赖包管理 Go Modules</h3>
+<p>Go Modules。Go 从1.11版本开始支持，Go 1.14被认为是生产可用了。个人用过最方便的Go依赖包管理工具了。</p>
+<p>版本管理中维护 <code>go.mod</code>/<code>go.sum</code> 两个文件。</p>
+<p><img src="../../images/image-20200320152954581.png" alt="image-20200320152954581"></p>
+<h4 id="参考">参考</h4>
+<ol>
+<li>Using Go Modules <a href="https://blog.golang.org/using-go-modules">https://blog.golang.org/using-go-modules</a></li>
+</ol>
+<h3 id="命令行框架-corba">命令行框架 Corba</h3>
+<p>Corba。第一次看到，是在翻看 Hyperledger Fabric 的时候。</p>
+<p><img src="../../images/ad566232-814f-11e5-9cd0-aa101788c117.png" alt="cobra logo"></p>
+<ol>
+<li>子命令，嵌套的子命令。</li>
+<li>增强版本的flags。</li>
+<li>项目模板的生成工具。</li>
+<li>生成工具也自动引入了Viper这个包。Corba与Viper由一个作者开发，两个项目配合使用非常方便。</li>
+</ol>
+<p>建议使用Cobra命令行工具生成项目模板。</p>
+<pre><code>  ▾ appName/
+    ▾ cmd/
+        add.go
+        your.go
+        commands.go
+        here.go
+      main.go
+</code></pre><h4 id="参考-1">参考</h4>
+<ol>
+<li>A Commander for modern Go CLI interactions <a href="https://github.com/spf13/cobra">https://github.com/spf13/cobra</a></li>
+<li>Cobra Generator <a href="https://github.com/spf13/cobra/blob/master/cobra/README.md">https://github.com/spf13/cobra/blob/master/cobra/README.md</a></li>
+</ol>
+<h3 id="配置管理-viper">配置管理 Viper</h3>
+<p>Viper。常常与Corba搭配使用。抄一段官方简介：</p>
+<p><img src="../../images/998df88a-8151-11e5-9448-4736db51020d.png" alt="viper logo"></p>
+<p>Viper is a complete configuration solution for Go applications including 12-Factor apps. It is designed to work within an application, and can handle all types of configuration needs and formats. It supports:</p>
+<ul>
+<li>setting defaults 设置默认值。示例：<code>viper.SetDefault(&quot;subject&quot;, &quot;World&quot;)</code></li>
+<li>reading from JSON, TOML, YAML, HCL, envfile and Java properties config files 支持各种配置文件格式，TOML比较合我口味。在使用viper之前的配置文件读取方式，一般都是配置文件对应一个Go的model，通过反序列化读入程序。现在看来非常粗糙。</li>
+<li>live watching and re-reading of config files (optional)</li>
+<li>reading from environment variables 读取环境变量。代码和配置严格分离，配置文件算是一种不错的选择，12-Factor更推荐将应用的配置存储于环境变量中，参考：https://12factor.net/zh_cn/config</li>
+<li>reading from remote config systems (etcd or Consul), and watching changes 读配置中心。</li>
+<li>reading from command line flags 示例：<code>viper.BindPFlag(&quot;subject&quot;, helloCmd.Flags().Lookup(&quot;subject&quot;))</code></li>
+<li>reading from buffer</li>
+<li>setting explicit values</li>
+</ul>
+<p>Viper can be thought of as a registry for all of your applications configuration needs.</p>
+<h4 id="关于读环境变量">关于读环境变量</h4>
+<p>AutomaticEnv is a powerful helper especially when combined with SetEnvPrefix. When called, Viper will check for an environment variable any time a viper.Get request is made. <strong>It will apply the following rules. It will check for a environment variable with a name matching the key uppercased</strong> and prefixed with the EnvPrefix if set.</p>
+<p>环境变量名是有要求的，默认是大写+下划线组合。如果设置了EnvPrefix，环境变量名需要加上前缀加下划线。</p>
+<p>vip.GetXXX(var) 这里的var倒是大小写随意的，因为viper内部统一小写处理。</p>
+<p><img src="../../images/image-20200321181144230.png" alt="image-20200321181144230"></p>
+<p>如果环境变量名并不满足组合怎么办呢。使用BindEnv，绑定key与环境变量名之间的关系，而不是使用默认的约定。</p>
+<p><code>BindEnv</code> takes one or two parameters. The first parameter is the key name, the second is the name of the environment variable. The name of the environment variable is case sensitive. If the ENV variable name is not provided, then Viper will automatically assume that the ENV variable matches the following format: prefix + &ldquo;_&rdquo; + the key name in ALL CAPS. <strong>When you explicitly provide the ENV variable name (the second parameter), it does not automatically add the prefix.</strong> For example if the second parameter is &ldquo;id&rdquo;, Viper will look for the ENV variable &ldquo;ID&rdquo;.</p>
+<h4 id="参考-2">参考</h4>
+<ol>
+<li>Go configuration with fangs <a href="https://github.com/spf13/viper">https://github.com/spf13/viper</a></li>
+</ol>
+<h3 id="日志-logrus">日志 logrus</h3>
+<p>Logrus提供的日志功能很丰富。</p>
+<p><img src="../../images/687474703a2f2f692e696d6775722e636f6d2f68546556776d4a2e706e67.png" alt=":walrus:"></p>
+<ol>
+<li>JSON、TEXT格式输出。JSON很方便解析，配合ES存储日志。</li>
+</ol>
+<h4 id="参考-3">参考</h4>
+<ol>
+<li>Structured, pluggable logging for Go. <a href="https://github.com/sirupsen/logrus">https://github.com/sirupsen/logrus</a></li>
+</ol>
+<h3 id="路由库--grollia-mux">路由库  grollia mux</h3>
+<p>摘抄官方：</p>
+<p><img src="../../images/68747470733a2f2f636c6f75642d63646e2e7175657374696f6e61626c652e73657276696365732f676f72696c6c612d69636f6e2d36342e706e67.png" alt="Gorilla Logo"></p>
+<p>Package <code>gorilla/mux</code> implements a request router and dispatcher for matching incoming requests to their respective handler.</p>
+<p>The name mux stands for &ldquo;HTTP request multiplexer&rdquo;. Like the standard <code>http.ServeMux</code>, <code>mux.Router</code> matches incoming requests against a list of registered routes and calls a handler for the route that matches the URL or other conditions. The main features are:</p>
+<ul>
+<li>It implements the <code>http.Handler</code> interface so it is compatible with the standard <code>http.ServeMux</code>. Go 提供的http.Handler 接口太具有扩展性了。</li>
+<li>Requests can be matched based on URL host, path, path prefix, schemes, header and query values, HTTP methods or using custom matchers. 丰富的路由匹配规则，host、path、header、query string都可以。</li>
+<li>URL hosts, paths and query values can have variables with an optional regular expression.</li>
+<li>Registered URLs can be built, or &ldquo;reversed&rdquo;, which helps maintaining references to resources.</li>
+<li>Routes can be used as subrouters: nested routes are only tested if the parent route matches. This is useful to define groups of routes that share common conditions like a host, a path prefix or other repeated attributes. As a bonus, this optimizes request matching. 分组功能，RESTful接口按照实体分组，很实用。</li>
+</ul>
+<p>可以搭配同系列的middleware项目使用：https://github.com/gorilla/handlers。</p>
+<h4 id="参考-4">参考</h4>
+<ol>
+<li>A powerful HTTP router and URL matcher for building Go web servers <a href="https://github.com/gorilla/mux">https://github.com/gorilla/mux</a></li>
+<li>A collection of useful middleware for Go HTTP services &amp; web applications <a href="https://github.com/gorilla/handlers">https://github.com/gorilla/handlers</a></li>
+<li>Web Server Graceful Shutdown <a href="https://github.com/gorilla/mux#graceful-shutdown">https://github.com/gorilla/mux#graceful-shutdown</a></li>
+</ol>
+<h3 id="orm-gorm">ORM gorm</h3>
+<p>文档很丰富。功能很实用。摘抄官方文档：</p>
+<ul>
+<li>Full-Featured ORM (almost)</li>
+<li>Associations (Has One, Has Many, Belongs To, Many To Many, Polymorphism)</li>
+<li>Hooks (Before/After Create/Save/Update/Delete/Find)</li>
+<li>Preloading (eager loading)</li>
+<li>Transactions</li>
+<li>Composite Primary Key</li>
+<li>SQL Builder</li>
+<li>Auto Migrations 自动创建表结构。</li>
+<li>Logger</li>
+<li>Extendable, write Plugins based on GORM callbacks</li>
+<li>Every feature comes with tests</li>
+<li>Developer Friendly</li>
+</ul>
+<h4 id="参考-5">参考</h4>
+<ol>
+<li>GORM Guides <a href="https://gorm.io/docs/">https://gorm.io/docs/</a></li>
+</ol>
+<h3 id="http-client-grequests">HTTP client grequests</h3>
+<p>号称 Python Requests 的Go clone。用着不错。</p>
+<h4 id="参考-6">参考</h4>
+<ol>
+<li>A Go &ldquo;clone&rdquo; of the great and famous Requests library <a href="https://github.com/levigross/grequests">https://github.com/levigross/grequests</a></li>
+</ol>
+<h3 id="errors-githubcompkgerrors">Errors github.com/pkg/errors</h3>
+<p>内置的errors太弱了。返回了error，但是呢，没有返回上下文信息。这个库解决的是这个问题。</p>
+<h4 id="参考-7">参考</h4>
+<ol>
+<li>Simple error handling primitives <a href="https://github.com/pkg/errors">https://github.com/pkg/errors</a></li>
+</ol>
+<h3 id="依赖注入框架-wire">依赖注入框架 wire</h3>
+<p>基于代码生成的依赖注入框架。小项目没必要使用。</p>
+<h3 id="rpc框架-grpc">RPC框架 gRPC</h3>
+<p>跨进程，跨语言通信。</p>
+<h2 id="常用工具">常用工具</h2>
+<h3 id="makefile">Makefile</h3>
+<p>将常用的命令放在Makefile里管理。比如格式化代码 ，编译，打包，开发环境运行等等，并维护好依赖关系。</p>
+<p>不要写一堆.sh脚本了。</p>
+<h3 id="docker">Docker</h3>
+<p>维护一份Dockerfile，项目交付物通过制作成Docker镜像分发。比如：</p>
+<pre><code># Dockerfile
+FROM alpine:latest
+WORKDIR /app
+COPY ./dist .
+ENTRYPOINT [&quot;./app&quot;, &quot;serve&quot;]
+</code></pre><p>可以通过Docker来构建Go项目（一个两阶段的Dockerfile）。也可以像我这样，在宿主机就构建好，Dockerfile只需要COPY编译产物即可。</p>
+<h3 id="swagger">Swagger</h3>
+<p>目前没有方便的生成方法，得手写注释！</p>
+<h2 id="项目结构">项目结构</h2>
+<p>Go web项目结构没有定式，每个人的风格都不一样。参考了这个系列文章，觉得不错，特别是第二篇。</p>
+<ol>
+<li>Go Web Application Structure - Part 1 <a href="https://aaf.engineering/go-web-application-structure-pt-1/">https://aaf.engineering/go-web-application-structure-pt-1/</a></li>
+<li><strong>Go Web Application Structure - Part 2 - Routing/Serving</strong> <a href="https://aaf.engineering/go-web-application-structure-part-2/">https://aaf.engineering/go-web-application-structure-part-2/</a></li>
+<li>Go Web Application Structure - Part 3 - The Database <a href="https://aaf.engineering/go-web-application-structure-part-3/">https://aaf.engineering/go-web-application-structure-part-3/</a></li>
+<li>Go Web Application Structure - Part 4 - Database Migrations &amp; Business Logic <a href="https://aaf.engineering/go-web-application-structure-part-4/">https://aaf.engineering/go-web-application-structure-part-4/</a></li>
+<li>code <a href="https://github.com/theaaf/todos">https://github.com/theaaf/todos</a></li>
+</ol>
+<p>层级调用链：cmd -&gt; api -&gt; app -&gt; db。model/config横切，其它层共享之。</p>
+<h3 id="model-database-models">model: database models</h3>
+<p>模型实体，通过分析需求建模，合理的建模便于后期维护。</p>
+<p>横切层。其他每层都会用到。</p>
+<p><img src="../../images/image-20200320170405357.png" alt="image-20200320170405357"></p>
+<h3 id="config">config</h3>
+<p>横切层。</p>
+<p>并没有自己独立的包，而是其他每层都可以根据需要，有一个自己独立的Config结构体。通过一个全局的Viper变量，取出该层关心的配置变量（或是从配置文件，或是从环境变量）。</p>
+<p>比如数据层的config：</p>
+<p><img src="../../images/image-20200320170301550.png" alt="image-20200320170301550"></p>
+<h3 id="db-database-operations">db: database operations</h3>
+<p>数据持久化层，底层。CRUD操作的封装。通过“构造函数”做依赖注入，方便单元测试。</p>
+<p><img src="../../images/image-20200320170627650.png" alt="image-20200320170627650"></p>
+<h3 id="app-business-logic">app: business logic</h3>
+<p>业务逻辑层，中层，核心层。调用数据层，及其他底层服务，比如S3云存储等。</p>
+<h4 id="三类错误">三类错误</h4>
+<p>该层方法返回的错误可以分三类。</p>
+<ol>
+<li>ValidationError 输入不正确，校验不通过，比如手机号长度不对。对应的HTTP状态码：400。</li>
+<li>UserError 认证错误，比如用户登录失败，用户没有权限。对应的HTTP状态码：401, 403。</li>
+<li>ServerError 系统错误，比如数据库连不上，也不需要特别定义ServerError：只要error不是ValidationError，UserError，就是ServerError。对应的HTTP状态码：500。</li>
+<li>没有错误，那么对应的HTTP状态码就是200。</li>
+</ol>
+<h3 id="api-api-controllers">api: api controllers</h3>
+<p>接口层。尽可能轻量，尽可能没有业务逻辑，只负责转译。通过调用业务逻辑层完成任务。将上述三分类错误映射到合适的状态码。</p>
+<h4 id="application-state-vs-request-state">Application State vs. Request State</h4>
+<p>请求入口函数需要为每个请求创建一个context（上下文）。context包含如下，摘抄原文。包含的字段需满足完成request的所需。</p>
+<p><img src="../../images/image-20200320181127465.png" alt="image-20200320181127465"></p>
+<h4 id="request-context-请求上下文信息">(Request) Context 请求上下文信息</h4>
+<ol>
+<li>Remote IP地址，显示于access log。使用logrus.WithField()。</li>
+<li>Request ID，显示于access log。使用logrus.WithField()。</li>
+<li>User，用于后续鉴权。如果有认证头信息（Auth Token），从数据库取出用户。</li>
+</ol>
+<h3 id="cmd-command-line-methods">cmd: command line methods</h3>
+<p>使用Cobra生成子命令。</p>
+<p><code>app serve </code></p>
+<p>启动web server，并加入web server优雅退出的功能。</p>
+
+                    
+                    <HR width="100%" id="EOF">
+                    <p style="color:#777;">Last modified on 2020-03-20</p>
+                    
+                </div>
+            </div>
+            
+            
+            <nav class="post-pagination">
+
+                
+                <a class="newer-posts" href="https://xujiahua.github.io/posts/20200321-docker-network/">
+                    Next<br>Docker Network小结
+                </a>
+                
+                
+                
+                <a class="older-posts" href="https://xujiahua.github.io/posts/2020-03-12-slash-in-url-path/">
+                    Previous<br>Go库对URL Path中%2F的处理
+                </a>
+                
+            </nav>
+            <div class="post-comment-wrapper">
+                
+
+
+
+
+
+
+            </div>
+        </div>
+    </div>
+</div>
+
+            </div><div id="single-column-footer">
+Hugo Theme <a href="https://github.com/amazingrise/hugo-theme-diary">Diary</a> by <a href="https://amazingrise.net">Rise</a>
+<br>
+Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopener">Makito</a>'s <a href="https://github.com/SumiMakito/hexo-theme-journal/" target="_blank" rel="noreferrer noopener">Journal.</a> <br>
+<br>
+
+&copy;
+	
+	2020 许嘉华的博客
+	</div>
+    	</div>
+    <script src="https://xujiahua.github.io//js/journal.js"></script>
+    </body>
+</html>

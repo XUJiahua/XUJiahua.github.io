@@ -13,10 +13,10 @@
     
     <item>
       <title>Github pages重新开始：使用Hugo、Typora</title>
-      <link>https://xujiahua.github.io/posts/github-pages-restart/</link>
+      <link>https://xujiahua.github.io/posts/20200310-github-pages-restart/</link>
       <pubDate>Tue, 10 Mar 2020 11:24:49 +0800</pubDate>
       
-      <guid>https://xujiahua.github.io/posts/github-pages-restart/</guid>
+      <guid>https://xujiahua.github.io/posts/20200310-github-pages-restart/</guid>
       <description>重新开始GitHub pages 曾使用GitHub pages +  jekyll 写过一段时间博客，没啥营养。
 打算重新开始：
  把我记录在Evernote和Typora中的资料迁移到GitHub pages上。 另外做一些Web形式的小工具，挂载在一个子目录里，方便平时使用。  Hugo + Typora 打算如下：

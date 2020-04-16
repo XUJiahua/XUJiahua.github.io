@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html><head>
+<title>5G认识小结</title>
+
+<meta charset="utf-8">
+<meta name="X-UA-Compatible" content="IE=edge">
+<meta name="google-site-verification" content="">
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport">
+<meta content="telephone=no" name="format-detection">
+<meta name="description" content="">
+<meta name="renderer" content="webkit">
+<meta name="theme-color" content="#ffffff">
+
+
+
+
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+	ga('create', 'UA-162706610-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+
+
+
+<script src="/vendor/js/jquery.min.js" ></script>
+<script src="/vendor/js/popper.min.js" ></script>
+<script src="/vendor/js/bootstrap.min.js" ></script>
+<script src="/vendor/js/smooth-scroll.polyfills.min.js" ></script>
+<link type="text/css" rel="stylesheet" href="/vendor/css/bootstrap.min.css">
+<script src="/vendor/js/vue.min.js" ></script>
+
+
+
+
+<link rel="stylesheet" href="https://xujiahua.github.io/scss/journal.min.5c667e74038e21ddbb9024b67930f8544e02af62491281cf73fdb817eec2947e.css" integrity="sha256-XGZ&#43;dAOOId27kCS2eTD4VE4Cr2JJEoHPc/24F&#43;7ClH4=" media="screen">
+
+<script src="https://xujiahua.github.io//js/loadCSS.js"></script>
+<script src="https://xujiahua.github.io//js/table.js"></script>
+
+
+<script src="https://xujiahua.github.io//js/toc.js"></script>
+
+
+<script>
+    loadCSS("https://fonts.googleapis.com/css?family=Lora|Montserrat|Fira+Mono|Noto+Serif+SC|Material+Icons");
+</script>
+
+
+
+
+
+
+</head><body>
+    	<div id="app"><div ref="sideContainer" class="side-container">
+    
+    <a class="a-block nav-head false" href="https://xujiahua.github.io/">
+    
+        <div class="nav-title">
+            许嘉华的博客
+        </div>
+        
+    </a>
+
+    <div class="nav-link-list">
+        
+        
+            
+            
+            
+                
+            
+            
+            
+            <a class="a-block nav-link-item active" href="/posts">
+                Archive
+            </a>
+            
+        
+            
+            
+            
+            
+            
+            <a class="a-block nav-link-item false" href="/categories">
+                Categories
+            </a>
+            
+        
+            
+            
+            
+            
+            
+            <a class="a-block nav-link-item false" href="/tags">
+                Tags
+            </a>
+            
+        
+            
+            
+            
+            
+            
+            <a class="a-block nav-link-item false" href="/index.xml">
+                RSS Feed
+            </a>
+            
+        
+    </div>
+
+    
+
+    <div class="nav-footer">
+        
+Hugo Theme <a href="https://github.com/amazingrise/hugo-theme-diary">Diary</a> by <a href="https://amazingrise.net">Rise</a>
+<br>
+Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopener">Makito</a>'s <a href="https://github.com/SumiMakito/hexo-theme-journal/" target="_blank" rel="noreferrer noopener">Journal.</a> <br>
+<br>
+
+&copy;
+	
+	2020 许嘉华的博客
+	
+    </div>
+    
+</div><div ref="extraContainer" class="extra-container">
+    
+    <div class="toc animated-visibility" :class="{ invisible: scrollY <= 140 }">
+
+
+	<div class="toc-content">
+	
+		
+		
+		
+		<center>- CATALOG -</center>
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e5%9f%ba%e6%9c%ac%e6%a6%82%e5%bf%b5" v-on:click="closeDrawer" id="基本概念-nav">
+										 基本概念
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e5%ba%94%e7%94%a8%e5%9c%ba%e6%99%af" v-on:click="closeDrawer" id="应用场景-nav">
+										 应用场景
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e4%bc%9a%e4%b8%8d%e4%bc%9a%e5%b8%a6%e6%9d%a5%e4%b8%8b%e4%b8%80%e4%b8%aa%e7%a7%bb%e5%8a%a8%e4%ba%92%e8%81%94%e7%bd%91" v-on:click="closeDrawer" id="会不会带来下一个移动互联网-nav">
+										 会不会带来下一个“移动互联网”
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#5g%e7%9a%84%e5%88%a9%e7%9b%8a%e5%85%b3%e7%b3%bb" v-on:click="closeDrawer" id="5g的利益关系-nav">
+										 5G的利益关系
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e6%9d%82%e8%a8%80" v-on:click="closeDrawer" id="杂言-nav">
+										 杂言
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+	</div>
+
+</div>
+    
+    <div class="pagination">
+        <a id="globalBackToTop" class="pagination-action animated-visibility" href="#top" :class="{ invisible: scrollY == 0 }">
+            <i class="material-icons pagination-action-icon">
+                keyboard_arrow_up
+            </i>
+        </a>
+        
+    </div>
+</div><div class="single-column-drawer-container" ref="drawer"
+     v-bind:class="{ 'single-column-drawer-container-active': isDrawerOpen }">
+    <div class="drawer-content">
+        <div class="drawer-menu">
+            
+            
+                
+                
+                
+                    
+                
+                
+                
+                <a class="a-block drawer-menu-item active" href="/posts">
+                    Archive
+                </a>
+                
+            
+                
+                
+                
+                
+                
+                <a class="a-block drawer-menu-item false" href="/categories">
+                    Categories
+                </a>
+                
+            
+                
+                
+                
+                
+                
+                <a class="a-block drawer-menu-item false" href="/tags">
+                    Tags
+                </a>
+                
+            
+                
+                
+                
+                
+                
+                <a class="a-block drawer-menu-item false" href="/index.xml">
+                    RSS Feed
+                </a>
+                
+            
+            
+            <div class="toc">
+
+
+	<div class="toc-content">
+	
+		
+		
+		
+		<center>- CATALOG -</center>
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e5%9f%ba%e6%9c%ac%e6%a6%82%e5%bf%b5" v-on:click="closeDrawer" id="基本概念-nav">
+										 基本概念
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e5%ba%94%e7%94%a8%e5%9c%ba%e6%99%af" v-on:click="closeDrawer" id="应用场景-nav">
+										 应用场景
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e4%bc%9a%e4%b8%8d%e4%bc%9a%e5%b8%a6%e6%9d%a5%e4%b8%8b%e4%b8%80%e4%b8%aa%e7%a7%bb%e5%8a%a8%e4%ba%92%e8%81%94%e7%bd%91" v-on:click="closeDrawer" id="会不会带来下一个移动互联网-nav">
+										 会不会带来下一个“移动互联网”
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#5g%e7%9a%84%e5%88%a9%e7%9b%8a%e5%85%b3%e7%b3%bb" v-on:click="closeDrawer" id="5g的利益关系-nav">
+										 5G的利益关系
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e6%9d%82%e8%a8%80" v-on:click="closeDrawer" id="杂言-nav">
+										 杂言
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+	</div>
+
+</div>
+            
+        </div>
+    </div>
+</div>
+<transition name="fade">
+    <div v-bind:class="{ 'single-column-drawer-mask': mounted }" v-if="isDrawerOpen" v-on:click="toggleDrawer"></div>
+</transition>
+<nav ref="navBar" class="navbar sticky-top navbar-light single-column-nav-container">
+    <div ref="navBackground" class="nav-background"></div>
+    <div class="container container-narrow nav-content">
+        <button id="nav_dropdown_btn" class="nav-dropdown-toggle" type="button" v-on:click="toggleDrawer">
+            <i class="material-icons">
+                menu
+            </i>
+        </button>
+        <a ref="navTitle" class="navbar-brand" href="https://xujiahua.github.io/">
+            许嘉华的博客
+        </a>
+    </div>
+</nav>
+<div class="single-column-header-container" ref="pageHead"
+     v-bind:style="{ transform: 'translateZ(0px) translateY('+.3*scrollY+'px)', opacity: 1-navOpacity }">
+    <a href="https://xujiahua.github.io/">
+        <div class="single-column-header-title">许嘉华的博客</div>
+        
+
+    </a>
+</div>
+            <div id="content">
+<div ref="streamContainer" class="stream-container">
+    <div class="post-list-container post-list-container-shadow">
+        <div class="post">
+            
+            
+            
+
+            <div class="post-head-wrapper-text-only"
+                 style="background-image: url('/')">
+                <div class="post-title">
+                    5G认识小结
+                    
+                    <div class="post-meta">
+                        
+                        <time itemprop="datePublished">
+                            2020-02-22 23:32
+                        </time>
+                        
+
+                        
+
+                        
+                            <i class="material-icons" style="">label</i>
+                            
+                                <a href="/tags/5g">5G</a>
+                                &nbsp;
+                            
+                        
+                    </div>
+                </div>
+            </div>
+            
+            <div class="post-body-wrapper">
+                <div class="post-body">
+                    <p>去年11月尝鲜，买了个三星5G手机。找基站测5G速度成了刚买时候的乐趣。用了几个月，深感5G功能很鸡肋，5G基站太少。</p>
+<p>这两天翻了好多知乎上关于5G的评论，对5G的概念、应用场景有了些厘清。</p>
+<h2 id="基本概念">基本概念</h2>
+<ol>
+<li>5G，第五代移动通信技术。也就是5G的边界是移动通信网络。</li>
+<li>5G的直接作用是提高了移动设备到基站的下载速率，能达到1G/s，也就是所谓的空口延迟低。</li>
+<li>5G下载的速度上限还是光纤的下载速度上限。</li>
+<li>5G的流量套餐应该不会便宜，除非国家出政策。为什么套餐不会便宜，这得看成本。5G的基站建设成本远比4G高。5G基站覆盖面积小，需要几倍于4G的基站，5G基站耗电成本也是几倍于4G基站。肥了设备商（华为中兴），苦了运营商（移动联通电信），最后还是消费者买单。</li>
+<li>理论速度极可能跑不满。使用者多了，平均到每个终端，带宽就不够。现在我的4G速度好慢，完全没到理论速度。现在的矛盾不是需要更快的网络，而是更多的网络。</li>
+<li>木桶效应，一个桶能装多少水由短板决定，以前的移动通信是短板，但是通过3G、4G到现在的5G的改善，已经成为长板了。运营商的承载网等配套也得扩容。不然5G的超高下载速率就是一个理论值。又是运营商的成本。</li>
+</ol>
+<h2 id="应用场景">应用场景</h2>
+<p>大部分人的共识是，5G的杀手级应用仍在探索中。</p>
+<p>什么样的场景，只有通过5G能够做到，而其他技术不行，这样的场景就是典型的5G应用场景。要找到技术的适用场景，不能生搬硬套。区块链也是这样一个典型。过滤那些“可以使用XXX技术，但是完全没必要”的场景。</p>
+<p>媒体上关于5G的一些应用场景：</p>
+<ol>
+<li>远程手术 —— 为什么不用光纤，可靠性更好。如果是边远山区不方便铺光纤，5G可能是好的替代。有总比没有好。</li>
+<li>远程挖掘机 —— 微博上看到的，挖掘机通过5G联网，驾驶员在机房操控，安全性更高。</li>
+<li>远程办公、远程上课 —— 这些光纤都能做到。对于山村里不方便通光纤的，是好事。但是山村里的困难是超乎我们想象的。看新闻，因为疫情不得不在家上课，几个小孩子共用一个手机，流量又贵，不舍得用。太难了。</li>
+<li>AR/VR —— 不看好。光纤，百兆宽带都这么普及了，AR/VR发展不好的根本原因应该是AR/VR本身吧，5G救不了ARVR。</li>
+<li>无人驾驶 —— 不看好。移动通信中的延时一直保持很低很困难吧，比如短时间太多人/设备使用基站导致拥挤。可靠性太重要了，毕竟汽车是高速移动的，稍微的疏忽就是惨痛代价。</li>
+</ol>
+<h2 id="会不会带来下一个移动互联网">会不会带来下一个“移动互联网”</h2>
+<p>之所以大家对5G这么关注，就是在想，5G能否像3/4G一样带动下一个移动互联网（电商、O2O、移动支付、短视频、直播）。</p>
+<p>先来看看移动互联网是怎么发展起来的。</p>
+<ol>
+<li>苹果公司发布iPhone，智能手机的火种。</li>
+<li>小米等一众国产品牌的低价策略，带来了<strong>智能手机的普及</strong>。</li>
+<li>国务院要求<strong>运营商资费下降</strong>。大家都用得起流量。</li>
+<li>总结就是：智能手机普及 + 运营商资费下降。</li>
+<li>其中智能手机，这是从无到有，从0到1的奇迹，颠覆了之前的所有手机。（好久没有让人激动的科技产品了，苹果的创新能力也是在备受质疑，因为大家期望太高了。）</li>
+<li>其中运营商资费下降，这是国家权力。（知乎用户：钱都让互联网企业赚走了，通讯行业等同于修路。）</li>
+</ol>
+<p>5G目前的作用仅限于加快了与基站之间的通信速度，假如说3G完成了从0到1，4G完成了从1到10，那么5G是从10到100吧。根据边际效应准则，后面的收益会越来越少。</p>
+<p>很难看出能带来什么样的产业革命来。</p>
+<h2 id="5g的利益关系">5G的利益关系</h2>
+<p>利好：</p>
+<ol>
+<li>5G基站厂商。华为为主。</li>
+<li>国家层面。5G是国家战略，是政治正确。其一，靠专利技术薅世界羊毛，从国家角度是有利可图的。其二，带动产业发展，拉动GDP。</li>
+<li>手机终端厂商。近年来手机上的创新的吸睛能力真不行，消费欲望降低。靠5G这个卖点，能赚一波眼球。</li>
+<li>还有众多蹭5G话题流量的：广告公司、创业公司。</li>
+</ol>
+<p>利坏：</p>
+<ol>
+<li>三大运营商。基站投入是高成本的，为了发展5G生态，国家也会限制套餐费用，影响其收入。还好是国企。</li>
+</ol>
+<p>参考：https://www.zhihu.com/question/342366514/answer/820922564</p>
+<h2 id="杂言">杂言</h2>
+<p>真正有颠覆性的，真正能突破人们想象力的，都在基础科学。比如材料科学，电池技术现在是瓶颈。离我很远。我做的事情真的对人类价值不大，只是个普通人，只能做到赚钱养家对家庭做贡献了。</p>
+
+                    
+                    <HR width="100%" id="EOF">
+                    <p style="color:#777;">Last modified on 2020-02-22</p>
+                    
+                </div>
+            </div>
+            
+            
+            <nav class="post-pagination">
+
+                
+                <a class="newer-posts" href="https://xujiahua.github.io/posts/20200228-go-modules/">
+                    Next<br>使用Go Modules
+                </a>
+                
+                
+                
+                <a class="older-posts" href="https://xujiahua.github.io/posts/20200211-recsys-implicit/">
+                    Previous<br>Implicit：推荐系统协同过滤库的测评
+                </a>
+                
+            </nav>
+            <div class="post-comment-wrapper">
+                
+
+
+
+
+
+
+            </div>
+        </div>
+    </div>
+</div>
+
+            </div><div id="single-column-footer">
+Hugo Theme <a href="https://github.com/amazingrise/hugo-theme-diary">Diary</a> by <a href="https://amazingrise.net">Rise</a>
+<br>
+Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopener">Makito</a>'s <a href="https://github.com/SumiMakito/hexo-theme-journal/" target="_blank" rel="noreferrer noopener">Journal.</a> <br>
+<br>
+
+&copy;
+	
+	2020 许嘉华的博客
+	</div>
+    	</div>
+    <script src="https://xujiahua.github.io//js/journal.js"></script>
+    </body>
+</html>

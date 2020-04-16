@@ -13,10 +13,10 @@
     
     <item>
       <title>Implicit：推荐系统协同过滤库的测评</title>
-      <link>https://xujiahua.github.io/posts/recsys-implicit/</link>
+      <link>https://xujiahua.github.io/posts/20200211-recsys-implicit/</link>
       <pubDate>Tue, 11 Feb 2020 14:34:27 +0800</pubDate>
       
-      <guid>https://xujiahua.github.io/posts/recsys-implicit/</guid>
+      <guid>https://xujiahua.github.io/posts/20200211-recsys-implicit/</guid>
       <description>简介 Implicit是一个推荐系统协同过滤库。所谓协同过滤，只用到了user、item的ID和user、item交互后的评分（或是某个度量）。
 GitHub：https://github.com/benfred/implicit
 安装 pip install implicit 其他选择 自己照着「推荐系统实战」里的基于物品推荐的相似度公式（类似关联分析中的Lift公式），也写了一个item-item recommender。

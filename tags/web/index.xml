@@ -13,10 +13,10 @@
     
     <item>
       <title>Go Web 项目框架</title>
-      <link>https://xujiahua.github.io/posts/go-web-project/</link>
+      <link>https://xujiahua.github.io/posts/20200320-go-web-project/</link>
       <pubDate>Fri, 20 Mar 2020 15:24:22 +0800</pubDate>
       
-      <guid>https://xujiahua.github.io/posts/go-web-project/</guid>
+      <guid>https://xujiahua.github.io/posts/20200320-go-web-project/</guid>
       <description>常用开源库 依赖包管理 Go Modules Go Modules。Go 从1.11版本开始支持，Go 1.14被认为是生产可用了。个人用过最方便的Go依赖包管理工具了。
 版本管理中维护 go.mod/go.sum 两个文件。
 参考  Using Go Modules https://blog.golang.org/using-go-modules  命令行框架 Corba Corba。第一次看到，是在翻看 Hyperledger Fabric 的时候。

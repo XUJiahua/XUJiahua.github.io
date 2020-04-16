@@ -5,19 +5,213 @@
     <description>Recent content on 许嘉华的博客</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Tue, 14 Apr 2020 09:53:35 +0800</lastBuildDate>
+    <lastBuildDate>Thu, 16 Apr 2020 11:33:18 +0800</lastBuildDate>
     
         <atom:link href="https://xujiahua.github.io/index.xml" rel="self" type="application/rss+xml" />
     
     
     
         <item>
+        <title>Go Web 项目框架</title>
+        <link>https://xujiahua.github.io/posts/20200320-go-web-project/</link>
+        <pubDate>Fri, 20 Mar 2020 15:24:22 +0800</pubDate>
+        
+        <guid>https://xujiahua.github.io/posts/20200320-go-web-project/</guid>
+        <description>许嘉华的博客 https://xujiahua.github.io/posts/20200320-go-web-project/ -&lt;h2 id=&#34;常用开源库&#34;&gt;常用开源库&lt;/h2&gt;
+&lt;h3 id=&#34;依赖包管理-go-modules&#34;&gt;依赖包管理 Go Modules&lt;/h3&gt;
+&lt;p&gt;Go Modules。Go 从1.11版本开始支持，Go 1.14被认为是生产可用了。个人用过最方便的Go依赖包管理工具了。&lt;/p&gt;
+&lt;p&gt;版本管理中维护 &lt;code&gt;go.mod&lt;/code&gt;/&lt;code&gt;go.sum&lt;/code&gt; 两个文件。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200320152954581.png&#34; alt=&#34;image-20200320152954581&#34;&gt;&lt;/p&gt;
+&lt;h4 id=&#34;参考&#34;&gt;参考&lt;/h4&gt;
+&lt;ol&gt;
+&lt;li&gt;Using Go Modules &lt;a href=&#34;https://blog.golang.org/using-go-modules&#34;&gt;https://blog.golang.org/using-go-modules&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3 id=&#34;命令行框架-corba&#34;&gt;命令行框架 Corba&lt;/h3&gt;
+&lt;p&gt;Corba。第一次看到，是在翻看 Hyperledger Fabric 的时候。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/ad566232-814f-11e5-9cd0-aa101788c117.png&#34; alt=&#34;cobra logo&#34;&gt;&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;子命令，嵌套的子命令。&lt;/li&gt;
+&lt;li&gt;增强版本的flags。&lt;/li&gt;
+&lt;li&gt;项目模板的生成工具。&lt;/li&gt;
+&lt;li&gt;生成工具也自动引入了Viper这个包。Corba与Viper由一个作者开发，两个项目配合使用非常方便。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;建议使用Cobra命令行工具生成项目模板。&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;  ▾ appName/
+    ▾ cmd/
+        add.go
+        your.go
+        commands.go
+        here.go
+      main.go
+&lt;/code&gt;&lt;/pre&gt;&lt;h4 id=&#34;参考-1&#34;&gt;参考&lt;/h4&gt;
+&lt;ol&gt;
+&lt;li&gt;A Commander for modern Go CLI interactions &lt;a href=&#34;https://github.com/spf13/cobra&#34;&gt;https://github.com/spf13/cobra&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;Cobra Generator &lt;a href=&#34;https://github.com/spf13/cobra/blob/master/cobra/README.md&#34;&gt;https://github.com/spf13/cobra/blob/master/cobra/README.md&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3 id=&#34;配置管理-viper&#34;&gt;配置管理 Viper&lt;/h3&gt;
+&lt;p&gt;Viper。常常与Corba搭配使用。抄一段官方简介：&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/998df88a-8151-11e5-9448-4736db51020d.png&#34; alt=&#34;viper logo&#34;&gt;&lt;/p&gt;
+&lt;p&gt;Viper is a complete configuration solution for Go applications including 12-Factor apps. It is designed to work within an application, and can handle all types of configuration needs and formats. It supports:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;setting defaults 设置默认值。示例：&lt;code&gt;viper.SetDefault(&amp;quot;subject&amp;quot;, &amp;quot;World&amp;quot;)&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;reading from JSON, TOML, YAML, HCL, envfile and Java properties config files 支持各种配置文件格式，TOML比较合我口味。在使用viper之前的配置文件读取方式，一般都是配置文件对应一个Go的model，通过反序列化读入程序。现在看来非常粗糙。&lt;/li&gt;
+&lt;li&gt;live watching and re-reading of config files (optional)&lt;/li&gt;
+&lt;li&gt;reading from environment variables 读取环境变量。代码和配置严格分离，配置文件算是一种不错的选择，12-Factor更推荐将应用的配置存储于环境变量中，参考：https://12factor.net/zh_cn/config&lt;/li&gt;
+&lt;li&gt;reading from remote config systems (etcd or Consul), and watching changes 读配置中心。&lt;/li&gt;
+&lt;li&gt;reading from command line flags 示例：&lt;code&gt;viper.BindPFlag(&amp;quot;subject&amp;quot;, helloCmd.Flags().Lookup(&amp;quot;subject&amp;quot;))&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;reading from buffer&lt;/li&gt;
+&lt;li&gt;setting explicit values&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Viper can be thought of as a registry for all of your applications configuration needs.&lt;/p&gt;
+&lt;h4 id=&#34;关于读环境变量&#34;&gt;关于读环境变量&lt;/h4&gt;
+&lt;p&gt;AutomaticEnv is a powerful helper especially when combined with SetEnvPrefix. When called, Viper will check for an environment variable any time a viper.Get request is made. &lt;strong&gt;It will apply the following rules. It will check for a environment variable with a name matching the key uppercased&lt;/strong&gt; and prefixed with the EnvPrefix if set.&lt;/p&gt;
+&lt;p&gt;环境变量名是有要求的，默认是大写+下划线组合。如果设置了EnvPrefix，环境变量名需要加上前缀加下划线。&lt;/p&gt;
+&lt;p&gt;vip.GetXXX(var) 这里的var倒是大小写随意的，因为viper内部统一小写处理。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200321181144230.png&#34; alt=&#34;image-20200321181144230&#34;&gt;&lt;/p&gt;
+&lt;p&gt;如果环境变量名并不满足组合怎么办呢。使用BindEnv，绑定key与环境变量名之间的关系，而不是使用默认的约定。&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;BindEnv&lt;/code&gt; takes one or two parameters. The first parameter is the key name, the second is the name of the environment variable. The name of the environment variable is case sensitive. If the ENV variable name is not provided, then Viper will automatically assume that the ENV variable matches the following format: prefix + &amp;ldquo;_&amp;rdquo; + the key name in ALL CAPS. &lt;strong&gt;When you explicitly provide the ENV variable name (the second parameter), it does not automatically add the prefix.&lt;/strong&gt; For example if the second parameter is &amp;ldquo;id&amp;rdquo;, Viper will look for the ENV variable &amp;ldquo;ID&amp;rdquo;.&lt;/p&gt;
+&lt;h4 id=&#34;参考-2&#34;&gt;参考&lt;/h4&gt;
+&lt;ol&gt;
+&lt;li&gt;Go configuration with fangs &lt;a href=&#34;https://github.com/spf13/viper&#34;&gt;https://github.com/spf13/viper&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3 id=&#34;日志-logrus&#34;&gt;日志 logrus&lt;/h3&gt;
+&lt;p&gt;Logrus提供的日志功能很丰富。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/687474703a2f2f692e696d6775722e636f6d2f68546556776d4a2e706e67.png&#34; alt=&#34;:walrus:&#34;&gt;&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;JSON、TEXT格式输出。JSON很方便解析，配合ES存储日志。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h4 id=&#34;参考-3&#34;&gt;参考&lt;/h4&gt;
+&lt;ol&gt;
+&lt;li&gt;Structured, pluggable logging for Go. &lt;a href=&#34;https://github.com/sirupsen/logrus&#34;&gt;https://github.com/sirupsen/logrus&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3 id=&#34;路由库--grollia-mux&#34;&gt;路由库  grollia mux&lt;/h3&gt;
+&lt;p&gt;摘抄官方：&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/68747470733a2f2f636c6f75642d63646e2e7175657374696f6e61626c652e73657276696365732f676f72696c6c612d69636f6e2d36342e706e67.png&#34; alt=&#34;Gorilla Logo&#34;&gt;&lt;/p&gt;
+&lt;p&gt;Package &lt;code&gt;gorilla/mux&lt;/code&gt; implements a request router and dispatcher for matching incoming requests to their respective handler.&lt;/p&gt;
+&lt;p&gt;The name mux stands for &amp;ldquo;HTTP request multiplexer&amp;rdquo;. Like the standard &lt;code&gt;http.ServeMux&lt;/code&gt;, &lt;code&gt;mux.Router&lt;/code&gt; matches incoming requests against a list of registered routes and calls a handler for the route that matches the URL or other conditions. The main features are:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;It implements the &lt;code&gt;http.Handler&lt;/code&gt; interface so it is compatible with the standard &lt;code&gt;http.ServeMux&lt;/code&gt;. Go 提供的http.Handler 接口太具有扩展性了。&lt;/li&gt;
+&lt;li&gt;Requests can be matched based on URL host, path, path prefix, schemes, header and query values, HTTP methods or using custom matchers. 丰富的路由匹配规则，host、path、header、query string都可以。&lt;/li&gt;
+&lt;li&gt;URL hosts, paths and query values can have variables with an optional regular expression.&lt;/li&gt;
+&lt;li&gt;Registered URLs can be built, or &amp;ldquo;reversed&amp;rdquo;, which helps maintaining references to resources.&lt;/li&gt;
+&lt;li&gt;Routes can be used as subrouters: nested routes are only tested if the parent route matches. This is useful to define groups of routes that share common conditions like a host, a path prefix or other repeated attributes. As a bonus, this optimizes request matching. 分组功能，RESTful接口按照实体分组，很实用。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;可以搭配同系列的middleware项目使用：https://github.com/gorilla/handlers。&lt;/p&gt;
+&lt;h4 id=&#34;参考-4&#34;&gt;参考&lt;/h4&gt;
+&lt;ol&gt;
+&lt;li&gt;A powerful HTTP router and URL matcher for building Go web servers &lt;a href=&#34;https://github.com/gorilla/mux&#34;&gt;https://github.com/gorilla/mux&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;A collection of useful middleware for Go HTTP services &amp;amp; web applications &lt;a href=&#34;https://github.com/gorilla/handlers&#34;&gt;https://github.com/gorilla/handlers&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;Web Server Graceful Shutdown &lt;a href=&#34;https://github.com/gorilla/mux#graceful-shutdown&#34;&gt;https://github.com/gorilla/mux#graceful-shutdown&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3 id=&#34;orm-gorm&#34;&gt;ORM gorm&lt;/h3&gt;
+&lt;p&gt;文档很丰富。功能很实用。摘抄官方文档：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Full-Featured ORM (almost)&lt;/li&gt;
+&lt;li&gt;Associations (Has One, Has Many, Belongs To, Many To Many, Polymorphism)&lt;/li&gt;
+&lt;li&gt;Hooks (Before/After Create/Save/Update/Delete/Find)&lt;/li&gt;
+&lt;li&gt;Preloading (eager loading)&lt;/li&gt;
+&lt;li&gt;Transactions&lt;/li&gt;
+&lt;li&gt;Composite Primary Key&lt;/li&gt;
+&lt;li&gt;SQL Builder&lt;/li&gt;
+&lt;li&gt;Auto Migrations 自动创建表结构。&lt;/li&gt;
+&lt;li&gt;Logger&lt;/li&gt;
+&lt;li&gt;Extendable, write Plugins based on GORM callbacks&lt;/li&gt;
+&lt;li&gt;Every feature comes with tests&lt;/li&gt;
+&lt;li&gt;Developer Friendly&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h4 id=&#34;参考-5&#34;&gt;参考&lt;/h4&gt;
+&lt;ol&gt;
+&lt;li&gt;GORM Guides &lt;a href=&#34;https://gorm.io/docs/&#34;&gt;https://gorm.io/docs/&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3 id=&#34;http-client-grequests&#34;&gt;HTTP client grequests&lt;/h3&gt;
+&lt;p&gt;号称 Python Requests 的Go clone。用着不错。&lt;/p&gt;
+&lt;h4 id=&#34;参考-6&#34;&gt;参考&lt;/h4&gt;
+&lt;ol&gt;
+&lt;li&gt;A Go &amp;ldquo;clone&amp;rdquo; of the great and famous Requests library &lt;a href=&#34;https://github.com/levigross/grequests&#34;&gt;https://github.com/levigross/grequests&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3 id=&#34;errors-githubcompkgerrors&#34;&gt;Errors github.com/pkg/errors&lt;/h3&gt;
+&lt;p&gt;内置的errors太弱了。返回了error，但是呢，没有返回上下文信息。这个库解决的是这个问题。&lt;/p&gt;
+&lt;h4 id=&#34;参考-7&#34;&gt;参考&lt;/h4&gt;
+&lt;ol&gt;
+&lt;li&gt;Simple error handling primitives &lt;a href=&#34;https://github.com/pkg/errors&#34;&gt;https://github.com/pkg/errors&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3 id=&#34;依赖注入框架-wire&#34;&gt;依赖注入框架 wire&lt;/h3&gt;
+&lt;p&gt;基于代码生成的依赖注入框架。小项目没必要使用。&lt;/p&gt;
+&lt;h3 id=&#34;rpc框架-grpc&#34;&gt;RPC框架 gRPC&lt;/h3&gt;
+&lt;p&gt;跨进程，跨语言通信。&lt;/p&gt;
+&lt;h2 id=&#34;常用工具&#34;&gt;常用工具&lt;/h2&gt;
+&lt;h3 id=&#34;makefile&#34;&gt;Makefile&lt;/h3&gt;
+&lt;p&gt;将常用的命令放在Makefile里管理。比如格式化代码 ，编译，打包，开发环境运行等等，并维护好依赖关系。&lt;/p&gt;
+&lt;p&gt;不要写一堆.sh脚本了。&lt;/p&gt;
+&lt;h3 id=&#34;docker&#34;&gt;Docker&lt;/h3&gt;
+&lt;p&gt;维护一份Dockerfile，项目交付物通过制作成Docker镜像分发。比如：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;# Dockerfile
+FROM alpine:latest
+WORKDIR /app
+COPY ./dist .
+ENTRYPOINT [&amp;quot;./app&amp;quot;, &amp;quot;serve&amp;quot;]
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;可以通过Docker来构建Go项目（一个两阶段的Dockerfile）。也可以像我这样，在宿主机就构建好，Dockerfile只需要COPY编译产物即可。&lt;/p&gt;
+&lt;h3 id=&#34;swagger&#34;&gt;Swagger&lt;/h3&gt;
+&lt;p&gt;目前没有方便的生成方法，得手写注释！&lt;/p&gt;
+&lt;h2 id=&#34;项目结构&#34;&gt;项目结构&lt;/h2&gt;
+&lt;p&gt;Go web项目结构没有定式，每个人的风格都不一样。参考了这个系列文章，觉得不错，特别是第二篇。&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Go Web Application Structure - Part 1 &lt;a href=&#34;https://aaf.engineering/go-web-application-structure-pt-1/&#34;&gt;https://aaf.engineering/go-web-application-structure-pt-1/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Go Web Application Structure - Part 2 - Routing/Serving&lt;/strong&gt; &lt;a href=&#34;https://aaf.engineering/go-web-application-structure-part-2/&#34;&gt;https://aaf.engineering/go-web-application-structure-part-2/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;Go Web Application Structure - Part 3 - The Database &lt;a href=&#34;https://aaf.engineering/go-web-application-structure-part-3/&#34;&gt;https://aaf.engineering/go-web-application-structure-part-3/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;Go Web Application Structure - Part 4 - Database Migrations &amp;amp; Business Logic &lt;a href=&#34;https://aaf.engineering/go-web-application-structure-part-4/&#34;&gt;https://aaf.engineering/go-web-application-structure-part-4/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;code &lt;a href=&#34;https://github.com/theaaf/todos&#34;&gt;https://github.com/theaaf/todos&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;层级调用链：cmd -&amp;gt; api -&amp;gt; app -&amp;gt; db。model/config横切，其它层共享之。&lt;/p&gt;
+&lt;h3 id=&#34;model-database-models&#34;&gt;model: database models&lt;/h3&gt;
+&lt;p&gt;模型实体，通过分析需求建模，合理的建模便于后期维护。&lt;/p&gt;
+&lt;p&gt;横切层。其他每层都会用到。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200320170405357.png&#34; alt=&#34;image-20200320170405357&#34;&gt;&lt;/p&gt;
+&lt;h3 id=&#34;config&#34;&gt;config&lt;/h3&gt;
+&lt;p&gt;横切层。&lt;/p&gt;
+&lt;p&gt;并没有自己独立的包，而是其他每层都可以根据需要，有一个自己独立的Config结构体。通过一个全局的Viper变量，取出该层关心的配置变量（或是从配置文件，或是从环境变量）。&lt;/p&gt;
+&lt;p&gt;比如数据层的config：&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200320170301550.png&#34; alt=&#34;image-20200320170301550&#34;&gt;&lt;/p&gt;
+&lt;h3 id=&#34;db-database-operations&#34;&gt;db: database operations&lt;/h3&gt;
+&lt;p&gt;数据持久化层，底层。CRUD操作的封装。通过“构造函数”做依赖注入，方便单元测试。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200320170627650.png&#34; alt=&#34;image-20200320170627650&#34;&gt;&lt;/p&gt;
+&lt;h3 id=&#34;app-business-logic&#34;&gt;app: business logic&lt;/h3&gt;
+&lt;p&gt;业务逻辑层，中层，核心层。调用数据层，及其他底层服务，比如S3云存储等。&lt;/p&gt;
+&lt;h4 id=&#34;三类错误&#34;&gt;三类错误&lt;/h4&gt;
+&lt;p&gt;该层方法返回的错误可以分三类。&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;ValidationError 输入不正确，校验不通过，比如手机号长度不对。对应的HTTP状态码：400。&lt;/li&gt;
+&lt;li&gt;UserError 认证错误，比如用户登录失败，用户没有权限。对应的HTTP状态码：401, 403。&lt;/li&gt;
+&lt;li&gt;ServerError 系统错误，比如数据库连不上，也不需要特别定义ServerError：只要error不是ValidationError，UserError，就是ServerError。对应的HTTP状态码：500。&lt;/li&gt;
+&lt;li&gt;没有错误，那么对应的HTTP状态码就是200。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3 id=&#34;api-api-controllers&#34;&gt;api: api controllers&lt;/h3&gt;
+&lt;p&gt;接口层。尽可能轻量，尽可能没有业务逻辑，只负责转译。通过调用业务逻辑层完成任务。将上述三分类错误映射到合适的状态码。&lt;/p&gt;
+&lt;h4 id=&#34;application-state-vs-request-state&#34;&gt;Application State vs. Request State&lt;/h4&gt;
+&lt;p&gt;请求入口函数需要为每个请求创建一个context（上下文）。context包含如下，摘抄原文。包含的字段需满足完成request的所需。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200320181127465.png&#34; alt=&#34;image-20200320181127465&#34;&gt;&lt;/p&gt;
+&lt;h4 id=&#34;request-context-请求上下文信息&#34;&gt;(Request) Context 请求上下文信息&lt;/h4&gt;
+&lt;ol&gt;
+&lt;li&gt;Remote IP地址，显示于access log。使用logrus.WithField()。&lt;/li&gt;
+&lt;li&gt;Request ID，显示于access log。使用logrus.WithField()。&lt;/li&gt;
+&lt;li&gt;User，用于后续鉴权。如果有认证头信息（Auth Token），从数据库取出用户。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3 id=&#34;cmd-command-line-methods&#34;&gt;cmd: command line methods&lt;/h3&gt;
+&lt;p&gt;使用Cobra生成子命令。&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;app serve &lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;启动web server，并加入web server优雅退出的功能。&lt;/p&gt;
+- https://xujiahua.github.io/posts/20200320-go-web-project/ - </description>
+        </item>
+    
+    
+    
+        <item>
         <title>Go库对URL Path中%2F的处理</title>
-        <link>https://xujiahua.github.io/posts/slash-in-url-path/</link>
+        <link>https://xujiahua.github.io/posts/2020-03-12-slash-in-url-path/</link>
         <pubDate>Thu, 12 Mar 2020 15:17:36 +0800</pubDate>
         
-        <guid>https://xujiahua.github.io/posts/slash-in-url-path/</guid>
-        <description>许嘉华的博客 https://xujiahua.github.io/posts/slash-in-url-path/ -&lt;h2 id=&#34;问题描述&#34;&gt;问题描述&lt;/h2&gt;
+        <guid>https://xujiahua.github.io/posts/2020-03-12-slash-in-url-path/</guid>
+        <description>许嘉华的博客 https://xujiahua.github.io/posts/2020-03-12-slash-in-url-path/ -&lt;h2 id=&#34;问题描述&#34;&gt;问题描述&lt;/h2&gt;
 &lt;ol&gt;
 &lt;li&gt;有同事反馈Go项目的接口404了。看了下nginx日志，只有部分请求404了，404请求的显著特征是URL里有&lt;code&gt;%2F&lt;/code&gt;，也就是&lt;code&gt;/&lt;/code&gt;的转义。&lt;/li&gt;
 &lt;li&gt;接口定义是这样的：&lt;code&gt;/api/xxx/{mid}/{uid}&lt;/code&gt;。mid、uid是URL path的一部分。从现象来看，程序没处理好转义字符，因为多了一个path部分，路由不匹配了，404。&lt;/li&gt;
@@ -87,18 +281,18 @@ func main() {
 &lt;p&gt;也就是说，即使让请求找到了路由，还是取不到真正的值。还得对URL Path进行手动decode才能用其中的值。让人崩溃，好多地方要改。&lt;/p&gt;
 &lt;p&gt;&lt;img src=&#34;../../images/image-20200312174326015.png&#34; alt=&#34;image-20200312174326015&#34;&gt;&lt;/p&gt;
 &lt;p&gt;不完美，但至少不需要让调用者改代码了。以后接口设计还是把请求参数放Body里，稳一点。&lt;/p&gt;
-- https://xujiahua.github.io/posts/slash-in-url-path/ - </description>
+- https://xujiahua.github.io/posts/2020-03-12-slash-in-url-path/ - </description>
         </item>
     
     
     
         <item>
         <title>专利申请流程小结</title>
-        <link>https://xujiahua.github.io/posts/patent/</link>
+        <link>https://xujiahua.github.io/posts/20200311-patent/</link>
         <pubDate>Wed, 11 Mar 2020 11:25:09 +0800</pubDate>
         
-        <guid>https://xujiahua.github.io/posts/patent/</guid>
-        <description>许嘉华的博客 https://xujiahua.github.io/posts/patent/ -&lt;p&gt;去年憋的一篇专利，到申请公布阶段了，算是去年研究区块链的副成果。https://patents.google.com/patent/CN110807211。整理下专利申请流程。&lt;/p&gt;
+        <guid>https://xujiahua.github.io/posts/20200311-patent/</guid>
+        <description>许嘉华的博客 https://xujiahua.github.io/posts/20200311-patent/ -&lt;p&gt;去年憋的一篇专利，到申请公布阶段了，算是去年研究区块链的副成果。https://patents.google.com/patent/CN110807211。整理下专利申请流程。&lt;/p&gt;
 &lt;p&gt;&lt;img src=&#34;../../images/01C8BAF0-B9C7-4F08-9575-38AF85AC4F14.png&#34; alt=&#34;01C8BAF0-B9C7-4F08-9575-38AF85AC4F14&#34;&gt;&lt;/p&gt;
 &lt;h2 id=&#34;专利申请流程&#34;&gt;专利申请流程&lt;/h2&gt;
 &lt;p&gt;主要流程如下图，来自网络。&lt;/p&gt;
@@ -116,18 +310,18 @@ func main() {
 &lt;h3 id=&#34;专利授权公告&#34;&gt;专利授权公告&lt;/h3&gt;
 &lt;p&gt;这个时间点叫做：授权公告日。&lt;/p&gt;
 &lt;p&gt;说明正式审查完了。这时候才算是真正拥有专利。&lt;/p&gt;
-- https://xujiahua.github.io/posts/patent/ - </description>
+- https://xujiahua.github.io/posts/20200311-patent/ - </description>
         </item>
     
     
     
         <item>
         <title>Github pages重新开始：使用Hugo、Typora</title>
-        <link>https://xujiahua.github.io/posts/github-pages-restart/</link>
+        <link>https://xujiahua.github.io/posts/20200310-github-pages-restart/</link>
         <pubDate>Tue, 10 Mar 2020 11:24:49 +0800</pubDate>
         
-        <guid>https://xujiahua.github.io/posts/github-pages-restart/</guid>
-        <description>许嘉华的博客 https://xujiahua.github.io/posts/github-pages-restart/ -&lt;h2 id=&#34;重新开始github-pages&#34;&gt;重新开始GitHub pages&lt;/h2&gt;
+        <guid>https://xujiahua.github.io/posts/20200310-github-pages-restart/</guid>
+        <description>许嘉华的博客 https://xujiahua.github.io/posts/20200310-github-pages-restart/ -&lt;h2 id=&#34;重新开始github-pages&#34;&gt;重新开始GitHub pages&lt;/h2&gt;
 &lt;p&gt;曾使用&lt;code&gt;GitHub pages&lt;/code&gt; + &lt;code&gt; jekyll&lt;/code&gt; 写过一段时间博客，没啥营养。&lt;/p&gt;
 &lt;p&gt;打算重新开始：&lt;/p&gt;
 &lt;ol&gt;
@@ -219,18 +413,18 @@ hugo -D
 &lt;ol&gt;
 &lt;li&gt;&lt;a href=&#34;https://gohugo.io/hosting-and-deployment/hosting-on-github/&#34;&gt;https://gohugo.io/hosting-and-deployment/hosting-on-github/&lt;/a&gt;&lt;/li&gt;
 &lt;/ol&gt;
-- https://xujiahua.github.io/posts/github-pages-restart/ - </description>
+- https://xujiahua.github.io/posts/20200310-github-pages-restart/ - </description>
         </item>
     
     
     
         <item>
         <title>Hyper-V使用体验</title>
-        <link>https://xujiahua.github.io/posts/use-hyper-v/</link>
+        <link>https://xujiahua.github.io/posts/20200323-use-hyper-v/</link>
         <pubDate>Tue, 03 Mar 2020 22:13:23 +0800</pubDate>
         
-        <guid>https://xujiahua.github.io/posts/use-hyper-v/</guid>
-        <description>许嘉华的博客 https://xujiahua.github.io/posts/use-hyper-v/ -&lt;h2 id=&#34;hyper-v-使用体验&#34;&gt;Hyper-V 使用体验&lt;/h2&gt;
+        <guid>https://xujiahua.github.io/posts/20200323-use-hyper-v/</guid>
+        <description>许嘉华的博客 https://xujiahua.github.io/posts/20200323-use-hyper-v/ -&lt;h2 id=&#34;hyper-v-使用体验&#34;&gt;Hyper-V 使用体验&lt;/h2&gt;
 &lt;p&gt;Hyper-V是 Windows10 内置的虚拟机软件，没想到我会用到它。&lt;/p&gt;
 &lt;h3 id=&#34;为什么要用hyper-v&#34;&gt;为什么要用Hyper-V&lt;/h3&gt;
 &lt;ol&gt;
@@ -321,18 +515,18 @@ hugo -D
 &lt;ol&gt;
 &lt;li&gt;Windows VPN对NAT有影响，相当于断网了。&lt;/li&gt;
 &lt;/ol&gt;
-- https://xujiahua.github.io/posts/use-hyper-v/ - </description>
+- https://xujiahua.github.io/posts/20200323-use-hyper-v/ - </description>
         </item>
     
     
     
         <item>
         <title>使用Go Modules</title>
-        <link>https://xujiahua.github.io/posts/go-modules/</link>
+        <link>https://xujiahua.github.io/posts/20200228-go-modules/</link>
         <pubDate>Fri, 28 Feb 2020 15:05:18 +0800</pubDate>
         
-        <guid>https://xujiahua.github.io/posts/go-modules/</guid>
-        <description>许嘉华的博客 https://xujiahua.github.io/posts/go-modules/ -&lt;p&gt;Go Modules使用着感觉不错，Go终于有正常点的依赖管理工具了。记录一二。&lt;/p&gt;
+        <guid>https://xujiahua.github.io/posts/20200228-go-modules/</guid>
+        <description>许嘉华的博客 https://xujiahua.github.io/posts/20200228-go-modules/ -&lt;p&gt;Go Modules使用着感觉不错，Go终于有正常点的依赖管理工具了。记录一二。&lt;/p&gt;
 &lt;h2 id=&#34;使用小结&#34;&gt;使用小结&lt;/h2&gt;
 &lt;ol&gt;
 &lt;li&gt;go.mod, go.sum加入版本管理 Both go.mod and go.sum should be checked into version control.&lt;/li&gt;
@@ -352,18 +546,18 @@ hugo -D
 &lt;p&gt;国内网络的问题，加上下面这行就好很多了。&lt;/p&gt;
 &lt;pre&gt;&lt;code&gt;# Set the GOPROXY environment variable
 export GOPROXY=https://goproxy.io
-&lt;/code&gt;&lt;/pre&gt;- https://xujiahua.github.io/posts/go-modules/ - </description>
+&lt;/code&gt;&lt;/pre&gt;- https://xujiahua.github.io/posts/20200228-go-modules/ - </description>
         </item>
     
     
     
         <item>
         <title>5G认识小结</title>
-        <link>https://xujiahua.github.io/posts/5g/</link>
+        <link>https://xujiahua.github.io/posts/20200222-5g/</link>
         <pubDate>Sat, 22 Feb 2020 23:32:14 +0800</pubDate>
         
-        <guid>https://xujiahua.github.io/posts/5g/</guid>
-        <description>许嘉华的博客 https://xujiahua.github.io/posts/5g/ -&lt;p&gt;去年11月尝鲜，买了个三星5G手机。找基站测5G速度成了刚买时候的乐趣。用了几个月，深感5G功能很鸡肋，5G基站太少。&lt;/p&gt;
+        <guid>https://xujiahua.github.io/posts/20200222-5g/</guid>
+        <description>许嘉华的博客 https://xujiahua.github.io/posts/20200222-5g/ -&lt;p&gt;去年11月尝鲜，买了个三星5G手机。找基站测5G速度成了刚买时候的乐趣。用了几个月，深感5G功能很鸡肋，5G基站太少。&lt;/p&gt;
 &lt;p&gt;这两天翻了好多知乎上关于5G的评论，对5G的概念、应用场景有了些厘清。&lt;/p&gt;
 &lt;h2 id=&#34;基本概念&#34;&gt;基本概念&lt;/h2&gt;
 &lt;ol&gt;
@@ -413,18 +607,18 @@ export GOPROXY=https://goproxy.io
 &lt;p&gt;参考：https://www.zhihu.com/question/342366514/answer/820922564&lt;/p&gt;
 &lt;h2 id=&#34;杂言&#34;&gt;杂言&lt;/h2&gt;
 &lt;p&gt;真正有颠覆性的，真正能突破人们想象力的，都在基础科学。比如材料科学，电池技术现在是瓶颈。离我很远。我做的事情真的对人类价值不大，只是个普通人，只能做到赚钱养家对家庭做贡献了。&lt;/p&gt;
-- https://xujiahua.github.io/posts/5g/ - </description>
+- https://xujiahua.github.io/posts/20200222-5g/ - </description>
         </item>
     
     
     
         <item>
         <title>Implicit：推荐系统协同过滤库的测评</title>
-        <link>https://xujiahua.github.io/posts/recsys-implicit/</link>
+        <link>https://xujiahua.github.io/posts/20200211-recsys-implicit/</link>
         <pubDate>Tue, 11 Feb 2020 14:34:27 +0800</pubDate>
         
-        <guid>https://xujiahua.github.io/posts/recsys-implicit/</guid>
-        <description>许嘉华的博客 https://xujiahua.github.io/posts/recsys-implicit/ -&lt;h2 id=&#34;简介&#34;&gt;简介&lt;/h2&gt;
+        <guid>https://xujiahua.github.io/posts/20200211-recsys-implicit/</guid>
+        <description>许嘉华的博客 https://xujiahua.github.io/posts/20200211-recsys-implicit/ -&lt;h2 id=&#34;简介&#34;&gt;简介&lt;/h2&gt;
 &lt;p&gt;Implicit是一个推荐系统协同过滤库。所谓协同过滤，只用到了user、item的ID和user、item交互后的评分（或是某个度量）。&lt;/p&gt;
 &lt;p&gt;GitHub：https://github.com/benfred/implicit&lt;/p&gt;
 &lt;h2 id=&#34;安装&#34;&gt;安装&lt;/h2&gt;
@@ -473,7 +667,7 @@ export GOPROXY=https://goproxy.io
 &lt;p&gt;一开始并没有那么多行为数据。训练出的结果肯定是挺一般的。这时候用标签推荐，运营根据经验配置标签和推荐的映射即可。&lt;/p&gt;
 &lt;h2 id=&#34;考虑用户特征商品特征而不仅仅是id&#34;&gt;考虑用户特征、商品特征（而不仅仅是ID）&lt;/h2&gt;
 &lt;p&gt;如果有user特征、item特征，可以使用更一般的监督学习算法。或是使用factorization machine。&lt;/p&gt;
-- https://xujiahua.github.io/posts/recsys-implicit/ - </description>
+- https://xujiahua.github.io/posts/20200211-recsys-implicit/ - </description>
         </item>
     
     
