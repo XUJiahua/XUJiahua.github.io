@@ -811,11 +811,11 @@ td-agent 30602 30596  9 17:10 ?        00:00:00 /opt/td-agent/embedded/bin/ruby 
     
         <item>
         <title>Google Vision API</title>
-        <link>https://xujiahua.github.io/posts/google-vision-api/</link>
+        <link>https://xujiahua.github.io/posts/20200401-google-vision-api/</link>
         <pubDate>Wed, 01 Apr 2020 14:20:51 +0800</pubDate>
         
-        <guid>https://xujiahua.github.io/posts/google-vision-api/</guid>
-        <description>许嘉华的博客 https://xujiahua.github.io/posts/google-vision-api/ -&lt;h2 id=&#34;目标&#34;&gt;目标&lt;/h2&gt;
+        <guid>https://xujiahua.github.io/posts/20200401-google-vision-api/</guid>
+        <description>许嘉华的博客 https://xujiahua.github.io/posts/20200401-google-vision-api/ -&lt;h2 id=&#34;目标&#34;&gt;目标&lt;/h2&gt;
 &lt;p&gt;业务上需要识别出文本、图像敏感内容，降低业务风险。&lt;/p&gt;
 &lt;p&gt;调用下云服务的产品。&lt;/p&gt;
 &lt;h2 id=&#34;google-cloud-platform&#34;&gt;Google Cloud Platform&lt;/h2&gt;
@@ -891,7 +891,7 @@ BenchmarkDetectSafeSearchForFile-8            &lt;span style=&#34;color:#ae81ff&
 &lt;p&gt;内容分类没有我们关注的敏感内容分类。&lt;/p&gt;
 &lt;p&gt;参考：https://cloud.google.com/natural-language/docs/categories?hl=zh-cn&lt;/p&gt;
 &lt;p&gt;通过简单的关键字过滤吧。&lt;/p&gt;
-- https://xujiahua.github.io/posts/google-vision-api/ - </description>
+- https://xujiahua.github.io/posts/20200401-google-vision-api/ - </description>
         </item>
     
     

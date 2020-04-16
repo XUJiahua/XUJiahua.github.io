@@ -1,0 +1,1087 @@
+<!DOCTYPE html>
+<html><head>
+<title>Google Vision API</title>
+
+<meta charset="utf-8">
+<meta name="X-UA-Compatible" content="IE=edge">
+<meta name="google-site-verification" content="">
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport">
+<meta content="telephone=no" name="format-detection">
+<meta name="description" content="">
+<meta name="renderer" content="webkit">
+<meta name="theme-color" content="#ffffff">
+
+
+
+
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+	ga('create', 'UA-162706610-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+
+
+
+<script src="/vendor/js/jquery.min.js" ></script>
+<script src="/vendor/js/popper.min.js" ></script>
+<script src="/vendor/js/bootstrap.min.js" ></script>
+<script src="/vendor/js/smooth-scroll.polyfills.min.js" ></script>
+<link type="text/css" rel="stylesheet" href="/vendor/css/bootstrap.min.css">
+<script src="/vendor/js/vue.min.js" ></script>
+
+
+
+
+<link rel="stylesheet" href="https://xujiahua.github.io/scss/journal.min.5c667e74038e21ddbb9024b67930f8544e02af62491281cf73fdb817eec2947e.css" integrity="sha256-XGZ&#43;dAOOId27kCS2eTD4VE4Cr2JJEoHPc/24F&#43;7ClH4=" media="screen">
+
+<script src="https://xujiahua.github.io//js/loadCSS.js"></script>
+<script src="https://xujiahua.github.io//js/table.js"></script>
+
+
+<script src="https://xujiahua.github.io//js/toc.js"></script>
+
+
+<script>
+    loadCSS("https://fonts.googleapis.com/css?family=Lora|Montserrat|Fira+Mono|Noto+Serif+SC|Material+Icons");
+</script>
+
+
+
+
+
+
+</head><body>
+    	<div id="app"><div ref="sideContainer" class="side-container">
+    
+    <a class="a-block nav-head false" href="https://xujiahua.github.io/">
+    
+        <div class="nav-title">
+            许嘉华的博客
+        </div>
+        
+    </a>
+
+    <div class="nav-link-list">
+        
+        
+            
+            
+            
+                
+            
+            
+            
+            <a class="a-block nav-link-item active" href="/posts">
+                Archive
+            </a>
+            
+        
+            
+            
+            
+            
+            
+            <a class="a-block nav-link-item false" href="/categories">
+                Categories
+            </a>
+            
+        
+            
+            
+            
+            
+            
+            <a class="a-block nav-link-item false" href="/tags">
+                Tags
+            </a>
+            
+        
+            
+            
+            
+            
+            
+            <a class="a-block nav-link-item false" href="/index.xml">
+                RSS Feed
+            </a>
+            
+        
+    </div>
+
+    
+
+    <div class="nav-footer">
+        
+Hugo Theme <a href="https://github.com/amazingrise/hugo-theme-diary">Diary</a> by <a href="https://amazingrise.net">Rise</a>
+<br>
+Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopener">Makito</a>'s <a href="https://github.com/SumiMakito/hexo-theme-journal/" target="_blank" rel="noreferrer noopener">Journal.</a> <br>
+<br>
+
+&copy;
+	
+	2020 许嘉华的博客
+	
+    </div>
+    
+</div><div ref="extraContainer" class="extra-container">
+    
+    <div class="toc animated-visibility" :class="{ invisible: scrollY <= 140 }">
+
+
+	<div class="toc-content">
+	
+		
+		
+		
+		<center>- CATALOG -</center>
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e7%9b%ae%e6%a0%87" v-on:click="closeDrawer" id="目标-nav">
+										 目标
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#google-cloud-platform" v-on:click="closeDrawer" id="google-cloud-platform-nav">
+										 Google Cloud Platform
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#vision-api%e5%9b%be%e5%83%8f%e5%86%85%e5%ae%b9%e8%af%86%e5%88%ab" v-on:click="closeDrawer" id="vision-api图像内容识别-nav">
+										 Vision API：图像内容识别
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e8%af%95%e7%94%a8" v-on:click="closeDrawer" id="试用-nav">
+										 试用
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e5%ae%89%e5%85%a8%e6%90%9c%e7%b4%a2%e7%9a%84%e5%88%86%e7%b1%bb%e8%af%b4%e6%98%8e" v-on:click="closeDrawer" id="安全搜索的分类说明-nav">
+										 安全搜索的分类说明
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e5%af%b9%e6%8e%a5%e6%b5%81%e7%a8%8b" v-on:click="closeDrawer" id="对接流程-nav">
+										 对接流程
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#demo" v-on:click="closeDrawer" id="demo-nav">
+										 DEMO
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e8%af%b7%e6%b1%82%e6%ac%a1%e6%95%b0%e9%99%90%e5%88%b6" v-on:click="closeDrawer" id="请求次数限制-nav">
+										 请求次数限制
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e8%af%b7%e6%b1%82%e5%93%8d%e5%ba%94%e6%97%b6%e9%97%b4" v-on:click="closeDrawer" id="请求响应时间-nav">
+										 请求响应时间
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e4%b8%8a%e4%bc%a0%e6%95%b0%e6%8d%ae%e5%a4%a7%e5%b0%8f" v-on:click="closeDrawer" id="上传数据大小-nav">
+										 上传数据大小
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#vision-api%e6%9c%ac%e8%ba%ab" v-on:click="closeDrawer" id="vision-api本身-nav">
+										 Vision API本身
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#natural-language-api-%e6%96%87%e6%9c%ac%e5%86%85%e5%ae%b9%e8%af%86%e5%88%ab" v-on:click="closeDrawer" id="natural-language-api-文本内容识别-nav">
+										 Natural Language API： 文本内容识别
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e5%86%85%e5%ae%b9%e5%88%86%e7%b1%bb" v-on:click="closeDrawer" id="内容分类-nav">
+										 内容分类
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+	</div>
+
+</div>
+    
+    <div class="pagination">
+        <a id="globalBackToTop" class="pagination-action animated-visibility" href="#top" :class="{ invisible: scrollY == 0 }">
+            <i class="material-icons pagination-action-icon">
+                keyboard_arrow_up
+            </i>
+        </a>
+        
+    </div>
+</div><div class="single-column-drawer-container" ref="drawer"
+     v-bind:class="{ 'single-column-drawer-container-active': isDrawerOpen }">
+    <div class="drawer-content">
+        <div class="drawer-menu">
+            
+            
+                
+                
+                
+                    
+                
+                
+                
+                <a class="a-block drawer-menu-item active" href="/posts">
+                    Archive
+                </a>
+                
+            
+                
+                
+                
+                
+                
+                <a class="a-block drawer-menu-item false" href="/categories">
+                    Categories
+                </a>
+                
+            
+                
+                
+                
+                
+                
+                <a class="a-block drawer-menu-item false" href="/tags">
+                    Tags
+                </a>
+                
+            
+                
+                
+                
+                
+                
+                <a class="a-block drawer-menu-item false" href="/index.xml">
+                    RSS Feed
+                </a>
+                
+            
+            
+            <div class="toc">
+
+
+	<div class="toc-content">
+	
+		
+		
+		
+		<center>- CATALOG -</center>
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e7%9b%ae%e6%a0%87" v-on:click="closeDrawer" id="目标-nav">
+										 目标
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#google-cloud-platform" v-on:click="closeDrawer" id="google-cloud-platform-nav">
+										 Google Cloud Platform
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#vision-api%e5%9b%be%e5%83%8f%e5%86%85%e5%ae%b9%e8%af%86%e5%88%ab" v-on:click="closeDrawer" id="vision-api图像内容识别-nav">
+										 Vision API：图像内容识别
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e8%af%95%e7%94%a8" v-on:click="closeDrawer" id="试用-nav">
+										 试用
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e5%ae%89%e5%85%a8%e6%90%9c%e7%b4%a2%e7%9a%84%e5%88%86%e7%b1%bb%e8%af%b4%e6%98%8e" v-on:click="closeDrawer" id="安全搜索的分类说明-nav">
+										 安全搜索的分类说明
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e5%af%b9%e6%8e%a5%e6%b5%81%e7%a8%8b" v-on:click="closeDrawer" id="对接流程-nav">
+										 对接流程
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#demo" v-on:click="closeDrawer" id="demo-nav">
+										 DEMO
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e8%af%b7%e6%b1%82%e6%ac%a1%e6%95%b0%e9%99%90%e5%88%b6" v-on:click="closeDrawer" id="请求次数限制-nav">
+										 请求次数限制
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e8%af%b7%e6%b1%82%e5%93%8d%e5%ba%94%e6%97%b6%e9%97%b4" v-on:click="closeDrawer" id="请求响应时间-nav">
+										 请求响应时间
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e4%b8%8a%e4%bc%a0%e6%95%b0%e6%8d%ae%e5%a4%a7%e5%b0%8f" v-on:click="closeDrawer" id="上传数据大小-nav">
+										 上传数据大小
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#vision-api%e6%9c%ac%e8%ba%ab" v-on:click="closeDrawer" id="vision-api本身-nav">
+										 Vision API本身
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#natural-language-api-%e6%96%87%e6%9c%ac%e5%86%85%e5%ae%b9%e8%af%86%e5%88%ab" v-on:click="closeDrawer" id="natural-language-api-文本内容识别-nav">
+										 Natural Language API： 文本内容识别
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e5%86%85%e5%ae%b9%e5%88%86%e7%b1%bb" v-on:click="closeDrawer" id="内容分类-nav">
+										 内容分类
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+	</div>
+
+</div>
+            
+        </div>
+    </div>
+</div>
+<transition name="fade">
+    <div v-bind:class="{ 'single-column-drawer-mask': mounted }" v-if="isDrawerOpen" v-on:click="toggleDrawer"></div>
+</transition>
+<nav ref="navBar" class="navbar sticky-top navbar-light single-column-nav-container">
+    <div ref="navBackground" class="nav-background"></div>
+    <div class="container container-narrow nav-content">
+        <button id="nav_dropdown_btn" class="nav-dropdown-toggle" type="button" v-on:click="toggleDrawer">
+            <i class="material-icons">
+                menu
+            </i>
+        </button>
+        <a ref="navTitle" class="navbar-brand" href="https://xujiahua.github.io/">
+            许嘉华的博客
+        </a>
+    </div>
+</nav>
+<div class="single-column-header-container" ref="pageHead"
+     v-bind:style="{ transform: 'translateZ(0px) translateY('+.3*scrollY+'px)', opacity: 1-navOpacity }">
+    <a href="https://xujiahua.github.io/">
+        <div class="single-column-header-title">许嘉华的博客</div>
+        
+
+    </a>
+</div>
+            <div id="content">
+<div ref="streamContainer" class="stream-container">
+    <div class="post-list-container post-list-container-shadow">
+        <div class="post">
+            
+            
+            
+
+            <div class="post-head-wrapper-text-only"
+                 style="background-image: url('/')">
+                <div class="post-title">
+                    Google Vision API
+                    
+                    <div class="post-meta">
+                        
+                        <time itemprop="datePublished">
+                            2020-04-01 14:20
+                        </time>
+                        
+
+                        
+
+                        
+                    </div>
+                </div>
+            </div>
+            
+            <div class="post-body-wrapper">
+                <div class="post-body">
+                    <h2 id="目标">目标</h2>
+<p>业务上需要识别出文本、图像敏感内容，降低业务风险。</p>
+<p>调用下云服务的产品。</p>
+<h2 id="google-cloud-platform">Google Cloud Platform</h2>
+<p>GCP上，图像识别有两个产品：</p>
+<ol>
+<li>Vision API 直接使用预先训练的模型</li>
+<li>AutoML 迁移学习，使用用户提交的新分类数据，训练模型。</li>
+</ol>
+<p>关于文本识别的产品是类似的，也分直接使用预训练模型和迁移学习重新训练。</p>
+<h2 id="vision-api图像内容识别">Vision API：图像内容识别</h2>
+<ol>
+<li>Google Vision API的模型已经有审核内容的能力：暴力、成人内容的识别。</li>
+<li>提供API，也提供了各个语言的SDK。</li>
+<li>不需要开发者训练模型。</li>
+</ol>
+<p><img src="../../images/image-20200401145549783.png" alt="image-20200401145549783"></p>
+<p><img src="../../images/image-20200401145658730.png" alt="image-20200401145658730"></p>
+<p>参考：https://cloud.google.com/vision?hl=zh-cn</p>
+<h3 id="试用">试用</h3>
+<p><img src="../../images/image-20200401142058025.png" alt="image-20200401142058025"></p>
+<h3 id="安全搜索的分类说明">安全搜索的分类说明</h3>
+<p><img src="../../images/image-20200401144423857.png" alt="image-20200401144423857"></p>
+<ol>
+<li>Adult 成人内容</li>
+<li>Spoof 恶搞，比如恶搞政治人物</li>
+<li>Medical 医疗影像</li>
+<li>Violence 暴力内容</li>
+<li>Racy 猥亵类，类似成人内容</li>
+</ol>
+<p>参考：https://cloud.google.com/vision/docs/reference/rpc/google.cloud.vision.v1?hl=zh-cn#google.cloud.vision.v1.SafeSearchAnnotation</p>
+<h3 id="对接流程">对接流程</h3>
+<p><img src="../../images/image-20200401143626559.png" alt="image-20200401143626559"></p>
+<p>参考：https://codelabs.developers.google.com/codelabs/cloud-vision-intro/index.html?index=..%2F..cloudai&amp;hl=zh-cn&amp;_ga=2.102874504.925825070.1585721382-1910642988.1585296097#0</p>
+<p>注意，图像不一定需要上传到Google的云存储。</p>
+<p>开发对接参考：检测露骨内容（安全搜索）https://cloud.google.com/vision/docs/detecting-safe-search?hl=zh-cn</p>
+<h3 id="demo">DEMO</h3>
+<p>创建服务账号、创建密钥，自动下载json文件：</p>
+<p><img src="../../images/image-20200401160832697.png" alt="image-20200401160832697"></p>
+<p><img src="../../images/image-20200401161206429.png" alt="image-20200401161206429"></p>
+<p>code：</p>
+<p><a href="https://github.com/GoogleCloudPlatform/golang-samples/blob/master/vision/detect/README.md">https://github.com/GoogleCloudPlatform/golang-samples/blob/master/vision/detect/README.md</a></p>
+<h3 id="请求次数限制">请求次数限制</h3>
+<p>对请求内容大小有限制外，需要注意请求配额，每分钟请求数1800，QPS也就是30。如果无法满足需求，需要在平台申请增加配额。</p>
+<p>使用默认配额，业务上需要考虑采样数据，再调用Vision API。</p>
+<p>参考 <a href="https://cloud.google.com/vision/quotas?hl=zh-cn">https://cloud.google.com/vision/quotas?hl=zh-cn</a></p>
+<h3 id="请求响应时间">请求响应时间</h3>
+<p>请求响应时间，取决于两个因素：</p>
+<h4 id="上传数据大小">上传数据大小</h4>
+<p>越大越慢。</p>
+<ol>
+<li>手机拍照软件生成的图像一般3M，建议图像压缩后上传。</li>
+<li>考虑gcloud上先存储图像文件。参考 <a href="https://medium.com/bankify-tech-blog/how-to-optimize-the-speed-of-google-vision-api-cdc5e452104b">https://medium.com/bankify-tech-blog/how-to-optimize-the-speed-of-google-vision-api-cdc5e452104b</a></li>
+</ol>
+<h4 id="vision-api本身">Vision API本身</h4>
+<p>对一张249K的图像进行简单压测。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ ll demo/trump.jpg 
+-rw-r--r--  <span style="color:#ae81ff">1</span> jiahua  staff   249K Apr  <span style="color:#ae81ff">1</span> 14:14 demo/trump.jpg
+</code></pre></div><p>Go benchmark。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">BenchmarkDetectSafeSearchForFile</span>(<span style="color:#a6e22e">b</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">testing</span>.<span style="color:#a6e22e">B</span>) {
+	<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">i</span><span style="color:#f92672">:=</span><span style="color:#ae81ff">0</span>;<span style="color:#a6e22e">i</span>&lt;<span style="color:#a6e22e">b</span>.<span style="color:#a6e22e">N</span>;<span style="color:#a6e22e">i</span><span style="color:#f92672">++</span>{
+		<span style="color:#a6e22e">result</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">DetectSafeSearchForFile</span>(<span style="color:#e6db74">&#34;demo/trump.jpg&#34;</span>)
+		<span style="color:#a6e22e">assert</span>.<span style="color:#a6e22e">Equal</span>(<span style="color:#a6e22e">b</span>, <span style="color:#66d9ef">nil</span>, <span style="color:#a6e22e">err</span>)
+		<span style="color:#a6e22e">spew</span>.<span style="color:#a6e22e">Dump</span>(<span style="color:#a6e22e">result</span>)
+	}
+}
+</code></pre></div><p>识别图像大概需要1秒。实际业务中使用，建议异步处理，事后处理，不然太影响正常体验了。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ go test -v -bench<span style="color:#f92672">=</span>DetectSafeSearchForFile -benchtime<span style="color:#f92672">=</span>30s
+
+BenchmarkDetectSafeSearchForFile-8            <span style="color:#ae81ff">33</span>        <span style="color:#ae81ff">1011378355</span> ns/op
+</code></pre></div><h2 id="natural-language-api-文本内容识别">Natural Language API： 文本内容识别</h2>
+<p><a href="https://cloud.google.com/natural-language/docs/how-to?hl=zh-cn">https://cloud.google.com/natural-language/docs/how-to?hl=zh-cn</a></p>
+<h3 id="内容分类">内容分类</h3>
+<p>内容分类没有我们关注的敏感内容分类。</p>
+<p>参考：https://cloud.google.com/natural-language/docs/categories?hl=zh-cn</p>
+<p>通过简单的关键字过滤吧。</p>
+
+                    
+                    <HR width="100%" id="EOF">
+                    <p style="color:#777;">Last modified on 2020-04-01</p>
+                    
+                </div>
+            </div>
+            
+            
+            <nav class="post-pagination">
+
+                
+                <a class="newer-posts" href="https://xujiahua.github.io/posts/20200402-use-fluentd/">
+                    Next<br>Fluentd实战
+                </a>
+                
+                
+                
+                <a class="older-posts" href="https://xujiahua.github.io/posts/20200331-use-docker-machine/">
+                    Previous<br>使用 Docker Machine
+                </a>
+                
+            </nav>
+            <div class="post-comment-wrapper">
+                
+
+
+
+
+
+
+            </div>
+        </div>
+    </div>
+</div>
+
+            </div><div id="single-column-footer">
+Hugo Theme <a href="https://github.com/amazingrise/hugo-theme-diary">Diary</a> by <a href="https://amazingrise.net">Rise</a>
+<br>
+Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopener">Makito</a>'s <a href="https://github.com/SumiMakito/hexo-theme-journal/" target="_blank" rel="noreferrer noopener">Journal.</a> <br>
+<br>
+
+&copy;
+	
+	2020 许嘉华的博客
+	</div>
+    	</div>
+    <script src="https://xujiahua.github.io//js/journal.js"></script>
+    </body>
+</html>
