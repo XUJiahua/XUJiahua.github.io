@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html><head>
-<title>Tags</title>
+<title>etcd api client 请求重试逻辑</title>
 
 <meta charset="utf-8">
 <meta name="X-UA-Compatible" content="IE=edge">
@@ -45,11 +45,7 @@ if (!doNotTrack) {
 <script src="https://xujiahua.github.io//js/table.js"></script>
 
 
-<style>
-  .toc{
-    display: none !important;
-  }
-</style>
+<script src="https://xujiahua.github.io//js/toc.js"></script>
 
 
 <script>
@@ -78,9 +74,11 @@ if (!doNotTrack) {
             
             
             
+                
             
             
-            <a class="a-block nav-link-item false" href="/posts">
+            
+            <a class="a-block nav-link-item active" href="/posts">
                 Archive
             </a>
             
@@ -98,11 +96,9 @@ if (!doNotTrack) {
             
             
             
-                
             
             
-            
-            <a class="a-block nav-link-item active" href="/tags">
+            <a class="a-block nav-link-item false" href="/tags">
                 Tags
             </a>
             
@@ -136,30 +132,53 @@ Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopene
     
 </div><div ref="extraContainer" class="extra-container">
     
+    <div class="toc animated-visibility" :class="{ invisible: scrollY <= 140 }">
+
+
+	<div class="toc-content">
+	
+		
+		
+		
+		<center>- CATALOG -</center>
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#etcd-api-client" v-on:click="closeDrawer" id="etcd-api-client-nav">
+										 etcd api client
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+	</div>
+
+</div>
+    
     <div class="pagination">
         <a id="globalBackToTop" class="pagination-action animated-visibility" href="#top" :class="{ invisible: scrollY == 0 }">
             <i class="material-icons pagination-action-icon">
                 keyboard_arrow_up
             </i>
         </a>
-        
-        
-            <div class="pagination-indicator">
-                <span style="text-align: center">
-                    3<br><div style="display: inline-block; transform: rotate(-28deg)">-</div><br>3
-                </span>
-            </div>
-            
-            
-            <a class="pagination-action" href="/tags/page/2/">
-                <i class="material-icons pagination-action-icon">
-                    chevron_left
-                </i>
-            </a>
-            
-
-            
-        
         
     </div>
 </div><div class="single-column-drawer-container" ref="drawer"
@@ -171,9 +190,11 @@ Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopene
                 
                 
                 
+                    
                 
                 
-                <a class="a-block drawer-menu-item false" href="/posts">
+                
+                <a class="a-block drawer-menu-item active" href="/posts">
                     Archive
                 </a>
                 
@@ -191,11 +212,9 @@ Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopene
                 
                 
                 
-                    
                 
                 
-                
-                <a class="a-block drawer-menu-item active" href="/tags">
+                <a class="a-block drawer-menu-item false" href="/tags">
                     Tags
                 </a>
                 
@@ -210,6 +229,47 @@ Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopene
                 </a>
                 
             
+            
+            <div class="toc">
+
+
+	<div class="toc-content">
+	
+		
+		
+		
+		<center>- CATALOG -</center>
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#etcd-api-client" v-on:click="closeDrawer" id="etcd-api-client-nav">
+										 etcd api client
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+	</div>
+
+</div>
             
         </div>
     </div>
@@ -241,133 +301,94 @@ Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopene
             <div id="content">
 <div ref="streamContainer" class="stream-container">
     <div class="post-list-container post-list-container-shadow">
-        <a class="a-block">
-            <div class="post-item-wrapper post-item-wrapper-no-hover">
-                <div class="post-item post-item-no-gaps">
-                    <div class="post-item-info-wrapper">
-                        <div class="post-item-title post-item-title-small">
-                            Tags
-                        </div>
+        <div class="post">
+            
+            
+            
+
+            <div class="post-head-wrapper-text-only"
+                 style="background-image: url('/')">
+                <div class="post-title">
+                    etcd api client 请求重试逻辑
+                    
+                    <div class="post-meta">
+                        
+                        <time itemprop="datePublished">
+                            2020-04-17 15:05
+                        </time>
+                        
+
+                        
+
+                        
+                            <i class="material-icons" style="">label</i>
+                            
+                                <a href="/tags/etcd">etcd</a>
+                                &nbsp;
+                            
+                        
                     </div>
                 </div>
             </div>
-        </a>
-        
-        
-                <a href="https://xujiahua.github.io/tags/hyper-v/" class="a-block">
-                    <div class="post-item-wrapper">
-                        <div class="post-item post-item-no-gaps">
-                            <div class="post-item-info-wrapper"> 
-                                <div class="post-item-title">
-                                    Hyper-V
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+            
+            <div class="post-body-wrapper">
+                <div class="post-body">
+                    <p>使用 Consul 作为配置中心，按照官方的说法，没必要创建 <code>consul client</code> 节点。那么直接连 <code>consul server</code> 就好了。</p>
+<blockquote>
+<p>Running an agent is not required for discovering other services or getting/setting key/value data. The agent is responsible for health checking the services on the node as well as the node itself.</p>
+<p><a href="https://www.consul.io/intro/index.html#basic-architecture-of-consul">https://www.consul.io/intro/index.html#basic-architecture-of-consul</a></p>
+</blockquote>
+<p>Consul api client (<a href="https://github.com/hashicorp/consul/tree/master/api">https://github.com/hashicorp/consul/tree/master/api</a>) 目前只能接收一个server地址。那么这个server地址得保证高可用才行啊。</p>
+<p>etcd api client (<a href="https://github.com/etcd-io/etcd/tree/master/client">https://github.com/etcd-io/etcd/tree/master/client</a>) 倒是能接收多个server地址，看看 etcd 是怎么做的。</p>
+<h3 id="etcd-api-client">etcd api client</h3>
+<p>创建了 httpClusterClient。</p>
+<p><img src="../../images/image-20200417151856806.png" alt="image-20200417151856806"></p>
+<p>多个 endpoint 的处理核心逻辑。</p>
+<p><img src="../../images/image-20200417152639174.png" alt="image-20200417152639174"></p>
+<ol>
+<li>pinned 用于记录好用的连接地址的index，优先使用这个地址。</li>
+<li>context 类错误，比如取消请求，直接退出。</li>
+<li>遇到 5xx 类错误，服务端错误。需要考虑是否重试了。</li>
+<li>isOneShot 标记，true 代表是 Set/Delete 操作，请求失败不再重试。应该跟请求是否幂等有关。</li>
+<li>可以重试的请求，重试直到成功或是循环结束。</li>
+</ol>
+
+                    
+                    <HR width="100%" id="EOF">
+                    <p style="color:#777;">Last modified on 2020-04-17</p>
+                    
+                </div>
+            </div>
+            
+            
+            <nav class="post-pagination">
+
+                
+                <a class="newer-posts">
+                    Next<br>No newer posts.
                 </a>
-        
-                <a href="https://xujiahua.github.io/tags/vm/" class="a-block">
-                    <div class="post-item-wrapper">
-                        <div class="post-item post-item-no-gaps">
-                            <div class="post-item-info-wrapper"> 
-                                <div class="post-item-title">
-                                    VM
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                
+                
+                
+                <a class="older-posts" href="https://xujiahua.github.io/posts/20200416-cortex/">
+                    Previous<br>机器学习在线推理部署方案：Cortex
                 </a>
-        
-                <a href="https://xujiahua.github.io/tags/%E4%BE%9D%E8%B5%96%E7%AE%A1%E7%90%86/" class="a-block">
-                    <div class="post-item-wrapper">
-                        <div class="post-item post-item-no-gaps">
-                            <div class="post-item-info-wrapper"> 
-                                <div class="post-item-title">
-                                    依赖管理
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </a>
-        
-                <a href="https://xujiahua.github.io/tags/5g/" class="a-block">
-                    <div class="post-item-wrapper">
-                        <div class="post-item post-item-no-gaps">
-                            <div class="post-item-info-wrapper"> 
-                                <div class="post-item-title">
-                                    5G
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </a>
-        
-                <a href="https://xujiahua.github.io/tags/implicit/" class="a-block">
-                    <div class="post-item-wrapper">
-                        <div class="post-item post-item-no-gaps">
-                            <div class="post-item-info-wrapper"> 
-                                <div class="post-item-title">
-                                    Implicit
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </a>
-        
-                <a href="https://xujiahua.github.io/tags/recsys/" class="a-block">
-                    <div class="post-item-wrapper">
-                        <div class="post-item post-item-no-gaps">
-                            <div class="post-item-info-wrapper"> 
-                                <div class="post-item-title">
-                                    Recsys
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </a>
-        
-                <a href="https://xujiahua.github.io/tags/%E6%B5%8B%E8%AF%84/" class="a-block">
-                    <div class="post-item-wrapper">
-                        <div class="post-item post-item-no-gaps">
-                            <div class="post-item-info-wrapper"> 
-                                <div class="post-item-title">
-                                    测评
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </a>
-        
-    </div>
-</div>
+                
+            </nav>
+            <div class="post-comment-wrapper">
+                
+
+
+
+
 
 
             </div>
-
-<div class="pagination">
-    
-    <a class="pagination-action" href="/tags/page/2/" style="opacity:1">
-    
-        <i class="material-icons pagination-action-icon">
-            chevron_left
-        </i>
-    </a>
-
-        <div class="pagination-indicator">
-            <span>3/3</span>
         </div>
-
-        
-            <a class="pagination-action" style="opacity:0">
-        
-                <i class="material-icons pagination-action-icon">
-                    chevron_right
-                </i>
-            </a>
+    </div>
 </div>
 
-
-<div id="single-column-footer">
+            </div><div id="single-column-footer">
 Hugo Theme <a href="https://github.com/amazingrise/hugo-theme-diary">Diary</a> by <a href="https://amazingrise.net">Rise</a>
 <br>
 Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopener">Makito</a>'s <a href="https://github.com/SumiMakito/hexo-theme-journal/" target="_blank" rel="noreferrer noopener">Journal.</a> <br>
