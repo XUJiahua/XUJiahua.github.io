@@ -6,10 +6,26 @@
     <description>Recent content in etcd on 许嘉华的博客</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Fri, 17 Apr 2020 15:05:51 +0800</lastBuildDate>
+    <lastBuildDate>Fri, 17 Apr 2020 16:09:28 +0800</lastBuildDate>
     
 	<atom:link href="https://xujiahua.github.io/tags/etcd/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>k8s configmap 与热更新</title>
+      <link>https://xujiahua.github.io/posts/20200417-kubernetes-configmap/</link>
+      <pubDate>Fri, 17 Apr 2020 16:09:28 +0800</pubDate>
+      
+      <guid>https://xujiahua.github.io/posts/20200417-kubernetes-configmap/</guid>
+      <description>configmap 简介 官方介绍：使用 ConfigMap 配置 Pod https://kubernetes.io/zh/docs/tasks/configure-pod-container/configure-pod-configmap/
+他人总结：ConfigMap https://jimmysong.io/kubernetes-handbook/concepts/configmap.html
+稍微总结下：
+ 每个configmap都有一个名字，名字全局唯一（命名空间内），重复创建会报错。 每个configmap本身是键值对。 configmap可以通过环境变量的方式让Pod内容器读取。 configmap可以通过挂载文件的方式让Pod内容器读取。k8s每隔一段时间同步configmap，如果有更新的话。当然，应用本身是不知道的。这个定时更新感觉有点鸡肋。 configmap更新，不会自动重启应用。只能人工方式，滚动重启应用。  把配置更新也当作一次应用变更看待，心情就好很多了。
+官方不支持热更新，所以有了各种技巧，提高效率。
+ create a new ConfigMap with the changes you want to make, and point your deployment at the new ConfigMap https://stackoverflow.com/a/40624029/820682 因为 deployment 文件变化了，触发滚动重启。 还有deployment 文件中配置 configmap hash值的。配置变化，hash值变化，deployment变化，滚动重启，一级级联动。 https://blog.questionable.services/article/kubernetes-deployments-configmap-change/ 还有使用sidecar的方式做热更新的，太复杂了 https://zhuanlan.zhihu.com/p/57570231  关于热更新 configmap的更新，容器化应用是无感知的。configmap这种方式没有推送更新到应用内的机制，要实现热更新过于复杂。
+k8s最核心的功能还是自动部署、伸缩、容器管理以及资源分配。微服务架构还是得需要其他框架来辅助的。
+配置热更新应用，就选择 etcd, consul 吧，有 watch 功能。</description>
+    </item>
     
     <item>
       <title>etcd api client 请求重试逻辑</title>

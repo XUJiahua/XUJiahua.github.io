@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html><head>
-<title>etcd api client 请求重试逻辑</title>
+<title>k8s configmap 与热更新</title>
 
 <meta charset="utf-8">
 <meta name="X-UA-Compatible" content="IE=edge">
@@ -151,16 +151,35 @@ Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopene
 						
 							<ul>
 						
-							<ul>
-						
 						
 								<li>
-				 					<a href="#etcd-api-client" v-on:click="closeDrawer" id="etcd-api-client-nav">
-										 etcd api client
+				 					<a href="#configmap-%e7%ae%80%e4%bb%8b" v-on:click="closeDrawer" id="configmap-简介-nav">
+										 configmap 简介
 									</a>
 								</li>
 						
 							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e5%85%b3%e4%ba%8e%e7%83%ad%e6%9b%b4%e6%96%b0" v-on:click="closeDrawer" id="关于热更新-nav">
+										 关于热更新
+									</a>
+								</li>
 						
 							</ul>
 						
@@ -249,16 +268,35 @@ Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopene
 						
 							<ul>
 						
-							<ul>
-						
 						
 								<li>
-				 					<a href="#etcd-api-client" v-on:click="closeDrawer" id="etcd-api-client-nav">
-										 etcd api client
+				 					<a href="#configmap-%e7%ae%80%e4%bb%8b" v-on:click="closeDrawer" id="configmap-简介-nav">
+										 configmap 简介
 									</a>
 								</li>
 						
 							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e5%85%b3%e4%ba%8e%e7%83%ad%e6%9b%b4%e6%96%b0" v-on:click="closeDrawer" id="关于热更新-nav">
+										 关于热更新
+									</a>
+								</li>
 						
 							</ul>
 						
@@ -309,12 +347,12 @@ Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopene
             <div class="post-head-wrapper-text-only"
                  style="background-image: url('/')">
                 <div class="post-title">
-                    etcd api client 请求重试逻辑
+                    k8s configmap 与热更新
                     
                     <div class="post-meta">
                         
                         <time itemprop="datePublished">
-                            2020-04-17 15:05
+                            2020-04-17 16:09
                         </time>
                         
 
@@ -326,6 +364,12 @@ Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopene
                                 <a href="/tags/etcd">etcd</a>
                                 &nbsp;
                             
+                                <a href="/tags/k8s">k8s</a>
+                                &nbsp;
+                            
+                                <a href="/tags/consul">consul</a>
+                                &nbsp;
+                            
                         
                     </div>
                 </div>
@@ -333,25 +377,28 @@ Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopene
             
             <div class="post-body-wrapper">
                 <div class="post-body">
-                    <p>使用 Consul 作为配置中心，按照官方的说法，没必要创建 <code>consul client</code> 节点。那么直接连 <code>consul server</code> 就好了。</p>
-<blockquote>
-<p>Running an agent is not required for discovering other services or getting/setting key/value data. The agent is responsible for health checking the services on the node as well as the node itself.</p>
-<p><a href="https://www.consul.io/intro/index.html#basic-architecture-of-consul">https://www.consul.io/intro/index.html#basic-architecture-of-consul</a></p>
-</blockquote>
-<p>Consul api client (<a href="https://github.com/hashicorp/consul/tree/master/api">https://github.com/hashicorp/consul/tree/master/api</a>) 目前只能接收一个server地址。那么这个server地址得保证高可用才行啊。</p>
-<p>etcd api client (<a href="https://github.com/etcd-io/etcd/tree/master/client">https://github.com/etcd-io/etcd/tree/master/client</a>) 倒是能接收多个server地址，看看 etcd 是怎么做的。</p>
-<h3 id="etcd-api-client">etcd api client</h3>
-<p>创建了 httpClusterClient。</p>
-<p><img src="../../images/image-20200417151856806.png" alt="image-20200417151856806"></p>
-<p>多个 endpoint 的处理核心逻辑。</p>
-<p><img src="../../images/image-20200417152639174.png" alt="image-20200417152639174"></p>
+                    <h2 id="configmap-简介">configmap 简介</h2>
+<p>官方介绍：使用 ConfigMap 配置 Pod  <a href="https://kubernetes.io/zh/docs/tasks/configure-pod-container/configure-pod-configmap/">https://kubernetes.io/zh/docs/tasks/configure-pod-container/configure-pod-configmap/</a></p>
+<p>他人总结：ConfigMap <a href="https://jimmysong.io/kubernetes-handbook/concepts/configmap.html">https://jimmysong.io/kubernetes-handbook/concepts/configmap.html</a></p>
+<p>稍微总结下：</p>
 <ol>
-<li>pinned 用于记录好用的连接地址的index，优先使用这个地址。</li>
-<li>context 类错误，比如取消请求，直接退出。</li>
-<li>遇到 5xx 类错误，服务端错误。需要考虑是否重试了。</li>
-<li>isOneShot 标记，true 代表是 Set/Delete 操作，请求失败不再重试。应该跟请求是否幂等有关。</li>
-<li>可以重试的请求，重试直到成功或是循环结束。</li>
+<li>每个configmap都有一个名字，名字全局唯一（命名空间内），重复创建会报错。</li>
+<li>每个configmap本身是键值对。</li>
+<li>configmap可以通过环境变量的方式让Pod内容器读取。</li>
+<li>configmap可以通过挂载文件的方式让Pod内容器读取。k8s每隔一段时间同步configmap，如果有更新的话。当然，应用本身是不知道的。这个定时更新感觉有点鸡肋。</li>
+<li>configmap更新，不会自动重启应用。只能人工方式，滚动重启应用。</li>
 </ol>
+<p>把配置更新也当作一次应用变更看待，心情就好很多了。</p>
+<p>官方不支持热更新，所以有了各种技巧，提高效率。</p>
+<ol>
+<li>create a new ConfigMap with the changes you want to make, and point your deployment at the new ConfigMap <a href="https://stackoverflow.com/a/40624029/820682">https://stackoverflow.com/a/40624029/820682</a> 因为 deployment 文件变化了，触发滚动重启。</li>
+<li>还有deployment 文件中配置 configmap hash值的。配置变化，hash值变化，deployment变化，滚动重启，一级级联动。 <a href="https://blog.questionable.services/article/kubernetes-deployments-configmap-change/">https://blog.questionable.services/article/kubernetes-deployments-configmap-change/</a></li>
+<li>还有使用sidecar的方式做热更新的，太复杂了 <a href="https://zhuanlan.zhihu.com/p/57570231">https://zhuanlan.zhihu.com/p/57570231</a></li>
+</ol>
+<h2 id="关于热更新">关于热更新</h2>
+<p>configmap的更新，容器化应用是无感知的。configmap这种方式没有推送更新到应用内的机制，要实现热更新过于复杂。</p>
+<p>k8s最核心的功能还是自动部署、伸缩、容器管理以及资源分配。微服务架构还是得需要其他框架来辅助的。</p>
+<p>配置热更新应用，就选择 etcd, consul 吧，有 watch 功能。</p>
 
                     
                     <HR width="100%" id="EOF">
@@ -364,14 +411,14 @@ Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopene
             <nav class="post-pagination">
 
                 
-                <a class="newer-posts" href="https://xujiahua.github.io/posts/20200417-kubernetes-configmap/">
-                    Next<br>k8s configmap 与热更新
+                <a class="newer-posts">
+                    Next<br>No newer posts.
                 </a>
                 
                 
                 
-                <a class="older-posts" href="https://xujiahua.github.io/posts/20200416-cortex/">
-                    Previous<br>机器学习在线推理部署方案：Cortex
+                <a class="older-posts" href="https://xujiahua.github.io/posts/20200417-etcd_client/">
+                    Previous<br>etcd api client 请求重试逻辑
                 </a>
                 
             </nav>
