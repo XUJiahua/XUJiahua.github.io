@@ -26,6 +26,7 @@
 &lt;li&gt;MVCC Multi-version Concurrency Control 也确实能读历史版本&lt;/li&gt;
 &lt;li&gt;Raft consensus algorithms 共识算法&lt;/li&gt;
 &lt;li&gt;Watch 配置更新能及时&amp;quot;通知&amp;quot;应用&lt;/li&gt;
+&lt;li&gt;RBAC 用户、角色、权限&lt;/li&gt;
 &lt;/ol&gt;
 &lt;p&gt;基于 etcd 可以做哪些事情：&lt;/p&gt;
 &lt;ol&gt;

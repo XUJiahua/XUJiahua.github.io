@@ -1586,12 +1586,12 @@ Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopene
 <li>支持健康检查：服务注册的时候可以提供健康检查项，服务发现会过滤掉不健康的service。</li>
 <li>支持 http 和 dns 协议接口。</li>
 <li>Web 管理界面。</li>
-<li>没有长连接，轮询方式可能不够及时。</li>
+<li>没有长连接，轮询方式可能不够及时。有watch。</li>
 </ul>
 <h3 id="核心概念">核心概念</h3>
 <ol>
 <li>consul agent server：维护核心状态并参与leader选举。server节点一般建议3个或是5个，测试用1个即可。写压力大的集群，考虑升级服务器实例的配置和低延迟的存储。（<strong>TIP</strong> For write-heavy clusters, consider scaling vertically with larger machine instances and lower latency storage. <a href="https://learn.hashicorp.com/consul/datacenter-deploy/reference-architecture">https://learn.hashicorp.com/consul/datacenter-deploy/reference-architecture</a>）</li>
-<li>consul agent client：与其他agent联通，并消息中转。每个主机都有一个agent的好处是，只要与本地agent通信，不用设置CONSUL_HTTP_ADDR，代码也不用指定这个地址。方便无脑操作。(In a multi-agent Consul datacenter, each service would register with its local Consul client, and the clients would forward the registration to the Consul servers, which maintain the service catalog. <a href="https://learn.hashicorp.com/consul/getting-started/services">https://learn.hashicorp.com/consul/getting-started/services</a>)</li>
+<li>consul agent client：与其他agent联通，并消息中转。agent的作用是健康检查。每个主机都有一个agent的好处是，只要与本地agent通信(In a multi-agent Consul datacenter, each service would register with its local Consul client, and the clients would forward the registration to the Consul servers, which maintain the service catalog. <a href="https://learn.hashicorp.com/consul/getting-started/services">https://learn.hashicorp.com/consul/getting-started/services</a>)</li>
 <li>node：一般是一个node一个agent。consul DNS name规则：{node_name}.node.consul</li>
 <li>service：一个service对应多个service实例，注册时使用相同的service_name，并使用不同的service_id区分实例。consul DNS name规则： {service_name}.service.consul</li>
 </ol>
