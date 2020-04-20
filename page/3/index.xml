@@ -5,9 +5,69 @@
     <description>Recent content on 许嘉华的博客</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Fri, 17 Apr 2020 16:09:28 +0800</lastBuildDate>
+    <lastBuildDate>Mon, 20 Apr 2020 14:12:38 +0800</lastBuildDate>
     
         <atom:link href="https://xujiahua.github.io/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    
+        <item>
+        <title>Implicit：推荐系统协同过滤库的测评</title>
+        <link>https://xujiahua.github.io/posts/20200211-recsys-implicit/</link>
+        <pubDate>Tue, 11 Feb 2020 14:34:27 +0800</pubDate>
+        
+        <guid>https://xujiahua.github.io/posts/20200211-recsys-implicit/</guid>
+        <description>许嘉华的博客 https://xujiahua.github.io/posts/20200211-recsys-implicit/ -&lt;h2 id=&#34;简介&#34;&gt;简介&lt;/h2&gt;
+&lt;p&gt;Implicit是一个推荐系统协同过滤库。所谓协同过滤，只用到了user、item的ID和user、item交互后的评分（或是某个度量）。&lt;/p&gt;
+&lt;p&gt;GitHub：https://github.com/benfred/implicit&lt;/p&gt;
+&lt;h2 id=&#34;安装&#34;&gt;安装&lt;/h2&gt;
+&lt;pre&gt;&lt;code&gt;pip install implicit
+&lt;/code&gt;&lt;/pre&gt;&lt;h2 id=&#34;其他选择&#34;&gt;其他选择&lt;/h2&gt;
+&lt;p&gt;自己照着「推荐系统实战」里的基于物品推荐的相似度公式（类似关联分析中的Lift公式），也写了一个item-item recommender。&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;看推荐结果，自己写与implicit ALS有点差别，与implicit Cosine的结果差不多。&lt;/li&gt;
+&lt;li&gt;纯python，没有并行，没有用C/C++，果然很慢。&lt;/li&gt;
+&lt;li&gt;自己写一个的目的，除了练手，也想看看implicit的效果具体怎么样。&lt;/li&gt;
+&lt;li&gt;生产使用，不建议用自己手写的，水平真的有限。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;Spark Mllib怎么样。&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Spark Mllib支持分布式，感觉没必要。本来Implicit单机就很强了。只要把数据导出来，导到训练机器上即可。&lt;/li&gt;
+&lt;li&gt;Spark分布式，扩展性好，但是性能并没有Implicit那么好。&lt;/li&gt;
+&lt;li&gt;Spark还得搭配HDFS，真的蛮重的，开发效率也没那么好。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2 id=&#34;背后的原理&#34;&gt;背后的原理&lt;/h2&gt;
+&lt;p&gt;今早根据作者文章Distance Metrics for Fun and Profit，整理了一份读后感，把之前的知识给梳理起来了。这篇文章主要介绍的是距离公式，用于K近邻的推荐算法。&lt;/p&gt;
+&lt;p&gt;协同过滤算法分两类：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;基于记忆的，K近邻算法（基于“距离”公式），建议使用BM25。优势在读后感中有写。（实际效果怎么样，还得看数据）&lt;/li&gt;
+&lt;li&gt;基于模型的，矩阵分解算法，建议使用 (implicit) ALS，其变种是支持implicit dataset的。矩阵分解算法SGD，只适用于评分。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;效果，见测评图。ALS的效果是最好的了。这是在movielens100k的结果。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/3D66F424-97FD-4236-8A57-98111FAF65A7.png&#34; alt=&#34;3D66F424-97FD-4236-8A57-98111FAF65A7&#34;&gt;&lt;/p&gt;
+&lt;p&gt;看起来指标都很低，「推荐系统实战」里差不多这个结果。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/FBC00415-D1AE-4F22-9B86-A0B070484ACF.png&#34; alt=&#34;FBC00415-D1AE-4F22-9B86-A0B070484ACF&#34;&gt;&lt;/p&gt;
+&lt;h2 id=&#34;遇到的小问题&#34;&gt;遇到的小问题&lt;/h2&gt;
+&lt;ol&gt;
+&lt;li&gt;K近邻算法的model没有model.recommend_all方法。&lt;/li&gt;
+&lt;li&gt;model.recommend与model.recommend_all的返回数据结构不同，model.recommend是包含评分的，而model.recommend_all只返回ID。&lt;/li&gt;
+&lt;li&gt;recommend(0)，传入第一个用户ID，与recommend_all[0]，取出第一个用户ID，两者的结果是不一样的，不管用什么算法都一样！去年12月就有这样的issue：https://github.com/benfred/implicit/issues/299，我解决了，回复了这个issue。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;猜想，因为recommend方法用到indices的原因？试着重新构建下user-item维度的sparse matrix。改完后，果然就一致了。技术原因，sparse matrix transpose后，indices是未转置前的indices，没有变化。 具体地，user_items.indices与item_users.T.indices是不同的。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/159B8A3D-4238-401B-A4D3-61E086FF9F0B.png&#34; alt=&#34;159B8A3D-4238-401B-A4D3-61E086FF9F0B&#34;&gt;&lt;/p&gt;
+&lt;ol start=&#34;4&#34;&gt;
+&lt;li&gt;ALS算法在Mac上表现稀烂啊，同样的代码。ALS_Faiss还报错了。先在Linux上用吧。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;Mac上的ALS效果：&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/409E288C-81F6-4588-8731-9849D1F3278B.png&#34; alt=&#34;409E288C-81F6-4588-8731-9849D1F3278B&#34;&gt;&lt;/p&gt;
+&lt;p&gt;Linux上的ALS效果：&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/8DD26395-F62D-4DA8-A801-493098799456.png&#34; alt=&#34;8DD26395-F62D-4DA8-A801-493098799456&#34;&gt;&lt;/p&gt;
+&lt;h2 id=&#34;冷启动&#34;&gt;冷启动&lt;/h2&gt;
+&lt;p&gt;一开始并没有那么多行为数据。训练出的结果肯定是挺一般的。这时候用标签推荐，运营根据经验配置标签和推荐的映射即可。&lt;/p&gt;
+&lt;h2 id=&#34;考虑用户特征商品特征而不仅仅是id&#34;&gt;考虑用户特征、商品特征（而不仅仅是ID）&lt;/h2&gt;
+&lt;p&gt;如果有user特征、item特征，可以使用更一般的监督学习算法。或是使用factorization machine。&lt;/p&gt;
+- https://xujiahua.github.io/posts/20200211-recsys-implicit/ - </description>
+        </item>
     
     
     

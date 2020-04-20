@@ -6,10 +6,23 @@
     <description>Recent content in Posts on 许嘉华的博客</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Fri, 17 Apr 2020 16:09:28 +0800</lastBuildDate>
+    <lastBuildDate>Mon, 20 Apr 2020 14:12:38 +0800</lastBuildDate>
     
 	<atom:link href="https://xujiahua.github.io/posts/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>etcd 小结</title>
+      <link>https://xujiahua.github.io/posts/20200420-use_etcd/</link>
+      <pubDate>Mon, 20 Apr 2020 14:12:38 +0800</pubDate>
+      
+      <guid>https://xujiahua.github.io/posts/20200420-use_etcd/</guid>
+      <description>简介 取名有意思。Linux下的/etc目录放的是配置文件。etcd，etc代表配置，d代表distributed，代表分布式配置。
+特点：
+ designed to reliably store infrequently updated data and provide reliable watch queries https://etcd.io/docs/v3.4.0/learning/data_model/ KV 核心用户接口 MVCC Multi-version Concurrency Control 也确实能读历史版本 Raft consensus algorithms 共识算法 Watch 配置更新能及时&amp;quot;通知&amp;quot;应用  基于 etcd 可以做哪些事情：
+ 配置中心。元数据存储。应用的配置集中存储在配置中心。 服务发现。配置中心的一个特例。相比起来，consul的服务发现是开箱即用的。 分布式锁。分布式系统协调。选主。像是Hadoop使用Zookeeper做Namenode的选主。  vs. Consul。Consul 官方（https://www.consul.io/）定义的usecase是 service discovery和 service mesh。
+ etcd and Consul solve different problems. If looking for a distributed consistent key value store, etcd is a better choice over Consul. If looking for end-to-end cluster service discovery, etcd will not have enough features; choose Kubernetes, Consul, or SmartStack.</description>
+    </item>
     
     <item>
       <title>k8s configmap 与热更新</title>

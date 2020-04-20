@@ -1,0 +1,854 @@
+<!DOCTYPE html>
+<html><head>
+<title>etcd 小结</title>
+
+<meta charset="utf-8">
+<meta name="X-UA-Compatible" content="IE=edge">
+<meta name="google-site-verification" content="">
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport">
+<meta content="telephone=no" name="format-detection">
+<meta name="description" content="">
+<meta name="renderer" content="webkit">
+<meta name="theme-color" content="#ffffff">
+
+
+
+
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+	ga('create', 'UA-162706610-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+
+
+
+<script src="/vendor/js/jquery.min.js" ></script>
+<script src="/vendor/js/popper.min.js" ></script>
+<script src="/vendor/js/bootstrap.min.js" ></script>
+<script src="/vendor/js/smooth-scroll.polyfills.min.js" ></script>
+<link type="text/css" rel="stylesheet" href="/vendor/css/bootstrap.min.css">
+<script src="/vendor/js/vue.min.js" ></script>
+
+
+
+
+<link rel="stylesheet" href="https://xujiahua.github.io/scss/journal.min.5c667e74038e21ddbb9024b67930f8544e02af62491281cf73fdb817eec2947e.css" integrity="sha256-XGZ&#43;dAOOId27kCS2eTD4VE4Cr2JJEoHPc/24F&#43;7ClH4=" media="screen">
+
+<script src="https://xujiahua.github.io//js/loadCSS.js"></script>
+<script src="https://xujiahua.github.io//js/table.js"></script>
+
+
+<script src="https://xujiahua.github.io//js/toc.js"></script>
+
+
+<script>
+    loadCSS("https://fonts.googleapis.com/css?family=Lora|Montserrat|Fira+Mono|Noto+Serif+SC|Material+Icons");
+</script>
+
+
+
+
+
+
+</head><body>
+    	<div id="app"><div ref="sideContainer" class="side-container">
+    
+    <a class="a-block nav-head false" href="https://xujiahua.github.io/">
+    
+        <div class="nav-title">
+            许嘉华的博客
+        </div>
+        
+    </a>
+
+    <div class="nav-link-list">
+        
+        
+            
+            
+            
+                
+            
+            
+            
+            <a class="a-block nav-link-item active" href="/posts">
+                Archive
+            </a>
+            
+        
+            
+            
+            
+            
+            
+            <a class="a-block nav-link-item false" href="/categories">
+                Categories
+            </a>
+            
+        
+            
+            
+            
+            
+            
+            <a class="a-block nav-link-item false" href="/tags">
+                Tags
+            </a>
+            
+        
+            
+            
+            
+            
+            
+            <a class="a-block nav-link-item false" href="/index.xml">
+                RSS Feed
+            </a>
+            
+        
+    </div>
+
+    
+
+    <div class="nav-footer">
+        
+Hugo Theme <a href="https://github.com/amazingrise/hugo-theme-diary">Diary</a> by <a href="https://amazingrise.net">Rise</a>
+<br>
+Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopener">Makito</a>'s <a href="https://github.com/SumiMakito/hexo-theme-journal/" target="_blank" rel="noreferrer noopener">Journal.</a> <br>
+<br>
+
+&copy;
+	
+	2020 许嘉华的博客
+	
+    </div>
+    
+</div><div ref="extraContainer" class="extra-container">
+    
+    <div class="toc animated-visibility" :class="{ invisible: scrollY <= 140 }">
+
+
+	<div class="toc-content">
+	
+		
+		
+		
+		<center>- CATALOG -</center>
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e7%ae%80%e4%bb%8b" v-on:click="closeDrawer" id="简介-nav">
+										 简介
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e5%8f%82%e8%80%83" v-on:click="closeDrawer" id="参考-nav">
+										 参考
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#etcd%e9%9b%86%e7%be%a4%e5%ae%89%e8%a3%85" v-on:click="closeDrawer" id="etcd集群安装-nav">
+										 etcd集群安装
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e5%b8%b8%e7%94%a8%e6%93%8d%e4%bd%9c" v-on:click="closeDrawer" id="常用操作-nav">
+										 常用操作
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#kv%e7%9b%b8%e5%85%b3" v-on:click="closeDrawer" id="kv相关-nav">
+										 KV相关
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#lease" v-on:click="closeDrawer" id="lease-nav">
+										 Lease
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e5%88%86%e5%b8%83%e5%bc%8f%e9%94%81" v-on:click="closeDrawer" id="分布式锁-nav">
+										 分布式锁
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e9%9b%86%e7%be%a4%e7%ae%a1%e7%90%86" v-on:click="closeDrawer" id="集群管理-nav">
+										 集群管理
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e7%94%a8%e6%88%b7%e6%9d%83%e9%99%90role-based-access-control" v-on:click="closeDrawer" id="用户权限role-based-access-control-nav">
+										 用户权限（role based access control）
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+	</div>
+
+</div>
+    
+    <div class="pagination">
+        <a id="globalBackToTop" class="pagination-action animated-visibility" href="#top" :class="{ invisible: scrollY == 0 }">
+            <i class="material-icons pagination-action-icon">
+                keyboard_arrow_up
+            </i>
+        </a>
+        
+    </div>
+</div><div class="single-column-drawer-container" ref="drawer"
+     v-bind:class="{ 'single-column-drawer-container-active': isDrawerOpen }">
+    <div class="drawer-content">
+        <div class="drawer-menu">
+            
+            
+                
+                
+                
+                    
+                
+                
+                
+                <a class="a-block drawer-menu-item active" href="/posts">
+                    Archive
+                </a>
+                
+            
+                
+                
+                
+                
+                
+                <a class="a-block drawer-menu-item false" href="/categories">
+                    Categories
+                </a>
+                
+            
+                
+                
+                
+                
+                
+                <a class="a-block drawer-menu-item false" href="/tags">
+                    Tags
+                </a>
+                
+            
+                
+                
+                
+                
+                
+                <a class="a-block drawer-menu-item false" href="/index.xml">
+                    RSS Feed
+                </a>
+                
+            
+            
+            <div class="toc">
+
+
+	<div class="toc-content">
+	
+		
+		
+		
+		<center>- CATALOG -</center>
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e7%ae%80%e4%bb%8b" v-on:click="closeDrawer" id="简介-nav">
+										 简介
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e5%8f%82%e8%80%83" v-on:click="closeDrawer" id="参考-nav">
+										 参考
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#etcd%e9%9b%86%e7%be%a4%e5%ae%89%e8%a3%85" v-on:click="closeDrawer" id="etcd集群安装-nav">
+										 etcd集群安装
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e5%b8%b8%e7%94%a8%e6%93%8d%e4%bd%9c" v-on:click="closeDrawer" id="常用操作-nav">
+										 常用操作
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#kv%e7%9b%b8%e5%85%b3" v-on:click="closeDrawer" id="kv相关-nav">
+										 KV相关
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#lease" v-on:click="closeDrawer" id="lease-nav">
+										 Lease
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e5%88%86%e5%b8%83%e5%bc%8f%e9%94%81" v-on:click="closeDrawer" id="分布式锁-nav">
+										 分布式锁
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e9%9b%86%e7%be%a4%e7%ae%a1%e7%90%86" v-on:click="closeDrawer" id="集群管理-nav">
+										 集群管理
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e7%94%a8%e6%88%b7%e6%9d%83%e9%99%90role-based-access-control" v-on:click="closeDrawer" id="用户权限role-based-access-control-nav">
+										 用户权限（role based access control）
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+	</div>
+
+</div>
+            
+        </div>
+    </div>
+</div>
+<transition name="fade">
+    <div v-bind:class="{ 'single-column-drawer-mask': mounted }" v-if="isDrawerOpen" v-on:click="toggleDrawer"></div>
+</transition>
+<nav ref="navBar" class="navbar sticky-top navbar-light single-column-nav-container">
+    <div ref="navBackground" class="nav-background"></div>
+    <div class="container container-narrow nav-content">
+        <button id="nav_dropdown_btn" class="nav-dropdown-toggle" type="button" v-on:click="toggleDrawer">
+            <i class="material-icons">
+                menu
+            </i>
+        </button>
+        <a ref="navTitle" class="navbar-brand" href="https://xujiahua.github.io/">
+            许嘉华的博客
+        </a>
+    </div>
+</nav>
+<div class="single-column-header-container" ref="pageHead"
+     v-bind:style="{ transform: 'translateZ(0px) translateY('+.3*scrollY+'px)', opacity: 1-navOpacity }">
+    <a href="https://xujiahua.github.io/">
+        <div class="single-column-header-title">许嘉华的博客</div>
+        
+
+    </a>
+</div>
+            <div id="content">
+<div ref="streamContainer" class="stream-container">
+    <div class="post-list-container post-list-container-shadow">
+        <div class="post">
+            
+            
+            
+
+            <div class="post-head-wrapper-text-only"
+                 style="background-image: url('/')">
+                <div class="post-title">
+                    etcd 小结
+                    
+                    <div class="post-meta">
+                        
+                        <time itemprop="datePublished">
+                            2020-04-20 14:12
+                        </time>
+                        
+
+                        
+
+                        
+                    </div>
+                </div>
+            </div>
+            
+            <div class="post-body-wrapper">
+                <div class="post-body">
+                    <h2 id="简介">简介</h2>
+<p>取名有意思。Linux下的/etc目录放的是配置文件。etcd，etc代表配置，d代表distributed，代表分布式配置。</p>
+<p>特点：</p>
+<ol>
+<li>designed to reliably store infrequently updated data and provide reliable watch queries <a href="https://etcd.io/docs/v3.4.0/learning/data_model/">https://etcd.io/docs/v3.4.0/learning/data_model/</a></li>
+<li>KV 核心用户接口</li>
+<li>MVCC Multi-version Concurrency Control 也确实能读历史版本</li>
+<li>Raft consensus algorithms 共识算法</li>
+<li>Watch 配置更新能及时&quot;通知&quot;应用</li>
+</ol>
+<p>基于 etcd 可以做哪些事情：</p>
+<ol>
+<li>配置中心。元数据存储。应用的配置集中存储在配置中心。</li>
+<li>服务发现。配置中心的一个特例。相比起来，consul的服务发现是开箱即用的。</li>
+<li>分布式锁。分布式系统协调。选主。像是Hadoop使用Zookeeper做Namenode的选主。</li>
+</ol>
+<p>vs. Consul。Consul 官方（https://www.consul.io/）定义的usecase是 service discovery和 service mesh。</p>
+<blockquote>
+<p>etcd and Consul solve different problems. If looking for a distributed consistent key value store, etcd is a better choice over Consul. If looking for end-to-end cluster service discovery, etcd will not have enough features; choose Kubernetes, Consul, or SmartStack. <a href="https://github.com/etcd-io/etcd/blob/master/Documentation/learning/why.md#consul">https://github.com/etcd-io/etcd/blob/master/Documentation/learning/why.md#consul</a></p>
+</blockquote>
+<p>如果是分布式配置中心，etcd是更好的选择。</p>
+<h3 id="参考">参考</h3>
+<ol>
+<li>etcd versus other key-value stores <a href="https://github.com/etcd-io/etcd/blob/master/Documentation/learning/why.md">https://github.com/etcd-io/etcd/blob/master/Documentation/learning/why.md</a></li>
+</ol>
+<h2 id="etcd集群安装">etcd集群安装</h2>
+<p><a href="https://github.com/XUJiahua/linux_scripts/tree/master/etcd">https://github.com/XUJiahua/linux_scripts/tree/master/etcd</a></p>
+<h2 id="常用操作">常用操作</h2>
+<p>etcdctl的命令主要是kv操作，以及集群管理，和RBAC用户权限管理。</p>
+<p>参考 <a href="https://etcd.io/docs/v3.4.0/demo/">https://etcd.io/docs/v3.4.0/demo/</a></p>
+<h3 id="kv相关">KV相关</h3>
+<ol>
+<li><code>put foo &quot;Hello World&quot;</code>  KV写</li>
+<li><code>get foo</code> KV读，还可以读历史版本的值</li>
+<li><code>get web --prefix</code> KV前缀读，适用于服务发现</li>
+<li><code>del key</code> KV删除</li>
+<li><code>del k --prefix</code> KV前缀删除</li>
+<li><code>txn --interactive</code> KV事务</li>
+<li><code>watch stock1</code> KV关注value变化，适用于服务发现，服务发生变动</li>
+<li><code>watch stock --prefix</code>  watch也支持前缀匹配</li>
+</ol>
+<h3 id="lease">Lease</h3>
+<ol>
+<li><code>lease grant 300</code> 创建300s的lease</li>
+<li><code>put sample value --lease=2be7547fbc6a5afa</code> 有效期300s的key。不设置 lease的put操作，值是永久存储的。</li>
+<li>keep-alive 刷新TTL, list, revoke。</li>
+</ol>
+<h3 id="分布式锁">分布式锁</h3>
+<ol>
+<li><code>lock mutex1</code> 获取锁后，其他请求被block</li>
+</ol>
+<h3 id="集群管理">集群管理</h3>
+<ol>
+<li><code>member list</code> list etcd member，member命令还可以增加新node，node也包含不投票的。</li>
+<li><code>endpoint status</code> 集群状态，能看到leader server</li>
+<li><code>endpoint health</code> 健康检查</li>
+<li><code>snapshot save my.db</code> 数据快照存储到本地</li>
+</ol>
+<h3 id="用户权限role-based-access-control">用户权限（role based access control）</h3>
+<ol>
+<li><code>role add root</code> 创建role</li>
+<li><code>role grant-permission root readwrite foo</code> role上赋予权限，这里赋予foo的读写权限</li>
+<li><code>user add root</code> 创建用户，并指定密码</li>
+<li><code>user grant-role root root</code> 赋予用户role</li>
+<li><code>auth enable</code> 开启认证，disable 即关闭auth。</li>
+<li><code>--user=root:root put foo bar</code> 操作时指定用户密码</li>
+</ol>
+
+                    
+                    <HR width="100%" id="EOF">
+                    <p style="color:#777;">Last modified on 2020-04-20</p>
+                    
+                </div>
+            </div>
+            
+            
+            <nav class="post-pagination">
+
+                
+                <a class="newer-posts">
+                    Next<br>No newer posts.
+                </a>
+                
+                
+                
+                <a class="older-posts" href="https://xujiahua.github.io/posts/20200417-kubernetes-configmap/">
+                    Previous<br>k8s configmap 与热更新
+                </a>
+                
+            </nav>
+            <div class="post-comment-wrapper">
+                
+
+
+
+
+
+
+            </div>
+        </div>
+    </div>
+</div>
+
+            </div><div id="single-column-footer">
+Hugo Theme <a href="https://github.com/amazingrise/hugo-theme-diary">Diary</a> by <a href="https://amazingrise.net">Rise</a>
+<br>
+Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopener">Makito</a>'s <a href="https://github.com/SumiMakito/hexo-theme-journal/" target="_blank" rel="noreferrer noopener">Journal.</a> <br>
+<br>
+
+&copy;
+	
+	2020 许嘉华的博客
+	</div>
+    	</div>
+    <script src="https://xujiahua.github.io//js/journal.js"></script>
+    </body>
+</html>
