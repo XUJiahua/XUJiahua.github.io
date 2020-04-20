@@ -215,10 +215,10 @@ Viper is a complete configuration solution for Go applications including 12-Fact
     
     <item>
       <title>Go库对URL Path中%2F的处理</title>
-      <link>https://xujiahua.github.io/posts/2020-03-12-slash-in-url-path/</link>
+      <link>https://xujiahua.github.io/posts/20200312-slash-in-url-path/</link>
       <pubDate>Thu, 12 Mar 2020 15:17:36 +0800</pubDate>
       
-      <guid>https://xujiahua.github.io/posts/2020-03-12-slash-in-url-path/</guid>
+      <guid>https://xujiahua.github.io/posts/20200312-slash-in-url-path/</guid>
       <description>问题描述  有同事反馈Go项目的接口404了。看了下nginx日志，只有部分请求404了，404请求的显著特征是URL里有%2F，也就是/的转义。 接口定义是这样的：/api/xxx/{mid}/{uid}。mid、uid是URL path的一部分。从现象来看，程序没处理好转义字符，因为多了一个path部分，路由不匹配了，404。 nginx的URL记录是%2F，其实调用方传的是微信ID，比如IEd5W/jqsdF9qpuagQscEg==。调用方在发请求之前对ID已经做好了转义。  Go内置库：不区分%2F和/ An application cannot distinguish between &amp;ldquo;/&amp;rdquo; used as a path segment delimiter and &amp;ldquo;/&amp;rdquo; encoded in a path segment.
 这个问题由来已久了，看着官方也不打算解决了，见这个issue：https://github.com/golang/go/issues/3659
 If your app needs to assign special meaning, the server can reprocess req.RequestURI as it sees fit, and the client can issue requests using &amp;amp;url.URL{Opaque: rawURI}.  reprocess req.RequestURI 就是让你别用内置路由库了。 issue requests using &amp;amp;url.URL{Opaque: rawURI}. 试了，问题没解决。客户端不管怎么做，最终都是以HTTP协议输出的。GET http://www.google.com/index.html HTTP/1.1 服务端代码最终解析的还是中间的那段URL文本。照理就不通啊。  源码角度 url.URL的定义，明确指出Path字段存储的是decode之后的数据，所以%2F在这里已经被转义成了/，跟之前的Path意义完全不同了。</description>
