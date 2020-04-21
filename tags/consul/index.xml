@@ -6,10 +6,23 @@
     <description>Recent content in consul on 许嘉华的博客</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Fri, 17 Apr 2020 16:09:28 +0800</lastBuildDate>
+    <lastBuildDate>Tue, 21 Apr 2020 09:01:38 +0800</lastBuildDate>
     
 	<atom:link href="https://xujiahua.github.io/tags/consul/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>consul 小结</title>
+      <link>https://xujiahua.github.io/posts/20200421-use-consul/</link>
+      <pubDate>Tue, 21 Apr 2020 09:01:38 +0800</pubDate>
+      
+      <guid>https://xujiahua.github.io/posts/20200421-use-consul/</guid>
+      <description>简单介绍 hashicorp 对 Consul 的定位是服务间网络方案。
+ Consul is a service networking solution to connect and secure services across any runtime platform and public or private cloud. https://www.consul.io/
+ 官方的两个 use case 就是 service discovery, service mesh。
+service discovery 与 etcd 比起来，Consul 的服务发现是开箱即用的。优点如下：
+ First class 的服务注册和获取接口。不需要像 etcd 那样在 kv 存储基础上做包装。 服务注册，可以是consul 命令，也可以是HTTP API。 获取服务注册表，除了 HTTP 接口，还可以使用 DNS 查询接口。 健康检查。服务注册的时候可以提供健康检查项，客户端获取服务注册表时consul会过滤掉不健康的service。不担心拿到“脏”服务。健康检查也包括节点的检查。健康检查这个功能，就是一个分布式监控工具。 Web 管理界面。节点、服务、健康与否一目了然。 Watch 功能。通过 blocking queries/ long-polling HTTP API 的方式得到服务注册表的改变的通知。 跨数据中心（取资源）。When a request is made for a resource in another datacenter, the local Consul servers forward an RPC request to the remote Consul servers for that resource and return the results.</description>
+    </item>
     
     <item>
       <title>k8s configmap 与热更新</title>
@@ -25,16 +38,6 @@
  create a new ConfigMap with the changes you want to make, and point your deployment at the new ConfigMap https://stackoverflow.com/a/40624029/820682 因为 deployment 文件变化了，触发滚动重启。 还有deployment 文件中配置 configmap hash值的。配置变化，hash值变化，deployment变化，滚动重启，一级级联动。 https://blog.questionable.services/article/kubernetes-deployments-configmap-change/ 还有使用sidecar的方式做热更新的，太复杂了 https://zhuanlan.zhihu.com/p/57570231  关于热更新 configmap的更新，容器化应用是无感知的。configmap这种方式没有推送更新到应用内的机制，要实现热更新过于复杂。
 k8s最核心的功能还是自动部署、伸缩、容器管理以及资源分配。微服务架构还是得需要其他框架来辅助的。
 配置热更新应用，就选择 etcd, consul 吧，有 watch 功能。</description>
-    </item>
-    
-    <item>
-      <title>Consul调研</title>
-      <link>https://xujiahua.github.io/posts/20200326-use-consul/</link>
-      <pubDate>Thu, 26 Mar 2020 09:01:38 +0800</pubDate>
-      
-      <guid>https://xujiahua.github.io/posts/20200326-use-consul/</guid>
-      <description>Consul简介 Consul 是 HashiCorp 公司推出的开源分布式服务发现与配置系统。
- 服务发现。特别是搭配Consul Connect（Service Mesh），可达到一种无侵入式的服务发现和客户端负载均衡。 Key/Value 存储 作为配置中心。 使用 Raft 算法来保证一致性。 支持多数据中心。 支持健康检查：服务注册的时候可以提供健康检查项，服务发现会过滤掉不健康的service。 支持 http 和 dns 协议接口。 Web 管理界面。 没有长连接，轮询方式可能不够及时。有watch。  核心概念  consul agent server：维护核心状态并参与leader选举。server节点一般建议3个或是5个，测试用1个即可。写压力大的集群，考虑升级服务器实例的配置和低延迟的存储。（TIP For write-heavy clusters, consider scaling vertically with larger machine instances and lower latency storage. https://learn.hashicorp.com/consul/datacenter-deploy/reference-architecture） consul agent client：与其他agent联通，并消息中转。agent的作用是健康检查。每个主机都有一个agent的好处是，只要与本地agent通信(In a multi-agent Consul datacenter, each service would register with its local Consul client, and the clients would forward the registration to the Consul servers, which maintain the service catalog.</description>
     </item>
     
   </channel>

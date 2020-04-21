@@ -6,10 +6,23 @@
     <description>Recent content in Posts on 许嘉华的博客</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Mon, 20 Apr 2020 14:12:38 +0800</lastBuildDate>
+    <lastBuildDate>Tue, 21 Apr 2020 09:01:38 +0800</lastBuildDate>
     
 	<atom:link href="https://xujiahua.github.io/posts/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>consul 小结</title>
+      <link>https://xujiahua.github.io/posts/20200421-use-consul/</link>
+      <pubDate>Tue, 21 Apr 2020 09:01:38 +0800</pubDate>
+      
+      <guid>https://xujiahua.github.io/posts/20200421-use-consul/</guid>
+      <description>简单介绍 hashicorp 对 Consul 的定位是服务间网络方案。
+ Consul is a service networking solution to connect and secure services across any runtime platform and public or private cloud. https://www.consul.io/
+ 官方的两个 use case 就是 service discovery, service mesh。
+service discovery 与 etcd 比起来，Consul 的服务发现是开箱即用的。优点如下：
+ First class 的服务注册和获取接口。不需要像 etcd 那样在 kv 存储基础上做包装。 服务注册，可以是consul 命令，也可以是HTTP API。 获取服务注册表，除了 HTTP 接口，还可以使用 DNS 查询接口。 健康检查。服务注册的时候可以提供健康检查项，客户端获取服务注册表时consul会过滤掉不健康的service。不担心拿到“脏”服务。健康检查也包括节点的检查。健康检查这个功能，就是一个分布式监控工具。 Web 管理界面。节点、服务、健康与否一目了然。 Watch 功能。通过 blocking queries/ long-polling HTTP API 的方式得到服务注册表的改变的通知。 跨数据中心（取资源）。When a request is made for a resource in another datacenter, the local Consul servers forward an RPC request to the remote Consul servers for that resource and return the results.</description>
+    </item>
     
     <item>
       <title>etcd 小结</title>
@@ -186,16 +199,6 @@ $ ll demo/trump.jpg -rw-r--r-- 1 jiahua staff 249K Apr 1 14:14 demo/trump.</desc
  vagrant init {box_name}，下载一个基础的虚拟机镜像，比如centos，并创建一个Vagrantfile。 Vagrantfile中设置虚拟机hostname。 Vagrantfile中设置Private network，使得几个VM可以互相通信。 VM内安装docker软件。  如果用上了docker-machine，只要一行命令。在这个场景上，docker-machine 比 Vagrant 方便了很多。
 docker-machine create -d virtualbox {host_name} VM的管理，vagrant命令需要在Vagrantfile所在目录执行。而docker-machine可以在任何目录管理VM。
 其他特色  通过其他driver，可以安装管理云主机或是私有数据中心，而不仅仅是virtualbox。 通过eval &amp;ldquo;$(docker-machine env default)&amp;quot;，覆盖环境变量DOCKER_HOST，使得本地docker client访问VM内的docker daemon。 更多实用命令，参考 https://docs.</description>
-    </item>
-    
-    <item>
-      <title>Consul调研</title>
-      <link>https://xujiahua.github.io/posts/20200326-use-consul/</link>
-      <pubDate>Thu, 26 Mar 2020 09:01:38 +0800</pubDate>
-      
-      <guid>https://xujiahua.github.io/posts/20200326-use-consul/</guid>
-      <description>Consul简介 Consul 是 HashiCorp 公司推出的开源分布式服务发现与配置系统。
- 服务发现。特别是搭配Consul Connect（Service Mesh），可达到一种无侵入式的服务发现和客户端负载均衡。 Key/Value 存储 作为配置中心。 使用 Raft 算法来保证一致性。 支持多数据中心。 支持健康检查：服务注册的时候可以提供健康检查项，服务发现会过滤掉不健康的service。 支持 http 和 dns 协议接口。 Web 管理界面。 没有长连接，轮询方式可能不够及时。有watch。  核心概念  consul agent server：维护核心状态并参与leader选举。server节点一般建议3个或是5个，测试用1个即可。写压力大的集群，考虑升级服务器实例的配置和低延迟的存储。（TIP For write-heavy clusters, consider scaling vertically with larger machine instances and lower latency storage. https://learn.hashicorp.com/consul/datacenter-deploy/reference-architecture） consul agent client：与其他agent联通，并消息中转。agent的作用是健康检查。每个主机都有一个agent的好处是，只要与本地agent通信(In a multi-agent Consul datacenter, each service would register with its local Consul client, and the clients would forward the registration to the Consul servers, which maintain the service catalog.</description>
     </item>
     
     <item>

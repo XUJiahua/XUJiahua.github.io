@@ -1,0 +1,1376 @@
+<!DOCTYPE html>
+<html><head>
+<title>consul 小结</title>
+
+<meta charset="utf-8">
+<meta name="X-UA-Compatible" content="IE=edge">
+<meta name="google-site-verification" content="">
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport">
+<meta content="telephone=no" name="format-detection">
+<meta name="description" content="">
+<meta name="renderer" content="webkit">
+<meta name="theme-color" content="#ffffff">
+
+
+
+
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+	ga('create', 'UA-162706610-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+
+
+
+<script src="/vendor/js/jquery.min.js" ></script>
+<script src="/vendor/js/popper.min.js" ></script>
+<script src="/vendor/js/bootstrap.min.js" ></script>
+<script src="/vendor/js/smooth-scroll.polyfills.min.js" ></script>
+<link type="text/css" rel="stylesheet" href="/vendor/css/bootstrap.min.css">
+<script src="/vendor/js/vue.min.js" ></script>
+
+
+
+
+<link rel="stylesheet" href="https://xujiahua.github.io/scss/journal.min.5c667e74038e21ddbb9024b67930f8544e02af62491281cf73fdb817eec2947e.css" integrity="sha256-XGZ&#43;dAOOId27kCS2eTD4VE4Cr2JJEoHPc/24F&#43;7ClH4=" media="screen">
+
+<script src="https://xujiahua.github.io//js/loadCSS.js"></script>
+<script src="https://xujiahua.github.io//js/table.js"></script>
+
+
+<script src="https://xujiahua.github.io//js/toc.js"></script>
+
+
+<script>
+    loadCSS("https://fonts.googleapis.com/css?family=Lora|Montserrat|Fira+Mono|Noto+Serif+SC|Material+Icons");
+</script>
+
+
+
+
+
+
+</head><body>
+    	<div id="app"><div ref="sideContainer" class="side-container">
+    
+    <a class="a-block nav-head false" href="https://xujiahua.github.io/">
+    
+        <div class="nav-title">
+            许嘉华的博客
+        </div>
+        
+    </a>
+
+    <div class="nav-link-list">
+        
+        
+            
+            
+            
+                
+            
+            
+            
+            <a class="a-block nav-link-item active" href="/posts">
+                Archive
+            </a>
+            
+        
+            
+            
+            
+            
+            
+            <a class="a-block nav-link-item false" href="/categories">
+                Categories
+            </a>
+            
+        
+            
+            
+            
+            
+            
+            <a class="a-block nav-link-item false" href="/tags">
+                Tags
+            </a>
+            
+        
+            
+            
+            
+            
+            
+            <a class="a-block nav-link-item false" href="/index.xml">
+                RSS Feed
+            </a>
+            
+        
+    </div>
+
+    
+
+    <div class="nav-footer">
+        
+Hugo Theme <a href="https://github.com/amazingrise/hugo-theme-diary">Diary</a> by <a href="https://amazingrise.net">Rise</a>
+<br>
+Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopener">Makito</a>'s <a href="https://github.com/SumiMakito/hexo-theme-journal/" target="_blank" rel="noreferrer noopener">Journal.</a> <br>
+<br>
+
+&copy;
+	
+	2020 许嘉华的博客
+	
+    </div>
+    
+</div><div ref="extraContainer" class="extra-container">
+    
+    <div class="toc animated-visibility" :class="{ invisible: scrollY <= 140 }">
+
+
+	<div class="toc-content">
+	
+		
+		
+		
+		<center>- CATALOG -</center>
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e7%ae%80%e5%8d%95%e4%bb%8b%e7%bb%8d" v-on:click="closeDrawer" id="简单介绍-nav">
+										 简单介绍
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#service-discovery" v-on:click="closeDrawer" id="service-discovery-nav">
+										 service discovery
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#service-mesh" v-on:click="closeDrawer" id="service-mesh-nav">
+										 service mesh
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#key-value-store" v-on:click="closeDrawer" id="key-value-store-nav">
+										 key value store
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#distributed-system-coordinate" v-on:click="closeDrawer" id="distributed-system-coordinate-nav">
+										 distributed system coordinate
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e6%a0%b8%e5%bf%83%e6%a6%82%e5%bf%b5" v-on:click="closeDrawer" id="核心概念-nav">
+										 核心概念
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e5%8f%82%e8%80%83" v-on:click="closeDrawer" id="参考-nav">
+										 参考
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#consul-connect-%e4%bd%93%e9%aa%8c" v-on:click="closeDrawer" id="consul-connect-体验-nav">
+										 Consul Connect 体验
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#1-quickstart-consul-connect" v-on:click="closeDrawer" id="1-quickstart-consul-connect-nav">
+										 1. Quickstart: Consul Connect
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#2-use-envoy" v-on:click="closeDrawer" id="2-use-envoy-nav">
+										 2. use Envoy
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#3-canary-deployments-using-traffic-splitting-and-resolution" v-on:click="closeDrawer" id="3-canary-deployments-using-traffic-splitting-and-resolution-nav">
+										 3. Canary deployments using traffic splitting and resolution
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#4-zipkin-tracing" v-on:click="closeDrawer" id="4-zipkin-tracing-nav">
+										 4. Zipkin tracing
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e5%9f%ba%e4%ba%8e-consul-%e5%be%ae%e6%9c%8d%e5%8a%a1%e6%94%b9%e9%80%a0" v-on:click="closeDrawer" id="基于-consul-微服务改造-nav">
+										 基于 Consul 微服务改造
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e6%9c%8d%e5%8a%a1%e9%97%b4%e9%80%9a%e4%bf%a1" v-on:click="closeDrawer" id="服务间通信-nav">
+										 服务间通信
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e5%af%b9%e5%a4%96%e6%9c%8d%e5%8a%a1" v-on:click="closeDrawer" id="对外服务-nav">
+										 对外服务
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e5%8f%82%e8%80%83-1" v-on:click="closeDrawer" id="参考-1-nav">
+										 参考
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e4%b8%80%e4%ba%9b%e8%b5%84%e6%96%99" v-on:click="closeDrawer" id="一些资料-nav">
+										 一些资料
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+	</div>
+
+</div>
+    
+    <div class="pagination">
+        <a id="globalBackToTop" class="pagination-action animated-visibility" href="#top" :class="{ invisible: scrollY == 0 }">
+            <i class="material-icons pagination-action-icon">
+                keyboard_arrow_up
+            </i>
+        </a>
+        
+    </div>
+</div><div class="single-column-drawer-container" ref="drawer"
+     v-bind:class="{ 'single-column-drawer-container-active': isDrawerOpen }">
+    <div class="drawer-content">
+        <div class="drawer-menu">
+            
+            
+                
+                
+                
+                    
+                
+                
+                
+                <a class="a-block drawer-menu-item active" href="/posts">
+                    Archive
+                </a>
+                
+            
+                
+                
+                
+                
+                
+                <a class="a-block drawer-menu-item false" href="/categories">
+                    Categories
+                </a>
+                
+            
+                
+                
+                
+                
+                
+                <a class="a-block drawer-menu-item false" href="/tags">
+                    Tags
+                </a>
+                
+            
+                
+                
+                
+                
+                
+                <a class="a-block drawer-menu-item false" href="/index.xml">
+                    RSS Feed
+                </a>
+                
+            
+            
+            <div class="toc">
+
+
+	<div class="toc-content">
+	
+		
+		
+		
+		<center>- CATALOG -</center>
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e7%ae%80%e5%8d%95%e4%bb%8b%e7%bb%8d" v-on:click="closeDrawer" id="简单介绍-nav">
+										 简单介绍
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#service-discovery" v-on:click="closeDrawer" id="service-discovery-nav">
+										 service discovery
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#service-mesh" v-on:click="closeDrawer" id="service-mesh-nav">
+										 service mesh
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#key-value-store" v-on:click="closeDrawer" id="key-value-store-nav">
+										 key value store
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#distributed-system-coordinate" v-on:click="closeDrawer" id="distributed-system-coordinate-nav">
+										 distributed system coordinate
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e6%a0%b8%e5%bf%83%e6%a6%82%e5%bf%b5" v-on:click="closeDrawer" id="核心概念-nav">
+										 核心概念
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e5%8f%82%e8%80%83" v-on:click="closeDrawer" id="参考-nav">
+										 参考
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#consul-connect-%e4%bd%93%e9%aa%8c" v-on:click="closeDrawer" id="consul-connect-体验-nav">
+										 Consul Connect 体验
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#1-quickstart-consul-connect" v-on:click="closeDrawer" id="1-quickstart-consul-connect-nav">
+										 1. Quickstart: Consul Connect
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#2-use-envoy" v-on:click="closeDrawer" id="2-use-envoy-nav">
+										 2. use Envoy
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#3-canary-deployments-using-traffic-splitting-and-resolution" v-on:click="closeDrawer" id="3-canary-deployments-using-traffic-splitting-and-resolution-nav">
+										 3. Canary deployments using traffic splitting and resolution
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#4-zipkin-tracing" v-on:click="closeDrawer" id="4-zipkin-tracing-nav">
+										 4. Zipkin tracing
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e5%9f%ba%e4%ba%8e-consul-%e5%be%ae%e6%9c%8d%e5%8a%a1%e6%94%b9%e9%80%a0" v-on:click="closeDrawer" id="基于-consul-微服务改造-nav">
+										 基于 Consul 微服务改造
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e6%9c%8d%e5%8a%a1%e9%97%b4%e9%80%9a%e4%bf%a1" v-on:click="closeDrawer" id="服务间通信-nav">
+										 服务间通信
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e5%af%b9%e5%a4%96%e6%9c%8d%e5%8a%a1" v-on:click="closeDrawer" id="对外服务-nav">
+										 对外服务
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e5%8f%82%e8%80%83-1" v-on:click="closeDrawer" id="参考-1-nav">
+										 参考
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e4%b8%80%e4%ba%9b%e8%b5%84%e6%96%99" v-on:click="closeDrawer" id="一些资料-nav">
+										 一些资料
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+	</div>
+
+</div>
+            
+        </div>
+    </div>
+</div>
+<transition name="fade">
+    <div v-bind:class="{ 'single-column-drawer-mask': mounted }" v-if="isDrawerOpen" v-on:click="toggleDrawer"></div>
+</transition>
+<nav ref="navBar" class="navbar sticky-top navbar-light single-column-nav-container">
+    <div ref="navBackground" class="nav-background"></div>
+    <div class="container container-narrow nav-content">
+        <button id="nav_dropdown_btn" class="nav-dropdown-toggle" type="button" v-on:click="toggleDrawer">
+            <i class="material-icons">
+                menu
+            </i>
+        </button>
+        <a ref="navTitle" class="navbar-brand" href="https://xujiahua.github.io/">
+            许嘉华的博客
+        </a>
+    </div>
+</nav>
+<div class="single-column-header-container" ref="pageHead"
+     v-bind:style="{ transform: 'translateZ(0px) translateY('+.3*scrollY+'px)', opacity: 1-navOpacity }">
+    <a href="https://xujiahua.github.io/">
+        <div class="single-column-header-title">许嘉华的博客</div>
+        
+
+    </a>
+</div>
+            <div id="content">
+<div ref="streamContainer" class="stream-container">
+    <div class="post-list-container post-list-container-shadow">
+        <div class="post">
+            
+            
+            
+
+            <div class="post-head-wrapper-text-only"
+                 style="background-image: url('/')">
+                <div class="post-title">
+                    consul 小结
+                    
+                    <div class="post-meta">
+                        
+                        <time itemprop="datePublished">
+                            2020-04-21 09:01
+                        </time>
+                        
+
+                        
+
+                        
+                            <i class="material-icons" style="">label</i>
+                            
+                                <a href="/tags/service-mesh">Service Mesh</a>
+                                &nbsp;
+                            
+                                <a href="/tags/consul">consul</a>
+                                &nbsp;
+                            
+                                <a href="/tags/microservices">microservices</a>
+                                &nbsp;
+                            
+                        
+                    </div>
+                </div>
+            </div>
+            
+            <div class="post-body-wrapper">
+                <div class="post-body">
+                    <h2 id="简单介绍">简单介绍</h2>
+<p>hashicorp 对 Consul 的定位是服务间网络方案。</p>
+<blockquote>
+<p>Consul is a service networking solution to connect and secure services across any runtime platform and public or private cloud. <a href="https://www.consul.io/">https://www.consul.io/</a></p>
+</blockquote>
+<p>官方的两个 use case 就是 service discovery, service mesh。</p>
+<h3 id="service-discovery">service discovery</h3>
+<p>与 etcd 比起来，Consul 的服务发现是开箱即用的。优点如下：</p>
+<ol>
+<li>First class 的服务注册和获取接口。不需要像 etcd 那样在 kv 存储基础上做包装。</li>
+<li>服务注册，可以是consul 命令，也可以是HTTP API。</li>
+<li>获取服务注册表，除了 HTTP 接口，还可以使用  DNS 查询接口。</li>
+<li>健康检查。服务注册的时候可以提供健康检查项，客户端获取服务注册表时consul会过滤掉不健康的service。不担心拿到“脏”服务。健康检查也包括节点的检查。健康检查这个功能，就是一个分布式监控工具。</li>
+<li>Web 管理界面。节点、服务、健康与否一目了然。</li>
+<li>Watch 功能。通过 blocking queries/ long-polling HTTP API 的方式得到服务注册表的改变的通知。</li>
+<li>跨数据中心（取资源）。When a request is made for a resource in another datacenter, the local Consul servers forward an RPC request to the remote Consul servers for that resource and return the results. <a href="https://learn.hashicorp.com/consul/security-networking/datacenters#data-replication">https://learn.hashicorp.com/consul/security-networking/datacenters#data-replication</a></li>
+</ol>
+<h3 id="service-mesh">service mesh</h3>
+<p>service discovery 只是微服务治理的初级阶段。作为服务请求方，通过 consul/ etcd 获取到服务注册表，下一步就是选择其中一个服务实例，发送请求。这个步骤叫做负载均衡。可以想象，客户端的代码会越来越重了。</p>
+<p>service mesh可以理解为 service discovery的升级版。为每个服务实例引入 sidecar proxy，接管服务实例的入、出流量。将 service discovery，load balancer 从 service 本身抽离出来，下沉到基础设施，也就是 sidecar proxy。</p>
+<p>sidecar proxy 上的功能还有更多扩展，比如：</p>
+<ol>
+<li>蓝绿部署，A/B 测试。打个比方，一个服务存在两个版本v1, v2，给v1分配80%的流量，给v2分配20%的流量。</li>
+<li>流量加密。</li>
+<li>服务指标的收集。比如HTTP协议的返回状态码。</li>
+<li>调用链追踪。</li>
+<li>Intention。可以设置服务与服务之间是否允许连接。Intentions define service based access control for services in the Consul service mesh and are used to control which services are allowed or not allowed to establish connections.</li>
+<li>这一切服务本身是无感知的。这也简化了应用的开发。</li>
+</ol>
+<p>这就是 Consul Connect 的功能。与之对应的竞品是 Istio。</p>
+<p>当然，一切都有代价。<strong>给每个服务实例创建一个sidecar proxy，这在部署上需要做好准备。使用 Kubernetes 可以提高效率，会帮助自动创建 sidecar proxy。</strong></p>
+<h3 id="key-value-store">key value store</h3>
+<p>consul 也能当 kv store 使用，这是服务发现的底子。使用方式跟 etcd 差不多。</p>
+<p>etcd 官方与 consul 做了比较。consul 在存储扩展性上不够好。也缺少KEY多版本存储，不方便追溯历史。key value store 这个场景，etcd 是更合适的。</p>
+<blockquote>
+<p><a href="https://github.com/coreos/dbtester/tree/master/test-results/2018Q1-02-etcd-zookeeper-consul">As it stands in Consul 1.0</a>, the storage system does not scale as well as other systems like etcd or Zookeeper in key-value operations; systems requiring millions of keys will suffer from high latencies and memory pressure. The key value API is missing, most notably, multi-version keys, conditional transactions, and reliable streaming watches.</p>
+<p>etcd and Consul solve different problems. If looking for a distributed consistent key value store, etcd is a better choice over Consul. If looking for end-to-end cluster service discovery, etcd will not have enough features; choose Kubernetes, Consul, or SmartStack.</p>
+<p><a href="https://github.com/etcd-io/etcd/blob/master/Documentation/learning/why.md#consul">https://github.com/etcd-io/etcd/blob/master/Documentation/learning/why.md#consul</a></p>
+</blockquote>
+<h3 id="distributed-system-coordinate">distributed system coordinate</h3>
+<p>分布式锁，分布式系统的协调 <a href="https://www.consul.io/docs/internals/sessions.html">https://www.consul.io/docs/internals/sessions.html</a> 。使用场景比如Hadoop系统的选主。不过大部分开源分布式系统基本上使用zookeeper和etcd。</p>
+<h2 id="核心概念">核心概念</h2>
+<p><img src="../../images/consul-arch-420ce04a.png" alt="Consul Architecture"></p>
+<p>Consul 架构图</p>
+<table>
+<thead>
+<tr>
+<th>名称</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>node</td>
+<td>每个 node 安装并运行 consul agent。</td>
+</tr>
+<tr>
+<td>consul server agent</td>
+<td>1）维护核心状态并基于共识算法 consensus protocol raft 参与leader选举。2）server节点一般建议3个或是5个。写压力大的集群，考虑升级服务器实例的配置和低延迟的存储。</td>
+</tr>
+<tr>
+<td>consul client agent</td>
+<td>1）当前节点、当前节点上的服务的健康检查。2）RPC请求转发到 consul server agent。3）每个主机都有一个agent的好处是，只要与本地agent通信。</td>
+</tr>
+<tr>
+<td>Datacenter</td>
+<td>可以理解为一个 consul 集群。一个consul 集群至少有一个 consul server agent。</td>
+</tr>
+<tr>
+<td>LAN gossip pool</td>
+<td>单个 Datacenter 内，由 consul server agent 和 consul client agent 组成。pool内成员通过 gossip protocol 通信。</td>
+</tr>
+<tr>
+<td>WAN gossip pool</td>
+<td>跨 Datacenter，由所有 Datacenter 内的 consul server agent 组成。可以跨网络通信。pool内成员通过 gossip protocol 通信。</td>
+</tr>
+<tr>
+<td>service</td>
+<td>一个service对应多个service实例，注册时使用相同的service_name，并使用不同的service_id区分实例。</td>
+</tr>
+</tbody>
+</table>
+<h4 id="参考">参考</h4>
+<ol>
+<li><a href="https://www.consul.io/docs/internals/architecture.html">https://www.consul.io/docs/internals/architecture.html</a></li>
+<li><a href="https://www.consul.io/docs/glossary.html">https://www.consul.io/docs/glossary.html</a></li>
+</ol>
+<h2 id="consul-connect-体验">Consul Connect 体验</h2>
+<h3 id="1-quickstart-consul-connect">1. Quickstart: Consul Connect</h3>
+<p><img src="../../images/consul_connect_demo_service_flow.png" alt="Flow diagram showing end user traffic being sent to the Dashboard Service at port 9002. The dashboard service makes requests for the counting service to the local Connect Proxy at port 5000. This traffic then traverses the Connect mesh over dynamic ports. The traffic exits the Connect mesh from the counting service&rsquo;s local proxy. The proxy sends this traffic to the counting service itself at port 9003."></p>
+<ol>
+<li>Secure Service-to-Service Communication <a href="https://learn.hashicorp.com/consul/developer-mesh/connect-services">https://learn.hashicorp.com/consul/developer-mesh/connect-services</a></li>
+<li>code <a href="https://github.com/hashicorp/demo-consul-101">https://github.com/hashicorp/demo-consul-101</a></li>
+</ol>
+<p>简单说明：</p>
+<ol>
+<li><code>consul agent -dev -config-dir=&quot;./demo-config-localhost&quot; -node=laptop</code> 这里已经完成了service和proxy的注册。这个可以后续脚本化，按需服务注册。</li>
+<li>service本身都不做服务发现和负载均衡。这些事情交给了 sidecar proxy。以dashboard service为例，<code>countingServiceURL = getEnvOrDefault(&quot;COUNTING_SERVICE_URL&quot;, &quot;http://localhost:9001&quot;)</code>，默认读的是本地的9001端口，也就是sidecar proxy的绑定端口。这就是劫持流量。</li>
+<li><code>consul connect proxy -sidecar-for counting-1</code> 需要手动为service创建proxy。这个可以后续脚本化。</li>
+<li>能看出Consul Connect /Service Mesh的好处了：不再侵入业务代码。重复的事情已下沉到基础设施，sidecar proxy处理。</li>
+</ol>
+<h3 id="2-use-envoy">2. use Envoy</h3>
+<p>Use Envoy with Connect <a href="https://learn.hashicorp.com/consul/developer-mesh/connect-envoy">https://learn.hashicorp.com/consul/developer-mesh/connect-envoy</a></p>
+<h3 id="3-canary-deployments-using-traffic-splitting-and-resolution">3. Canary deployments using traffic splitting and resolution</h3>
+<p><img src="../../images/consul-splitting-architecture.png" alt="Architecture diagram of the splitting demo. A web service directly connects to two different versions of the API service through proxies. Consul configures those proxies."></p>
+<p>Traffic Splitting for Service Deployments <a href="https://learn.hashicorp.com/consul/developer-mesh/consul-splitting">https://learn.hashicorp.com/consul/developer-mesh/consul-splitting</a></p>
+<p>code <a href="https://github.com/hashicorp/consul-demo-traffic-splitting">https://github.com/hashicorp/consul-demo-traffic-splitting</a></p>
+<h3 id="4-zipkin-tracing">4. Zipkin tracing</h3>
+<p>code <a href="https://github.com/hashicorp/consul-demo-tracing/tree/master/jaeger">https://github.com/hashicorp/consul-demo-tracing/tree/master/jaeger</a></p>
+<h2 id="基于-consul-微服务改造">基于 Consul 微服务改造</h2>
+<p>不用 Kubernetes 和 Docker。</p>
+<h3 id="服务间通信">服务间通信</h3>
+<p>目的：应用对 consul 无感知，降低应用开发的复杂度。</p>
+<p>需要做如下准备：</p>
+<ol>
+<li>独立服务器安装 consul server agent 集群。负责维护集群状态。</li>
+<li>每台应用服务器都有 consul client agent 运行，并已经连入 consul server agent。负责健康检查，与请求转发。</li>
+<li>每台应用服务器上安装有 envoy 二进制文件。负责sidecar proxy的创建。</li>
+<li>服务注册、注销的工作交给应用的伙伴脚本。</li>
+</ol>
+<p>伙伴脚本的工作：</p>
+<ol>
+<li>启动应用。</li>
+<li>服务注册和健康检查。所需的信息，比如IP可以通过命令取、端口可以从应用启动信息取、服务名是固定的。</li>
+<li>启动 sidecar proxy 进程。</li>
+<li>伙伴脚本还需要监测应用的状态，应用不存在后，发起服务注销。</li>
+<li>consul的健康检查机制会自动把不健康的服务过滤掉，对伙伴脚本的要求没那么高了。</li>
+</ol>
+<h3 id="对外服务">对外服务</h3>
+<p>目的：动态更新 nginx upstream。</p>
+<p>目前，我们使用nginx作为对外服务。使用 consul-template，动态生成 nginx 配置（upstreams）并 reload nginx。</p>
+<p><img src="../../images/consul-nginx-template-arch.png" alt="NGINX and Consul template architecture"></p>
+<h4 id="参考-1">参考</h4>
+<ol>
+<li>Load Balancing with NGINX and Consul Template <a href="https://learn.hashicorp.com/consul/integrations/nginx-consul-template">https://learn.hashicorp.com/consul/integrations/nginx-consul-template</a></li>
+<li>consul-template <a href="https://learn.hashicorp.com/consul/developer-configuration/consul-template">https://learn.hashicorp.com/consul/developer-configuration/consul-template</a></li>
+<li>Manage local application configuration files using templates and data from etcd or consul 与consul-template的思路是一样的 <a href="https://github.com/kelseyhightower/confd">https://github.com/kelseyhightower/conf</a></li>
+</ol>
+<h2 id="一些资料">一些资料</h2>
+<p>可能有帮助。</p>
+<ol>
+<li>Getting Started <a href="https://learn.hashicorp.com/consul?track=getting-started#getting-started">https://learn.hashicorp.com/consul?track=getting-started#getting-started</a></li>
+<li>基于consul构建golang系统分布式服务发现机制（使用Consul HTTP API） <a href="https://segmentfault.com/a/1190000008471221">https://segmentfault.com/a/1190000008471221</a></li>
+<li>Service registry bridge for Docker <a href="https://gliderlabs.github.io/registrator/latest/">https://gliderlabs.github.io/registrator/latest/</a></li>
+</ol>
+
+                    
+                    <HR width="100%" id="EOF">
+                    <p style="color:#777;">Last modified on 2020-04-21</p>
+                    
+                </div>
+            </div>
+            
+            
+            <nav class="post-pagination">
+
+                
+                <a class="newer-posts">
+                    Next<br>No newer posts.
+                </a>
+                
+                
+                
+                <a class="older-posts" href="https://xujiahua.github.io/posts/20200420-use_etcd/">
+                    Previous<br>etcd 小结
+                </a>
+                
+            </nav>
+            <div class="post-comment-wrapper">
+                
+
+
+
+
+
+
+            </div>
+        </div>
+    </div>
+</div>
+
+            </div><div id="single-column-footer">
+Hugo Theme <a href="https://github.com/amazingrise/hugo-theme-diary">Diary</a> by <a href="https://amazingrise.net">Rise</a>
+<br>
+Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopener">Makito</a>'s <a href="https://github.com/SumiMakito/hexo-theme-journal/" target="_blank" rel="noreferrer noopener">Journal.</a> <br>
+<br>
+
+&copy;
+	
+	2020 许嘉华的博客
+	</div>
+    	</div>
+    <script src="https://xujiahua.github.io//js/journal.js"></script>
+    </body>
+</html>
