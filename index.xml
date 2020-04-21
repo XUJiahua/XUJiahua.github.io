@@ -29,7 +29,7 @@
 &lt;li&gt;First class 的服务注册和获取接口。不需要像 etcd 那样在 kv 存储基础上做包装。&lt;/li&gt;
 &lt;li&gt;服务注册，可以是consul 命令，也可以是HTTP API。&lt;/li&gt;
 &lt;li&gt;获取服务注册表，除了 HTTP 接口，还可以使用  DNS 查询接口。&lt;/li&gt;
-&lt;li&gt;健康检查。服务注册的时候可以提供健康检查项，客户端获取服务注册表时consul会过滤掉不健康的service。不担心拿到“脏”服务。健康检查也包括节点的检查。健康检查这个功能，就是一个分布式监控工具。&lt;/li&gt;
+&lt;li&gt;健康检查。服务注册的时候可以提供健康检查项。健康检查机制保证了拿到的服务注册表是“健康”的。健康检查也包括节点的检查。单纯利用 consul 健康检查这个功能，consul 就是一个分布式监控工具。&lt;/li&gt;
 &lt;li&gt;Web 管理界面。节点、服务、健康与否一目了然。&lt;/li&gt;
 &lt;li&gt;Watch 功能。通过 blocking queries/ long-polling HTTP API 的方式得到服务注册表的改变的通知。&lt;/li&gt;
 &lt;li&gt;跨数据中心（取资源）。When a request is made for a resource in another datacenter, the local Consul servers forward an RPC request to the remote Consul servers for that resource and return the results. &lt;a href=&#34;https://learn.hashicorp.com/consul/security-networking/datacenters#data-replication&#34;&gt;https://learn.hashicorp.com/consul/security-networking/datacenters#data-replication&lt;/a&gt;&lt;/li&gt;
@@ -40,7 +40,7 @@
 &lt;p&gt;sidecar proxy 上的功能还有更多扩展，比如：&lt;/p&gt;
 &lt;ol&gt;
 &lt;li&gt;蓝绿部署，A/B 测试。打个比方，一个服务存在两个版本v1, v2，给v1分配80%的流量，给v2分配20%的流量。&lt;/li&gt;
-&lt;li&gt;流量加密。&lt;/li&gt;
+&lt;li&gt;流量加密。authentication and authorization。&lt;/li&gt;
 &lt;li&gt;服务指标的收集。比如HTTP协议的返回状态码。&lt;/li&gt;
 &lt;li&gt;调用链追踪。&lt;/li&gt;
 &lt;li&gt;Intention。可以设置服务与服务之间是否允许连接。Intentions define service based access control for services in the Consul service mesh and are used to control which services are allowed or not allowed to establish connections.&lt;/li&gt;
@@ -56,6 +56,7 @@
 &lt;p&gt;etcd and Consul solve different problems. If looking for a distributed consistent key value store, etcd is a better choice over Consul. If looking for end-to-end cluster service discovery, etcd will not have enough features; choose Kubernetes, Consul, or SmartStack.&lt;/p&gt;
 &lt;p&gt;&lt;a href=&#34;https://github.com/etcd-io/etcd/blob/master/Documentation/learning/why.md#consul&#34;&gt;https://github.com/etcd-io/etcd/blob/master/Documentation/learning/why.md#consul&lt;/a&gt;&lt;/p&gt;
 &lt;/blockquote&gt;
+&lt;p&gt;consul client agent的主要工作是健康检查，所以如果只是key value store的使用场景，可以直接与 consul server agent 交互，就像使用 etcd 那样。&lt;/p&gt;
 &lt;h3 id=&#34;distributed-system-coordinate&#34;&gt;distributed system coordinate&lt;/h3&gt;
 &lt;p&gt;分布式锁，分布式系统的协调 &lt;a href=&#34;https://www.consul.io/docs/internals/sessions.html&#34;&gt;https://www.consul.io/docs/internals/sessions.html&lt;/a&gt; 。使用场景比如Hadoop系统的选主。不过大部分开源分布式系统基本上使用zookeeper和etcd。&lt;/p&gt;
 &lt;h2 id=&#34;核心概念&#34;&gt;核心概念&lt;/h2&gt;
@@ -160,7 +161,7 @@
 &lt;ol&gt;
 &lt;li&gt;Getting Started &lt;a href=&#34;https://learn.hashicorp.com/consul?track=getting-started#getting-started&#34;&gt;https://learn.hashicorp.com/consul?track=getting-started#getting-started&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;基于consul构建golang系统分布式服务发现机制（使用Consul HTTP API） &lt;a href=&#34;https://segmentfault.com/a/1190000008471221&#34;&gt;https://segmentfault.com/a/1190000008471221&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;Service registry bridge for Docker &lt;a href=&#34;https://gliderlabs.github.io/registrator/latest/&#34;&gt;https://gliderlabs.github.io/registrator/latest/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;Service registry bridge for Docker 监听Docker的Unix套接字来获取Docker容器启动和消亡时的事件，并且它会通过在事先配置好的一个可插拔的后端服务中创建新记录的形式自动完成容器的服务注册 &lt;a href=&#34;https://gliderlabs.github.io/registrator/latest/&#34;&gt;https://gliderlabs.github.io/registrator/latest/&lt;/a&gt;&lt;/li&gt;
 &lt;/ol&gt;
 - https://xujiahua.github.io/posts/20200421-use-consul/ - </description>
         </item>

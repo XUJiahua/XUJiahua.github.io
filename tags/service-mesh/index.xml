@@ -21,7 +21,7 @@
  Consul is a service networking solution to connect and secure services across any runtime platform and public or private cloud. https://www.consul.io/
  官方的两个 use case 就是 service discovery, service mesh。
 service discovery 与 etcd 比起来，Consul 的服务发现是开箱即用的。优点如下：
- First class 的服务注册和获取接口。不需要像 etcd 那样在 kv 存储基础上做包装。 服务注册，可以是consul 命令，也可以是HTTP API。 获取服务注册表，除了 HTTP 接口，还可以使用 DNS 查询接口。 健康检查。服务注册的时候可以提供健康检查项，客户端获取服务注册表时consul会过滤掉不健康的service。不担心拿到“脏”服务。健康检查也包括节点的检查。健康检查这个功能，就是一个分布式监控工具。 Web 管理界面。节点、服务、健康与否一目了然。 Watch 功能。通过 blocking queries/ long-polling HTTP API 的方式得到服务注册表的改变的通知。 跨数据中心（取资源）。When a request is made for a resource in another datacenter, the local Consul servers forward an RPC request to the remote Consul servers for that resource and return the results.</description>
+ First class 的服务注册和获取接口。不需要像 etcd 那样在 kv 存储基础上做包装。 服务注册，可以是consul 命令，也可以是HTTP API。 获取服务注册表，除了 HTTP 接口，还可以使用 DNS 查询接口。 健康检查。服务注册的时候可以提供健康检查项。健康检查机制保证了拿到的服务注册表是“健康”的。健康检查也包括节点的检查。单纯利用 consul 健康检查这个功能，consul 就是一个分布式监控工具。 Web 管理界面。节点、服务、健康与否一目了然。 Watch 功能。通过 blocking queries/ long-polling HTTP API 的方式得到服务注册表的改变的通知。 跨数据中心（取资源）。When a request is made for a resource in another datacenter, the local Consul servers forward an RPC request to the remote Consul servers for that resource and return the results.</description>
     </item>
     
   </channel>
