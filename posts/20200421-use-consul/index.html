@@ -598,6 +598,33 @@ Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopene
 						
 							<ul>
 						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#viper" v-on:click="closeDrawer" id="viper-nav">
+										 viper
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
 						
 								<li>
 				 					<a href="#%e5%85%b6%e4%bb%96%e4%b8%80%e4%ba%9b%e8%b5%84%e6%96%99" v-on:click="closeDrawer" id="其他一些资料-nav">
@@ -1139,6 +1166,33 @@ Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopene
 						
 							<ul>
 						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#viper" v-on:click="closeDrawer" id="viper-nav">
+										 viper
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
 						
 								<li>
 				 					<a href="#%e5%85%b6%e4%bb%96%e4%b8%80%e4%ba%9b%e8%b5%84%e6%96%99" v-on:click="closeDrawer" id="其他一些资料-nav">
@@ -1376,11 +1430,26 @@ Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopene
 </ol>
 <h2 id="基于-consul-的配置中心">基于 Consul 的配置中心</h2>
 <p>目前，应用读本地配置文件。</p>
-<p>Viper 对 consul 支持的不够好，需要对viper改造：</p>
+<p>目标，从 consul 读配置文件，并监听配置变化。</p>
+<p>基于 Viper 库和 consul 做了一个demo。 <a href="https://github.com/XUJiahua/consul_config_demo">https://github.com/XUJiahua/consul_config_demo</a></p>
+<h3 id="viper">viper</h3>
+<p><a href="https://github.com/spf13/viper">https://github.com/spf13/viper</a></p>
+<p>其中 Viper 的 remote config 支持的不够好：</p>
 <ol>
-<li>OnConfigChange 对 remote 类配置无效。</li>
-<li>WatchRemoteConfig()与ReadRemoteConfig() 完全没区别。底层都是consul get方法，没有block querying。</li>
-<li>WatchRemoteConfigOnChannel() 确实是block querying，但是没有通知应用代码，有更新的配置，而是默默地更新了！这个PR <a href="https://github.com/spf13/viper/pull/780/files">https://github.com/spf13/viper/pull/780/files</a> 做了这方面的改进。还有加了onRemoteConfigChange的PR <a href="https://github.com/spf13/viper/pull/456/files">https://github.com/spf13/viper/pull/456/files</a> 后面这个PR更好。明天基于这个PR做点改进吧。</li>
+<li>OnConfigChange 对 remote config 无效。</li>
+<li>WatchRemoteConfig()与ReadRemoteConfig() 完全没区别。</li>
+<li>WatchRemoteConfigOnChannel() 是真正有watch功能的方法，但是没有通知应用代码。默默就更新配置了。</li>
+</ol>
+<p>所以基于 PR <a href="https://github.com/spf13/viper/pull/456/files">https://github.com/spf13/viper/pull/456/files</a> 更新了下viper。</p>
+<p>还有个不足。viper remote config 只接收一个 consul/etcd 的地址。</p>
+<p><img src="../../images/image-20200422113501760.png" alt="image-20200422113501760"></p>
+<p>viper 依赖的 crypt 库因为consul api 库只支持一个地址，也支持不了多地址。</p>
+<p><img src="../../images/image-20200422113617179.png" alt="image-20200422113617179"></p>
+<p>有几个解决办法：</p>
+<ol>
+<li>搭配 consul 服务发现使用，只连本地的 consul client agent，client 节点挂了，本机和其上的服务等会标记为失败了，不会影响其他服务。</li>
+<li>保证 consul 地址是高可用的，比如 nginx 代理多个consul 地址。</li>
+<li>更新库，让 consul api 库支持多个地址。参考下 etcd client 的写法。 <a href="https://github.com/etcd-io/etcd/blob/master/client/client.go#L362">https://github.com/etcd-io/etcd/blob/master/client/client.go#L362</a></li>
 </ol>
 <h2 id="其他一些资料">其他：一些资料</h2>
 <p>可能有帮助。</p>

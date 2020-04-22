@@ -343,7 +343,7 @@ Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopene
 <h3 id="etcd-api-client">etcd api client</h3>
 <p>创建了 httpClusterClient。</p>
 <p><img src="../../images/image-20200417151856806.png" alt="image-20200417151856806"></p>
-<p>多个 endpoint 的处理核心逻辑。</p>
+<p>多个 endpoint 的处理核心逻辑。https://github.com/etcd-io/etcd/blob/master/client/client.go#L362</p>
 <p><img src="../../images/image-20200417152639174.png" alt="image-20200417152639174"></p>
 <ol>
 <li>pinned 用于记录好用的连接地址的index，优先使用这个地址。</li>
