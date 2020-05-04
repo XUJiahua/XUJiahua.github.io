@@ -1,0 +1,1098 @@
+<!DOCTYPE html>
+<html><head>
+<title>NUC8i5BEH Hackintosh</title>
+
+<meta charset="utf-8">
+<meta name="X-UA-Compatible" content="IE=edge">
+<meta name="google-site-verification" content="">
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport">
+<meta content="telephone=no" name="format-detection">
+<meta name="description" content="">
+<meta name="renderer" content="webkit">
+<meta name="theme-color" content="#ffffff">
+
+
+
+
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+	ga('create', 'UA-162706610-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+
+
+
+<script src="/vendor/js/jquery.min.js" ></script>
+<script src="/vendor/js/popper.min.js" ></script>
+<script src="/vendor/js/bootstrap.min.js" ></script>
+<script src="/vendor/js/smooth-scroll.polyfills.min.js" ></script>
+<link type="text/css" rel="stylesheet" href="/vendor/css/bootstrap.min.css">
+<script src="/vendor/js/vue.min.js" ></script>
+
+
+
+
+<link rel="stylesheet" href="https://xujiahua.github.io/scss/journal.min.5c667e74038e21ddbb9024b67930f8544e02af62491281cf73fdb817eec2947e.css" integrity="sha256-XGZ&#43;dAOOId27kCS2eTD4VE4Cr2JJEoHPc/24F&#43;7ClH4=" media="screen">
+
+<script src="https://xujiahua.github.io//js/loadCSS.js"></script>
+<script src="https://xujiahua.github.io//js/table.js"></script>
+
+
+<script src="https://xujiahua.github.io//js/toc.js"></script>
+
+
+<script>
+    loadCSS("https://fonts.googleapis.com/css?family=Lora|Montserrat|Fira+Mono|Noto+Serif+SC|Material+Icons");
+</script>
+
+
+
+
+
+
+</head><body>
+    	<div id="app"><div ref="sideContainer" class="side-container">
+    
+    <a class="a-block nav-head false" href="https://xujiahua.github.io/">
+    
+        <div class="nav-title">
+            许嘉华的博客
+        </div>
+        
+    </a>
+
+    <div class="nav-link-list">
+        
+        
+            
+            
+            
+                
+            
+            
+            
+            <a class="a-block nav-link-item active" href="/posts">
+                Archive
+            </a>
+            
+        
+            
+            
+            
+            
+            
+            <a class="a-block nav-link-item false" href="/categories">
+                Categories
+            </a>
+            
+        
+            
+            
+            
+            
+            
+            <a class="a-block nav-link-item false" href="/tags">
+                Tags
+            </a>
+            
+        
+            
+            
+            
+            
+            
+            <a class="a-block nav-link-item false" href="/index.xml">
+                RSS Feed
+            </a>
+            
+        
+    </div>
+
+    
+
+    <div class="nav-footer">
+        
+Hugo Theme <a href="https://github.com/amazingrise/hugo-theme-diary">Diary</a> by <a href="https://amazingrise.net">Rise</a>
+<br>
+Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopener">Makito</a>'s <a href="https://github.com/SumiMakito/hexo-theme-journal/" target="_blank" rel="noreferrer noopener">Journal.</a> <br>
+<br>
+
+&copy;
+	
+	2020 许嘉华的博客
+	
+    </div>
+    
+</div><div ref="extraContainer" class="extra-container">
+    
+    <div class="toc animated-visibility" :class="{ invisible: scrollY <= 140 }">
+
+
+	<div class="toc-content">
+	
+		
+		
+		
+		<center>- CATALOG -</center>
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e6%95%88%e6%9e%9c" v-on:click="closeDrawer" id="效果-nav">
+										 效果
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e6%88%90%e6%9c%ac" v-on:click="closeDrawer" id="成本-nav">
+										 成本
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e4%b8%8d%e8%b6%b3" v-on:click="closeDrawer" id="不足-nav">
+										 不足
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#why-nuc8i5beh" v-on:click="closeDrawer" id="why-nuc8i5beh-nav">
+										 WHY NUC8i5BEH
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#nuc8i5beh-vs-nuc8i5bek" v-on:click="closeDrawer" id="nuc8i5beh-vs-nuc8i5bek-nav">
+										 NUC8i5BEH vs NUC8i5BEK
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#nuc8i5beh-vs-nuc8i7beh" v-on:click="closeDrawer" id="nuc8i5beh-vs-nuc8i7beh-nav">
+										 NUC8i5BEH vs NUC8i7BEH
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#nuc8i5beh-vs-nuc8i7hvk" v-on:click="closeDrawer" id="nuc8i5beh-vs-nuc8i7hvk-nav">
+										 NUC8i5BEH vs NUC8i7HVK
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e5%ae%89%e8%a3%85%e6%95%99%e7%a8%8b" v-on:click="closeDrawer" id="安装教程-nav">
+										 安装教程
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e7%a1%ac%e4%bb%b6%e5%ae%89%e8%a3%85" v-on:click="closeDrawer" id="硬件安装-nav">
+										 硬件安装
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#macos-%e5%ae%89%e8%a3%85" v-on:click="closeDrawer" id="macos-安装-nav">
+										 MacOS 安装
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e6%84%8f%e5%a4%96%e6%83%85%e5%86%b5" v-on:click="closeDrawer" id="意外情况-nav">
+										 意外情况
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#bios-%e9%85%8d%e7%bd%ae" v-on:click="closeDrawer" id="bios-配置-nav">
+										 BIOS 配置
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e5%85%b6%e4%bb%96%e6%95%99%e7%a8%8b" v-on:click="closeDrawer" id="其他教程-nav">
+										 其他教程
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+	</div>
+
+</div>
+    
+    <div class="pagination">
+        <a id="globalBackToTop" class="pagination-action animated-visibility" href="#top" :class="{ invisible: scrollY == 0 }">
+            <i class="material-icons pagination-action-icon">
+                keyboard_arrow_up
+            </i>
+        </a>
+        
+    </div>
+</div><div class="single-column-drawer-container" ref="drawer"
+     v-bind:class="{ 'single-column-drawer-container-active': isDrawerOpen }">
+    <div class="drawer-content">
+        <div class="drawer-menu">
+            
+            
+                
+                
+                
+                    
+                
+                
+                
+                <a class="a-block drawer-menu-item active" href="/posts">
+                    Archive
+                </a>
+                
+            
+                
+                
+                
+                
+                
+                <a class="a-block drawer-menu-item false" href="/categories">
+                    Categories
+                </a>
+                
+            
+                
+                
+                
+                
+                
+                <a class="a-block drawer-menu-item false" href="/tags">
+                    Tags
+                </a>
+                
+            
+                
+                
+                
+                
+                
+                <a class="a-block drawer-menu-item false" href="/index.xml">
+                    RSS Feed
+                </a>
+                
+            
+            
+            <div class="toc">
+
+
+	<div class="toc-content">
+	
+		
+		
+		
+		<center>- CATALOG -</center>
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e6%95%88%e6%9e%9c" v-on:click="closeDrawer" id="效果-nav">
+										 效果
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e6%88%90%e6%9c%ac" v-on:click="closeDrawer" id="成本-nav">
+										 成本
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e4%b8%8d%e8%b6%b3" v-on:click="closeDrawer" id="不足-nav">
+										 不足
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#why-nuc8i5beh" v-on:click="closeDrawer" id="why-nuc8i5beh-nav">
+										 WHY NUC8i5BEH
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#nuc8i5beh-vs-nuc8i5bek" v-on:click="closeDrawer" id="nuc8i5beh-vs-nuc8i5bek-nav">
+										 NUC8i5BEH vs NUC8i5BEK
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#nuc8i5beh-vs-nuc8i7beh" v-on:click="closeDrawer" id="nuc8i5beh-vs-nuc8i7beh-nav">
+										 NUC8i5BEH vs NUC8i7BEH
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#nuc8i5beh-vs-nuc8i7hvk" v-on:click="closeDrawer" id="nuc8i5beh-vs-nuc8i7hvk-nav">
+										 NUC8i5BEH vs NUC8i7HVK
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e5%ae%89%e8%a3%85%e6%95%99%e7%a8%8b" v-on:click="closeDrawer" id="安装教程-nav">
+										 安装教程
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e7%a1%ac%e4%bb%b6%e5%ae%89%e8%a3%85" v-on:click="closeDrawer" id="硬件安装-nav">
+										 硬件安装
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#macos-%e5%ae%89%e8%a3%85" v-on:click="closeDrawer" id="macos-安装-nav">
+										 MacOS 安装
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e6%84%8f%e5%a4%96%e6%83%85%e5%86%b5" v-on:click="closeDrawer" id="意外情况-nav">
+										 意外情况
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#bios-%e9%85%8d%e7%bd%ae" v-on:click="closeDrawer" id="bios-配置-nav">
+										 BIOS 配置
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e5%85%b6%e4%bb%96%e6%95%99%e7%a8%8b" v-on:click="closeDrawer" id="其他教程-nav">
+										 其他教程
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+	</div>
+
+</div>
+            
+        </div>
+    </div>
+</div>
+<transition name="fade">
+    <div v-bind:class="{ 'single-column-drawer-mask': mounted }" v-if="isDrawerOpen" v-on:click="toggleDrawer"></div>
+</transition>
+<nav ref="navBar" class="navbar sticky-top navbar-light single-column-nav-container">
+    <div ref="navBackground" class="nav-background"></div>
+    <div class="container container-narrow nav-content">
+        <button id="nav_dropdown_btn" class="nav-dropdown-toggle" type="button" v-on:click="toggleDrawer">
+            <i class="material-icons">
+                menu
+            </i>
+        </button>
+        <a ref="navTitle" class="navbar-brand" href="https://xujiahua.github.io/">
+            许嘉华的博客
+        </a>
+    </div>
+</nav>
+<div class="single-column-header-container" ref="pageHead"
+     v-bind:style="{ transform: 'translateZ(0px) translateY('+.3*scrollY+'px)', opacity: 1-navOpacity }">
+    <a href="https://xujiahua.github.io/">
+        <div class="single-column-header-title">许嘉华的博客</div>
+        
+
+    </a>
+</div>
+            <div id="content">
+<div ref="streamContainer" class="stream-container">
+    <div class="post-list-container post-list-container-shadow">
+        <div class="post">
+            
+            
+            
+
+            <div class="post-head-wrapper-text-only"
+                 style="background-image: url('/')">
+                <div class="post-title">
+                    NUC8i5BEH Hackintosh
+                    
+                    <div class="post-meta">
+                        
+                        <time itemprop="datePublished">
+                            2020-05-04 13:11
+                        </time>
+                        
+
+                        
+
+                        
+                    </div>
+                </div>
+            </div>
+            
+            <div class="post-body-wrapper">
+                <div class="post-body">
+                    <p>买了个 NUC8i5BEH 当玩具，不怎么折腾的方式体验下黑苹果。</p>
+<p><img src="../../images/image-20200504145011481.png" alt="image-20200504145011481"></p>
+<h2 id="效果">效果</h2>
+<p><img src="../../images/image-20200504132303349.png" alt="image-20200504132303349"></p>
+<p>与我的 2018 MBP 13.3 做对比。处理器、显卡是一样的。用很少的钱提升内存，16GB 2133 DDR3 -&gt; 32GB 2400 DDR4。</p>
+<p><img src="../../images/image-20200504132417310.png" alt="image-20200504132417310"></p>
+<h3 id="成本">成本</h3>
+<p>大概 ￥4000。2018年买的MacBook近￥15000。</p>
+<ol>
+<li>NUC8i5BEH ￥2379</li>
+<li>DDR4 2400 16 GB X 2 笔记本内存条 ￥978</li>
+<li>500GB M.2 SSD 大约￥600（不在这次消费计划里，从现有机器抠出来的）</li>
+</ol>
+<h3 id="不足">不足</h3>
+<p>WiFi、蓝牙，以及之上的AirDrop等功能缺失。</p>
+<p>网上有解决方案，主要是网卡使用Macbook的配件替代。感觉配件也不便宜，应该是炒热了。用网线，不折腾了。</p>
+<h2 id="why-nuc8i5beh">WHY NUC8i5BEH</h2>
+<p>豆子峡谷 NUC8i5BEH 机箱真的小！性能也不差。可以说，是最具性价比的了。</p>
+<p>能做这么小，机箱与电源分离的设计功不可没。- -!</p>
+<p><img src="../../images/v2-80ec6cb9eb82fa2c5e0e16cbda516f41_720w.jpg" alt="v2-80ec6cb9eb82fa2c5e0e16cbda516f41_720w"></p>
+<h3 id="nuc8i5beh-vs-nuc8i5bek">NUC8i5BEH vs NUC8i5BEK</h3>
+<p>BEH 胖版，BEK 瘦版。瘦版差一个 2.5 寸盘位。硬盘只有一个M.2插槽。网卡魔改的方案使用M.2插槽，这样BEK就不能放硬盘了。BEH 虽然胖一点，还是很mini。</p>
+<h3 id="nuc8i5beh-vs-nuc8i7beh">NUC8i5BEH vs NUC8i7BEH</h3>
+<p>区别在CPU。差大约￥700。</p>
+<h3 id="nuc8i5beh-vs-nuc8i7hvk">NUC8i5BEH vs NUC8i7HVK</h3>
+<p>冥王峡谷 NUC8i7HVK 拥有 AMD 显卡。不玩电脑游戏，AMD卡又不方便做深度学习，另外小机身大功耗散热问题一定存在，就不考虑了。价格￥6000 起。那就非常没有必要了。</p>
+<h2 id="安装教程">安装教程</h2>
+<h3 id="硬件安装">硬件安装</h3>
+<p>插内存条和硬盘，看说明书就行。</p>
+<h3 id="macos-安装">MacOS 安装</h3>
+<p>MacOS是认硬件的，所以直接按照Apple官方制作MacOS启动盘的方式肯定不行。目前主要是用 Clover/OpenCore 等 BootLoader 骗过系统。安装过程中有两个阶段：U盘启动，硬盘启动，为了能够顺利进入系统，都要对它们的EFI分区进行修改。</p>
+<p>根据这个图文教程（NUC8i5BEH 黑果安装教程 <a href="https://www.jianshu.com/p/ebd6054d4799">https://www.jianshu.com/p/ebd6054d4799</a> ），完成了 Mojave 的安装。图文教程对新人来说比较友好，对细节也有详细描述。（因为使用高手们封装好的镜像，U盘 EFI 分区在这个教程里就忽略了。）</p>
+<p>这个教程大差不差，但也是费了很长时间。</p>
+<h4 id="意外情况">意外情况</h4>
+<ol>
+<li>主要问题，引导很慢，一直是白苹果进度条的画面。睡了一觉起来还是这个状态，真的很气啊。</li>
+</ol>
+<p>重启重试多几次。慢慢发现，要是2~3分钟进度条没走完，大概率是卡住了。多重启几次，总会有转机的。不明白到底发生了什么，所以这步操作运气成分很大。</p>
+<ol start="2">
+<li>引导过程中遇到白苹果变成了禁止标志。</li>
+</ol>
+<p>重启重试即可。</p>
+<ol start="3">
+<li>Mojave的镜像文件，内置的证书过期了。报错信息应用程序副本已损坏。</li>
+</ol>
+<p>参考 <a href="https://blog.csdn.net/qq_41855420/article/details/102762647">https://blog.csdn.net/qq_41855420/article/details/102762647</a></p>
+<ol start="4">
+<li>另外注意，MacOS 选择文件系统 APFS（教程中用的默认选项），适合SSD。</li>
+</ol>
+<h4 id="bios-配置">BIOS 配置</h4>
+<p><em>仅作记录</em></p>
+<ul>
+<li>Boot -&gt; Boot Configuration, disable &ldquo;<strong>Network Boot</strong>&rdquo;</li>
+<li>Power -&gt; Secondary Power Settings, &ldquo;<strong>Wake on LAN from S4/S5</strong>&quot;, set to &ldquo;<strong>Stay Off</strong>&rdquo;</li>
+<li>Boot -&gt; Secure Boot, disable &ldquo;<strong>Secure Boot</strong>&rdquo;</li>
+<li>Devices -&gt; OnBoard Devices, disable &ldquo;<strong>Bluetooth</strong>&rdquo; (macOS is not compatible well with Intel Wi-Fi/Bluetooth)</li>
+</ul>
+<p>Suggested:</p>
+<ul>
+<li>Boot -&gt; Boot Priority -&gt; Legacy Boot Priority, enable &ldquo;<strong>Legacy Boot</strong>&quot;.</li>
+</ul>
+<p>参考 <a href="https://github.com/sarkrui/NUC8i7BEH-Hackintosh-Build">https://github.com/sarkrui/NUC8i7BEH-Hackintosh-Build</a></p>
+<h4 id="其他教程">其他教程</h4>
+<ol>
+<li>[GUIDE] Building a Mac mini beast with NUC8i7BEH <a href="https://github.com/sarkrui/NUC8i7BEH-Hackintosh-Build">https://github.com/sarkrui/NUC8i7BEH-Hackintosh-Build</a></li>
+</ol>
+<p>包含如何处理WiFi、蓝牙模块。</p>
+<ol start="2">
+<li>NUC8I5BEH Hackintosh <a href="https://github.com/csrutil/NUC8I5BEH">https://github.com/csrutil/NUC8I5BEH</a></li>
+</ol>
+<p>配置文件可以直接使用。不算是教程。描述得比较简略。不懂的还是不懂。</p>
+
+                    
+                    <HR width="100%" id="EOF">
+                    <p style="color:#777;">Last modified on 2020-05-04</p>
+                    
+                </div>
+            </div>
+            
+            
+            <nav class="post-pagination">
+
+                
+                <a class="newer-posts">
+                    Next<br>No newer posts.
+                </a>
+                
+                
+                
+                <a class="older-posts" href="https://xujiahua.github.io/posts/20200421-use-consul/">
+                    Previous<br>consul 小结
+                </a>
+                
+            </nav>
+            <div class="post-comment-wrapper">
+                
+
+
+
+
+
+
+            </div>
+        </div>
+    </div>
+</div>
+
+            </div><div id="single-column-footer">
+Hugo Theme <a href="https://github.com/amazingrise/hugo-theme-diary">Diary</a> by <a href="https://amazingrise.net">Rise</a>
+<br>
+Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopener">Makito</a>'s <a href="https://github.com/SumiMakito/hexo-theme-journal/" target="_blank" rel="noreferrer noopener">Journal.</a> <br>
+<br>
+
+&copy;
+	
+	2020 许嘉华的博客
+	</div>
+    	</div>
+    <script src="https://xujiahua.github.io//js/journal.js"></script>
+    </body>
+</html>

@@ -6,10 +6,30 @@
     <description>Recent content in Posts on 许嘉华的博客</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Tue, 21 Apr 2020 09:01:38 +0800</lastBuildDate>
+    <lastBuildDate>Mon, 04 May 2020 13:11:09 +0800</lastBuildDate>
     
 	<atom:link href="https://xujiahua.github.io/posts/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>NUC8i5BEH Hackintosh</title>
+      <link>https://xujiahua.github.io/posts/20200504-hackintosh/</link>
+      <pubDate>Mon, 04 May 2020 13:11:09 +0800</pubDate>
+      
+      <guid>https://xujiahua.github.io/posts/20200504-hackintosh/</guid>
+      <description>买了个 NUC8i5BEH 当玩具，不怎么折腾的方式体验下黑苹果。
+效果 与我的 2018 MBP 13.3 做对比。处理器、显卡是一样的。用很少的钱提升内存，16GB 2133 DDR3 -&amp;gt; 32GB 2400 DDR4。
+成本 大概 ￥4000。2018年买的MacBook近￥15000。
+ NUC8i5BEH ￥2379 DDR4 2400 16 GB X 2 笔记本内存条 ￥978 500GB M.2 SSD 大约￥600（不在这次消费计划里，从现有机器抠出来的）  不足 WiFi、蓝牙，以及之上的AirDrop等功能缺失。
+网上有解决方案，主要是网卡使用Macbook的配件替代。感觉配件也不便宜，应该是炒热了。用网线，不折腾了。
+WHY NUC8i5BEH 豆子峡谷 NUC8i5BEH 机箱真的小！性能也不差。可以说，是最具性价比的了。
+能做这么小，机箱与电源分离的设计功不可没。- -!
+NUC8i5BEH vs NUC8i5BEK BEH 胖版，BEK 瘦版。瘦版差一个 2.5 寸盘位。硬盘只有一个M.2插槽。网卡魔改的方案使用M.2插槽，这样BEK就不能放硬盘了。BEH 虽然胖一点，还是很mini。
+NUC8i5BEH vs NUC8i7BEH 区别在CPU。差大约￥700。
+NUC8i5BEH vs NUC8i7HVK 冥王峡谷 NUC8i7HVK 拥有 AMD 显卡。不玩电脑游戏，AMD卡又不方便做深度学习，另外小机身大功耗散热问题一定存在，就不考虑了。价格￥6000 起。那就非常没有必要了。
+安装教程 硬件安装 插内存条和硬盘，看说明书就行。
+MacOS 安装 MacOS是认硬件的，所以直接按照Apple官方制作MacOS启动盘的方式肯定不行。目前主要是用 Clover/OpenCore 等 BootLoader 骗过系统。安装过程中有两个阶段：U盘启动，硬盘启动，为了能够顺利进入系统，都要对它们的EFI分区进行修改。</description>
+    </item>
     
     <item>
       <title>consul 小结</title>
