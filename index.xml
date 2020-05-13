@@ -79,6 +79,11 @@
 &lt;li&gt;Boot -&amp;gt; Boot Priority -&amp;gt; Legacy Boot Priority, enable &amp;ldquo;&lt;strong&gt;Legacy Boot&lt;/strong&gt;&amp;quot;.&lt;/li&gt;
 &lt;/ul&gt;
 &lt;p&gt;参考 &lt;a href=&#34;https://github.com/sarkrui/NUC8i7BEH-Hackintosh-Build&#34;&gt;https://github.com/sarkrui/NUC8i7BEH-Hackintosh-Build&lt;/a&gt;&lt;/p&gt;
+&lt;h4 id=&#34;apple-id--icloud--app-store&#34;&gt;Apple ID / iCloud / App Store&lt;/h4&gt;
+&lt;p&gt;不考虑 iMessage / FaceTime，没使用场景。&lt;/p&gt;
+&lt;p&gt;按照网上说法，只要生成随机三码（工具按照规则生成），使用 iCloud / App Store 没什么问题。&lt;/p&gt;
+&lt;p&gt;参考 &lt;a href=&#34;https://www.jianshu.com/p/78510cfa4a64&#34;&gt;https://www.jianshu.com/p/78510cfa4a64&lt;/a&gt; （最后一节）&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200513100122246.png&#34; alt=&#34;image-20200513100122246&#34;&gt;&lt;/p&gt;
 &lt;h4 id=&#34;其他教程&#34;&gt;其他教程&lt;/h4&gt;
 &lt;ol&gt;
 &lt;li&gt;[GUIDE] Building a Mac mini beast with NUC8i7BEH &lt;a href=&#34;https://github.com/sarkrui/NUC8i7BEH-Hackintosh-Build&#34;&gt;https://github.com/sarkrui/NUC8i7BEH-Hackintosh-Build&lt;/a&gt;&lt;/li&gt;
