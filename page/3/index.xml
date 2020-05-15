@@ -5,9 +5,40 @@
     <description>Recent content on 许嘉华的博客</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Mon, 04 May 2020 13:11:09 +0800</lastBuildDate>
+    <lastBuildDate>Thu, 14 May 2020 13:38:12 +0800</lastBuildDate>
     
         <atom:link href="https://xujiahua.github.io/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    
+        <item>
+        <title>使用Go Modules</title>
+        <link>https://xujiahua.github.io/posts/20200228-go-modules/</link>
+        <pubDate>Fri, 28 Feb 2020 15:05:18 +0800</pubDate>
+        
+        <guid>https://xujiahua.github.io/posts/20200228-go-modules/</guid>
+        <description>许嘉华的博客 https://xujiahua.github.io/posts/20200228-go-modules/ -&lt;p&gt;Go Modules使用着感觉不错，Go终于有正常点的依赖管理工具了。记录一二。&lt;/p&gt;
+&lt;h2 id=&#34;使用小结&#34;&gt;使用小结&lt;/h2&gt;
+&lt;ol&gt;
+&lt;li&gt;go.mod, go.sum加入版本管理 Both go.mod and go.sum should be checked into version control.&lt;/li&gt;
+&lt;li&gt;直接依赖体现在go.mod，间接依赖由直接依赖自己管理，这是个递归的过程 Only direct dependencies are recorded in the go.mod file.&lt;/li&gt;
+&lt;li&gt;go命令自动管理go.mod，这可太方便了 When it encounters an import of a package not provided   by any module in go.mod, the go command automatically   looks up the module containing that package and adds it to   go.mod, using the latest version.&lt;/li&gt;
+&lt;li&gt;看着比之前的依赖管理好用很多。比如dep。因为网络下载包等问题，最后把依赖包全checkin到vendor目录了。太臃肿。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2 id=&#34;常用命令&#34;&gt;常用命令&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;go mod init&lt;/code&gt; creates a new module, initializing the go.mod file that describes it.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;go build&lt;/code&gt;,&lt;code&gt; go test&lt;/code&gt;, and other package-building commands add new dependencies to go.mod as needed.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;go list -m&lt;/code&gt; all prints the current module’s dependencies.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;go get&lt;/code&gt; changes the required version of a dependency (or adds a new dependency).&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;go mod tidy&lt;/code&gt; removes unused dependencies.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;代理&#34;&gt;代理&lt;/h2&gt;
+&lt;p&gt;国内网络的问题，加上下面这行就好很多了。&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;# Set the GOPROXY environment variable
+export GOPROXY=https://goproxy.io
+&lt;/code&gt;&lt;/pre&gt;- https://xujiahua.github.io/posts/20200228-go-modules/ - </description>
+        </item>
     
     
     

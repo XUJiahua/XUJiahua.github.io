@@ -6,10 +6,31 @@
     <description>Recent content in Posts on 许嘉华的博客</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Mon, 04 May 2020 13:11:09 +0800</lastBuildDate>
+    <lastBuildDate>Thu, 14 May 2020 13:38:12 +0800</lastBuildDate>
     
 	<atom:link href="https://xujiahua.github.io/posts/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>微信头像</title>
+      <link>https://xujiahua.github.io/posts/20200514-wx-avatar/</link>
+      <pubDate>Thu, 14 May 2020 13:38:12 +0800</pubDate>
+      
+      <guid>https://xujiahua.github.io/posts/20200514-wx-avatar/</guid>
+      <description>项目需要基于头像、昵称对不同实体账号下的微信用户进行匹配。基于这个思路，打算先下载微信头像的图像，后计算其MD5，“单元测试”了下这个简单方法，结果惊人。
+同一个人的同一个头像链接返回的图像内容都不一样。内容不一样，MD5值也就不一样。
+看来微信对我们这些拙劣的手段早有防备。
+微信头像内容分析 同一个头像链接下载两次。
+$ wget -O 1.png https://wx.qlogo.cn/mmopen/vi_32/DYAIOgq83eoc614h6RfCUnwQTblG9y2dq4g5PKVicVZd5CQO9JNdPCWCovl8cmsvxQcWDemcLYGW6pSt97uUW5A/132 $ wget -O 2.png https://wx.qlogo.cn/mmopen/vi_32/DYAIOgq83eoc614h6RfCUnwQTblG9y2dq4g5PKVicVZd5CQO9JNdPCWCovl8cmsvxQcWDemcLYGW6pSt97uUW5A/132 $ md5 1.png MD5 (1.png) = dd6aa938cbec381a3e83702776be88a3 $ md5 2.png MD5 (2.png) = 83668a6ad7eeee8fa8e5e0db339233d1 肉眼比较 肉眼完全无法区分。
+字节级比较 两张图，可以看出差异很大。
+像素级比较 为了方便对比，图先灰度化（一个像素点的RGB三值改为1个值）。
+两张灰度图差值的数据分布。x轴为差值，y轴为出现次数。
+0代表相同位置的像素点相同，非0代表相同位置像素点有差异及其差异幅度。
+0出现次数最多，可见两张图的大部分像素点的值是相同的。差异主要分为两部分，1-10 闭区间。（试了几张图）
+另一种可视化，白色代表两图相同位置像素点不同。可见，图片污染非常严重。
+上图生成脚本：
+import numpy as np from PIL import Image def read_to_2d_array(filename): img = Image.open(filename) img = img.convert(&amp;#39;L&amp;#39;) print(img.size) return np.array(img) data1 = read_to_2d_array(&amp;#34;1.png&amp;#34;) data2 = read_to_2d_array(&amp;#34;2.png&amp;#34;) # NOTE: np.uint8(3) - np.</description>
+    </item>
     
     <item>
       <title>NUC8i5BEH Hackintosh</title>
