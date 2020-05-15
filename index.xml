@@ -114,7 +114,7 @@ size_options &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; [
 &lt;li&gt;相似图片搜索的原理 &lt;a href=&#34;http://www.ruanyifeng.com/blog/2011/07/principle_of_similar_image_search.html&#34;&gt;http://www.ruanyifeng.com/blog/2011/07/principle_of_similar_image_search.html&lt;/a&gt;&lt;/li&gt;
 &lt;/ol&gt;
 &lt;h2 id=&#34;总结&#34;&gt;总结&lt;/h2&gt;
-&lt;p&gt;微信为了保护用户隐私，防止通过头像昵称进行用户匹配，对每次通过头像链接获取的头像内容加入了随机的扰动，像素点扰动幅度范围在 [-10, 10]，大概15%的像素点（两份干扰图的差异），肉眼难以察觉。&lt;/p&gt;
+&lt;p&gt;微信为了保护用户隐私，防止通过头像昵称进行用户匹配，对每次通过头像链接获取的头像内容加入了随机的扰动，像素点扰动幅度范围在 [-10, 10]，大概15%的像素点（两份干扰图的差异）受干扰，图像的差异肉眼难以察觉。&lt;/p&gt;
 &lt;p&gt;最终图像哈希用于 SQL JOIN，需要将有些许差异的图像映射成一个值。不考虑相似度算法。&lt;/p&gt;
 &lt;p&gt;通过在图像色彩、尺寸上降维，初步解决了这个问题。&lt;/p&gt;
 - https://xujiahua.github.io/posts/20200514-wx-avatar/ - </description>
