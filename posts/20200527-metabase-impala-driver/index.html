@@ -1,0 +1,1281 @@
+<!DOCTYPE html>
+<html><head>
+<title>Metabase Impala Driver</title>
+
+<meta charset="utf-8">
+<meta name="X-UA-Compatible" content="IE=edge">
+<meta name="google-site-verification" content="">
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport">
+<meta content="telephone=no" name="format-detection">
+<meta name="description" content="">
+<meta name="renderer" content="webkit">
+<meta name="theme-color" content="#ffffff">
+
+
+
+
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+	ga('create', 'UA-162706610-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+
+
+
+<script src="/vendor/js/jquery.min.js" ></script>
+<script src="/vendor/js/popper.min.js" ></script>
+<script src="/vendor/js/bootstrap.min.js" ></script>
+<script src="/vendor/js/smooth-scroll.polyfills.min.js" ></script>
+<link type="text/css" rel="stylesheet" href="/vendor/css/bootstrap.min.css">
+<script src="/vendor/js/vue.min.js" ></script>
+
+
+
+
+<link rel="stylesheet" href="https://xujiahua.github.io/scss/journal.min.5c667e74038e21ddbb9024b67930f8544e02af62491281cf73fdb817eec2947e.css" integrity="sha256-XGZ&#43;dAOOId27kCS2eTD4VE4Cr2JJEoHPc/24F&#43;7ClH4=" media="screen">
+
+<script src="https://xujiahua.github.io//js/loadCSS.js"></script>
+<script src="https://xujiahua.github.io//js/table.js"></script>
+
+
+<script src="https://xujiahua.github.io//js/toc.js"></script>
+
+
+<script>
+    loadCSS("https://fonts.googleapis.com/css?family=Lora|Montserrat|Fira+Mono|Noto+Serif+SC|Material+Icons");
+</script>
+
+
+
+
+
+
+</head><body>
+    	<div id="app"><div ref="sideContainer" class="side-container">
+    
+    <a class="a-block nav-head false" href="https://xujiahua.github.io/">
+    
+        <div class="nav-title">
+            许嘉华的博客
+        </div>
+        
+    </a>
+
+    <div class="nav-link-list">
+        
+        
+            
+            
+            
+                
+            
+            
+            
+            <a class="a-block nav-link-item active" href="/posts">
+                Archive
+            </a>
+            
+        
+            
+            
+            
+            
+            
+            <a class="a-block nav-link-item false" href="/categories">
+                Categories
+            </a>
+            
+        
+            
+            
+            
+            
+            
+            <a class="a-block nav-link-item false" href="/tags">
+                Tags
+            </a>
+            
+        
+            
+            
+            
+            
+            
+            <a class="a-block nav-link-item false" href="/index.xml">
+                RSS Feed
+            </a>
+            
+        
+    </div>
+
+    
+
+    <div class="nav-footer">
+        
+Hugo Theme <a href="https://github.com/amazingrise/hugo-theme-diary">Diary</a> by <a href="https://amazingrise.net">Rise</a>
+<br>
+Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopener">Makito</a>'s <a href="https://github.com/SumiMakito/hexo-theme-journal/" target="_blank" rel="noreferrer noopener">Journal.</a> <br>
+<br>
+
+&copy;
+	
+	2020 许嘉华的博客
+	
+    </div>
+    
+</div><div ref="extraContainer" class="extra-container">
+    
+    <div class="toc animated-visibility" :class="{ invisible: scrollY <= 140 }">
+
+
+	<div class="toc-content">
+	
+		
+		
+		
+		<center>- CATALOG -</center>
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e8%83%8c%e6%99%af" v-on:click="closeDrawer" id="背景-nav">
+										 背景
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e7%8e%b0%e6%9c%89%e9%a9%b1%e5%8a%a8%e6%8e%a2%e7%b4%a2" v-on:click="closeDrawer" id="现有驱动探索-nav">
+										 现有驱动探索
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e6%90%ad%e5%bb%ba-impala-%e5%bc%80%e5%8f%91%e7%8e%af%e5%a2%83" v-on:click="closeDrawer" id="搭建-impala-开发环境-nav">
+										 搭建 Impala 开发环境
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e5%b0%9d%e8%af%95-mwullinkmetabase" v-on:click="closeDrawer" id="尝试-mwullinkmetabase-nav">
+										 尝试 mwullink/metabase
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e4%bd%bf%e7%94%a8%e5%ae%98%e6%96%b9-sparksql-%e9%a9%b1%e5%8a%a8" v-on:click="closeDrawer" id="使用官方-sparksql-驱动-nav">
+										 使用官方 sparksql 驱动
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#db-metadata-%e5%90%8c%e6%ad%a5%e5%87%ba%e9%94%99" v-on:click="closeDrawer" id="db-metadata-同步出错-nav">
+										 db-metadata 同步出错
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e8%87%aa%e5%b7%b1%e5%86%99%e9%a9%b1%e5%8a%a8" v-on:click="closeDrawer" id="自己写驱动-nav">
+										 自己写驱动
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#sparksql-%e5%8c%85%e4%b8%ad%e6%96%b0%e5%a2%9e%e4%b8%80%e4%b8%aa-impala-driver" v-on:click="closeDrawer" id="sparksql-包中新增一个-impala-driver-nav">
+										 sparksql 包中新增一个 impala driver
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#sparksql-%e5%8c%85%e7%9a%84%e4%be%9d%e8%b5%96%e9%97%ae%e9%a2%98-%e5%ad%98%e9%87%8fbug" v-on:click="closeDrawer" id="sparksql-包的依赖问题-存量bug-nav">
+										 sparksql 包的依赖问题 （存量bug）
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#uberjar-%e7%9a%84%e5%bc%8a%e7%ab%af" v-on:click="closeDrawer" id="uberjar-的弊端-nav">
+										 uberjar 的弊端
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e9%a2%98%e5%a4%96%e8%af%9d-sparksql-deps" v-on:click="closeDrawer" id="题外话-sparksql-deps-nav">
+										 题外话 sparksql-deps
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#todo-%e6%96%b0%e5%a2%9e-impala-%e5%8c%85" v-on:click="closeDrawer" id="todo-新增-impala-包-nav">
+										 TODO 新增 impala 包
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#impala-jdbc-driver" v-on:click="closeDrawer" id="impala-jdbc-driver-nav">
+										 Impala JDBC Driver
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e6%80%bb%e7%bb%93" v-on:click="closeDrawer" id="总结-nav">
+										 总结
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+	</div>
+
+</div>
+    
+    <div class="pagination">
+        <a id="globalBackToTop" class="pagination-action animated-visibility" href="#top" :class="{ invisible: scrollY == 0 }">
+            <i class="material-icons pagination-action-icon">
+                keyboard_arrow_up
+            </i>
+        </a>
+        
+    </div>
+</div><div class="single-column-drawer-container" ref="drawer"
+     v-bind:class="{ 'single-column-drawer-container-active': isDrawerOpen }">
+    <div class="drawer-content">
+        <div class="drawer-menu">
+            
+            
+                
+                
+                
+                    
+                
+                
+                
+                <a class="a-block drawer-menu-item active" href="/posts">
+                    Archive
+                </a>
+                
+            
+                
+                
+                
+                
+                
+                <a class="a-block drawer-menu-item false" href="/categories">
+                    Categories
+                </a>
+                
+            
+                
+                
+                
+                
+                
+                <a class="a-block drawer-menu-item false" href="/tags">
+                    Tags
+                </a>
+                
+            
+                
+                
+                
+                
+                
+                <a class="a-block drawer-menu-item false" href="/index.xml">
+                    RSS Feed
+                </a>
+                
+            
+            
+            <div class="toc">
+
+
+	<div class="toc-content">
+	
+		
+		
+		
+		<center>- CATALOG -</center>
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e8%83%8c%e6%99%af" v-on:click="closeDrawer" id="背景-nav">
+										 背景
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e7%8e%b0%e6%9c%89%e9%a9%b1%e5%8a%a8%e6%8e%a2%e7%b4%a2" v-on:click="closeDrawer" id="现有驱动探索-nav">
+										 现有驱动探索
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e6%90%ad%e5%bb%ba-impala-%e5%bc%80%e5%8f%91%e7%8e%af%e5%a2%83" v-on:click="closeDrawer" id="搭建-impala-开发环境-nav">
+										 搭建 Impala 开发环境
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e5%b0%9d%e8%af%95-mwullinkmetabase" v-on:click="closeDrawer" id="尝试-mwullinkmetabase-nav">
+										 尝试 mwullink/metabase
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e4%bd%bf%e7%94%a8%e5%ae%98%e6%96%b9-sparksql-%e9%a9%b1%e5%8a%a8" v-on:click="closeDrawer" id="使用官方-sparksql-驱动-nav">
+										 使用官方 sparksql 驱动
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#db-metadata-%e5%90%8c%e6%ad%a5%e5%87%ba%e9%94%99" v-on:click="closeDrawer" id="db-metadata-同步出错-nav">
+										 db-metadata 同步出错
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e8%87%aa%e5%b7%b1%e5%86%99%e9%a9%b1%e5%8a%a8" v-on:click="closeDrawer" id="自己写驱动-nav">
+										 自己写驱动
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#sparksql-%e5%8c%85%e4%b8%ad%e6%96%b0%e5%a2%9e%e4%b8%80%e4%b8%aa-impala-driver" v-on:click="closeDrawer" id="sparksql-包中新增一个-impala-driver-nav">
+										 sparksql 包中新增一个 impala driver
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#sparksql-%e5%8c%85%e7%9a%84%e4%be%9d%e8%b5%96%e9%97%ae%e9%a2%98-%e5%ad%98%e9%87%8fbug" v-on:click="closeDrawer" id="sparksql-包的依赖问题-存量bug-nav">
+										 sparksql 包的依赖问题 （存量bug）
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#uberjar-%e7%9a%84%e5%bc%8a%e7%ab%af" v-on:click="closeDrawer" id="uberjar-的弊端-nav">
+										 uberjar 的弊端
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e9%a2%98%e5%a4%96%e8%af%9d-sparksql-deps" v-on:click="closeDrawer" id="题外话-sparksql-deps-nav">
+										 题外话 sparksql-deps
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#todo-%e6%96%b0%e5%a2%9e-impala-%e5%8c%85" v-on:click="closeDrawer" id="todo-新增-impala-包-nav">
+										 TODO 新增 impala 包
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#impala-jdbc-driver" v-on:click="closeDrawer" id="impala-jdbc-driver-nav">
+										 Impala JDBC Driver
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e6%80%bb%e7%bb%93" v-on:click="closeDrawer" id="总结-nav">
+										 总结
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+	</div>
+
+</div>
+            
+        </div>
+    </div>
+</div>
+<transition name="fade">
+    <div v-bind:class="{ 'single-column-drawer-mask': mounted }" v-if="isDrawerOpen" v-on:click="toggleDrawer"></div>
+</transition>
+<nav ref="navBar" class="navbar sticky-top navbar-light single-column-nav-container">
+    <div ref="navBackground" class="nav-background"></div>
+    <div class="container container-narrow nav-content">
+        <button id="nav_dropdown_btn" class="nav-dropdown-toggle" type="button" v-on:click="toggleDrawer">
+            <i class="material-icons">
+                menu
+            </i>
+        </button>
+        <a ref="navTitle" class="navbar-brand" href="https://xujiahua.github.io/">
+            许嘉华的博客
+        </a>
+    </div>
+</nav>
+<div class="single-column-header-container" ref="pageHead"
+     v-bind:style="{ transform: 'translateZ(0px) translateY('+.3*scrollY+'px)', opacity: 1-navOpacity }">
+    <a href="https://xujiahua.github.io/">
+        <div class="single-column-header-title">许嘉华的博客</div>
+        
+
+    </a>
+</div>
+            <div id="content">
+<div ref="streamContainer" class="stream-container">
+    <div class="post-list-container post-list-container-shadow">
+        <div class="post">
+            
+            
+            
+
+            <div class="post-head-wrapper-text-only"
+                 style="background-image: url('/')">
+                <div class="post-title">
+                    Metabase Impala Driver
+                    
+                    <div class="post-meta">
+                        
+                        <time itemprop="datePublished">
+                            2020-05-27 12:16
+                        </time>
+                        
+
+                        
+
+                        
+                    </div>
+                </div>
+            </div>
+            
+            <div class="post-body-wrapper">
+                <div class="post-body">
+                    <p>Metabase 版本：v0.35.3</p>
+<h2 id="背景">背景</h2>
+<p>我们的数据仓库是 Hadoop/Hive 体系的。Hadoop 版本采用的是 CDH 发行版。在这个背景下 SQL on Hadoop 的方案有 Hive/Impala/(SparkSQL)。作为 BI 数据库，Impala 在我们的场景下比较合适。</p>
+<ol>
+<li>Hive：太慢了。做 ETL 可以，BI 非常不适。</li>
+<li>SparkSQL：CDH 官方 Spark 不含 Thrift Server。为了能够使用 Metabase ，独立于 CDH 启了个 Thrift Server，用着还不错。问题就在于缺乏统一管理，比如 Kerberos 的管理就得自己写脚本处理、进程 OOM 挂掉了 CDH Manager 也监测不到。</li>
+<li>Impala：CDH 官方出品，为 BI 而设计，由 CDH Manager 管理。根据这份报告，见下参考链接，Impala 好于 SparkSQL。</li>
+</ol>
+<p>出于尽可能复用已有基础设施的目的，选择 Impala。而 Metabase 官方、社区并不提供 Impala 驱动。本文就是为了探索并解决这个问题。</p>
+<p>参考：</p>
+<ol>
+<li>开源OLAP引擎测评报告(SparkSql、Presto、Impala、HAWQ、ClickHouse、GreenPlum) <a href="http://www.clickhouse.com.cn/topic/5c453371389ad55f127768ea">http://www.clickhouse.com.cn/topic/5c453371389ad55f127768ea</a></li>
+</ol>
+<h2 id="现有驱动探索">现有驱动探索</h2>
+<h3 id="搭建-impala-开发环境">搭建 Impala 开发环境</h3>
+<p>使用 Cloudera Quickstart Docker 镜像（官方已经下架 quickstart vm ）。其中，Impala版本 2.5.0。（我们的生产环境：CDH 6.3.2 Impala 3.2.0 Hive 2.1.1）</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">docker run --name cloudera_quickstart --hostname<span style="color:#f92672">=</span>quickstart.cloudera <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>--privileged<span style="color:#f92672">=</span>true -t -i -d -p 8888:8888 -p 80:80 -p 10000:10000 -p 7180:7180 <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>-p 21050:21050 -p 50070:50070 -p 50075:50075 -p 50010:50010 -p 50020:50020 <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>-p 8020:8020 cloudera/quickstart /usr/bin/docker-quickstart
+</code></pre></div><p>一些端口使用的说明：</p>
+<table>
+<thead>
+<tr>
+<th>Port</th>
+<th>Use</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>80</td>
+<td>Tutorial</td>
+</tr>
+<tr>
+<td>8888</td>
+<td>HUE</td>
+</tr>
+<tr>
+<td>21050</td>
+<td>Impala</td>
+</tr>
+<tr>
+<td>10000</td>
+<td>Hive</td>
+</tr>
+</tbody>
+</table>
+<p>注意：关闭再启动容器，Impala进程并没有重启。重启 Impala 最直接的方法就是重建容器。</p>
+<p>参考：</p>
+<ol>
+<li>quickstart docker image <a href="https://hub.docker.com/r/cloudera/quickstart">https://hub.docker.com/r/cloudera/quickstart</a></li>
+<li>15分钟——在Docker启动Cloudera并开始体验 <a href="https://xieshaohu.wordpress.com/2019/02/26/15%E5%88%86%E9%92%9F-%E5%9C%A8docker%E5%90%AF%E5%8A%A8cloudera%E5%B9%B6%E5%BC%80%E5%A7%8B%E4%BD%93%E9%AA%8C/">https://xieshaohu.wordpress.com/2019/02/26/15%E5%88%86%E9%92%9F-%E5%9C%A8docker%E5%90%AF%E5%8A%A8cloudera%E5%B9%B6%E5%BC%80%E5%A7%8B%E4%BD%93%E9%AA%8C/</a></li>
+</ol>
+<h3 id="尝试-mwullinkmetabase">尝试 mwullink/metabase</h3>
+<p>在 metabase issue 里看到一个关掉的关于Impala的PR，这方面的资料真的很少。如下：</p>
+<ol>
+<li>Support Apache Impala database #3002 #3749 <a href="https://github.com/metabase/metabase/pull/3749">https://github.com/metabase/metabase/pull/3749</a></li>
+<li>Support Apache Impala database #3002 <a href="https://github.com/metabase/metabase/issues/3002">https://github.com/metabase/metabase/issues/3002</a></li>
+</ol>
+<p>可惜，并没有被合并到官方库。尝试编译作者mwullink的metabase版本。 <a href="https://github.com/mwullink/metabase">https://github.com/mwullink/metabase</a></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">git clone https://github.com/mwullink/metabase.git metabase-mwullink
+</code></pre></div><p>这个metabase版本太老了，前端依赖还是node 4.4.7（warning You are using Node &ldquo;4.4.7&rdquo; which is not supported and may encounter bugs or unexpected behavior. Yarn supports the following semver range: &ldquo;^4.8.0 || ^5.7.0 || ^6.2.2 || &gt;=8.0.0&rdquo;），另外yarn对node4.x也有兼容问题（ <a href="https://github.com/yarnpkg/yarn/issues/6900">https://github.com/yarnpkg/yarn/issues/6900</a> ）。</p>
+<p>特殊处理逻辑：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e"># nvm 安装 node 4.x 版本</span>
+nvm install lts/argon
+
+<span style="color:#75715e"># 修改 node 版本</span>
+vim package.json
+  <span style="color:#e6db74">&#34;engines&#34;</span>: <span style="color:#f92672">{</span>
+    <span style="color:#e6db74">&#34;node&#34;</span>: <span style="color:#e6db74">&#34;4.9.1&#34;</span>,
+    <span style="color:#e6db74">&#34;npm&#34;</span>: <span style="color:#e6db74">&#34;2.15.11&#34;</span>
+  <span style="color:#f92672">}</span>,
+  
+<span style="color:#75715e"># 安装老版本的yarn</span>
+npm --global install yarn@1.12.3
+
+<span style="color:#75715e"># 这样就可以了</span>
+./bin/build
+</code></pre></div><p>运行：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e"># jar目录</span>
+cd ./target/uberjar
+
+<span style="color:#75715e"># 将impala驱动放这里。下载和安装参考 https://github.com/metabase/metabase/pull/3749/files</span>
+mkdir plugins
+
+<span style="color:#75715e"># 换个端口号，本地还有其他版本metabase运行</span>
+java -DMB_JETTY_PORT<span style="color:#f92672">=</span><span style="color:#ae81ff">12345</span> -jar metabase.jar
+</code></pre></div><p>效果：</p>
+<ol>
+<li>可以直接写SQL查询，基于查询结果也能做 chart/dashboard。</li>
+<li>但是metadata（比如表结构）并没有同步。SQL查询的右边表结构也不会显示，filter功能受影响。</li>
+<li>metadata没有同步，也没有报错信息。（作为对比，连mysql是有metadata同步的。）</li>
+</ol>
+<h3 id="使用官方-sparksql-驱动">使用官方 sparksql 驱动</h3>
+<p>尝试使用 sparksql 驱动来连接 Impala 数据库。</p>
+<p>因为 SparkSQL 的 thrift server 复用的是 HiveServer2 的实现，架构如下图。而 Impala 可以使用 Hive 的JDBC Driver （ <a href="https://impala.apache.org/docs/build/html/topics/impala_jdbc.html">https://impala.apache.org/docs/build/html/topics/impala_jdbc.html</a> <a href="https://docs.cloudera.com/documentation/enterprise/latest/topics/impala_jdbc.html#jdbc_driver_choice">https://docs.cloudera.com/documentation/enterprise/latest/topics/impala_jdbc.html#jdbc_driver_choice</a> ）。</p>
+<p><img src="../../images/image-20200520093534168.png" alt="image-20200520093534168"></p>
+<p>效果：</p>
+<ol>
+<li>可以直接写SQL查询，基于查询结果也能做chart/dashboard。</li>
+<li>但是表结构并没有同步。SQL查询的右边表结构也不会显示，filter功能受影响。</li>
+<li><strong>同步有报错信息。终于有线索了</strong></li>
+</ol>
+<h4 id="db-metadata-同步出错">db-metadata 同步出错</h4>
+<p><img src="../../images/image-20200525102147780.png" alt="image-20200525102147780"></p>
+<p>第10行的这个方法崩了。</p>
+<p><img src="../../images/image-20200525162346701.png" alt="image-20200525162346701"></p>
+<p>方法 <code>driver/describe-database</code> 的作用是获取db的所有表。方法 <code>driver/describe-table</code>的作用是获取table的字段信息 。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-clojure" data-lang="clojure">(<span style="color:#66d9ef">defmulti </span>describe-database
+  <span style="color:#e6db74">&#34;Return a map containing information that describes all of the tables in a `database`, an instance of the `Database`
+</span><span style="color:#e6db74">  model. It is expected that this function will be peformant and avoid draining meaningful resources of the database.
+</span><span style="color:#e6db74">  Results should match the `metabase.sync.interface/DatabaseMetadata` schema.&#34;</span>
+  {<span style="color:#e6db74">:arglists</span> <span style="color:#f92672">&#39;</span>([driver database])}
+  dispatch-on-initialized-driver
+  <span style="color:#e6db74">:hierarchy</span> <span style="color:#f92672">#</span><span style="color:#e6db74">&#39;hierarchy</span>)
+
+(<span style="color:#66d9ef">defmulti </span>describe-table
+  <span style="color:#e6db74">&#34;Return a map containing information that describes the physical schema of `table` (i.e. the fields contained
+</span><span style="color:#e6db74">  therein). `database` will be an instance of the `Database` model; and `table`, an instance of the `Table` model. It is
+</span><span style="color:#e6db74">  expected that this function will be peformant and avoid draining meaningful resources of the database. Results
+</span><span style="color:#e6db74">  should match the `metabase.sync.interface/TableMetadata` schema.&#34;</span>
+  {<span style="color:#e6db74">:arglists</span> <span style="color:#f92672">&#39;</span>([driver database table])}
+  dispatch-on-initialized-driver
+  <span style="color:#e6db74">:hierarchy</span> <span style="color:#f92672">#</span><span style="color:#e6db74">&#39;hierarchy</span>)
+</code></pre></div><p>这（两）个方法调用失败，Metabase 上自然就没有表结构信息了。</p>
+<p>sparksql驱动“重载”了这两个方法。初步怀疑与重载有关，sparksql 的父驱动 jdbc-sql 是有默认实现的，尝试注释掉重载。</p>
+<p><img src="../../images/image-20200525163902594.png" alt="image-20200525163902594"></p>
+<p>神奇地发现，注释掉这两个方法，可以直接通过sparksql驱动连接impala服务器了。</p>
+<p>猜想，SparkSQL的Thrift Server和Impala  Server实现有差异，SparkSQL Thrift Server可能因为有设计缺陷，需要在驱动上打上补丁。</p>
+<h2 id="自己写驱动">自己写驱动</h2>
+<p>基于最新版 Metabase 0.35.3 开发。（尝试编译 master 分支，发现打包结果 <code>java -jar metabase.jar</code> 报错。）</p>
+<p>自己写驱动，目前来看有两条路：</p>
+<ol>
+<li>通过分析 sparksql 驱动的报错信息，貌似找到了连接 Impala 数据库的方式。为了兼容现有的 sparksql 实现，在 sparksql 包中新增一个 impala 文件（复用hive-like父类实现，与sparksql 平行）。</li>
+<li>新增一个驱动包 impala。基于Impala官方的JDBC驱动实现。需要系统理解下 Metabase 驱动开发逻辑。</li>
+</ol>
+<p>当然，都需要对 Metabase 有一定熟悉程度，先看下文档。</p>
+<h3 id="sparksql-包中新增一个-impala-driver">sparksql 包中新增一个 impala driver</h3>
+<p>按照上述思路，代码提交在这里。</p>
+<p><a href="https://github.com/XUJiahua/metabase/tree/driver-impala-in-sparksql/modules/drivers/sparksql">https://github.com/XUJiahua/metabase/tree/driver-impala-in-sparksql/modules/drivers/sparksql</a></p>
+<p>本地测试。</p>
+<p><img src="../../images/image-20200526165539889.png" alt="image-20200526165539889"></p>
+<p><img src="../../images/image-20200526165644979.png" alt="image-20200526165644979"></p>
+<p><img src="../../images/image-20200526165735569.png" alt="image-20200526165735569"></p>
+<h4 id="sparksql-包的依赖问题-存量bug">sparksql 包的依赖问题 （存量bug）</h4>
+<p>如果服务端启用了 Kerberos 认证，会有这个问题。</p>
+<p><img src="../../images/image-20200527105225274.png" alt="image-20200527105225274"></p>
+<pre><code>05-27 10:39:39 ERROR driver.util :: Database connection error
+java.lang.IllegalArgumentException: Unrecognized Hadoop major version number: 3.1.1
+	at org.apache.hadoop.hive.shims.ShimLoader.getMajorVersion(ShimLoader.java:174)
+	at org.apache.hadoop.hive.shims.ShimLoader.loadShims(ShimLoader.java:139)
+	at org.apache.hadoop.hive.shims.ShimLoader.getHadoopThriftAuthBridge(ShimLoader.java:125)
+	at org.apache.hive.service.auth.KerberosSaslHelper.getKerberosTransport(KerberosSaslHelper.java:54)
+	at org.apache.hive.jdbc.HiveConnection.createBinaryTransport(HiveConnection.java:445)
+	at org.apache.hive.jdbc.HiveConnection.openTransport(HiveConnection.java:201)
+	at org.apache.hive.jdbc.HiveConnection.&lt;init&gt;(HiveConnection.java:176)
+</code></pre><p>sparksql jar 包依赖：</p>
+<pre><code># 作为 hadoop 基础包，含 Kerberos 认证逻辑代码
+org.apache.hadoop/hadoop-common &quot;3.1.1&quot;
+
+# 1.x 系列最后一个版本
+org.apache.hive/hive-jdbc &quot;1.2.1&quot;
+</code></pre><p>根据报错信息找到了Hive的源代码：</p>
+<p><img src="../../images/image-20200527110418542.png" alt="image-20200527110418542"></p>
+<p><a href="https://github.com/apache/hive/blob/release-1.2.1/shims/common/src/main/java/org/apache/hadoop/hive/shims/ShimLoader.java#L159">https://github.com/apache/hive/blob/release-1.2.1/shims/common/src/main/java/org/apache/hadoop/hive/shims/ShimLoader.java#L159</a></p>
+<p>所以 org.apache.hive/hive-jdbc &ldquo;1.2.1&rdquo; 压根就不兼容 org.apache.hadoop/hadoop-common &ldquo;3.x&rdquo; 版本的。人写代码的时候没测到这个case。</p>
+<p>解决方式，引用hadoop-common 2.x最后一个版本：</p>
+<pre><code>org.apache.hadoop/hadoop-common &quot;2.10.0&quot;
+</code></pre><p>重新编译打包后效果OK。</p>
+<h4 id="uberjar-的弊端">uberjar 的弊端</h4>
+<p>Metabase为了方便包的分发，整个项目、驱动都是uberjar的打包思路。弊端其实也挺明显。JDBC 驱动与数据库的兼容性问题，一般是适配数据库，JDBC 驱动被 uberjar 后，想换驱动就得重新编译源码。</p>
+<p>比如 Hive Server 1.1.0，Hive JDBC 1.2.1 就连不上。开源产品的兼容性问题让人头秃。</p>
+<p>TODO：驱动不再uberjar，可以使用自己需要的依赖版本，比如我们使用 CDH 6.x 的 hadoop/hive jar包。</p>
+<h4 id="题外话-sparksql-deps">题外话 sparksql-deps</h4>
+<p>网上有个老版本的sparksql 驱动包 <a href="https://s3.amazonaws.com/sparksql-deps/metabase-sparksql-deps-1.2.1.spark2-standalone.jar">https://s3.amazonaws.com/sparksql-deps/metabase-sparksql-deps-1.2.1.spark2-standalone.jar</a> 。之前解决这个问题，就是将其放到plugins目录。究其原因，其引用的hadoop-common版本是2.x的。</p>
+<p><img src="../../images/image-20200527111551416.png" alt="image-20200527111551416"></p>
+<p>而其源码包括历史记录（ <a href="https://github.com/metabase/sparksql-deps">https://github.com/metabase/sparksql-deps</a> ）的hadoop-common版本是3.1.0。不要被误导了。</p>
+<h3 id="todo-新增-impala-包">TODO 新增 impala 包</h3>
+<p>需要系统了解下驱动是怎么写的。</p>
+<ol>
+<li>有整体思路，教程有点缺失 <a href="https://github.com/metabase/metabase/wiki/Writing-a-Driver">https://github.com/metabase/metabase/wiki/Writing-a-Driver</a></li>
+<li>引用本地jar包（Impala jar包是本地） <a href="https://github.com/kumarshantanu/lein-localrepo">https://github.com/kumarshantanu/lein-localrepo</a></li>
+</ol>
+<h4 id="impala-jdbc-driver">Impala JDBC Driver</h4>
+<p>我们可以使用JDBC 4.2版本的。其兼容性也挺高的。本地Impala 2.5.0，生产Impala 3.2.0都覆盖了。</p>
+<p><img src="../../images/image-20200524093032785.png" alt="image-20200524093032785"></p>
+<p>（Impala JDBC Driver压缩包内的文档）</p>
+<h2 id="总结">总结</h2>
+<p>通过摸索，改进 Metabase sparksql 包后，我们可以使用 Impala 了。至于有多少坑，还得等我深度使用后才知道。</p>
+<p>代码 <a href="https://github.com/XUJiahua/metabase/tree/driver-impala-in-sparksql">https://github.com/XUJiahua/metabase/tree/driver-impala-in-sparksql</a></p>
+<p>因为时间关系，留下一些 TODO ，未完待续。</p>
+<h2 id="heading"></h2>
+
+                    
+                    <HR width="100%" id="EOF">
+                    <p style="color:#777;">Last modified on 2020-05-27</p>
+                    
+                </div>
+            </div>
+            
+            
+            <nav class="post-pagination">
+
+                
+                <a class="newer-posts">
+                    Next<br>No newer posts.
+                </a>
+                
+                
+                
+                <a class="older-posts" href="https://xujiahua.github.io/posts/20200514-wx-avatar/">
+                    Previous<br>微信用户授权头像内容带随机干扰的问题
+                </a>
+                
+            </nav>
+            <div class="post-comment-wrapper">
+                
+
+
+
+
+
+
+            </div>
+        </div>
+    </div>
+</div>
+
+            </div><div id="single-column-footer">
+Hugo Theme <a href="https://github.com/amazingrise/hugo-theme-diary">Diary</a> by <a href="https://amazingrise.net">Rise</a>
+<br>
+Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopener">Makito</a>'s <a href="https://github.com/SumiMakito/hexo-theme-journal/" target="_blank" rel="noreferrer noopener">Journal.</a> <br>
+<br>
+
+&copy;
+	
+	2020 许嘉华的博客
+	</div>
+    	</div>
+    <script src="https://xujiahua.github.io//js/journal.js"></script>
+    </body>
+</html>

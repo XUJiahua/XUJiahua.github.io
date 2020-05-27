@@ -5,9 +5,261 @@
     <description>Recent content on 许嘉华的博客</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Thu, 14 May 2020 13:38:12 +0800</lastBuildDate>
+    <lastBuildDate>Wed, 27 May 2020 12:16:36 +0800</lastBuildDate>
     
         <atom:link href="https://xujiahua.github.io/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    
+        <item>
+        <title>CDH6 启用 Spark Thrift Server</title>
+        <link>https://xujiahua.github.io/posts/20200410-spark-thrift-server-cdh/</link>
+        <pubDate>Fri, 10 Apr 2020 10:07:16 +0800</pubDate>
+        
+        <guid>https://xujiahua.github.io/posts/20200410-spark-thrift-server-cdh/</guid>
+        <description>许嘉华的博客 https://xujiahua.github.io/posts/20200410-spark-thrift-server-cdh/ -&lt;p&gt;很遗憾，CDH版本的Spark阉割了Thrift Server。（可能与自家产品Impala有竞争关系的原因。）&lt;/p&gt;
+&lt;p&gt;参考 &lt;a href=&#34;https://docs.cloudera.com/documentation/enterprise/6/6.3/topics/spark.html#spark__d99299e107&#34;&gt;https://docs.cloudera.com/documentation/enterprise/6/6.3/topics/spark.html#spark__d99299e107&lt;/a&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;# ll /opt/cloudera/parcels/CDH/lib/spark/sbin/
+total 84
+-rwxr-xr-x 1 root root 2803 Nov  9 00:05 slaves.sh
+-rwxr-xr-x 1 root root 1429 Nov  9 00:05 spark-config.sh
+-rwxr-xr-x 1 root root 5689 Nov  9 00:05 spark-daemon.sh
+-rwxr-xr-x 1 root root 1262 Nov  9 00:05 spark-daemons.sh
+-rwxr-xr-x 1 root root 1190 Nov  9 00:05 start-all.sh
+-rwxr-xr-x 1 root root 1274 Nov  9 00:05 start-history-server.sh
+-rwxr-xr-x 1 root root 2050 Nov  9 00:05 start-master.sh
+-rwxr-xr-x 1 root root 1877 Nov  9 00:05 start-mesos-dispatcher.sh
+-rwxr-xr-x 1 root root 1423 Nov  9 00:05 start-mesos-shuffle-service.sh
+-rwxr-xr-x 1 root root 1279 Nov  9 00:05 start-shuffle-service.sh
+-rwxr-xr-x 1 root root 3151 Nov  9 00:05 start-slave.sh
+-rwxr-xr-x 1 root root 1527 Nov  9 00:05 start-slaves.sh
+-rwxr-xr-x 1 root root 1478 Nov  9 00:05 stop-all.sh
+-rwxr-xr-x 1 root root 1056 Nov  9 00:05 stop-history-server.sh
+-rwxr-xr-x 1 root root 1080 Nov  9 00:05 stop-master.sh
+-rwxr-xr-x 1 root root 1227 Nov  9 00:05 stop-mesos-dispatcher.sh
+-rwxr-xr-x 1 root root 1084 Nov  9 00:05 stop-mesos-shuffle-service.sh
+-rwxr-xr-x 1 root root 1067 Nov  9 00:05 stop-shuffle-service.sh
+-rwxr-xr-x 1 root root 1557 Nov  9 00:05 stop-slave.sh
+-rwxr-xr-x 1 root root 1064 Nov  9 00:05 stop-slaves.sh
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;可见，没有Thrift Server的启动脚本。&lt;/p&gt;
+&lt;p&gt;借鉴网上资料（CDH 6成功启动spark-thrift服务 &lt;a href=&#34;https://blog.csdn.net/qq_34864753/article/details/102729859&#34;&gt;https://blog.csdn.net/qq_34864753/article/details/102729859&lt;/a&gt;），在不修改CDH Spark的前提下，我们需要启动一个独立的Spark Thrift Server。&lt;/p&gt;
+&lt;p&gt;还需要考虑CDH Kerberos认证的问题。&lt;/p&gt;
+&lt;h2 id=&#34;spark-thrift-server-简介&#34;&gt;Spark Thrift Server 简介&lt;/h2&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/sparksqlthriftserver.png&#34; alt=&#34;Spark SQL Thrift Server&#34;&gt;&lt;/p&gt;
+&lt;p&gt;Spark Thrift Server是Spark社区基于HiveServer2实现的一个Thrift服务。旨在无缝兼容HiveServer2。&lt;/p&gt;
+&lt;p&gt;因为Spark Thrift Server的接口和协议都和HiveServer2完全一致，因此我们部署好Spark Thrift Server后，可以直接使用hive的beeline访问Spark Thrift Server执行相关语句。&lt;/p&gt;
+&lt;p&gt;Spark Thrift Server的目的也只是取代HiveServer2，因此它依旧可以和Hive Metastore进行交互，获取到hive的元数据。&lt;/p&gt;
+&lt;p&gt;参考 &lt;a href=&#34;https://www.jianshu.com/p/b719c6415411&#34;&gt;https://www.jianshu.com/p/b719c6415411&lt;/a&gt;&lt;/p&gt;
+&lt;h2 id=&#34;apache-spark配置&#34;&gt;Apache Spark配置&lt;/h2&gt;
+&lt;h3 id=&#34;下载官方版本&#34;&gt;下载官方版本&lt;/h3&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;cd /opt
+wget https://archive.apache.org/dist/spark/spark-2.4.0/spark-2.4.0-bin-hadoop2.7.tgz
+cd spark-2.4.0-bin-hadoop2.7 &lt;span style=&#34;color:#f92672&#34;&gt;&amp;amp;&amp;amp;&lt;/span&gt; ln -s &lt;span style=&#34;color:#e6db74&#34;&gt;`&lt;/span&gt;pwd&lt;span style=&#34;color:#e6db74&#34;&gt;`&lt;/span&gt; /opt/spark
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;spark配置文件&#34;&gt;Spark配置文件&lt;/h3&gt;
+&lt;p&gt;通过软链接的方式复用Hive的配置。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;ln -s /etc/hive/conf/hive-site.xml /opt/spark/conf/hive-site.xml
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;最后配置文件夹长这样。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# ll /opt/spark/conf/&lt;/span&gt;
+-rw-r--r-- &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt; webapp webapp  &lt;span style=&#34;color:#ae81ff&#34;&gt;996&lt;/span&gt; Oct &lt;span style=&#34;color:#ae81ff&#34;&gt;29&lt;/span&gt;  &lt;span style=&#34;color:#ae81ff&#34;&gt;2018&lt;/span&gt; docker.properties.template
+-rw-r--r-- &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt; webapp webapp &lt;span style=&#34;color:#ae81ff&#34;&gt;1105&lt;/span&gt; Oct &lt;span style=&#34;color:#ae81ff&#34;&gt;29&lt;/span&gt;  &lt;span style=&#34;color:#ae81ff&#34;&gt;2018&lt;/span&gt; fairscheduler.xml.template
+lrwxrwxrwx &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt; root   root     &lt;span style=&#34;color:#ae81ff&#34;&gt;28&lt;/span&gt; Apr  &lt;span style=&#34;color:#ae81ff&#34;&gt;9&lt;/span&gt; 11:05 hive-site.xml -&amp;gt; /etc/hive/conf/hive-site.xml
+-rw-r--r-- &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt; webapp webapp &lt;span style=&#34;color:#ae81ff&#34;&gt;2025&lt;/span&gt; Oct &lt;span style=&#34;color:#ae81ff&#34;&gt;29&lt;/span&gt;  &lt;span style=&#34;color:#ae81ff&#34;&gt;2018&lt;/span&gt; log4j.properties.template
+-rw-r--r-- &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt; webapp webapp &lt;span style=&#34;color:#ae81ff&#34;&gt;7801&lt;/span&gt; Oct &lt;span style=&#34;color:#ae81ff&#34;&gt;29&lt;/span&gt;  &lt;span style=&#34;color:#ae81ff&#34;&gt;2018&lt;/span&gt; metrics.properties.template
+-rw-r--r-- &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt; webapp webapp  &lt;span style=&#34;color:#ae81ff&#34;&gt;865&lt;/span&gt; Oct &lt;span style=&#34;color:#ae81ff&#34;&gt;29&lt;/span&gt;  &lt;span style=&#34;color:#ae81ff&#34;&gt;2018&lt;/span&gt; slaves.template
+-rw-r--r-- &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt; webapp webapp &lt;span style=&#34;color:#ae81ff&#34;&gt;1292&lt;/span&gt; Oct &lt;span style=&#34;color:#ae81ff&#34;&gt;29&lt;/span&gt;  &lt;span style=&#34;color:#ae81ff&#34;&gt;2018&lt;/span&gt; spark-defaults.conf.template
+-rwxr-xr-x &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt; webapp webapp &lt;span style=&#34;color:#ae81ff&#34;&gt;4221&lt;/span&gt; Oct &lt;span style=&#34;color:#ae81ff&#34;&gt;29&lt;/span&gt;  &lt;span style=&#34;color:#ae81ff&#34;&gt;2018&lt;/span&gt; spark-env.sh.template
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h4 id=&#34;spark配置文件配置方式&#34;&gt;Spark配置文件配置方式&lt;/h4&gt;
+&lt;ol&gt;
+&lt;li&gt;默认配置路径：&lt;code&gt;$SPARK_HOME/conf&lt;/code&gt;，如果&lt;code&gt;$SPARK_HOME&lt;/code&gt;不存在，脚本中会把脚本上层目录当做&lt;code&gt;$SPARK_HOME&lt;/code&gt;。&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;$SPARK_CONF_DIR&lt;/code&gt;，可以指定SPARK配置文件夹。&lt;/li&gt;
+&lt;li&gt;Spark classpath，如果&lt;code&gt;hdfs-site.xml&lt;/code&gt; &lt;code&gt;core-site.xml&lt;/code&gt;在classpath，Spark可以读取。&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;$HADOOP_CONF_DIR&lt;/code&gt;，一般是&lt;code&gt;/etc/hadoop/conf&lt;/code&gt;目录，读Hadoop配置信息。&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;$YARN_CONF_DIR&lt;/code&gt;，一般也是&lt;code&gt;/etc/hadoop/conf&lt;/code&gt;目录。&lt;/li&gt;
+&lt;li&gt;命令行中可以覆盖以上配置文件中的具体参数。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;参考 &lt;a href=&#34;https://spark.apache.org/docs/latest/configuration.html#inheriting-hadoop-cluster-configuration&#34;&gt;https://spark.apache.org/docs/latest/configuration.html#inheriting-hadoop-cluster-configuration&lt;/a&gt;&lt;/p&gt;
+&lt;h3 id=&#34;spark-lib修改&#34;&gt;Spark lib修改&lt;/h3&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;cd /opt/spark
+rm -rf jars/hadoop-yarn-*
+cp /opt/cloudera/parcels/CDH-6.3.2-1.cdh6.3.2.p0.1605554/jars/hadoop-yarn-* jars/
+cp /opt/cloudera/parcels/CDH-6.3.2-1.cdh6.3.2.p0.1605554/jars/hive-shims-scheduler-2.1.1-cdh6.3.2.jar jars/
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;kerberos-认证&#34;&gt;Kerberos 认证&lt;/h2&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200410140136660.png&#34; alt=&#34;image-20200410140136660&#34;&gt;&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;图中的三个角色，在Kerkeros认证体系下都对应一个principal。Kerberos principal相当于用户名，keytab相当于密码。权限配置，依靠hive与hdfs本身。&lt;/li&gt;
+&lt;li&gt;JDBC客户端与Spark JDBC Server需要使用Kerberos认证。JDBC客户端需要拥有principal/keytab对。我们手动创建。&lt;/li&gt;
+&lt;li&gt;Spark JDBC Server与Hive metastore需要使用Kerberos认证。JDBC服务端需要拥有principal/keytab对。我们手动创建。&lt;/li&gt;
+&lt;li&gt;Hive metastore也拥有自己的principal/keytab对，不过这个已经由CDH托管了。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;常见Kerberos错误：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;org.apache.hive.service.ServiceException: Unable to login to kerberos with given principal/keytab / Caused by: java.io.IOException: HiveServer2 Kerberos principal or keytab is not correctly configured&lt;/li&gt;
+&lt;li&gt;Caused by: java.io.IOException: Login failure for &lt;a href=&#34;mailto:hive/xh-hd2-peggy-dost000003@PEGGY.LING&#34;&gt;hive/xh-hd2-peggy-dost000003@PEGGY.LING&lt;/a&gt; from keytab hive.keytab: javax.security.auth.login.LoginException: Unable to obtain password from user&lt;/li&gt;
+&lt;li&gt;SASL negotiation failure
+javax.security.sasl.SaslException: GSS initiate failed [Caused by GSSException: No valid credentials provided (Mechanism level: Failed to find any Kerberos tgt)]&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3 id=&#34;创建-spark-jdbc-server-的-principal&#34;&gt;创建 Spark JDBC Server 的 Principal&lt;/h3&gt;
+&lt;p&gt;因为复用了Hive的配置文件，待创建的principal的名字需要满足配置中的规范。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;webapp@xh-hd2-peggy-dost000004 spark&lt;span style=&#34;color:#f92672&#34;&gt;]&lt;/span&gt;$ cat conf/hive-site.xml
+...
+  &amp;lt;property&amp;gt;
+    &amp;lt;name&amp;gt;hive.server2.authentication.kerberos.principal&amp;lt;/name&amp;gt;
+    &amp;lt;value&amp;gt;hive/_HOST@PEGGY.LING&amp;lt;/value&amp;gt;
+  &amp;lt;/property&amp;gt;
+... 
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;在Kerberos服务器创建 principal及导出 keytab，同步到Spark JDBC Server所在机器。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# create principal&lt;/span&gt;
+kadmin.local addprinc -randkey hive/xh-hd2-peggy-dost000004
+&lt;span style=&#34;color:#75715e&#34;&gt;# export keytab&lt;/span&gt;
+kadmin.local ktadd -k hive.xh-hd2-peggy-dost000004.keytab hive/xh-hd2-peggy-dost000004
+&lt;span style=&#34;color:#75715e&#34;&gt;# 验证是否OK&lt;/span&gt;
+kinit -kt hive.xh-hd2-peggy-dost000004.keytab hive/xh-hd2-peggy-dost000004@PEGGY.LING
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;启动-spark-jdbc-server&#34;&gt;启动 Spark JDBC Server&lt;/h3&gt;
+&lt;p&gt;启动脚本如下。因为配置文件里没有指定keytab的路径，需要通过&lt;code&gt;--hiveconf&lt;/code&gt;指定。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;#!/usr/bin/bash
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;
+export JAVA_HOME&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;/usr/java/jdk1.8.0_181-cloudera
+export PATH&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;$PATH:$JAVA_HOME/bin
+export HADOOP_CONF_DIR&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;/etc/hadoop/conf
+
+kinit -kt hive.xh-hd2-peggy-dost000004.keytab hive/xh-hd2-peggy-dost000004@PEGGY.LING
+
+sbin/start-thriftserver.sh &lt;span style=&#34;color:#ae81ff&#34;&gt;\
+&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;&lt;/span&gt;--hiveconf hive.server2.authentication.kerberos.keytab hive.xh-hd2-peggy-dost000004.keytab
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;也可以参考这篇文章：&lt;/p&gt;
+&lt;p&gt;Configuring Spark Thrift Server with Kerberos &lt;a href=&#34;https://mapr.com/docs/61/Spark/ConfiguringSparkSQLThriftServer_Kerberos.html&#34;&gt;https://mapr.com/docs/61/Spark/ConfiguringSparkSQLThriftServer_Kerberos.html&lt;/a&gt;&lt;/p&gt;
+&lt;h4 id=&#34;kinit-ticket过期问题&#34;&gt;kinit ticket过期问题&lt;/h4&gt;
+&lt;p&gt;Spark Thrift Server 进程会自动处理Kerberos ticket renewal操作。&lt;/p&gt;
+&lt;p&gt;默认的ticket_lifetime 1d，renew_lifetime 7d。上次kinit是04/10。&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;[webapp@xh-hd2-peggy-dost000004 spark]$ klist
+Ticket cache: FILE:/tmp/krb5cc_1000
+Default principal: hive/xh-hd2-peggy-dost000004@PEGGY.LING
+
+Valid starting       Expires              Service principal
+04/13/2020 01:32:45  04/14/2020 01:32:45  krbtgt/PEGGY.LING@PEGGY.LING
+	renew until 04/17/2020 15:56:45
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;就看7天后会怎么样了。renew周期过了，会重建么？理论上是可以的。&lt;/p&gt;
+&lt;p&gt;看到Spark代码中已经有kerberos集成了，包括登录啥的。&lt;/p&gt;
+&lt;p&gt;spark/sql/hive-thriftserver/v2.3.5/src/main/java/org/apache/hive/service/auth/HiveAuthFactory.java&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200413110032646.png&#34; alt=&#34;image-20200413110032646&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200413105917167.png&#34; alt=&#34;image-20200413105917167&#34;&gt;&lt;/p&gt;
+&lt;h3 id=&#34;创建-jdbc-client-的-principal&#34;&gt;创建 JDBC Client 的 Principal&lt;/h3&gt;
+&lt;p&gt;在Kerberos服务器创建 principal及导出 keytab，同步到 JDBC Client 所在机器。这里对principal的名称没有严格要求。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# create principal&lt;/span&gt;
+kadmin.local addprinc -randkey hive/xh-hd2-peggy-dost000003
+&lt;span style=&#34;color:#75715e&#34;&gt;# export keytab&lt;/span&gt;
+kadmin.local ktadd -k hive.xh-hd2-peggy-dost000003.keytab hive/xh-hd2-peggy-dost000003 
+&lt;span style=&#34;color:#75715e&#34;&gt;# 验证是否OK&lt;/span&gt;
+kinit -kt hive.xh-hd2-peggy-dost000003.keytab hive/xh-hd2-peggy-dost000003@PEGGY.LING
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;启动-jdbc-client&#34;&gt;启动 JDBC Client&lt;/h3&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;webapp@xh-hd2-peggy-dost000003 spark&lt;span style=&#34;color:#f92672&#34;&gt;]&lt;/span&gt;$ kinit -kt hive.xh-hd2-peggy-dost000003.keytab hive/xh-hd2-peggy-dost000003@PEGGY.LING
+
+&lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;webapp@xh-hd2-peggy-dost000003 spark&lt;span style=&#34;color:#f92672&#34;&gt;]&lt;/span&gt;$ bin/beeline -u &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;jdbc:hive2://xh-hd2-peggy-dost000004:10000/default;principal=hive/xh-hd2-peggy-dost000004@PEGGY.LING&amp;#34;&lt;/span&gt;
+Connecting to jdbc:hive2://xh-hd2-peggy-dost000004:10000/default;principal&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;hive/xh-hd2-peggy-dost000004@PEGGY.LING
+2020-04-10 16:09:01 INFO  Utils:310 - Supplied authorities: xh-hd2-peggy-dost000004:10000
+2020-04-10 16:09:01 INFO  Utils:397 - Resolved authority: xh-hd2-peggy-dost000004:10000
+2020-04-10 16:09:01 INFO  HiveConnection:203 - Will try to open client transport with JDBC Uri: jdbc:hive2://xh-hd2-peggy-dost000004:10000/default;principal&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;hive/xh-hd2-peggy-dost000004@PEGGY.LING
+Connected to: Spark SQL &lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;version 2.4.0&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt;
+Driver: Hive JDBC &lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;version 1.2.1.spark2&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt;
+Transaction isolation: TRANSACTION_REPEATABLE_READ
+Beeline version 1.2.1.spark2 by Apache Hive
+0: jdbc:hive2://xh-hd2-peggy-dost000004:10000&amp;gt; show databases;
++---------------+--+
+| databaseName  |
++---------------+--+
+| db1           |
+| default       |
+| product       |
++---------------+--+
+&lt;span style=&#34;color:#ae81ff&#34;&gt;3&lt;/span&gt; rows selected &lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;0.091 seconds&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;至此，Thrift Server的启用就完成了。&lt;/p&gt;
+&lt;h3 id=&#34;yarn-运行&#34;&gt;YARN 运行&lt;/h3&gt;
+&lt;p&gt;失败了，TODO&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;sbin/start-thriftserver.sh --hiveconf hive.server2.authentication.kerberos.keytab hive.keytab --hiveconf hive.server2.thrift.port=10001 --queue root.zm_yarn_pool.development  --master yarn --executor-memory 4g --executor-cores 2 --num-executors 20
+
+2020-04-09 17:56:19 INFO  Client:54 - Requesting a new application from cluster with 5 NodeManagers
+Exception in thread &amp;quot;main&amp;quot; java.lang.NoClassDefFoundError: org/apache/hadoop/util/FastNumberFormat
+        at org.apache.hadoop.yarn.api.records.ApplicationId.toString(ApplicationId.java:104)
+        at org.apache.spark.deploy.yarn.Client$.org$apache$spark$deploy$yarn$Client$$getAppStagingDir(Client.scala:1222)
+        at org.apache.spark.deploy.yarn.Client.org$apache$spark$deploy$yarn$Client$$cleanupStagingDirInternal$1(Client.scala:206)
+        at org.apache.spark.deploy.yarn.Client.cleanupStagingDir(Client.scala:226)
+        at org.apache.spark.deploy.yarn.Client.submitApplication(Client.scala:191)
+        at org.apache.spark.scheduler.cluster.YarnClientSchedulerBackend.start(YarnClientSchedulerBackend.scala:57)
+        at org.apache.spark.scheduler.TaskSchedulerImpl.start(TaskSchedulerImpl.scala:178)
+        at org.apache.spark.SparkContext.&amp;lt;init&amp;gt;(SparkContext.scala:501)
+        at org.apache.spark.SparkContext$.getOrCreate(SparkContext.scala:2520)
+        at org.apache.spark.sql.SparkSession$Builder$$anonfun$7.apply(SparkSession.scala:935)
+        at org.apache.spark.sql.SparkSession$Builder$$anonfun$7.apply(SparkSession.scala:926)
+        at scala.Option.getOrElse(Option.scala:121)
+&lt;/code&gt;&lt;/pre&gt;&lt;h2 id=&#34;外传cdh是如何管理hadoop配置文件的&#34;&gt;【外传】CDH是如何管理Hadoop配置文件的&lt;/h2&gt;
+&lt;p&gt;以下结果都是通过观察实践所得。&lt;/p&gt;
+&lt;p&gt;以Hive为例，&lt;code&gt;/etc/hive/conf&lt;/code&gt;下的配置文件由CDH生成。（CDH管理界面上可以修改这些配置。）&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# ll /etc/hive/conf/&lt;/span&gt;
+total &lt;span style=&#34;color:#ae81ff&#34;&gt;64&lt;/span&gt;
+-rw-r--r-- &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt; root root   &lt;span style=&#34;color:#ae81ff&#34;&gt;21&lt;/span&gt; Dec &lt;span style=&#34;color:#ae81ff&#34;&gt;31&lt;/span&gt; 15:02 __cloudera_generation__
+-rw-r--r-- &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt; root root   &lt;span style=&#34;color:#ae81ff&#34;&gt;70&lt;/span&gt; Dec &lt;span style=&#34;color:#ae81ff&#34;&gt;31&lt;/span&gt; 15:02 __cloudera_metadata__
+-rw-r--r-- &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt; root root &lt;span style=&#34;color:#ae81ff&#34;&gt;3846&lt;/span&gt; Dec &lt;span style=&#34;color:#ae81ff&#34;&gt;31&lt;/span&gt; 15:02 core-site.xml
+-rw-r--r-- &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt; root root  &lt;span style=&#34;color:#ae81ff&#34;&gt;617&lt;/span&gt; Dec &lt;span style=&#34;color:#ae81ff&#34;&gt;31&lt;/span&gt; 15:02 hadoop-env.sh
+-rw-r--r-- &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt; root root &lt;span style=&#34;color:#ae81ff&#34;&gt;3839&lt;/span&gt; Dec &lt;span style=&#34;color:#ae81ff&#34;&gt;31&lt;/span&gt; 15:02 hdfs-site.xml
+-rw-r--r-- &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt; root root &lt;span style=&#34;color:#ae81ff&#34;&gt;2655&lt;/span&gt; Dec &lt;span style=&#34;color:#ae81ff&#34;&gt;31&lt;/span&gt; 15:02 hive-env.sh
+-rw-r--r-- &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt; root root &lt;span style=&#34;color:#ae81ff&#34;&gt;6925&lt;/span&gt; Dec &lt;span style=&#34;color:#ae81ff&#34;&gt;31&lt;/span&gt; 15:02 hive-site.xml
+...
+
+&lt;span style=&#34;color:#75715e&#34;&gt;# head /etc/hive/conf/hive-site.xml&lt;/span&gt;
+&amp;lt;?xml version&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;1.0&amp;#34;&lt;/span&gt; encoding&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;UTF-8&amp;#34;&lt;/span&gt;?&amp;gt;
+
+&amp;lt;!--Autogenerated by Cloudera Manager--&amp;gt;
+&amp;lt;configuration&amp;gt;
+  &amp;lt;property&amp;gt;
+    &amp;lt;name&amp;gt;hive.metastore.uris&amp;lt;/name&amp;gt;
+    &amp;lt;value&amp;gt;thrift://xh-hd2-peggy-dost001:9083&amp;lt;/value&amp;gt;
+  &amp;lt;/property&amp;gt;
+  &amp;lt;property&amp;gt;
+    &amp;lt;name&amp;gt;hive.metastore.client.socket.timeout&amp;lt;/name&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;我们的集群是开启了Kerberos认证的。但是上述配置文件里没见principal的keytab路径配置。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# grep keytab /etc/hive/conf/hive-site.xml&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;也就是说，&lt;code&gt;/etc/hive/conf&lt;/code&gt;不是真正在被使用的配置文件。&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;/var/run/cloudera-scm-agent/process/&lt;/code&gt; 这个目录中有所有CDH监控的进程，包括我们关注的Hive进程。&lt;/p&gt;
+&lt;p&gt;参考 &lt;a href=&#34;https://community.cloudera.com/t5/Support-Questions/Location-of-keytab-files/td-p/33716&#34;&gt;https://community.cloudera.com/t5/Support-Questions/Location-of-keytab-files/td-p/33716&lt;/a&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;# ls /var/run/cloudera-scm-agent/process/*hive*
+/var/run/cloudera-scm-agent/process/954-hive-HIVEMETASTORE:
+cloudera-monitor.properties        config.zip     creds.localjceks  hdfs-site.xml  hive-log4j2.properties  logs       redaction-rules.json  service-metrics.properties  supervisor_status
+cloudera-stack-monitor.properties  core-site.xml  exit_code         hive.keytab    hive-site.xml           proc.json  sentry-site.xml       supervisor.conf             yarn-conf
+
+/var/run/cloudera-scm-agent/process/955-hive-HIVESERVER2:
+cloudera-monitor.properties        config.zip     exit_code           hdfs-site.xml  hive-log4j2.properties  logs                         navigator.lineage.client.properties  redaction-rules.json  service-metrics.properties  supervisor.conf    yarn-conf
+cloudera-stack-monitor.properties  core-site.xml  fair-scheduler.xml  hive.keytab    hive-site.xml           navigator.client.properties  proc.json                            sentry-site.xml       spark-defaults.conf         supervisor_status
+
+/var/run/cloudera-scm-agent/process/956-hive-WEBHCAT:
+cloudera-monitor.properties        config.zip     exit_code      hive-site.xml  logs       redaction-rules.json        supervisor.conf    webhcat-default.xml       webhcat-site.xml
+cloudera-stack-monitor.properties  core-site.xml  hdfs-site.xml  HTTP.keytab    proc.json  service-metrics.properties  supervisor_status  webhcat-log4j.properties  yarn-conf
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;这里Hive有三个进程，metastore，hiveserver2，WEBHCAT。可见principal对应的keytab，这里的 &lt;code&gt;hive.keytab&lt;/code&gt;，也是在这里维护着。配置文件也是在&lt;code&gt;/etc/hive/conf&lt;/code&gt;基础上作了改动，比如keytab路径的设置。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;root 954-hive-HIVEMETASTORE&lt;span style=&#34;color:#f92672&#34;&gt;]&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# grep kerberos hive-site.xml&lt;/span&gt;
+    &amp;lt;name&amp;gt;hive.metastore.kerberos.principal&amp;lt;/name&amp;gt;
+    &amp;lt;name&amp;gt;hive.metastore.kerberos.keytab.file&amp;lt;/name&amp;gt;
+    &amp;lt;value&amp;gt;kerberos&amp;lt;/value&amp;gt;
+    
+&lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;root 955-hive-HIVESERVER2&lt;span style=&#34;color:#f92672&#34;&gt;]&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# grep kerberos hive-site.xml&lt;/span&gt;
+    &amp;lt;value&amp;gt;kerberos&amp;lt;/value&amp;gt;
+    &amp;lt;name&amp;gt;hive.metastore.kerberos.principal&amp;lt;/name&amp;gt;
+    &amp;lt;name&amp;gt;hive.server2.authentication.kerberos.principal&amp;lt;/name&amp;gt;
+    &amp;lt;name&amp;gt;hive.server2.authentication.kerberos.keytab&amp;lt;/name&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;HiveMetaStore与HiveServer2使用的keytab是不同的。一个principal对应多个keytab么？TODO：可能是因为加密随机的原因？？？&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;root@xh-hd2-peggy-dost001 955-hive-HIVESERVER2&lt;span style=&#34;color:#f92672&#34;&gt;]&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# md5sum hive.keytab&lt;/span&gt;
+523357eec4f542b7b3df7ec52cee43b2  hive.keytab
+
+&lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;root@xh-hd2-peggy-dost001 954-hive-HIVEMETASTORE&lt;span style=&#34;color:#f92672&#34;&gt;]&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# md5sum hive.keytab&lt;/span&gt;
+3c6f52333067518ae4bdce1e99878857  hive.keytab
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;TODO：实验发现，导出两次，之前的keytab就失效了！进入知识盲区。&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;[root@xh-hd2-peggy-rost01 ~]# kadmin.local addprinc -randkey hive/xh-hd2-peggy-dost000003
+[root@xh-hd2-peggy-rost01 ~]# kadmin.local ktadd -k hive.xh-hd2-peggy-dost000003.keytab hive/xh-hd2-peggy-dost000003
+[root@xh-hd2-peggy-rost01 ~]# mv hive.xh-hd2-peggy-dost000003.keytab hive.xh-hd2-peggy-dost000003.keytab.bak
+[root@xh-hd2-peggy-rost01 ~]# kadmin.local ktadd -k hive.xh-hd2-peggy-dost000003.keytab hive/xh-hd2-peggy-dost000003
+[root@xh-hd2-peggy-rost01 ~]# kinit -kt hive.xh-hd2-peggy-dost000003.keytab hive/xh-hd2-peggy-dost000003@PEGGY.LING
+[root@xh-hd2-peggy-rost01 ~]# kinit -kt hive.xh-hd2-peggy-dost000003.keytab.bak hive/xh-hd2-peggy-dost000003@PEGGY.LING
+kinit: Password incorrect while getting initial credentials
+&lt;/code&gt;&lt;/pre&gt;- https://xujiahua.github.io/posts/20200410-spark-thrift-server-cdh/ - </description>
+        </item>
     
     
     
@@ -1185,108 +1437,6 @@ hugo -D
 &lt;li&gt;&lt;a href=&#34;https://gohugo.io/hosting-and-deployment/hosting-on-github/&#34;&gt;https://gohugo.io/hosting-and-deployment/hosting-on-github/&lt;/a&gt;&lt;/li&gt;
 &lt;/ol&gt;
 - https://xujiahua.github.io/posts/20200310-github-pages-restart/ - </description>
-        </item>
-    
-    
-    
-        <item>
-        <title>Hyper-V使用体验</title>
-        <link>https://xujiahua.github.io/posts/20200323-use-hyper-v/</link>
-        <pubDate>Tue, 03 Mar 2020 22:13:23 +0800</pubDate>
-        
-        <guid>https://xujiahua.github.io/posts/20200323-use-hyper-v/</guid>
-        <description>许嘉华的博客 https://xujiahua.github.io/posts/20200323-use-hyper-v/ -&lt;h2 id=&#34;hyper-v-使用体验&#34;&gt;Hyper-V 使用体验&lt;/h2&gt;
-&lt;p&gt;Hyper-V是 Windows10 内置的虚拟机软件，没想到我会用到它。&lt;/p&gt;
-&lt;h3 id=&#34;为什么要用hyper-v&#34;&gt;为什么要用Hyper-V&lt;/h3&gt;
-&lt;ol&gt;
-&lt;li&gt;需要使用虚拟机来模拟Kubernetes环境。&lt;/li&gt;
-&lt;li&gt;Windows Docker依赖Hyper-V。貌似WSL2也是基于Hyper-V。应该是不会卸载Hyper-V了。&lt;/li&gt;
-&lt;li&gt;Hyper-V与其他虚拟机软件（VirtualBox, VMWare）冲突，用不了其他的，只能用Hyper-V。&lt;/li&gt;
-&lt;li&gt;Hyper-V与VirtualBox兼容的方案有没有。可能有，不想过于折腾了，那就不得不用。&lt;/li&gt;
-&lt;/ol&gt;
-&lt;h3 id=&#34;hyper-v好不好用&#34;&gt;Hyper-V好不好用&lt;/h3&gt;
-&lt;ol&gt;
-&lt;li&gt;使用体验太差了，从Mac、从其他虚拟机使用过来，默认配置各种踩坑。&lt;/li&gt;
-&lt;li&gt;安装VM碰到DHCP超时的问题，反复试验无果，重启Windows后VM的DHCP不超时了。总结下，Windows上，如果怎么搞都搞不定，重启下可能就好了。WTF！&lt;/li&gt;
-&lt;li&gt;自带的NAT网络有点残疾，VM配置静态IP，网络就不通了。不像VirtualBox是开箱即用的。&lt;/li&gt;
-&lt;li&gt;最后借助网络上的零碎信息自定义了下NAT网络，各种神奇配置。&lt;/li&gt;
-&lt;li&gt;Windows还是很屎，除了打游戏，开发体验跟我之前的体验一样糟。最后搞定花了我一天时间。要是用VMware/VirtualBox，可能在2个小时内就能搞定。总结，不好用。&lt;/li&gt;
-&lt;/ol&gt;
-&lt;h2 id=&#34;hyper-v-创建和克隆vm&#34;&gt;Hyper-V 创建和克隆VM&lt;/h2&gt;
-&lt;h3 id=&#34;创建vm&#34;&gt;创建VM&lt;/h3&gt;
-&lt;p&gt;从&lt;code&gt;*.iso&lt;/code&gt;文件创建VM。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/465F25A3-07A1-4DB7-90CE-FD02376D4C92.png&#34; alt=&#34;465F25A3-07A1-4DB7-90CE-FD02376D4C92&#34;&gt;&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;注意，Linux VM，不启用Windows Secure Boot。&lt;/li&gt;
-&lt;li&gt;更多选项里，设置VM的名称和交换机。&lt;/li&gt;
-&lt;li&gt;体验不好的地方：左上方的「选择操作系统」区域有长时间的加载过程，即使使用本地镜像文件也得等。&lt;/li&gt;
-&lt;/ol&gt;
-&lt;h3 id=&#34;克隆vm&#34;&gt;克隆VM&lt;/h3&gt;
-&lt;p&gt;从硬盘文件创建VM。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/03603F71-9B97-4ABC-8D1F-91F6CBB6602E.png&#34; alt=&#34;03603F71-9B97-4ABC-8D1F-91F6CBB6602E&#34;&gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/3C85F0B5-0763-468F-9ABC-2FC35AF20235.png&#34; alt=&#34;3C85F0B5-0763-468F-9ABC-2FC35AF20235&#34;&gt;&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;克隆是为了减少重复配置一些基础环境的工作量。&lt;/li&gt;
-&lt;li&gt;不像VirtualBox那样有直观的克隆按钮。摸索出的克隆功能是这样的：就是从VM硬盘创建VM。&lt;/li&gt;
-&lt;li&gt;建议先关机母体VM后，再基于母体VM的硬盘文件克隆。防止母体VM开机状态下一些更新并没有持久化到硬盘文件中。&lt;/li&gt;
-&lt;/ol&gt;
-&lt;h2 id=&#34;hyper-v-nat网络搭建总结&#34;&gt;Hyper-V NAT网络搭建总结&lt;/h2&gt;
-&lt;p&gt;如果使用VMWare/VirtualBox的话，NAT网络是完全自动搭建的。&lt;/p&gt;
-&lt;p&gt;VMWare中有三种网络模式，Bridging、NAT、Host-only分别对应Hyper-V下的三种交换机，外部、内部、专用。&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;Bridging：VM使用物理网络。GUEST VM与HOST相当于通过交换机连上一个网络（细节不确定）。&lt;/li&gt;
-&lt;li&gt;NAT：VM使用虚拟网络，HOST同时连入物理网络和虚拟网络。VM出口流量都会通过HOST，使用HOST IP。&lt;/li&gt;
-&lt;li&gt;Host-only：在NAT基础上，VM连不上外网，除非有路由设置。&lt;/li&gt;
-&lt;/ol&gt;
-&lt;h3 id=&#34;默认的nat网络&#34;&gt;默认的NAT网络&lt;/h3&gt;
-&lt;p&gt;默认交换机支持NAT，但是瑕疵不少，无法满足工作需要。&lt;/p&gt;
-&lt;p&gt;Hyper-V Default Switch + VM DHCP 的组合默认有了NAT功能，满足以下：&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;虚拟机之间可以互相访问&lt;/li&gt;
-&lt;li&gt;虚拟机与物理机之间可以互相访问&lt;/li&gt;
-&lt;li&gt;虚拟机可以访问互联网&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;但是：&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;每次重启，Default Switch的IP都会变，Windows10 物理机上的网卡IPv4配置无法让他不变。&lt;/li&gt;
-&lt;li&gt;ping &lt;a href=&#34;http://baidu.com/&#34;&gt;baidu.com&lt;/a&gt; 启动过程特别慢，估计跟DNS有关。&lt;/li&gt;
-&lt;li&gt;VM设置静态IP，无法访问互联网，NAT就失效了。&lt;/li&gt;
-&lt;/ol&gt;
-&lt;h3 id=&#34;自定义nat网络&#34;&gt;自定义NAT网络&lt;/h3&gt;
-&lt;p&gt;网络拓扑，摘自互联网。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/6EAD4887-1785-47EF-A527-7FF21A70F2DF.png&#34; alt=&#34;6EAD4887-1785-47EF-A527-7FF21A70F2DF&#34;&gt;&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;Hyper-V 管理器中创建一个新的交换机， 并在VM中启用这个交换机。&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/7FF4F0E4-B0D8-4A2E-8D64-668837898471.png&#34; alt=&#34;7FF4F0E4-B0D8-4A2E-8D64-668837898471&#34;&gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/D33768BD-BFD7-4D57-B6B4-CB9A82CDD4AF.png&#34; alt=&#34;D33768BD-BFD7-4D57-B6B4-CB9A82CDD4AF&#34;&gt;&lt;/p&gt;
-&lt;ol start=&#34;2&#34;&gt;
-&lt;li&gt;定义一个C类网络，192.168.246.0，默认网关是192.168.246.1，这个网关地址也会在在物理机网卡上配置的。&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;Ubuntu 18 配置静态IP，搜索关键词Ubuntu netplan即可。不赘述。必须加上nameservers，使用默认的nameserver无法解析域名。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/6186B767-AD19-45FC-81F7-4D7E2DDB0116.png&#34; alt=&#34;6186B767-AD19-45FC-81F7-4D7E2DDB0116&#34;&gt;&lt;/p&gt;
-&lt;ol start=&#34;3&#34;&gt;
-&lt;li&gt;把上面的网关地址填到Windows的这个虚拟网卡上。&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;如果不是填网关地址，网络不通。所以，windows在这里的角色是网关的作用。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/7C3CCA08-E26D-46BE-8DBB-FD207C2AA497.png&#34; alt=&#34;7C3CCA08-E26D-46BE-8DBB-FD207C2AA497&#34;&gt;&lt;/p&gt;
-&lt;p&gt;ifconfig/ipconfig如下：&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/94315174-B7F8-4747-B042-555A903E28DA.png&#34; alt=&#34;94315174-B7F8-4747-B042-555A903E28DA&#34;&gt;&lt;/p&gt;
-&lt;ol start=&#34;4&#34;&gt;
-&lt;li&gt;最后命令行设置NAT&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;这一步最关键。决定了你是否能连互联网。不然只能局域网内连接了。&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;New-NetNat -Name NAT-VM -InternalIPInterfaceAddressPrefix 192.168.246.0/24
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;参考：&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;Hyper V NAT 网络设置 固定IP &lt;a href=&#34;https://www.cnblogs.com/wswind/p/11007613.html&#34;&gt;https://www.cnblogs.com/wswind/p/11007613.html&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;使用hyper-v搭建nat内部网络（与上篇雷同，太多命令行，容易误操作） &lt;a href=&#34;http://kael-aiur.com/%E9%BB%91%E7%A7%91%E6%8A%80/%E4%BD%BF%E7%94%A8hyper-v%E6%90%AD%E5%BB%BAnat%E5%86%85%E9%83%A8%E7%BD%91%E7%BB%9C.html&#34;&gt;http://kael-aiur.com/%E9%BB%91%E7%A7%91%E6%8A%80/%E4%BD%BF%E7%94%A8hyper-v%E6%90%AD%E5%BB%BAnat%E5%86%85%E9%83%A8%E7%BD%91%E7%BB%9C.html&lt;/a&gt;&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;遗留问题：&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;Windows VPN对NAT有影响，相当于断网了。&lt;/li&gt;
-&lt;/ol&gt;
-- https://xujiahua.github.io/posts/20200323-use-hyper-v/ - </description>
         </item>
     
     
