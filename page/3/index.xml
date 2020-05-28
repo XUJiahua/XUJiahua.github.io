@@ -5,9 +5,112 @@
     <description>Recent content on 许嘉华的博客</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Wed, 27 May 2020 12:16:36 +0800</lastBuildDate>
+    <lastBuildDate>Thu, 28 May 2020 09:30:09 +0800</lastBuildDate>
     
         <atom:link href="https://xujiahua.github.io/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    
+        <item>
+        <title>Github pages重新开始：使用Hugo、Typora</title>
+        <link>https://xujiahua.github.io/posts/20200310-github-pages-restart/</link>
+        <pubDate>Tue, 10 Mar 2020 11:24:49 +0800</pubDate>
+        
+        <guid>https://xujiahua.github.io/posts/20200310-github-pages-restart/</guid>
+        <description>许嘉华的博客 https://xujiahua.github.io/posts/20200310-github-pages-restart/ -&lt;h2 id=&#34;重新开始github-pages&#34;&gt;重新开始GitHub pages&lt;/h2&gt;
+&lt;p&gt;曾使用&lt;code&gt;GitHub pages&lt;/code&gt; + &lt;code&gt; jekyll&lt;/code&gt; 写过一段时间博客，没啥营养。&lt;/p&gt;
+&lt;p&gt;打算重新开始：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;把我记录在Evernote和Typora中的资料迁移到&lt;code&gt;GitHub pages&lt;/code&gt;上。&lt;/li&gt;
+&lt;li&gt;另外做一些Web形式的小工具，挂载在一个子目录里，方便平时使用。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2 id=&#34;hugo--typora&#34;&gt;Hugo + Typora&lt;/h2&gt;
+&lt;p&gt;打算如下：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Markdown文件还是使用Typora写。用过MWeb、Typora，Typora使用感受更好些（这么好用还不要钱）。&lt;/li&gt;
+&lt;li&gt;Hugo作为静态网站生成，创建一个博客模板。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3 id=&#34;hugo-quickstart&#34;&gt;Hugo quickstart&lt;/h3&gt;
+&lt;pre&gt;&lt;code&gt;# 安装hugo（其实是Go编译的二进制文件）
+brew install hugo
+
+# 创建site
+hugo new site quickstart
+
+# 通过git submodule的方式下载主题
+git init
+git submodule -b master add https://github.com/dillonzq/LoveIt themes/LoveIt
+
+# 更新config.toml，配置主题参数，见loveit配置
+
+# 创建博客，创建的posts在content目录下。文件格式为：content/&amp;lt;CATEGORY&amp;gt;/&amp;lt;FILE&amp;gt;.&amp;lt;FORMAT&amp;gt;
+# hugo new 会采用 archetypes/default.md作为模板，把一些共性配置放在这个模板里吧。
+hugo new posts/my-first-post.md
+
+# 本地看blog效果，-D表示草稿状态的博客也显示
+hugo server -D
+
+# 生成静态网站到./public/，也可以指定目录
+hugo -D
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;挑选了一个比较实用的主题 &lt;a href=&#34;https://hugoloveit.com/&#34;&gt;https://hugoloveit.com/&lt;/a&gt;&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;比较基本的posts, tags, categories&lt;/li&gt;
+&lt;li&gt;文章页面右边可显示文章的目录表&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;参考：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;a href=&#34;https://gohugo.io/getting-started/quick-start/&#34;&gt;https://gohugo.io/getting-started/quick-start/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://hugoloveit.com/theme-documentation-basics/&#34;&gt;https://hugoloveit.com/theme-documentation-basics/&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3 id=&#34;图片文件夹的配置&#34;&gt;图片文件夹的配置&lt;/h3&gt;
+&lt;p&gt;Typora的贴图功能很方便：配置好图片文件夹，从剪贴板粘贴图像会自动将图片保存到图片文件夹，并自动命名。&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;hugo&lt;/code&gt;管理静态资源的方式跟Typora默认是不适配的，需要做些调整。&lt;/p&gt;
+&lt;h5 id=&#34;长话短说&#34;&gt;长话短说&lt;/h5&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;code&gt;hugo&lt;/code&gt;项目中，创建&lt;code&gt;static/images&lt;/code&gt;文件夹，并且软链接到项目根目录下：&lt;/li&gt;
+&lt;/ol&gt;
+&lt;pre&gt;&lt;code&gt;mkdir -p static/images &amp;amp;&amp;amp; ln -s `pwd`/static/images images
+&lt;/code&gt;&lt;/pre&gt;&lt;ol start=&#34;2&#34;&gt;
+&lt;li&gt;Typora打开content目录，并做配置如下。之后，像平常那样用Typora写文字吧。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200310184153667.png&#34; alt=&#34;image-20200310184153667&#34;&gt;&lt;/p&gt;
+&lt;h5 id=&#34;在根目录建images软链接的理由&#34;&gt;在根目录建&lt;code&gt;images&lt;/code&gt;软链接的理由&lt;/h5&gt;
+&lt;p&gt;一些信息和思路：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;code&gt;hugo&lt;/code&gt;的静态资源放在static目录下。&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;hugo&lt;/code&gt;生成静态文件，static目录会将其下的文件、文件夹平移到目标网站目录的根目录，比如&lt;code&gt;static/images/1.png&lt;/code&gt;，平移后为&lt;code&gt;images/1.png&lt;/code&gt;。html里使用&lt;code&gt;/images/*&lt;/code&gt;的方式引用。（可查看public文件夹的目录结构）&lt;/li&gt;
+&lt;li&gt;hugo static目录下的资源目录不能是软链接，WTF。Unsupported symlink found &lt;a href=&#34;https://github.com/gohugoio/hugo/issues/6225&#34;&gt;https://github.com/gohugoio/hugo/issues/6225&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;万幸Typora可以用软链接。&lt;/li&gt;
+&lt;li&gt;一篇post，在浏览器和文件系统上的目录结构是不同的。以最末层的文件夹为&lt;code&gt;./&lt;/code&gt;。浏览器下目录结构如下：&lt;/li&gt;
+&lt;/ol&gt;
+&lt;pre&gt;&lt;code&gt;/ =&amp;gt; ../.. 举例来说，以图片文件夹名称为`image`为例，`../../images/*` = `/images/*`
+	/posts/ =&amp;gt; ../
+		/posts/post_name/ =&amp;gt; ./
+&lt;/code&gt;&lt;/pre&gt;&lt;ol start=&#34;6&#34;&gt;
+&lt;li&gt;文件系统下的目录结构：&lt;/li&gt;
+&lt;/ol&gt;
+&lt;pre&gt;&lt;code&gt;hugo-blogger =&amp;gt; ../../
+	content =&amp;gt; ../
+		posts =&amp;gt; ./
+			post_name
+&lt;/code&gt;&lt;/pre&gt;&lt;ol start=&#34;7&#34;&gt;
+&lt;li&gt;所以为了能让文件系统和浏览器上都显示图像，&lt;code&gt;images&lt;/code&gt;软链接放在项目根目录下比较合适。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3 id=&#34;github-pages&#34;&gt;GitHub pages&lt;/h3&gt;
+&lt;p&gt;静态文件输出到xujiahua.github.io上去。&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;git submodule add -b master https://github.com/XUJiahua/XUJiahua.github.io.git public
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;复用这里的deploy脚本。https://gohugo.io/hosting-and-deployment/hosting-on-github/#put-it-into-a-script&lt;/p&gt;
+&lt;h4 id=&#34;图片资源404的问题&#34;&gt;图片资源404的问题&lt;/h4&gt;
+&lt;p&gt;_images文件夹下的资源404了。太奇怪了，路径OK，也没大小问题。过了很久还是不见效。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200312190900210.png&#34; alt=&#34;image-20200312190900210&#34;&gt;&lt;/p&gt;
+&lt;p&gt;尝试在images文件夹下放了个1.txt，理论上链接应该是 &lt;a href=&#34;https://xujiahua.github.io/images/1.txt&#34;&gt;https://xujiahua.github.io/images/1.txt&lt;/a&gt;，一开始也是404。过了半小时OK了。&lt;/p&gt;
+&lt;p&gt;结论是，_images文件夹取名可能有问题。那就改用images。&lt;/p&gt;
+&lt;p&gt;参考：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;a href=&#34;https://gohugo.io/hosting-and-deployment/hosting-on-github/&#34;&gt;https://gohugo.io/hosting-and-deployment/hosting-on-github/&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+- https://xujiahua.github.io/posts/20200310-github-pages-restart/ - </description>
+        </item>
     
     
     

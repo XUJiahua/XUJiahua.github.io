@@ -1,0 +1,1330 @@
+<!DOCTYPE html>
+<html><head>
+<title>Metabase Impala Driver 0528更新日志</title>
+
+<meta charset="utf-8">
+<meta name="X-UA-Compatible" content="IE=edge">
+<meta name="google-site-verification" content="">
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport">
+<meta content="telephone=no" name="format-detection">
+<meta name="description" content="">
+<meta name="renderer" content="webkit">
+<meta name="theme-color" content="#ffffff">
+
+
+
+
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+	ga('create', 'UA-162706610-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+
+
+
+<script src="/vendor/js/jquery.min.js" ></script>
+<script src="/vendor/js/popper.min.js" ></script>
+<script src="/vendor/js/bootstrap.min.js" ></script>
+<script src="/vendor/js/smooth-scroll.polyfills.min.js" ></script>
+<link type="text/css" rel="stylesheet" href="/vendor/css/bootstrap.min.css">
+<script src="/vendor/js/vue.min.js" ></script>
+
+
+
+
+<link rel="stylesheet" href="https://xujiahua.github.io/scss/journal.min.5c667e74038e21ddbb9024b67930f8544e02af62491281cf73fdb817eec2947e.css" integrity="sha256-XGZ&#43;dAOOId27kCS2eTD4VE4Cr2JJEoHPc/24F&#43;7ClH4=" media="screen">
+
+<script src="https://xujiahua.github.io//js/loadCSS.js"></script>
+<script src="https://xujiahua.github.io//js/table.js"></script>
+
+
+<script src="https://xujiahua.github.io//js/toc.js"></script>
+
+
+<script>
+    loadCSS("https://fonts.googleapis.com/css?family=Lora|Montserrat|Fira+Mono|Noto+Serif+SC|Material+Icons");
+</script>
+
+
+
+
+
+
+</head><body>
+    	<div id="app"><div ref="sideContainer" class="side-container">
+    
+    <a class="a-block nav-head false" href="https://xujiahua.github.io/">
+    
+        <div class="nav-title">
+            许嘉华的博客
+        </div>
+        
+    </a>
+
+    <div class="nav-link-list">
+        
+        
+            
+            
+            
+                
+            
+            
+            
+            <a class="a-block nav-link-item active" href="/posts">
+                Archive
+            </a>
+            
+        
+            
+            
+            
+            
+            
+            <a class="a-block nav-link-item false" href="/categories">
+                Categories
+            </a>
+            
+        
+            
+            
+            
+            
+            
+            <a class="a-block nav-link-item false" href="/tags">
+                Tags
+            </a>
+            
+        
+            
+            
+            
+            
+            
+            <a class="a-block nav-link-item false" href="/index.xml">
+                RSS Feed
+            </a>
+            
+        
+    </div>
+
+    
+
+    <div class="nav-footer">
+        
+Hugo Theme <a href="https://github.com/amazingrise/hugo-theme-diary">Diary</a> by <a href="https://amazingrise.net">Rise</a>
+<br>
+Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopener">Makito</a>'s <a href="https://github.com/SumiMakito/hexo-theme-journal/" target="_blank" rel="noreferrer noopener">Journal.</a> <br>
+<br>
+
+&copy;
+	
+	2020 许嘉华的博客
+	
+    </div>
+    
+</div><div ref="extraContainer" class="extra-container">
+    
+    <div class="toc animated-visibility" :class="{ invisible: scrollY <= 140 }">
+
+
+	<div class="toc-content">
+	
+		
+		
+		
+		<center>- CATALOG -</center>
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#1-timestamp-%e7%b1%bb%e5%9e%8b%e6%b2%a1%e6%9c%89%e8%bf%87%e6%bb%a4%e5%99%a8%e6%a0%b7%e5%bc%8f" v-on:click="closeDrawer" id="1-timestamp-类型没有过滤器样式-nav">
+										 1. TIMESTAMP 类型没有过滤器样式
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e7%8e%b0%e8%b1%a1" v-on:click="closeDrawer" id="现象-nav">
+										 现象
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e5%88%9d%e6%ad%a5%e5%88%86%e6%9e%90" v-on:click="closeDrawer" id="初步分析-nav">
+										 初步分析
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#hive-impala%e7%9a%84%e6%95%b0%e6%8d%ae%e7%b1%bb%e5%9e%8b%e5%bc%82%e5%90%8c" v-on:click="closeDrawer" id="hive-impala的数据类型异同-nav">
+										 Hive Impala的数据类型异同
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#fix" v-on:click="closeDrawer" id="fix-nav">
+										 fix
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#2-timestamp-xxx-%e6%8a%a5%e9%94%99%e4%bf%a1%e6%81%af" v-on:click="closeDrawer" id="2-timestamp-xxx-报错信息-nav">
+										 2. timestamp xxx 报错信息
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e7%8e%b0%e8%b1%a1-1" v-on:click="closeDrawer" id="现象-1-nav">
+										 现象
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e5%88%86%e6%9e%90" v-on:click="closeDrawer" id="分析-nav">
+										 分析
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#fix-1" v-on:click="closeDrawer" id="fix-1-nav">
+										 fix
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#3-date_format-unknown" v-on:click="closeDrawer" id="3-date_format-unknown-nav">
+										 3. date_format() unknown
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e7%8e%b0%e8%b1%a1-2" v-on:click="closeDrawer" id="现象-2-nav">
+										 现象
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e5%88%86%e6%9e%90-1" v-on:click="closeDrawer" id="分析-1-nav">
+										 分析
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#fix-2" v-on:click="closeDrawer" id="fix-2-nav">
+										 fix
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e6%80%bb%e7%bb%93" v-on:click="closeDrawer" id="总结-nav">
+										 总结
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e6%9c%aa%e5%ae%8c%e5%be%85%e7%bb%ad" v-on:click="closeDrawer" id="未完待续-nav">
+										 未完待续
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+	</div>
+
+</div>
+    
+    <div class="pagination">
+        <a id="globalBackToTop" class="pagination-action animated-visibility" href="#top" :class="{ invisible: scrollY == 0 }">
+            <i class="material-icons pagination-action-icon">
+                keyboard_arrow_up
+            </i>
+        </a>
+        
+    </div>
+</div><div class="single-column-drawer-container" ref="drawer"
+     v-bind:class="{ 'single-column-drawer-container-active': isDrawerOpen }">
+    <div class="drawer-content">
+        <div class="drawer-menu">
+            
+            
+                
+                
+                
+                    
+                
+                
+                
+                <a class="a-block drawer-menu-item active" href="/posts">
+                    Archive
+                </a>
+                
+            
+                
+                
+                
+                
+                
+                <a class="a-block drawer-menu-item false" href="/categories">
+                    Categories
+                </a>
+                
+            
+                
+                
+                
+                
+                
+                <a class="a-block drawer-menu-item false" href="/tags">
+                    Tags
+                </a>
+                
+            
+                
+                
+                
+                
+                
+                <a class="a-block drawer-menu-item false" href="/index.xml">
+                    RSS Feed
+                </a>
+                
+            
+            
+            <div class="toc">
+
+
+	<div class="toc-content">
+	
+		
+		
+		
+		<center>- CATALOG -</center>
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#1-timestamp-%e7%b1%bb%e5%9e%8b%e6%b2%a1%e6%9c%89%e8%bf%87%e6%bb%a4%e5%99%a8%e6%a0%b7%e5%bc%8f" v-on:click="closeDrawer" id="1-timestamp-类型没有过滤器样式-nav">
+										 1. TIMESTAMP 类型没有过滤器样式
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e7%8e%b0%e8%b1%a1" v-on:click="closeDrawer" id="现象-nav">
+										 现象
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e5%88%9d%e6%ad%a5%e5%88%86%e6%9e%90" v-on:click="closeDrawer" id="初步分析-nav">
+										 初步分析
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#hive-impala%e7%9a%84%e6%95%b0%e6%8d%ae%e7%b1%bb%e5%9e%8b%e5%bc%82%e5%90%8c" v-on:click="closeDrawer" id="hive-impala的数据类型异同-nav">
+										 Hive Impala的数据类型异同
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#fix" v-on:click="closeDrawer" id="fix-nav">
+										 fix
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#2-timestamp-xxx-%e6%8a%a5%e9%94%99%e4%bf%a1%e6%81%af" v-on:click="closeDrawer" id="2-timestamp-xxx-报错信息-nav">
+										 2. timestamp xxx 报错信息
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e7%8e%b0%e8%b1%a1-1" v-on:click="closeDrawer" id="现象-1-nav">
+										 现象
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e5%88%86%e6%9e%90" v-on:click="closeDrawer" id="分析-nav">
+										 分析
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#fix-1" v-on:click="closeDrawer" id="fix-1-nav">
+										 fix
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#3-date_format-unknown" v-on:click="closeDrawer" id="3-date_format-unknown-nav">
+										 3. date_format() unknown
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e7%8e%b0%e8%b1%a1-2" v-on:click="closeDrawer" id="现象-2-nav">
+										 现象
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e5%88%86%e6%9e%90-1" v-on:click="closeDrawer" id="分析-1-nav">
+										 分析
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#fix-2" v-on:click="closeDrawer" id="fix-2-nav">
+										 fix
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e6%80%bb%e7%bb%93" v-on:click="closeDrawer" id="总结-nav">
+										 总结
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e6%9c%aa%e5%ae%8c%e5%be%85%e7%bb%ad" v-on:click="closeDrawer" id="未完待续-nav">
+										 未完待续
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+	</div>
+
+</div>
+            
+        </div>
+    </div>
+</div>
+<transition name="fade">
+    <div v-bind:class="{ 'single-column-drawer-mask': mounted }" v-if="isDrawerOpen" v-on:click="toggleDrawer"></div>
+</transition>
+<nav ref="navBar" class="navbar sticky-top navbar-light single-column-nav-container">
+    <div ref="navBackground" class="nav-background"></div>
+    <div class="container container-narrow nav-content">
+        <button id="nav_dropdown_btn" class="nav-dropdown-toggle" type="button" v-on:click="toggleDrawer">
+            <i class="material-icons">
+                menu
+            </i>
+        </button>
+        <a ref="navTitle" class="navbar-brand" href="https://xujiahua.github.io/">
+            许嘉华的博客
+        </a>
+    </div>
+</nav>
+<div class="single-column-header-container" ref="pageHead"
+     v-bind:style="{ transform: 'translateZ(0px) translateY('+.3*scrollY+'px)', opacity: 1-navOpacity }">
+    <a href="https://xujiahua.github.io/">
+        <div class="single-column-header-title">许嘉华的博客</div>
+        
+
+    </a>
+</div>
+            <div id="content">
+<div ref="streamContainer" class="stream-container">
+    <div class="post-list-container post-list-container-shadow">
+        <div class="post">
+            
+            
+            
+
+            <div class="post-head-wrapper-text-only"
+                 style="background-image: url('/')">
+                <div class="post-title">
+                    Metabase Impala Driver 0528更新日志
+                    
+                    <div class="post-meta">
+                        
+                        <time itemprop="datePublished">
+                            2020-05-28 09:30
+                        </time>
+                        
+
+                        
+
+                        
+                    </div>
+                </div>
+            </div>
+            
+            <div class="post-body-wrapper">
+                <div class="post-body">
+                    <p>体验过程中还是碰到不少问题。</p>
+<h2 id="1-timestamp-类型没有过滤器样式">1. TIMESTAMP 类型没有过滤器样式</h2>
+<h3 id="现象">现象</h3>
+<p><img src="../../images/image-20200528173609294.png" alt="image-20200528173609294"></p>
+<p>连 SparkSQL 没这个问题。同样是TIMESTAMP类型，表现不同。</p>
+<h3 id="初步分析">初步分析</h3>
+<p>在数据库中查看存储的字段信息，Impala/SparkSQL对比看，发现 Impala 数据库下的字段 base_type 都是 <code>type/*</code>。而 database_type，Impala 都是大写的，比如TIMESTAMP，而不是timestamp。所以，并不仅仅是TIMESTAMP类型没有过滤器样式。</p>
+<p><img src="../../images/image-20200528173915594.png" alt="image-20200528173915594"></p>
+<p>Metabase 数据库类型会映射为 Clojure类型，数据库类型的名称是大小写敏感的。所以不能复用hive-like中的实现（都是小写的），而且Hive与Impala的类型还是有些不同的。</p>
+<h3 id="hive-impala的数据类型异同">Hive Impala的数据类型异同</h3>
+<p>以 Hive Data Types 为基准。</p>
+<table>
+<thead>
+<tr>
+<th>Type Name</th>
+<th>Type Catgory</th>
+<th>Comment</th>
+<th>Impala Support?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>TINYINT</td>
+<td>Numeric Types</td>
+<td></td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>SMALLINT</td>
+<td>Numeric Types</td>
+<td></td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>INT</td>
+<td>Numeric Types</td>
+<td></td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>BIGINT</td>
+<td>Numeric Types</td>
+<td></td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>FLOAT</td>
+<td>Numeric Types</td>
+<td></td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>DOUBLE</td>
+<td>Numeric Types</td>
+<td></td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>DOUBLE PRECISION</td>
+<td>Numeric Types</td>
+<td>alias for DOUBLE, only available starting with Hive 2.2.0</td>
+<td>No</td>
+</tr>
+<tr>
+<td>DECIMAL</td>
+<td>Numeric Types</td>
+<td>Introduced in Hive 0.11.0 with a precision of 38 digits<!-- raw HTML omitted -->Hive 0.13.0 introduced user-definable precision and scale</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>NUMERIC</td>
+<td>Numeric Types</td>
+<td>same as DECIMAL, starting with Hive 3.0.0</td>
+<td>No</td>
+</tr>
+<tr>
+<td>TIMESTAMP</td>
+<td>Date/Time Types</td>
+<td>available starting with Hive 0.8.0</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>DATE</td>
+<td>Date/Time Types</td>
+<td>available starting with Hive 0.12.0</td>
+<td>No</td>
+</tr>
+<tr>
+<td>INTERVAL</td>
+<td>Date/Time Types</td>
+<td>available starting with Hive 1.2.0</td>
+<td>No</td>
+</tr>
+<tr>
+<td>STRING</td>
+<td>String Types</td>
+<td></td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>VARCHAR</td>
+<td>String Types</td>
+<td>available starting with Hive 0.12.0</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>CHAR</td>
+<td>String Types</td>
+<td>available starting with Hive 0.13.0</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>BOOLEAN</td>
+<td>Misc Types</td>
+<td></td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>BINARY</td>
+<td>Misc Types</td>
+<td>available starting with Hive 0.8.0</td>
+<td>No</td>
+</tr>
+<tr>
+<td>arrays: ARRAY&lt;data_type&gt;</td>
+<td>Complex Types</td>
+<td></td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>maps: MAP&lt;primitive_type, data_type&gt;</td>
+<td>Complex Types</td>
+<td></td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>structs: STRUCT&lt;col_name : data_type [COMMENT col_comment], &hellip;&gt;</td>
+<td>Complex Types</td>
+<td></td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>union: UNIONTYPE&lt;data_type, data_type, &hellip;&gt;</td>
+<td>Complex Types</td>
+<td></td>
+<td>No</td>
+</tr>
+</tbody>
+</table>
+<p>参考：</p>
+<ol>
+<li>Hive Data Types <a href="https://cwiki.apache.org/confluence/display/Hive/LanguageManual+Types">https://cwiki.apache.org/confluence/display/Hive/LanguageManual+Types</a></li>
+<li>Impala Data Types <a href="https://docs.cloudera.com/documentation/enterprise/latest/topics/impala_datatypes.html">https://docs.cloudera.com/documentation/enterprise/latest/topics/impala_datatypes.html</a></li>
+<li>SQL Differences Between Impala and Hive <a href="https://docs.cloudera.com/documentation/enterprise/6/6.3/topics/impala_langref_unsupported.html">https://docs.cloudera.com/documentation/enterprise/6/6.3/topics/impala_langref_unsupported.html</a></li>
+</ol>
+<h3 id="fix">fix</h3>
+<p>根据与Hive数据类型对比，重写方法 <code>sql-jdbc.sync/database-type-&gt;base-type</code>。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-clojure" data-lang="clojure">(<span style="color:#66d9ef">defmethod </span>sql-jdbc.sync/database-type-&gt;base-type <span style="color:#e6db74">:impala</span>
+  [_ database-type]
+  (<span style="color:#a6e22e">condp</span> re-matches (name database-type)
+    <span style="color:#f92672">#</span><span style="color:#e6db74">&#34;TINYINT&#34;</span>          <span style="color:#e6db74">:type/Integer</span>
+    <span style="color:#f92672">#</span><span style="color:#e6db74">&#34;SMALLINT&#34;</span>         <span style="color:#e6db74">:type/Integer</span>
+    <span style="color:#f92672">#</span><span style="color:#e6db74">&#34;INT&#34;</span>              <span style="color:#e6db74">:type/Integer</span>
+    <span style="color:#f92672">#</span><span style="color:#e6db74">&#34;BIGINT&#34;</span>           <span style="color:#e6db74">:type/BigInteger</span>
+    <span style="color:#f92672">#</span><span style="color:#e6db74">&#34;FLOAT&#34;</span>            <span style="color:#e6db74">:type/Float</span>
+    <span style="color:#f92672">#</span><span style="color:#e6db74">&#34;DOUBLE&#34;</span>           <span style="color:#e6db74">:type/Float</span>
+    <span style="color:#f92672">#</span><span style="color:#e6db74">&#34;DECIMAL.*&#34;</span>        <span style="color:#e6db74">:type/Decimal</span>
+    <span style="color:#f92672">#</span><span style="color:#e6db74">&#34;TIMESTAMP&#34;</span>        <span style="color:#e6db74">:type/DateTime</span>
+    <span style="color:#f92672">#</span><span style="color:#e6db74">&#34;STRING.*&#34;</span>         <span style="color:#e6db74">:type/Text</span>
+    <span style="color:#f92672">#</span><span style="color:#e6db74">&#34;VARCHAR.*&#34;</span>        <span style="color:#e6db74">:type/Text</span>
+    <span style="color:#f92672">#</span><span style="color:#e6db74">&#34;CHAR.*&#34;</span>           <span style="color:#e6db74">:type/Text</span>
+    <span style="color:#f92672">#</span><span style="color:#e6db74">&#34;BOOLEAN&#34;</span>          <span style="color:#e6db74">:type/Boolean</span>
+    <span style="color:#f92672">#</span><span style="color:#e6db74">&#34;ARRAY.*&#34;</span>          <span style="color:#e6db74">:type/Array</span>
+    <span style="color:#f92672">#</span><span style="color:#e6db74">&#34;MAP.*&#34;</span>            <span style="color:#e6db74">:type/Dictionary</span>
+    <span style="color:#f92672">#</span><span style="color:#e6db74">&#34;.*&#34;</span>               <span style="color:#e6db74">:type/*</span>))
+</code></pre></div><p><a href="https://github.com/XUJiahua/metabase/pull/2/commits/e156683989844eb2405e5240e888249a2defe78c">https://github.com/XUJiahua/metabase/pull/2/commits/e156683989844eb2405e5240e888249a2defe78c</a></p>
+<p>效果：</p>
+<p><img src="../../images/image-20200528120341696.png" alt="image-20200528120341696"></p>
+<p>这样，TIMESTAMP 类型就有过滤器样式了。</p>
+<h2 id="2-timestamp-xxx-报错信息">2. timestamp xxx 报错信息</h2>
+<h3 id="现象-1">现象</h3>
+<blockquote>
+<p>&ldquo;ParseException: Syntax error in line 4:\nAND date_timestamp &lt; timestamp &lsquo;2019-01-03 00:00:00.000&rsquo;\n ^\nEncountered: TIMESTAMP\nExpected: CASE, CAST, DEFAULT, EXISTS, FALSE, IF, INTERVAL, LEFT, NOT, NULL, REPLACE, RIGHT, TRUNCATE, TRUE, IDENTIFIER\n\nCAUSED BY: Exception: Syntax error\n&rdquo;,</p>
+</blockquote>
+<p>SQL过滤器测试用例：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">select</span> <span style="color:#f92672">*</span> <span style="color:#66d9ef">from</span> product.dwd_dim_date_with_timestamp
+<span style="color:#66d9ef">where</span> <span style="color:#ae81ff">1</span><span style="color:#f92672">=</span><span style="color:#ae81ff">1</span>
+[[<span style="color:#66d9ef">AND</span> date_timestamp <span style="color:#f92672">&lt;</span> <span style="color:#960050;background-color:#1e0010">{{</span>date_timestamp<span style="color:#960050;background-color:#1e0010">}}</span> ]]
+</code></pre></div><p>洪敏眼尖，发现是 Impala 不支持这个语法。</p>
+<h3 id="分析">分析</h3>
+<p>hive-like 并没有重写处理 LocalDateTime 的方法。</p>
+<p><img src="../../images/image-20200528165940717.png" alt="image-20200528165940717"></p>
+<p>而 Impala TIMESTAMP是没有时区的，大概率会用这个方法。</p>
+<blockquote>
+<p>In Impala, the TIMESTAMP data type holds a value of date and time. It can be decomposed into year, month, day, hour, minute and seconds fields, but with no time zone information available, it does not correspond to any specific point in time. <a href="https://docs.cloudera.com/documentation/enterprise/6/6.3/topics/impala_timestamp.html">https://docs.cloudera.com/documentation/enterprise/6/6.3/topics/impala_timestamp.html</a></p>
+</blockquote>
+<p>默认实现是 timestamp 语法，报错信息就在这。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-clojure" data-lang="clojure">(<span style="color:#66d9ef">defmethod </span>unprepare-value [<span style="color:#e6db74">:sql</span> LocalDateTime]
+  [_ t]
+  (<span style="color:#a6e22e">format</span> <span style="color:#e6db74">&#34;timestamp &#39;%s&#39;&#34;</span> (<span style="color:#a6e22e">t/format</span> <span style="color:#e6db74">&#34;yyyy-MM-dd HH:mm:ss.SSS&#34;</span> t)))
+</code></pre></div><h3 id="fix-1">fix</h3>
+<p>找到 Impala 对应的 SQL 函数。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-clojure" data-lang="clojure">(<span style="color:#66d9ef">defmethod </span>unprepare/unprepare-value [<span style="color:#e6db74">:impala</span> LocalDateTime]
+  [_ t]
+  (<span style="color:#a6e22e">format</span> <span style="color:#e6db74">&#34;to_timestamp(&#39;%s&#39;, &#39;yyyy-MM-dd HH:mm:ss&#39;)&#34;</span> (<span style="color:#a6e22e">t/format</span> <span style="color:#e6db74">&#34;yyyy-MM-dd HH:mm:ss&#34;</span> t)))
+</code></pre></div><p><a href="https://github.com/XUJiahua/metabase/pull/2/commits/005b878caf2fbbbd8c00a7ed016c899187f59d3c">https://github.com/XUJiahua/metabase/pull/2/commits/005b878caf2fbbbd8c00a7ed016c899187f59d3c</a></p>
+<h2 id="3-date_format-unknown">3. date_format() unknown</h2>
+<h3 id="现象-2">现象</h3>
+<p><img src="../../images/image-20200528210146896.png" alt="image-20200528210146896"></p>
+<h3 id="分析-1">分析</h3>
+<p>大概率又是 Impala 不支持 date_format 这个函数。代码中搜索关键字。</p>
+<p><img src="../../images/image-20200528212547249.png" alt="image-20200528212547249"></p>
+<p>这里简单说明下，<code>(hsql/call :date_format xx xx)</code> 这个方法最终会生成 SQL语句 <code>date_format(xx, xx)</code>。又一次，我们得找到 Impala 中的SQL函数来替代它。</p>
+<p>参考：</p>
+<ol>
+<li>Hive/SparkSQL Built-in Functions <a href="https://spark.apache.org/docs/2.4.5/api/sql/index.html#date_format">https://spark.apache.org/docs/2.4.5/api/sql/index.html#date_format</a></li>
+<li>Impala Built-In Functions <a href="https://docs.cloudera.com/documentation/enterprise/6/6.3/topics/impala_functions.html">https://docs.cloudera.com/documentation/enterprise/6/6.3/topics/impala_functions.html</a></li>
+<li>Impala Date and Time Functions <a href="https://docs.cloudera.com/documentation/enterprise/6/6.3/topics/impala_datetime_functions.html">https://docs.cloudera.com/documentation/enterprise/6/6.3/topics/impala_datetime_functions.html</a></li>
+</ol>
+<h3 id="fix-2">fix</h3>
+<p>因为 <code>date-format</code> 被应用中很多 <code>defmethod sql.qp/date</code> 方法里，所以在 Impala 重新实现这些方法，尽可能用 Impala 内置的函数。</p>
+<p><a href="https://github.com/XUJiahua/metabase/pull/2/commits/01046a664dc8bc9d815184fd6ec419b7a4c1aa10">https://github.com/XUJiahua/metabase/pull/2/commits/01046a664dc8bc9d815184fd6ec419b7a4c1aa10</a></p>
+<h2 id="总结">总结</h2>
+<p>这些问题主要还是 Impala 和 Hive 的 SQL 规范不一样。令人头秃。不过对 Metabase 越来越熟悉了。</p>
+<h3 id="未完待续">未完待续</h3>
+<p>这2个选项还在报错，应该是不支持对应的方法。还好暂时用不到。</p>
+<p><img src="../../images/image-20200528213420179.png" alt="image-20200528213420179"></p>
+
+                    
+                    <HR width="100%" id="EOF">
+                    <p style="color:#777;">Last modified on 2020-05-28</p>
+                    
+                </div>
+            </div>
+            
+            
+            <nav class="post-pagination">
+
+                
+                <a class="newer-posts">
+                    Next<br>No newer posts.
+                </a>
+                
+                
+                
+                <a class="older-posts" href="https://xujiahua.github.io/posts/20200527-metabase-impala-driver/">
+                    Previous<br>Metabase Impala Driver
+                </a>
+                
+            </nav>
+            <div class="post-comment-wrapper">
+                
+
+
+
+
+
+
+            </div>
+        </div>
+    </div>
+</div>
+
+            </div><div id="single-column-footer">
+Hugo Theme <a href="https://github.com/amazingrise/hugo-theme-diary">Diary</a> by <a href="https://amazingrise.net">Rise</a>
+<br>
+Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopener">Makito</a>'s <a href="https://github.com/SumiMakito/hexo-theme-journal/" target="_blank" rel="noreferrer noopener">Journal.</a> <br>
+<br>
+
+&copy;
+	
+	2020 许嘉华的博客
+	</div>
+    	</div>
+    <script src="https://xujiahua.github.io//js/journal.js"></script>
+    </body>
+</html>
