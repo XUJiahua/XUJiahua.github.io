@@ -446,7 +446,10 @@ org.apache.hive/hive-jdbc &amp;quot;1.2.1&amp;quot;
 &lt;p&gt;通过摸索，改进 Metabase sparksql 包后，我们可以使用 Impala 了。至于有多少坑，还得等我深度使用后才知道。&lt;/p&gt;
 &lt;p&gt;代码 &lt;a href=&#34;https://github.com/XUJiahua/metabase/tree/driver-impala-in-sparksql&#34;&gt;https://github.com/XUJiahua/metabase/tree/driver-impala-in-sparksql&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt;因为时间关系，留下一些 TODO ，未完待续。&lt;/p&gt;
-&lt;h2 id=&#34;heading&#34;&gt;&lt;/h2&gt;
+&lt;h3 id=&#34;更新日志&#34;&gt;更新日志&lt;/h3&gt;
+&lt;ol&gt;
+&lt;li&gt;Metabase Impala Driver 0528更新日志 &lt;a href=&#34;https://xujiahua.github.io/posts/20200528-metabase-impala-type/&#34;&gt;https://xujiahua.github.io/posts/20200528-metabase-impala-type/&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
 - https://xujiahua.github.io/posts/20200527-metabase-impala-driver/ - </description>
         </item>
     
