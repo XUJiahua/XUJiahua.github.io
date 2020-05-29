@@ -1,0 +1,1345 @@
+<!DOCTYPE html>
+<html><head>
+<title>记一次数据项目经历</title>
+
+<meta charset="utf-8">
+<meta name="X-UA-Compatible" content="IE=edge">
+<meta name="google-site-verification" content="">
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport">
+<meta content="telephone=no" name="format-detection">
+<meta name="description" content="">
+<meta name="renderer" content="webkit">
+<meta name="theme-color" content="#ffffff">
+
+
+
+
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+	ga('create', 'UA-162706610-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+
+
+
+<script src="/vendor/js/jquery.min.js" ></script>
+<script src="/vendor/js/popper.min.js" ></script>
+<script src="/vendor/js/bootstrap.min.js" ></script>
+<script src="/vendor/js/smooth-scroll.polyfills.min.js" ></script>
+<link type="text/css" rel="stylesheet" href="/vendor/css/bootstrap.min.css">
+<script src="/vendor/js/vue.min.js" ></script>
+
+
+
+
+<link rel="stylesheet" href="https://xujiahua.github.io/scss/journal.min.5c667e74038e21ddbb9024b67930f8544e02af62491281cf73fdb817eec2947e.css" integrity="sha256-XGZ&#43;dAOOId27kCS2eTD4VE4Cr2JJEoHPc/24F&#43;7ClH4=" media="screen">
+
+<script src="https://xujiahua.github.io//js/loadCSS.js"></script>
+<script src="https://xujiahua.github.io//js/table.js"></script>
+
+
+<script src="https://xujiahua.github.io//js/toc.js"></script>
+
+
+<script>
+    loadCSS("https://fonts.googleapis.com/css?family=Lora|Montserrat|Fira+Mono|Noto+Serif+SC|Material+Icons");
+</script>
+
+
+
+
+
+
+</head><body>
+    	<div id="app"><div ref="sideContainer" class="side-container">
+    
+    <a class="a-block nav-head false" href="https://xujiahua.github.io/">
+    
+        <div class="nav-title">
+            许嘉华的博客
+        </div>
+        
+    </a>
+
+    <div class="nav-link-list">
+        
+        
+            
+            
+            
+                
+            
+            
+            
+            <a class="a-block nav-link-item active" href="/posts">
+                Archive
+            </a>
+            
+        
+            
+            
+            
+            
+            
+            <a class="a-block nav-link-item false" href="/categories">
+                Categories
+            </a>
+            
+        
+            
+            
+            
+            
+            
+            <a class="a-block nav-link-item false" href="/tags">
+                Tags
+            </a>
+            
+        
+            
+            
+            
+            
+            
+            <a class="a-block nav-link-item false" href="/index.xml">
+                RSS Feed
+            </a>
+            
+        
+    </div>
+
+    
+
+    <div class="nav-footer">
+        
+Hugo Theme <a href="https://github.com/amazingrise/hugo-theme-diary">Diary</a> by <a href="https://amazingrise.net">Rise</a>
+<br>
+Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopener">Makito</a>'s <a href="https://github.com/SumiMakito/hexo-theme-journal/" target="_blank" rel="noreferrer noopener">Journal.</a> <br>
+<br>
+
+&copy;
+	
+	2020 许嘉华的博客
+	
+    </div>
+    
+</div><div ref="extraContainer" class="extra-container">
+    
+    <div class="toc animated-visibility" :class="{ invisible: scrollY <= 140 }">
+
+
+	<div class="toc-content">
+	
+		
+		
+		
+		<center>- CATALOG -</center>
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e9%9c%80%e6%b1%82%e8%83%8c%e6%99%af" v-on:click="closeDrawer" id="需求背景-nav">
+										 需求背景
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e6%8a%80%e6%9c%af%e7%bb%86%e8%8a%82" v-on:click="closeDrawer" id="技术细节-nav">
+										 技术细节
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e6%95%b0%e6%8d%ae%e9%87%87%e9%9b%86" v-on:click="closeDrawer" id="数据采集-nav">
+										 数据采集
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#1-%e5%89%8d%e7%ab%af%e5%ba%94%e7%94%a8%e5%9f%8b%e7%82%b9" v-on:click="closeDrawer" id="1-前端应用埋点-nav">
+										 1. 前端应用埋点
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#2-sftp-%e6%96%87%e4%bb%b6%e5%90%8c%e6%ad%a5" v-on:click="closeDrawer" id="2-sftp-文件同步-nav">
+										 2. SFTP 文件同步
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#3-%e5%be%ae%e4%bf%a1%e5%85%ac%e4%bc%97%e5%8f%b7%e6%8e%88%e6%9d%83" v-on:click="closeDrawer" id="3-微信公众号授权-nav">
+										 3. 微信公众号授权
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#etl-%e4%b8%8e-%e6%95%b0%e6%8d%ae%e4%bb%93%e5%ba%93" v-on:click="closeDrawer" id="etl-与-数据仓库-nav">
+										 ETL 与 数据仓库
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#1-etl" v-on:click="closeDrawer" id="1-etl-nav">
+										 1. ETL
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#2-%e6%95%b0%e6%8d%ae%e4%bb%93%e5%ba%93" v-on:click="closeDrawer" id="2-数据仓库-nav">
+										 2. 数据仓库
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#olap-%e6%95%b0%e6%8d%ae%e5%ba%93-%e4%b8%8e-bi-%e5%b7%a5%e5%85%b7" v-on:click="closeDrawer" id="olap-数据库-与-bi-工具-nav">
+										 OLAP 数据库 与 BI 工具
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#1-sql-on-hadoop" v-on:click="closeDrawer" id="1-sql-on-hadoop-nav">
+										 1. SQL on Hadoop
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#2-metabase" v-on:click="closeDrawer" id="2-metabase-nav">
+										 2. Metabase
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e6%95%b0%e6%8d%ae%e5%88%86%e6%9e%90" v-on:click="closeDrawer" id="数据分析-nav">
+										 数据分析
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e5%ae%a2%e6%88%b7%e9%9c%80%e6%b1%82" v-on:click="closeDrawer" id="客户需求-nav">
+										 客户需求
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e9%9a%90%e8%97%8f%e7%9a%84%e7%bb%b4%e5%ba%a6%e4%bf%a1%e6%81%af" v-on:click="closeDrawer" id="隐藏的维度信息-nav">
+										 隐藏的维度信息
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e6%80%bb%e7%bb%93" v-on:click="closeDrawer" id="总结-nav">
+										 总结
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+	</div>
+
+</div>
+    
+    <div class="pagination">
+        <a id="globalBackToTop" class="pagination-action animated-visibility" href="#top" :class="{ invisible: scrollY == 0 }">
+            <i class="material-icons pagination-action-icon">
+                keyboard_arrow_up
+            </i>
+        </a>
+        
+    </div>
+</div><div class="single-column-drawer-container" ref="drawer"
+     v-bind:class="{ 'single-column-drawer-container-active': isDrawerOpen }">
+    <div class="drawer-content">
+        <div class="drawer-menu">
+            
+            
+                
+                
+                
+                    
+                
+                
+                
+                <a class="a-block drawer-menu-item active" href="/posts">
+                    Archive
+                </a>
+                
+            
+                
+                
+                
+                
+                
+                <a class="a-block drawer-menu-item false" href="/categories">
+                    Categories
+                </a>
+                
+            
+                
+                
+                
+                
+                
+                <a class="a-block drawer-menu-item false" href="/tags">
+                    Tags
+                </a>
+                
+            
+                
+                
+                
+                
+                
+                <a class="a-block drawer-menu-item false" href="/index.xml">
+                    RSS Feed
+                </a>
+                
+            
+            
+            <div class="toc">
+
+
+	<div class="toc-content">
+	
+		
+		
+		
+		<center>- CATALOG -</center>
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e9%9c%80%e6%b1%82%e8%83%8c%e6%99%af" v-on:click="closeDrawer" id="需求背景-nav">
+										 需求背景
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e6%8a%80%e6%9c%af%e7%bb%86%e8%8a%82" v-on:click="closeDrawer" id="技术细节-nav">
+										 技术细节
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e6%95%b0%e6%8d%ae%e9%87%87%e9%9b%86" v-on:click="closeDrawer" id="数据采集-nav">
+										 数据采集
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#1-%e5%89%8d%e7%ab%af%e5%ba%94%e7%94%a8%e5%9f%8b%e7%82%b9" v-on:click="closeDrawer" id="1-前端应用埋点-nav">
+										 1. 前端应用埋点
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#2-sftp-%e6%96%87%e4%bb%b6%e5%90%8c%e6%ad%a5" v-on:click="closeDrawer" id="2-sftp-文件同步-nav">
+										 2. SFTP 文件同步
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#3-%e5%be%ae%e4%bf%a1%e5%85%ac%e4%bc%97%e5%8f%b7%e6%8e%88%e6%9d%83" v-on:click="closeDrawer" id="3-微信公众号授权-nav">
+										 3. 微信公众号授权
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#etl-%e4%b8%8e-%e6%95%b0%e6%8d%ae%e4%bb%93%e5%ba%93" v-on:click="closeDrawer" id="etl-与-数据仓库-nav">
+										 ETL 与 数据仓库
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#1-etl" v-on:click="closeDrawer" id="1-etl-nav">
+										 1. ETL
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#2-%e6%95%b0%e6%8d%ae%e4%bb%93%e5%ba%93" v-on:click="closeDrawer" id="2-数据仓库-nav">
+										 2. 数据仓库
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#olap-%e6%95%b0%e6%8d%ae%e5%ba%93-%e4%b8%8e-bi-%e5%b7%a5%e5%85%b7" v-on:click="closeDrawer" id="olap-数据库-与-bi-工具-nav">
+										 OLAP 数据库 与 BI 工具
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#1-sql-on-hadoop" v-on:click="closeDrawer" id="1-sql-on-hadoop-nav">
+										 1. SQL on Hadoop
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#2-metabase" v-on:click="closeDrawer" id="2-metabase-nav">
+										 2. Metabase
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e6%95%b0%e6%8d%ae%e5%88%86%e6%9e%90" v-on:click="closeDrawer" id="数据分析-nav">
+										 数据分析
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e5%ae%a2%e6%88%b7%e9%9c%80%e6%b1%82" v-on:click="closeDrawer" id="客户需求-nav">
+										 客户需求
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e9%9a%90%e8%97%8f%e7%9a%84%e7%bb%b4%e5%ba%a6%e4%bf%a1%e6%81%af" v-on:click="closeDrawer" id="隐藏的维度信息-nav">
+										 隐藏的维度信息
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e6%80%bb%e7%bb%93" v-on:click="closeDrawer" id="总结-nav">
+										 总结
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+	</div>
+
+</div>
+            
+        </div>
+    </div>
+</div>
+<transition name="fade">
+    <div v-bind:class="{ 'single-column-drawer-mask': mounted }" v-if="isDrawerOpen" v-on:click="toggleDrawer"></div>
+</transition>
+<nav ref="navBar" class="navbar sticky-top navbar-light single-column-nav-container">
+    <div ref="navBackground" class="nav-background"></div>
+    <div class="container container-narrow nav-content">
+        <button id="nav_dropdown_btn" class="nav-dropdown-toggle" type="button" v-on:click="toggleDrawer">
+            <i class="material-icons">
+                menu
+            </i>
+        </button>
+        <a ref="navTitle" class="navbar-brand" href="https://xujiahua.github.io/">
+            许嘉华的博客
+        </a>
+    </div>
+</nav>
+<div class="single-column-header-container" ref="pageHead"
+     v-bind:style="{ transform: 'translateZ(0px) translateY('+.3*scrollY+'px)', opacity: 1-navOpacity }">
+    <a href="https://xujiahua.github.io/">
+        <div class="single-column-header-title">许嘉华的博客</div>
+        
+
+    </a>
+</div>
+            <div id="content">
+<div ref="streamContainer" class="stream-container">
+    <div class="post-list-container post-list-container-shadow">
+        <div class="post">
+            
+            
+            
+
+            <div class="post-head-wrapper-text-only"
+                 style="background-image: url('/')">
+                <div class="post-title">
+                    记一次数据项目经历
+                    
+                    <div class="post-meta">
+                        
+                        <time itemprop="datePublished">
+                            2020-05-29 11:00
+                        </time>
+                        
+
+                        
+
+                        
+                    </div>
+                </div>
+            </div>
+            
+            <div class="post-body-wrapper">
+                <div class="post-body">
+                    <p>分享下 4月、5月（特别是5月，5/1假期后基本上全身心投入）在忙的这个数据项目经历，工作面覆盖陪同拜访客户、开会、需求分析、提供方案、数据清洗、数据分析、数据基础设施的搭建开发、帮甲方IT调试代码等环节，累到头秃。</p>
+<p>（本文刻意隐去客户信息。）</p>
+<h2 id="需求背景">需求背景</h2>
+<p>客户需求是做一个聚合小程序（此处脑补下麦当劳的微信小程序「i麦当劳」），用于广告投放，比如微信系APP的弹屏广告。应用本身不复杂，只是罗列客户其他小程序、H5应用和一些广告链接，让用户选择。</p>
+<p>投放效果需要数据量化，我们做了前后端的数据埋点，尽可能收集用户的行为记录。</p>
+<p>客户花钱投广告，是为了企业销售额等指标的提升。我们也对接了客户的订单数据，多方数据进行交叉分析。</p>
+<p>数据量化的结果，也就是数据报告，以日报、周报、月报的形式体现。</p>
+<h2 id="技术细节">技术细节</h2>
+<p>下文就以数据的生命周期来讲，数据是怎么从毛料，到精修，最后到报表的。</p>
+<h3 id="数据采集">数据采集</h3>
+<p>工作重点：</p>
+<ol>
+<li>定义数据对接规范，或是理解别人的规范。</li>
+<li>与自家开发做好数据对接。把握数据质量。</li>
+<li>与甲方开发做好数据对接。把握数据质量。（为了加快数据对接速度，又是写示例代码、又是帮他们定位中文编码问题。体验真是酸爽。还是自家小伙伴靠谱。）</li>
+<li>数据质量很重要。数据质量决定了后续工作是否需要反复。</li>
+</ol>
+<h4 id="1-前端应用埋点">1. 前端应用埋点</h4>
+<p>用于收集聚合小程序的用户行为记录。</p>
+<p>整体架构还是沿用几年前的，唯一变化的就是埋点的规范，因为需求的不同而变化。基本上如下逻辑：</p>
+<ol>
+<li>前端应用开发主动在代码中加入用户行为埋点。</li>
+<li>埋点 SDK 异步地将数据上传到服务器。多台服务器通过 DNS 解析来负载均衡。</li>
+<li>WEB 服务器使用的是 openresty，有一些 lua 脚本，用于处理 cookie，和格式化存储行为日志。</li>
+<li>之后数据通过Filebeat、Kafka、StreamSets等软件分发到Hadoop集群、实时处理任务。</li>
+</ol>
+<p><img src="../../images/image-20200512145610312.png" alt="image-20200512145610312"></p>
+<h4 id="2-sftp-文件同步">2. SFTP 文件同步</h4>
+<p>用于接收甲方的订单数据（二期、三期项目还有其他类型数据）。</p>
+<p>根据双方约定时间收取文件，将文件存入Hadoop集群。</p>
+<h4 id="3-微信公众号授权">3. 微信公众号授权</h4>
+<p>客户授权后，我们获取到了公众号的粉丝关注记录（由后端开发请求微信服务器取到数据并写入Kafka集群）。同样，也存放到了Hadoop集群。</p>
+<h3 id="etl-与-数据仓库">ETL 与 数据仓库</h3>
+<p>工作重点：</p>
+<ol>
+<li>承上启下的工作。以方便数据分析为出发点，反过来检验数据质量。</li>
+<li>字符串类型的时间转为时间戳类型。BI 工具需要。</li>
+<li>基于数据金字塔模型、维度分析模型建模。</li>
+<li>数据仓库未来可以考虑 ClickHouse。Hadoop体系数据粒度是文件，更新历史数据中的某条记录，得更新所在的整个文件！</li>
+</ol>
+<h4 id="1-etl">1. ETL</h4>
+<p>经过数据采集阶段，毛料数据以文件形式存储于Hadoop集群。本阶段主要将毛料数据抽取成表（实际还是文件存储）。</p>
+<p>技术上使用 Hive/Spark 框架写SQL。Hive SQL实在太慢了，所以一般使用Spark做清洗，Hive更多地是用其metastore组件，维护表结构信息。</p>
+<p>因为Spark（SQL）脚本得用Python写。抽象了一个清洗脚本模板，填空：</p>
+<ol>
+<li>可选填清洗前执行的SQL。比如建表DDL。</li>
+<li>可选填毛料数据的解析schema。（直接依靠框架采样推理出schema，与实际schema比，可能缺字段，程序会崩。schema也没必要手写。一个技巧就是准备一条最全的数据记录，让Spark推理，把schema存下来使用。）</li>
+<li>填核心的清洗逻辑。</li>
+</ol>
+<h4 id="2-数据仓库">2. 数据仓库</h4>
+<p>数据是有层次结构的。以用户行为记录为例：</p>
+<ol>
+<li>采集到的是<strong>毛料数据</strong>。很多时候，为了埋点规范能够动态扩展，字段都定义在一个有嵌套JSON结构的字段里。</li>
+<li>清洗成<strong>明细数据</strong>。一般是一张扁平表，能够描述用户在某上下文（时间、手机型号、IP地址）中点了某按钮。</li>
+<li>基于明细数据生成<strong>汇总数据</strong>。明细数据中维度很多，是以用户维度、用户会话维度汇总？还是以按钮、手机型号汇总？</li>
+<li>汇总是有不同程度的，比如按程度从低到高，按日、按月、按年。</li>
+</ol>
+<p>如果把占数据量绝大部分的毛料数据放在底部，占少部分的汇总数据放在上方，数据的层次结构可以想象成金字塔。所以也有数据金字塔模型一说。</p>
+<p>数据仓库的材料网上很多，比如维度分析模型，就不展开了。</p>
+<h3 id="olap-数据库-与-bi-工具">OLAP 数据库 与 BI 工具</h3>
+<p>工作重点：</p>
+<ol>
+<li>保证 OLAP 数据库高效稳定。</li>
+<li>选择合适的BI工具。（写重复代码是一件非常无聊的事情）</li>
+</ol>
+<p><img src="../../images/image-20200512153140285.png" alt="image-20200512153140285"></p>
+<h4 id="1-sql-on-hadoop">1. SQL on Hadoop</h4>
+<p>因为数据仓库是基于Hadoop/Hive的。在这个体系下的，分析型数据库选择就不多了。</p>
+<ol>
+<li>使用的CDH版本Hadoop，自带Impala。</li>
+<li>Hive。这个太慢了，无法适用BI场景。</li>
+<li>SparkSQL。需要独立安装。</li>
+</ol>
+<p>最合适的就是Impala，查询速度快，天然由CDH Manager工具管理监控。而且每个impalad都是天然的proxy，任务会分发给其他节点，并行完成。</p>
+<p>一开始还没有为 Metabase 开发 Impala 的数据库驱动。有单独部署一个 SparkSQL Thrift Server。随着数据量上升，太容易因为 OOM 崩了。</p>
+<h4 id="2-metabase">2. Metabase</h4>
+<p>去年 10月工作内容调整，重新着手数据相关的工作。当时，时不时有一个H5营销应用的网页分析报表下载需求。为了减少人工操作，开始调研开源的 BI 工具。</p>
+<ol>
+<li>superset 名气挺大的，但是各种不方便。没法做 JOIN！写SQL没法直接做可视化！界面老土（用flask-appbuilder生成的UI模板）！</li>
+<li>Metabase。连本地MySQL做数据分析，体验没有硬伤，还有很多惊喜。对比下，技术选型还是选择了 Metabase。</li>
+</ol>
+<p>Metabase的优点：</p>
+<ol>
+<li>开源。</li>
+<li>简单干净的界面，良好的文档，没遇到过大bug。 <a href="https://www.metabase.com/docs/latest/users-guide/start.html">https://www.metabase.com/docs/latest/users-guide/start.html</a></li>
+<li>X-Ray 功能。自动生成一张表的常见统计指标。惊喜的功能！我一度还在花时间写类似的工具，用于大数据上的数据探索。因为收益太低放弃了。</li>
+<li>比较常用的可视化技术。 <a href="https://www.metabase.com/docs/latest/users-guide/05-visualizing-results.html">https://www.metabase.com/docs/latest/users-guide/05-visualizing-results.html</a></li>
+<li>RBAC。权限控制。权限的粒度，数据库、表、分析文件夹。通过创建权限组，将一类用户集中管理。用途，某某项目组下的用户只能看到Dashboard，不能进行SQL操作，</li>
+<li>Filters。Dashboard/Question 中可指定SQL参数，可设置默认值。用途，筛选时间段、筛选活动ID，不需要重复创建Dashboard。一个Dashboard建议不要太多 filter （更多filter，感觉Kibana+Elasticsearch的组合更合适）。详见 <a href="https://www.metabase.com/docs/latest/users-guide/08-dashboard-filters.html">https://www.metabase.com/docs/latest/users-guide/08-dashboard-filters.html</a></li>
+<li>数据导出。Dashboard没法直接下载Question中的数据，需要点击进入各个Question下载。</li>
+<li>BI工具，是真正贯彻了组件化思维。可视化都是选项，通过点击就能制作一个图表。平台不再是写死的，而是动态变化的。数据分析、数据工程、前后端开发，充分解耦。目前我们平台的问题就是数据分析和前后端开发是耦合在一起的，迭代会很慢。</li>
+</ol>
+<p>美中不足，没有开箱即用的 Impala 驱动。花了些时间研究，写了个 Impala 驱动，已经在生产使用了。参考 <a href="https://xujiahua.github.io/posts/20200527-metabase-impala-driver/">https://xujiahua.github.io/posts/20200527-metabase-impala-driver/</a></p>
+<h3 id="数据分析">数据分析</h3>
+<p>工作重点：</p>
+<ol>
+<li>理解客户需求，以客户需求为中心做数据分析。</li>
+<li>写 SQL。维度分析和对比分析。</li>
+</ol>
+<h4 id="客户需求">客户需求</h4>
+<p>客户需求，是运营在跟。而我是一个没有灵魂的SQL写手。渐渐因为只是写这些繁杂的SQL，觉得非常无聊。目前还深受折磨。</p>
+<p>以客户需求为中心做数据分析。这是我跟运营学到的一课。虽然数据分析有套路，但是维度那么多、对比那么多，毫无目的地发散空耗自身精力。</p>
+<h4 id="隐藏的维度信息">隐藏的维度信息</h4>
+<p>比如行为记录埋点，只有一个按钮名称。这个按钮的真正去向是什么页面、什么时候创建的，需要向开发收集。</p>
+<p>比如订单中，只有一个门店名称。这个门店所在的城市、分公司隶属关系这些信息需要收集，扩充门店的维度信息。</p>
+<h2 id="总结">总结</h2>
+<p>以上为近2月项目的浓缩总结。人力有限，每个环节都做得比较粗放。</p>
+<p>但总体有条不紊，幸亏洪敏和我前期的积累。</p>
+
+                    
+                    <HR width="100%" id="EOF">
+                    <p style="color:#777;">Last modified on 2020-05-29</p>
+                    
+                </div>
+            </div>
+            
+            
+            <nav class="post-pagination">
+
+                
+                <a class="newer-posts">
+                    Next<br>No newer posts.
+                </a>
+                
+                
+                
+                <a class="older-posts" href="https://xujiahua.github.io/posts/20200528-metabase-impala-type/">
+                    Previous<br>Metabase Impala Driver 0528更新日志
+                </a>
+                
+            </nav>
+            <div class="post-comment-wrapper">
+                
+
+
+
+
+
+
+            </div>
+        </div>
+    </div>
+</div>
+
+            </div><div id="single-column-footer">
+Hugo Theme <a href="https://github.com/amazingrise/hugo-theme-diary">Diary</a> by <a href="https://amazingrise.net">Rise</a>
+<br>
+Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopener">Makito</a>'s <a href="https://github.com/SumiMakito/hexo-theme-journal/" target="_blank" rel="noreferrer noopener">Journal.</a> <br>
+<br>
+
+&copy;
+	
+	2020 许嘉华的博客
+	</div>
+    	</div>
+    <script src="https://xujiahua.github.io//js/journal.js"></script>
+    </body>
+</html>

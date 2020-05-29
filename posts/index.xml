@@ -6,10 +6,36 @@
     <description>Recent content in Posts on 许嘉华的博客</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Thu, 28 May 2020 09:30:09 +0800</lastBuildDate>
+    <lastBuildDate>Fri, 29 May 2020 11:00:23 +0800</lastBuildDate>
     
 	<atom:link href="https://xujiahua.github.io/posts/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>记一次数据项目经历</title>
+      <link>https://xujiahua.github.io/posts/20200529-bi_project/</link>
+      <pubDate>Fri, 29 May 2020 11:00:23 +0800</pubDate>
+      
+      <guid>https://xujiahua.github.io/posts/20200529-bi_project/</guid>
+      <description>分享下 4月、5月（特别是5月，5/1假期后基本上全身心投入）在忙的这个数据项目经历，工作面覆盖陪同拜访客户、开会、需求分析、提供方案、数据清洗、数据分析、数据基础设施的搭建开发、帮甲方IT调试代码等环节，累到头秃。
+（本文刻意隐去客户信息。）
+需求背景 客户需求是做一个聚合小程序（此处脑补下麦当劳的微信小程序「i麦当劳」），用于广告投放，比如微信系APP的弹屏广告。应用本身不复杂，只是罗列客户其他小程序、H5应用和一些广告链接，让用户选择。
+投放效果需要数据量化，我们做了前后端的数据埋点，尽可能收集用户的行为记录。
+客户花钱投广告，是为了企业销售额等指标的提升。我们也对接了客户的订单数据，多方数据进行交叉分析。
+数据量化的结果，也就是数据报告，以日报、周报、月报的形式体现。
+技术细节 下文就以数据的生命周期来讲，数据是怎么从毛料，到精修，最后到报表的。
+数据采集 工作重点：
+ 定义数据对接规范，或是理解别人的规范。 与自家开发做好数据对接。把握数据质量。 与甲方开发做好数据对接。把握数据质量。（为了加快数据对接速度，又是写示例代码、又是帮他们定位中文编码问题。体验真是酸爽。还是自家小伙伴靠谱。） 数据质量很重要。数据质量决定了后续工作是否需要反复。  1. 前端应用埋点 用于收集聚合小程序的用户行为记录。
+整体架构还是沿用几年前的，唯一变化的就是埋点的规范，因为需求的不同而变化。基本上如下逻辑：
+ 前端应用开发主动在代码中加入用户行为埋点。 埋点 SDK 异步地将数据上传到服务器。多台服务器通过 DNS 解析来负载均衡。 WEB 服务器使用的是 openresty，有一些 lua 脚本，用于处理 cookie，和格式化存储行为日志。 之后数据通过Filebeat、Kafka、StreamSets等软件分发到Hadoop集群、实时处理任务。  2. SFTP 文件同步 用于接收甲方的订单数据（二期、三期项目还有其他类型数据）。
+根据双方约定时间收取文件，将文件存入Hadoop集群。
+3. 微信公众号授权 客户授权后，我们获取到了公众号的粉丝关注记录（由后端开发请求微信服务器取到数据并写入Kafka集群）。同样，也存放到了Hadoop集群。
+ETL 与 数据仓库 工作重点：
+ 承上启下的工作。以方便数据分析为出发点，反过来检验数据质量。 字符串类型的时间转为时间戳类型。BI 工具需要。 基于数据金字塔模型、维度分析模型建模。 数据仓库未来可以考虑 ClickHouse。Hadoop体系数据粒度是文件，更新历史数据中的某条记录，得更新所在的整个文件！  1. ETL 经过数据采集阶段，毛料数据以文件形式存储于Hadoop集群。本阶段主要将毛料数据抽取成表（实际还是文件存储）。
+技术上使用 Hive/Spark 框架写SQL。Hive SQL实在太慢了，所以一般使用Spark做清洗，Hive更多地是用其metastore组件，维护表结构信息。
+因为Spark（SQL）脚本得用Python写。抽象了一个清洗脚本模板，填空：
+ 可选填清洗前执行的SQL。比如建表DDL。 可选填毛料数据的解析schema。（直接依靠框架采样推理出schema，与实际schema比，可能缺字段，程序会崩。schema也没必要手写。一个技巧就是准备一条最全的数据记录，让Spark推理，把schema存下来使用。） 填核心的清洗逻辑。  2.</description>
+    </item>
     
     <item>
       <title>Metabase Impala Driver 0528更新日志</title>

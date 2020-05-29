@@ -5,9 +5,128 @@
     <description>Recent content on 许嘉华的博客</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Thu, 28 May 2020 09:30:09 +0800</lastBuildDate>
+    <lastBuildDate>Fri, 29 May 2020 11:00:23 +0800</lastBuildDate>
     
         <atom:link href="https://xujiahua.github.io/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    
+        <item>
+        <title>记一次数据项目经历</title>
+        <link>https://xujiahua.github.io/posts/20200529-bi_project/</link>
+        <pubDate>Fri, 29 May 2020 11:00:23 +0800</pubDate>
+        
+        <guid>https://xujiahua.github.io/posts/20200529-bi_project/</guid>
+        <description>许嘉华的博客 https://xujiahua.github.io/posts/20200529-bi_project/ -&lt;p&gt;分享下 4月、5月（特别是5月，5/1假期后基本上全身心投入）在忙的这个数据项目经历，工作面覆盖陪同拜访客户、开会、需求分析、提供方案、数据清洗、数据分析、数据基础设施的搭建开发、帮甲方IT调试代码等环节，累到头秃。&lt;/p&gt;
+&lt;p&gt;（本文刻意隐去客户信息。）&lt;/p&gt;
+&lt;h2 id=&#34;需求背景&#34;&gt;需求背景&lt;/h2&gt;
+&lt;p&gt;客户需求是做一个聚合小程序（此处脑补下麦当劳的微信小程序「i麦当劳」），用于广告投放，比如微信系APP的弹屏广告。应用本身不复杂，只是罗列客户其他小程序、H5应用和一些广告链接，让用户选择。&lt;/p&gt;
+&lt;p&gt;投放效果需要数据量化，我们做了前后端的数据埋点，尽可能收集用户的行为记录。&lt;/p&gt;
+&lt;p&gt;客户花钱投广告，是为了企业销售额等指标的提升。我们也对接了客户的订单数据，多方数据进行交叉分析。&lt;/p&gt;
+&lt;p&gt;数据量化的结果，也就是数据报告，以日报、周报、月报的形式体现。&lt;/p&gt;
+&lt;h2 id=&#34;技术细节&#34;&gt;技术细节&lt;/h2&gt;
+&lt;p&gt;下文就以数据的生命周期来讲，数据是怎么从毛料，到精修，最后到报表的。&lt;/p&gt;
+&lt;h3 id=&#34;数据采集&#34;&gt;数据采集&lt;/h3&gt;
+&lt;p&gt;工作重点：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;定义数据对接规范，或是理解别人的规范。&lt;/li&gt;
+&lt;li&gt;与自家开发做好数据对接。把握数据质量。&lt;/li&gt;
+&lt;li&gt;与甲方开发做好数据对接。把握数据质量。（为了加快数据对接速度，又是写示例代码、又是帮他们定位中文编码问题。体验真是酸爽。还是自家小伙伴靠谱。）&lt;/li&gt;
+&lt;li&gt;数据质量很重要。数据质量决定了后续工作是否需要反复。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h4 id=&#34;1-前端应用埋点&#34;&gt;1. 前端应用埋点&lt;/h4&gt;
+&lt;p&gt;用于收集聚合小程序的用户行为记录。&lt;/p&gt;
+&lt;p&gt;整体架构还是沿用几年前的，唯一变化的就是埋点的规范，因为需求的不同而变化。基本上如下逻辑：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;前端应用开发主动在代码中加入用户行为埋点。&lt;/li&gt;
+&lt;li&gt;埋点 SDK 异步地将数据上传到服务器。多台服务器通过 DNS 解析来负载均衡。&lt;/li&gt;
+&lt;li&gt;WEB 服务器使用的是 openresty，有一些 lua 脚本，用于处理 cookie，和格式化存储行为日志。&lt;/li&gt;
+&lt;li&gt;之后数据通过Filebeat、Kafka、StreamSets等软件分发到Hadoop集群、实时处理任务。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200512145610312.png&#34; alt=&#34;image-20200512145610312&#34;&gt;&lt;/p&gt;
+&lt;h4 id=&#34;2-sftp-文件同步&#34;&gt;2. SFTP 文件同步&lt;/h4&gt;
+&lt;p&gt;用于接收甲方的订单数据（二期、三期项目还有其他类型数据）。&lt;/p&gt;
+&lt;p&gt;根据双方约定时间收取文件，将文件存入Hadoop集群。&lt;/p&gt;
+&lt;h4 id=&#34;3-微信公众号授权&#34;&gt;3. 微信公众号授权&lt;/h4&gt;
+&lt;p&gt;客户授权后，我们获取到了公众号的粉丝关注记录（由后端开发请求微信服务器取到数据并写入Kafka集群）。同样，也存放到了Hadoop集群。&lt;/p&gt;
+&lt;h3 id=&#34;etl-与-数据仓库&#34;&gt;ETL 与 数据仓库&lt;/h3&gt;
+&lt;p&gt;工作重点：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;承上启下的工作。以方便数据分析为出发点，反过来检验数据质量。&lt;/li&gt;
+&lt;li&gt;字符串类型的时间转为时间戳类型。BI 工具需要。&lt;/li&gt;
+&lt;li&gt;基于数据金字塔模型、维度分析模型建模。&lt;/li&gt;
+&lt;li&gt;数据仓库未来可以考虑 ClickHouse。Hadoop体系数据粒度是文件，更新历史数据中的某条记录，得更新所在的整个文件！&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h4 id=&#34;1-etl&#34;&gt;1. ETL&lt;/h4&gt;
+&lt;p&gt;经过数据采集阶段，毛料数据以文件形式存储于Hadoop集群。本阶段主要将毛料数据抽取成表（实际还是文件存储）。&lt;/p&gt;
+&lt;p&gt;技术上使用 Hive/Spark 框架写SQL。Hive SQL实在太慢了，所以一般使用Spark做清洗，Hive更多地是用其metastore组件，维护表结构信息。&lt;/p&gt;
+&lt;p&gt;因为Spark（SQL）脚本得用Python写。抽象了一个清洗脚本模板，填空：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;可选填清洗前执行的SQL。比如建表DDL。&lt;/li&gt;
+&lt;li&gt;可选填毛料数据的解析schema。（直接依靠框架采样推理出schema，与实际schema比，可能缺字段，程序会崩。schema也没必要手写。一个技巧就是准备一条最全的数据记录，让Spark推理，把schema存下来使用。）&lt;/li&gt;
+&lt;li&gt;填核心的清洗逻辑。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h4 id=&#34;2-数据仓库&#34;&gt;2. 数据仓库&lt;/h4&gt;
+&lt;p&gt;数据是有层次结构的。以用户行为记录为例：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;采集到的是&lt;strong&gt;毛料数据&lt;/strong&gt;。很多时候，为了埋点规范能够动态扩展，字段都定义在一个有嵌套JSON结构的字段里。&lt;/li&gt;
+&lt;li&gt;清洗成&lt;strong&gt;明细数据&lt;/strong&gt;。一般是一张扁平表，能够描述用户在某上下文（时间、手机型号、IP地址）中点了某按钮。&lt;/li&gt;
+&lt;li&gt;基于明细数据生成&lt;strong&gt;汇总数据&lt;/strong&gt;。明细数据中维度很多，是以用户维度、用户会话维度汇总？还是以按钮、手机型号汇总？&lt;/li&gt;
+&lt;li&gt;汇总是有不同程度的，比如按程度从低到高，按日、按月、按年。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;如果把占数据量绝大部分的毛料数据放在底部，占少部分的汇总数据放在上方，数据的层次结构可以想象成金字塔。所以也有数据金字塔模型一说。&lt;/p&gt;
+&lt;p&gt;数据仓库的材料网上很多，比如维度分析模型，就不展开了。&lt;/p&gt;
+&lt;h3 id=&#34;olap-数据库-与-bi-工具&#34;&gt;OLAP 数据库 与 BI 工具&lt;/h3&gt;
+&lt;p&gt;工作重点：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;保证 OLAP 数据库高效稳定。&lt;/li&gt;
+&lt;li&gt;选择合适的BI工具。（写重复代码是一件非常无聊的事情）&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200512153140285.png&#34; alt=&#34;image-20200512153140285&#34;&gt;&lt;/p&gt;
+&lt;h4 id=&#34;1-sql-on-hadoop&#34;&gt;1. SQL on Hadoop&lt;/h4&gt;
+&lt;p&gt;因为数据仓库是基于Hadoop/Hive的。在这个体系下的，分析型数据库选择就不多了。&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;使用的CDH版本Hadoop，自带Impala。&lt;/li&gt;
+&lt;li&gt;Hive。这个太慢了，无法适用BI场景。&lt;/li&gt;
+&lt;li&gt;SparkSQL。需要独立安装。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;最合适的就是Impala，查询速度快，天然由CDH Manager工具管理监控。而且每个impalad都是天然的proxy，任务会分发给其他节点，并行完成。&lt;/p&gt;
+&lt;p&gt;一开始还没有为 Metabase 开发 Impala 的数据库驱动。有单独部署一个 SparkSQL Thrift Server。随着数据量上升，太容易因为 OOM 崩了。&lt;/p&gt;
+&lt;h4 id=&#34;2-metabase&#34;&gt;2. Metabase&lt;/h4&gt;
+&lt;p&gt;去年 10月工作内容调整，重新着手数据相关的工作。当时，时不时有一个H5营销应用的网页分析报表下载需求。为了减少人工操作，开始调研开源的 BI 工具。&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;superset 名气挺大的，但是各种不方便。没法做 JOIN！写SQL没法直接做可视化！界面老土（用flask-appbuilder生成的UI模板）！&lt;/li&gt;
+&lt;li&gt;Metabase。连本地MySQL做数据分析，体验没有硬伤，还有很多惊喜。对比下，技术选型还是选择了 Metabase。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;Metabase的优点：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;开源。&lt;/li&gt;
+&lt;li&gt;简单干净的界面，良好的文档，没遇到过大bug。 &lt;a href=&#34;https://www.metabase.com/docs/latest/users-guide/start.html&#34;&gt;https://www.metabase.com/docs/latest/users-guide/start.html&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;X-Ray 功能。自动生成一张表的常见统计指标。惊喜的功能！我一度还在花时间写类似的工具，用于大数据上的数据探索。因为收益太低放弃了。&lt;/li&gt;
+&lt;li&gt;比较常用的可视化技术。 &lt;a href=&#34;https://www.metabase.com/docs/latest/users-guide/05-visualizing-results.html&#34;&gt;https://www.metabase.com/docs/latest/users-guide/05-visualizing-results.html&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;RBAC。权限控制。权限的粒度，数据库、表、分析文件夹。通过创建权限组，将一类用户集中管理。用途，某某项目组下的用户只能看到Dashboard，不能进行SQL操作，&lt;/li&gt;
+&lt;li&gt;Filters。Dashboard/Question 中可指定SQL参数，可设置默认值。用途，筛选时间段、筛选活动ID，不需要重复创建Dashboard。一个Dashboard建议不要太多 filter （更多filter，感觉Kibana+Elasticsearch的组合更合适）。详见 &lt;a href=&#34;https://www.metabase.com/docs/latest/users-guide/08-dashboard-filters.html&#34;&gt;https://www.metabase.com/docs/latest/users-guide/08-dashboard-filters.html&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;数据导出。Dashboard没法直接下载Question中的数据，需要点击进入各个Question下载。&lt;/li&gt;
+&lt;li&gt;BI工具，是真正贯彻了组件化思维。可视化都是选项，通过点击就能制作一个图表。平台不再是写死的，而是动态变化的。数据分析、数据工程、前后端开发，充分解耦。目前我们平台的问题就是数据分析和前后端开发是耦合在一起的，迭代会很慢。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;美中不足，没有开箱即用的 Impala 驱动。花了些时间研究，写了个 Impala 驱动，已经在生产使用了。参考 &lt;a href=&#34;https://xujiahua.github.io/posts/20200527-metabase-impala-driver/&#34;&gt;https://xujiahua.github.io/posts/20200527-metabase-impala-driver/&lt;/a&gt;&lt;/p&gt;
+&lt;h3 id=&#34;数据分析&#34;&gt;数据分析&lt;/h3&gt;
+&lt;p&gt;工作重点：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;理解客户需求，以客户需求为中心做数据分析。&lt;/li&gt;
+&lt;li&gt;写 SQL。维度分析和对比分析。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h4 id=&#34;客户需求&#34;&gt;客户需求&lt;/h4&gt;
+&lt;p&gt;客户需求，是运营在跟。而我是一个没有灵魂的SQL写手。渐渐因为只是写这些繁杂的SQL，觉得非常无聊。目前还深受折磨。&lt;/p&gt;
+&lt;p&gt;以客户需求为中心做数据分析。这是我跟运营学到的一课。虽然数据分析有套路，但是维度那么多、对比那么多，毫无目的地发散空耗自身精力。&lt;/p&gt;
+&lt;h4 id=&#34;隐藏的维度信息&#34;&gt;隐藏的维度信息&lt;/h4&gt;
+&lt;p&gt;比如行为记录埋点，只有一个按钮名称。这个按钮的真正去向是什么页面、什么时候创建的，需要向开发收集。&lt;/p&gt;
+&lt;p&gt;比如订单中，只有一个门店名称。这个门店所在的城市、分公司隶属关系这些信息需要收集，扩充门店的维度信息。&lt;/p&gt;
+&lt;h2 id=&#34;总结&#34;&gt;总结&lt;/h2&gt;
+&lt;p&gt;以上为近2月项目的浓缩总结。人力有限，每个环节都做得比较粗放。&lt;/p&gt;
+&lt;p&gt;但总体有条不紊，幸亏洪敏和我前期的积累。&lt;/p&gt;
+- https://xujiahua.github.io/posts/20200529-bi_project/ - </description>
+        </item>
     
     
     
@@ -1056,47 +1175,6 @@ size_options &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; [
 &lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;&lt;/span&gt;        -v &lt;span style=&#34;color:#e6db74&#34;&gt;`&lt;/span&gt;pwd&lt;span style=&#34;color:#e6db74&#34;&gt;`&lt;/span&gt;:/mnt/spec &lt;span style=&#34;color:#ae81ff&#34;&gt;\
 &lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;&lt;/span&gt;        -p 5000:5000 cortexlabs/python-serve:0.15.1
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;- https://xujiahua.github.io/posts/20200416-cortex/ - </description>
-        </item>
-    
-    
-    
-        <item>
-        <title>k8s 应用日志收集</title>
-        <link>https://xujiahua.github.io/posts/20200414-k8s-logging/</link>
-        <pubDate>Tue, 14 Apr 2020 09:53:35 +0800</pubDate>
-        
-        <guid>https://xujiahua.github.io/posts/20200414-k8s-logging/</guid>
-        <description>许嘉华的博客 https://xujiahua.github.io/posts/20200414-k8s-logging/ -&lt;h2 id=&#34;k8s-日志收集架构&#34;&gt;k8s 日志收集架构&lt;/h2&gt;
-&lt;p&gt;以下是比较一般、普适的架构。更多参考：Kubernetes 日志架构 &lt;a href=&#34;https://kubernetes.io/zh/docs/concepts/cluster-administration/logging/&#34;&gt;https://kubernetes.io/zh/docs/concepts/cluster-administration/logging/&lt;/a&gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/logging-with-node-agent.png&#34; alt=&#34;使用节点日志记录代理&#34;&gt;&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;容器化应用将日志写入&lt;code&gt;stdout&lt;/code&gt;、&lt;code&gt;stderr&lt;/code&gt;。&lt;/li&gt;
-&lt;li&gt;Docker容器引擎将&lt;code&gt;stdout&lt;/code&gt;、&lt;code&gt;stderr&lt;/code&gt;流重定向到日志驱动，比如默认的json-file。&lt;/li&gt;
-&lt;li&gt;json-file日志驱动将日志写入到（宿主机上的）文件。&lt;/li&gt;
-&lt;li&gt;日志收集工具以DaemonSet的形式安装在每个节点。&lt;/li&gt;
-&lt;li&gt;日志收集工具监听文件变化，并将日志写入到日志中心服务。&lt;/li&gt;
-&lt;/ol&gt;
-&lt;h2 id=&#34;k8s-日志收集细节&#34;&gt;k8s 日志收集细节&lt;/h2&gt;
-&lt;h3 id=&#34;实战&#34;&gt;实战&lt;/h3&gt;
-&lt;p&gt;可以直接参考以下教程：minikube创建了一个Kubernetes集群，Fluentd收集日志，存入ElasticSearch，使用Kibana查看日志。典型的EFK技术栈。&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;Logging in Kubernetes with Elasticsearch, Kibana, and Fluentd &lt;a href=&#34;https://mherman.org/blog/logging-in-kubernetes-with-elasticsearch-Kibana-fluentd/&#34;&gt;https://mherman.org/blog/logging-in-kubernetes-with-elasticsearch-Kibana-fluentd/&lt;/a&gt;&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;在Kibana上看收集到的日志。能看到日志收集工具也采集了容器、镜像、Pod有关的信息。这些上下文信息能让人定位到是哪个应用在生产日志。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image-20200414104511399.png&#34; alt=&#34;image-20200414104511399&#34;&gt;&lt;/p&gt;
-&lt;h3 id=&#34;fluentd-收集上下文信息&#34;&gt;fluentd 收集上下文信息&lt;/h3&gt;
-&lt;p&gt;Docker &lt;code&gt;json-file&lt;/code&gt; 日志驱动写文件，并不记录上下文信息。 &lt;a href=&#34;https://docs.docker.com/config/containers/logging/json-file/&#34;&gt;https://docs.docker.com/config/containers/logging/json-file/&lt;/a&gt;&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;{&amp;quot;log&amp;quot;:&amp;quot;Log line is here\n&amp;quot;,&amp;quot;stream&amp;quot;:&amp;quot;stdout&amp;quot;,&amp;quot;time&amp;quot;:&amp;quot;2019-01-01T11:11:11.111111111Z&amp;quot;}
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;上文中使用的日志收集镜像是 &lt;code&gt;fluent/fluentd-kubernetes-daemonset:v1.3-debian-elasticsearch&lt;/code&gt;。&lt;/p&gt;
-&lt;p&gt;具体代码路径在此 &lt;a href=&#34;https://github.com/fluent/fluentd-kubernetes-daemonset/tree/master/docker-image/v1.3/debian-elasticsearch&#34;&gt;https://github.com/fluent/fluentd-kubernetes-daemonset/tree/master/docker-image/v1.3/debian-elasticsearch&lt;/a&gt;&lt;/p&gt;
-&lt;p&gt;收集容器目录下的日志。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image-20200414105706563.png&#34; alt=&#34;image-20200414105706563&#34;&gt;&lt;/p&gt;
-&lt;p&gt;使用&lt;code&gt;kubernetes_metadata&lt;/code&gt;这个第三方插件获取容器相关的上下文信息。这里是通过请求API server得到metadata的。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image-20200414105752287.png&#34; alt=&#34;image-20200414105752287&#34;&gt;&lt;/p&gt;
-&lt;p&gt;&lt;code&gt;kubernetes_metadata&lt;/code&gt; 插件地址 &lt;a href=&#34;https://github.com/fabric8io/fluent-plugin-kubernetes_metadata_filter&#34;&gt;https://github.com/fabric8io/fluent-plugin-kubernetes_metadata_filter&lt;/a&gt;&lt;/p&gt;
-&lt;p&gt;插件中有缓存metadata的选项，不用担心每处理一条日志，就要向API server发送请求。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image-20200414111028867.png&#34; alt=&#34;image-20200414111028867&#34;&gt;&lt;/p&gt;
-- https://xujiahua.github.io/posts/20200414-k8s-logging/ - </description>
         </item>
     
     

@@ -5,9 +5,50 @@
     <description>Recent content on 许嘉华的博客</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Thu, 28 May 2020 09:30:09 +0800</lastBuildDate>
+    <lastBuildDate>Fri, 29 May 2020 11:00:23 +0800</lastBuildDate>
     
         <atom:link href="https://xujiahua.github.io/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    
+        <item>
+        <title>k8s 应用日志收集</title>
+        <link>https://xujiahua.github.io/posts/20200414-k8s-logging/</link>
+        <pubDate>Tue, 14 Apr 2020 09:53:35 +0800</pubDate>
+        
+        <guid>https://xujiahua.github.io/posts/20200414-k8s-logging/</guid>
+        <description>许嘉华的博客 https://xujiahua.github.io/posts/20200414-k8s-logging/ -&lt;h2 id=&#34;k8s-日志收集架构&#34;&gt;k8s 日志收集架构&lt;/h2&gt;
+&lt;p&gt;以下是比较一般、普适的架构。更多参考：Kubernetes 日志架构 &lt;a href=&#34;https://kubernetes.io/zh/docs/concepts/cluster-administration/logging/&#34;&gt;https://kubernetes.io/zh/docs/concepts/cluster-administration/logging/&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/logging-with-node-agent.png&#34; alt=&#34;使用节点日志记录代理&#34;&gt;&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;容器化应用将日志写入&lt;code&gt;stdout&lt;/code&gt;、&lt;code&gt;stderr&lt;/code&gt;。&lt;/li&gt;
+&lt;li&gt;Docker容器引擎将&lt;code&gt;stdout&lt;/code&gt;、&lt;code&gt;stderr&lt;/code&gt;流重定向到日志驱动，比如默认的json-file。&lt;/li&gt;
+&lt;li&gt;json-file日志驱动将日志写入到（宿主机上的）文件。&lt;/li&gt;
+&lt;li&gt;日志收集工具以DaemonSet的形式安装在每个节点。&lt;/li&gt;
+&lt;li&gt;日志收集工具监听文件变化，并将日志写入到日志中心服务。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2 id=&#34;k8s-日志收集细节&#34;&gt;k8s 日志收集细节&lt;/h2&gt;
+&lt;h3 id=&#34;实战&#34;&gt;实战&lt;/h3&gt;
+&lt;p&gt;可以直接参考以下教程：minikube创建了一个Kubernetes集群，Fluentd收集日志，存入ElasticSearch，使用Kibana查看日志。典型的EFK技术栈。&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Logging in Kubernetes with Elasticsearch, Kibana, and Fluentd &lt;a href=&#34;https://mherman.org/blog/logging-in-kubernetes-with-elasticsearch-Kibana-fluentd/&#34;&gt;https://mherman.org/blog/logging-in-kubernetes-with-elasticsearch-Kibana-fluentd/&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;在Kibana上看收集到的日志。能看到日志收集工具也采集了容器、镜像、Pod有关的信息。这些上下文信息能让人定位到是哪个应用在生产日志。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200414104511399.png&#34; alt=&#34;image-20200414104511399&#34;&gt;&lt;/p&gt;
+&lt;h3 id=&#34;fluentd-收集上下文信息&#34;&gt;fluentd 收集上下文信息&lt;/h3&gt;
+&lt;p&gt;Docker &lt;code&gt;json-file&lt;/code&gt; 日志驱动写文件，并不记录上下文信息。 &lt;a href=&#34;https://docs.docker.com/config/containers/logging/json-file/&#34;&gt;https://docs.docker.com/config/containers/logging/json-file/&lt;/a&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;{&amp;quot;log&amp;quot;:&amp;quot;Log line is here\n&amp;quot;,&amp;quot;stream&amp;quot;:&amp;quot;stdout&amp;quot;,&amp;quot;time&amp;quot;:&amp;quot;2019-01-01T11:11:11.111111111Z&amp;quot;}
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;上文中使用的日志收集镜像是 &lt;code&gt;fluent/fluentd-kubernetes-daemonset:v1.3-debian-elasticsearch&lt;/code&gt;。&lt;/p&gt;
+&lt;p&gt;具体代码路径在此 &lt;a href=&#34;https://github.com/fluent/fluentd-kubernetes-daemonset/tree/master/docker-image/v1.3/debian-elasticsearch&#34;&gt;https://github.com/fluent/fluentd-kubernetes-daemonset/tree/master/docker-image/v1.3/debian-elasticsearch&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;收集容器目录下的日志。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200414105706563.png&#34; alt=&#34;image-20200414105706563&#34;&gt;&lt;/p&gt;
+&lt;p&gt;使用&lt;code&gt;kubernetes_metadata&lt;/code&gt;这个第三方插件获取容器相关的上下文信息。这里是通过请求API server得到metadata的。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200414105752287.png&#34; alt=&#34;image-20200414105752287&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;kubernetes_metadata&lt;/code&gt; 插件地址 &lt;a href=&#34;https://github.com/fabric8io/fluent-plugin-kubernetes_metadata_filter&#34;&gt;https://github.com/fabric8io/fluent-plugin-kubernetes_metadata_filter&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;插件中有缓存metadata的选项，不用担心每处理一条日志，就要向API server发送请求。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200414111028867.png&#34; alt=&#34;image-20200414111028867&#34;&gt;&lt;/p&gt;
+- https://xujiahua.github.io/posts/20200414-k8s-logging/ - </description>
+        </item>
     
     
     
@@ -1444,35 +1485,6 @@ func main() {
 &lt;p&gt;&lt;img src=&#34;../../images/image-20200312174326015.png&#34; alt=&#34;image-20200312174326015&#34;&gt;&lt;/p&gt;
 &lt;p&gt;不完美，但至少不需要让调用者改代码了。以后接口设计还是把请求参数放Body里，稳一点。&lt;/p&gt;
 - https://xujiahua.github.io/posts/20200312-slash-in-url-path/ - </description>
-        </item>
-    
-    
-    
-        <item>
-        <title>专利申请流程小结</title>
-        <link>https://xujiahua.github.io/posts/20200311-patent/</link>
-        <pubDate>Wed, 11 Mar 2020 11:25:09 +0800</pubDate>
-        
-        <guid>https://xujiahua.github.io/posts/20200311-patent/</guid>
-        <description>许嘉华的博客 https://xujiahua.github.io/posts/20200311-patent/ -&lt;p&gt;去年憋的一篇专利，到申请公布阶段了，算是去年研究区块链的副成果。https://patents.google.com/patent/CN110807211。整理下专利申请流程。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/01C8BAF0-B9C7-4F08-9575-38AF85AC4F14.png&#34; alt=&#34;01C8BAF0-B9C7-4F08-9575-38AF85AC4F14&#34;&gt;&lt;/p&gt;
-&lt;h2 id=&#34;专利申请流程&#34;&gt;专利申请流程&lt;/h2&gt;
-&lt;p&gt;主要流程如下图，来自网络。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/7CA0DB1A-692F-481B-BFA3-987F503E1E39.png&#34; alt=&#34;7CA0DB1A-692F-481B-BFA3-987F503E1E39&#34;&gt;&lt;/p&gt;
-&lt;h3 id=&#34;技术成果生成&#34;&gt;技术成果生成&lt;/h3&gt;
-&lt;p&gt;有可以申请专利的点，这个因人而异。基于点子，写个草稿。&lt;/p&gt;
-&lt;h3 id=&#34;申请专利&#34;&gt;申请专利&lt;/h3&gt;
-&lt;p&gt;找一个专利代理，让他们提供专利稿的修改意见。反复迭代直到专利代理觉得没问题了。&lt;/p&gt;
-&lt;p&gt;之后专利代理会出具一份「专利申请受理通知书」，你再交点钱，可能还会有税费减免。&lt;/p&gt;
-&lt;p&gt;我遇到了专利代理看不大懂专利的情况，僵持了一段时间，后面换了一家顺畅好多。&lt;/p&gt;
-&lt;h3 id=&#34;专利申请公布&#34;&gt;专利申请公布&lt;/h3&gt;
-&lt;p&gt;这个时间点叫做：申请公布日。&lt;/p&gt;
-&lt;p&gt;说明初审过了。实用新型和外观发明的话，直接就授权了，而发明还需要实质审查。&lt;/p&gt;
-&lt;p&gt;&amp;ldquo;初步审查合格后，实用新型和外观就直接授权了，而发明还要经过实质审查，检索国内外的资料，确认没有相同的才会授权，所以发明的含金量会高很多，因此发明专利审查的时间也会是比较长的，一般从申请到拿证书都需要2-3年，而实用、外观这两项专利一年能拿到。&amp;rdquo;&lt;/p&gt;
-&lt;h3 id=&#34;专利授权公告&#34;&gt;专利授权公告&lt;/h3&gt;
-&lt;p&gt;这个时间点叫做：授权公告日。&lt;/p&gt;
-&lt;p&gt;说明正式审查完了。这时候才算是真正拥有专利。&lt;/p&gt;
-- https://xujiahua.github.io/posts/20200311-patent/ - </description>
         </item>
     
     
