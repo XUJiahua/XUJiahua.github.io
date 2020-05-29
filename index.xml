@@ -79,8 +79,9 @@
 &lt;h3 id=&#34;olap-数据库-与-bi-工具&#34;&gt;OLAP 数据库 与 BI 工具&lt;/h3&gt;
 &lt;p&gt;工作重点：&lt;/p&gt;
 &lt;ol&gt;
+&lt;li&gt;为数据分析准备工作平台。&lt;/li&gt;
 &lt;li&gt;保证 OLAP 数据库高效稳定。&lt;/li&gt;
-&lt;li&gt;选择合适的BI工具。（写重复代码是一件非常无聊的事情）&lt;/li&gt;
+&lt;li&gt;选择合适的BI工具，用户体验很重要。&lt;/li&gt;
 &lt;/ol&gt;
 &lt;p&gt;&lt;img src=&#34;../../images/image-20200512153140285.png&#34; alt=&#34;image-20200512153140285&#34;&gt;&lt;/p&gt;
 &lt;h4 id=&#34;1-sql-on-hadoop&#34;&gt;1. SQL on Hadoop&lt;/h4&gt;
