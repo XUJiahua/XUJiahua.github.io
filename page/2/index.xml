@@ -319,6 +319,7 @@ Valid starting       Expires              Service principal
 04/13/2020 01:32:45  04/14/2020 01:32:45  krbtgt/PEGGY.LING@PEGGY.LING
 	renew until 04/17/2020 15:56:45
 &lt;/code&gt;&lt;/pre&gt;&lt;p&gt;就看7天后会怎么样了。renew周期过了，会重建么？理论上是可以的。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;2020-05-30：实践证明，renew周期过后，ticket就无法renew，也就无法连接数据库。简单直接的方法，设置定时任务执行 kinit 命令，刷新ticket，不依赖 spark 的实现。&lt;/strong&gt;&lt;/p&gt;
 &lt;p&gt;看到Spark代码中已经有kerberos集成了，包括登录啥的。&lt;/p&gt;
 &lt;p&gt;spark/sql/hive-thriftserver/v2.3.5/src/main/java/org/apache/hive/service/auth/HiveAuthFactory.java&lt;/p&gt;
 &lt;p&gt;&lt;img src=&#34;../../images/image-20200413110032646.png&#34; alt=&#34;image-20200413110032646&#34;&gt;&lt;/p&gt;
