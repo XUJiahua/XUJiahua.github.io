@@ -4,16 +4,21 @@
   
   <url>
     <loc>https://xujiahua.github.io/posts/</loc>
-    <lastmod>2020-05-29T11:00:23+08:00</lastmod>
+    <lastmod>2020-06-04T16:13:27+08:00</lastmod>
   </url>
   
   <url>
-    <loc>https://xujiahua.github.io/posts/20200529-bi_project/</loc>
-    <lastmod>2020-05-29T11:00:23+08:00</lastmod>
+    <loc>https://xujiahua.github.io/posts/20200604-clojure-repl-debug/</loc>
+    <lastmod>2020-06-04T16:13:27+08:00</lastmod>
   </url>
   
   <url>
     <loc>https://xujiahua.github.io/</loc>
+    <lastmod>2020-06-04T16:13:27+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://xujiahua.github.io/posts/20200529-bi_project/</loc>
     <lastmod>2020-05-29T11:00:23+08:00</lastmod>
   </url>
   
@@ -168,11 +173,6 @@
   </url>
   
   <url>
-    <loc>https://xujiahua.github.io/tags/go/</loc>
-    <lastmod>2020-03-20T15:24:22+08:00</lastmod>
-  </url>
-  
-  <url>
     <loc>https://xujiahua.github.io/posts/20200320-go-web-project/</loc>
     <lastmod>2020-03-20T15:24:22+08:00</lastmod>
   </url>
@@ -189,6 +189,11 @@
   
   <url>
     <loc>https://xujiahua.github.io/tags/bug/</loc>
+    <lastmod>2020-03-12T15:17:36+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://xujiahua.github.io/tags/go/</loc>
     <lastmod>2020-03-12T15:17:36+08:00</lastmod>
   </url>
   

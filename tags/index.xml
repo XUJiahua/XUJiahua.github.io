@@ -120,15 +120,6 @@
     </item>
     
     <item>
-      <title>Go</title>
-      <link>https://xujiahua.github.io/tags/go/</link>
-      <pubDate>Fri, 20 Mar 2020 15:24:22 +0800</pubDate>
-      
-      <guid>https://xujiahua.github.io/tags/go/</guid>
-      <description></description>
-    </item>
-    
-    <item>
       <title>Golang</title>
       <link>https://xujiahua.github.io/tags/golang/</link>
       <pubDate>Fri, 20 Mar 2020 15:24:22 +0800</pubDate>
@@ -152,6 +143,15 @@
       <pubDate>Thu, 12 Mar 2020 15:17:36 +0800</pubDate>
       
       <guid>https://xujiahua.github.io/tags/bug/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Go</title>
+      <link>https://xujiahua.github.io/tags/go/</link>
+      <pubDate>Thu, 12 Mar 2020 15:17:36 +0800</pubDate>
+      
+      <guid>https://xujiahua.github.io/tags/go/</guid>
       <description></description>
     </item>
     
