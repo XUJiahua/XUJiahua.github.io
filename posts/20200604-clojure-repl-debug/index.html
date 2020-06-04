@@ -340,6 +340,37 @@ Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopene
 						
 							<ul>
 						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#clojure-%e5%8a%a8%e6%80%81%e6%80%a7" v-on:click="closeDrawer" id="clojure-动态性-nav">
+										 Clojure 动态性：#’
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
 						
 								<li>
 				 					<a href="#%e6%80%bb%e7%bb%93" v-on:click="closeDrawer" id="总结-nav">
@@ -623,6 +654,37 @@ Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopene
 						
 							<ul>
 						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#clojure-%e5%8a%a8%e6%80%81%e6%80%a7" v-on:click="closeDrawer" id="clojure-动态性-nav">
+										 Clojure 动态性：#’
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
 						
 								<li>
 				 					<a href="#%e6%80%bb%e7%bb%93" v-on:click="closeDrawer" id="总结-nav">
@@ -691,6 +753,12 @@ Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopene
                         
 
                         
+                            <i class="material-icons" style="">label</i>
+                            
+                                <a href="/tags/clojure">clojure</a>
+                                &nbsp;
+                            
+                        
                     </div>
                 </div>
             </div>
@@ -756,7 +824,83 @@ Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopene
 <ol>
 <li>The Cursive REPL <a href="https://cursive-ide.com/userguide/repl.html">https://cursive-ide.com/userguide/repl.html</a></li>
 </ol>
-<h2 id="总结">总结</h2>
+<h4 id="clojure-动态性">Clojure 动态性：#&rsquo;</h4>
+<p><code>#'</code>是 Clojure 里的一个reader macro，可以理解为一个语法糖。 <a href="https://en.wikibooks.org/wiki/Learning_Clojure/Reader_Macros">https://en.wikibooks.org/wiki/Learning_Clojure/Reader_Macros</a></p>
+<p>实际展开为<code>var</code>方法。</p>
+<pre><code>#'foo                 ; (var foo)
+</code></pre><p>比如一个内置方法<code>inc</code>，以下两种写法都能用。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-clojure" data-lang="clojure">(inc <span style="color:#ae81ff">1</span>)
+=&gt; <span style="color:#ae81ff">2</span>
+<span style="color:#75715e">;; = ((var inc) 1)</span>
+(<span style="color:#f92672">#</span><span style="color:#e6db74">&#39;inc</span> <span style="color:#ae81ff">1</span>)
+=&gt; <span style="color:#ae81ff">2</span>
+</code></pre></div><p>两种写法的区别，打开一个REPL试试。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-clojure" data-lang="clojure"><span style="color:#75715e">;; twice version 1</span>
+(<span style="color:#66d9ef">defn </span>twice [n] (* n <span style="color:#ae81ff">2.0</span>))
+=&gt; <span style="color:#f92672">#</span><span style="color:#e6db74">&#39;user/twice</span>
+
+<span style="color:#75715e">;; #&#39;twice = (var twice) 定义simple-calc时编译器不会指向twice的内容内存地址，只是twice var的地址。</span>
+(<span style="color:#66d9ef">def </span>simple-calc <span style="color:#f92672">#</span><span style="color:#e6db74">&#39;twice</span>)
+=&gt; <span style="color:#f92672">#</span><span style="color:#e6db74">&#39;user/simple-calc</span>
+(<span style="color:#a6e22e">simple-calc</span> <span style="color:#ae81ff">3</span>)
+=&gt; <span style="color:#ae81ff">6.0</span>
+
+<span style="color:#75715e">;; 定义simple-calc2时编译器指向twice的内容内存地址。</span>
+(<span style="color:#66d9ef">def </span>simple-calc2 twice)
+=&gt; <span style="color:#f92672">#</span><span style="color:#e6db74">&#39;user/simple-calc2</span>
+(<span style="color:#a6e22e">simple-calc2</span> <span style="color:#ae81ff">3</span>)
+=&gt; <span style="color:#ae81ff">6.0</span>
+
+<span style="color:#75715e">;; 更新了 twice 的内容，两个 simple-calc 的表现就不一样了</span>
+<span style="color:#75715e">;; twice version 2</span>
+(<span style="color:#66d9ef">defn </span>twice [n] (* n <span style="color:#ae81ff">2</span>))
+=&gt; <span style="color:#f92672">#</span><span style="color:#e6db74">&#39;user/twice</span>
+
+<span style="color:#75715e">;; 结果随着twice的变动更新了</span>
+<span style="color:#75715e">;; 每次运行 simple-calc，都会执行 (var twice)，保证取twice最新的内容内存地址。</span>
+(<span style="color:#a6e22e">simple-calc</span> <span style="color:#ae81ff">3</span>)
+=&gt; <span style="color:#ae81ff">6</span>
+
+<span style="color:#75715e">;; 结果没变。因为内部使用的还是编译前的twice的内容内存地址。</span>
+(<span style="color:#a6e22e">simple-calc2</span> <span style="color:#ae81ff">3</span>)
+=&gt; <span style="color:#ae81ff">6.0</span>
+</code></pre></div><p>这个回答是很好的解释：</p>
+<ol>
+<li>Dynamic handler update in Clojure Ring/Compojure REPL <a href="https://stackoverflow.com/questions/28904260/dynamic-handler-update-in-clojure-ring-compojure-repl">https://stackoverflow.com/questions/28904260/dynamic-handler-update-in-clojure-ring-compojure-repl</a></li>
+</ol>
+<p>其实 Clojure 中最常用到的就是Var类型了，使用defn/def定义方法、变量都是定义Var类型，Var类型可以理解为一个容器，指向Function、Value。Clojure之所以如此动态，就是因为Var类型指向的内容可以随时更新。参考以下：</p>
+<p><img src="../../images/clojure-functional-concurrency-for-the-jvm-presented-at-oscon-47-728.jpg" alt="Everything&rsquo;s a Var! Function Namespace"></p>
+<p><a href="https://www.slideshare.net/hlship/clojure-functional-concurrency-for-the-jvm-presented-at-oscon/47-Everythings_a_Var_Function_Namespace">https://www.slideshare.net/hlship/clojure-functional-concurrency-for-the-jvm-presented-at-oscon/47-Everythings_a_Var_Function_Namespace</a></p>
+<blockquote>
+<p>Vars (instances of <a href="https://github.com/clojure/clojure/blob/master/src/jvm/clojure/lang/Var.java"><code>clojure.lang.Var</code></a>) are one of four constructs the Clojure language gives us to maintain a persistent reference to a changing value.<a href="https://8thlight.com/blog/aaron-lahey/2016/07/20/relationship-between-clojure-functions-symbols-vars-namespaces.html#footnote-3">3</a> In fact, of the four constructs (<a href="http://clojure.org/reference/vars">vars</a>, <a href="http://clojure.org/reference/atoms">atoms</a>, <a href="http://clojure.org/reference/refs">refs</a>, and <a href="http://clojure.org/reference/agents">agents</a>), they&rsquo;re probably the one you use the most without even realizing it! Every time something is defined using the special form <code>def</code> (or the <code>defn</code> macro which uses <code>def</code> internally), Clojure creates a new var and places the value or function inside&hellip;</p>
+<p>Having this mutable container act as a layer of indirection between a caller and the function being called is what allows Clojure to be so dynamic at runtime. If all invocations of a particular function are routed through this container, we&rsquo;re given the opportunity to dynamically update the behavior of our program by changing or altering what is inside&hellip;</p>
+<p><a href="https://8thlight.com/blog/aaron-lahey/2016/07/20/relationship-between-clojure-functions-symbols-vars-namespaces.html">https://8thlight.com/blog/aaron-lahey/2016/07/20/relationship-between-clojure-functions-symbols-vars-namespaces.html</a></p>
+</blockquote>
+<p>Metabase 代码里就有很多<code>#'</code>的使用，比如这里定义的HTTP请求的middleware，保证开发时随时更改随时生效，提高开发效率。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-clojure" data-lang="clojure"><span style="color:#75715e">;; default-middleware是一个Vector（数组），每个元素都是一个含相同方法签名的方法。</span>
+(<span style="color:#66d9ef">def </span>default-middleware
+  <span style="color:#e6db74">&#34;The default set of middleware applied to queries ran via `process-query`.&#34;</span>
+  [<span style="color:#f92672">#</span><span style="color:#e6db74">&#39;mbql-to-native/mbql-&gt;native</span>
+   <span style="color:#f92672">#</span><span style="color:#e6db74">&#39;check-features/check-features</span>
+   <span style="color:#f92672">#</span><span style="color:#e6db74">&#39;optimize-datetime-filters/optimize-datetime-filters</span>
+   ...])
+
+(<span style="color:#66d9ef">def </span><span style="color:#f92672">^</span>{<span style="color:#e6db74">:arglists</span> <span style="color:#f92672">&#39;</span>([query] [query context])} process-query-async
+  <span style="color:#e6db74">&#34;Process a query asynchronously, returning a `core.async` channel that is called with the final result (or Throwable).&#34;</span>
+  (<span style="color:#a6e22e">base-qp</span> default-middleware))
+
+<span style="color:#75715e">;; In REPL-based dev rebuild the QP every time it is called; this way we don&#39;t need to reload this namespace when</span>
+<span style="color:#75715e">;; middleware is changed. Outside of dev only build the QP once for performance/locality （build once? HOW?）</span>
+(<span style="color:#66d9ef">defn- </span>base-qp [middleware]
+  <span style="color:#75715e">;; letfn与let类似，定义一个本地变量，letfn定义的是一个方法（变量）。</span>
+  (<span style="color:#a6e22e">letfn</span> [(<span style="color:#a6e22e">qp</span> [] <span style="color:#75715e">;; qp 方法名 [] 入参</span>
+              <span style="color:#75715e">;; 将middleware数组合并成一个middleware，可以合并是因为方法签名是一致的</span>
+            (<span style="color:#a6e22e">qp.reducible/async-qp</span> (<span style="color:#a6e22e">qp.reducible/combine-middleware</span> middleware)))]
+    (<span style="color:#66d9ef">if </span>config/is-dev?
+      (<span style="color:#66d9ef">fn </span>[<span style="color:#f92672">&amp;</span> args]
+        (apply (<span style="color:#a6e22e">qp</span>) args))
+      (<span style="color:#a6e22e">qp</span>))))
+</code></pre></div><h2 id="总结">总结</h2>
 <p>REPL 的方式调试代码还是蛮新奇的，对我来说。</p>
 
                     

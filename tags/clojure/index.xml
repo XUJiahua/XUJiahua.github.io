@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>clojure on 许嘉华的博客</title>
+    <link>https://xujiahua.github.io/tags/clojure/</link>
+    <description>Recent content in clojure on 许嘉华的博客</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Thu, 04 Jun 2020 16:13:27 +0800</lastBuildDate>
+    
+	<atom:link href="https://xujiahua.github.io/tags/clojure/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>使用 REPL 调试 Clojure 项目</title>
+      <link>https://xujiahua.github.io/posts/20200604-clojure-repl-debug/</link>
+      <pubDate>Thu, 04 Jun 2020 16:13:27 +0800</pubDate>
+      
+      <guid>https://xujiahua.github.io/posts/20200604-clojure-repl-debug/</guid>
+      <description>开发工具 Intellij IDEA + Cursive 安装 IDEA 社区版即可，并安装插件 Cursive。
+Cursive 插件按键冲突 比如我会用组合键⌘ + [浏览代码，与 Cursive 插件的按键冲突。可以取消 Cursive 的这个组合键。
+实践 Metabase 接触 Clojure 是因为 Metabase 这个项目 https://github.com/metabase/metabase 。以 Metabase 为例，说明如何调试 Clojure 项目。
+Metabase 由前后端两部分组成，后端是由 Clojure 写的 REST API 项目。启动前端工程，需要在前端界面上触发 API 请求。
+yarn build-hot 参考
+ Metabase developers-guide https://github.com/metabase/metabase/blob/master/docs/developers-guide.md  REPL 调试 Clojure 项目 新建一个 Clojure REPL 配置。
+展开右下角的 REPL 子窗口，Run REPL for metabase-core。（注意，此时，项目中的 clojure namespace 并没有实际加载。代码编辑区运行 Clojure 函数，会报错，Error: :namespace-not-found）
+metabase.core.clj 是整个项目的入口文件。执行 Load File in REPL。插件自动把所有 metabase.</description>
+    </item>
+    
+  </channel>
+</rss>

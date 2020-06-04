@@ -76,7 +76,83 @@
 &lt;ol&gt;
 &lt;li&gt;The Cursive REPL &lt;a href=&#34;https://cursive-ide.com/userguide/repl.html&#34;&gt;https://cursive-ide.com/userguide/repl.html&lt;/a&gt;&lt;/li&gt;
 &lt;/ol&gt;
-&lt;h2 id=&#34;总结&#34;&gt;总结&lt;/h2&gt;
+&lt;h4 id=&#34;clojure-动态性&#34;&gt;Clojure 动态性：#&amp;rsquo;&lt;/h4&gt;
+&lt;p&gt;&lt;code&gt;#&#39;&lt;/code&gt;是 Clojure 里的一个reader macro，可以理解为一个语法糖。 &lt;a href=&#34;https://en.wikibooks.org/wiki/Learning_Clojure/Reader_Macros&#34;&gt;https://en.wikibooks.org/wiki/Learning_Clojure/Reader_Macros&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;实际展开为&lt;code&gt;var&lt;/code&gt;方法。&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;#&#39;foo                 ; (var foo)
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;比如一个内置方法&lt;code&gt;inc&lt;/code&gt;，以下两种写法都能用。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-clojure&#34; data-lang=&#34;clojure&#34;&gt;(inc &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;)
+=&amp;gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;
+&lt;span style=&#34;color:#75715e&#34;&gt;;; = ((var inc) 1)&lt;/span&gt;
+(&lt;span style=&#34;color:#f92672&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;inc&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;)
+=&amp;gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;两种写法的区别，打开一个REPL试试。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-clojure&#34; data-lang=&#34;clojure&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;;; twice version 1&lt;/span&gt;
+(&lt;span style=&#34;color:#66d9ef&#34;&gt;defn &lt;/span&gt;twice [n] (* n &lt;span style=&#34;color:#ae81ff&#34;&gt;2.0&lt;/span&gt;))
+=&amp;gt; &lt;span style=&#34;color:#f92672&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;user/twice&lt;/span&gt;
+
+&lt;span style=&#34;color:#75715e&#34;&gt;;; #&amp;#39;twice = (var twice) 定义simple-calc时编译器不会指向twice的内容内存地址，只是twice var的地址。&lt;/span&gt;
+(&lt;span style=&#34;color:#66d9ef&#34;&gt;def &lt;/span&gt;simple-calc &lt;span style=&#34;color:#f92672&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;twice&lt;/span&gt;)
+=&amp;gt; &lt;span style=&#34;color:#f92672&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;user/simple-calc&lt;/span&gt;
+(&lt;span style=&#34;color:#a6e22e&#34;&gt;simple-calc&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;3&lt;/span&gt;)
+=&amp;gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;6.0&lt;/span&gt;
+
+&lt;span style=&#34;color:#75715e&#34;&gt;;; 定义simple-calc2时编译器指向twice的内容内存地址。&lt;/span&gt;
+(&lt;span style=&#34;color:#66d9ef&#34;&gt;def &lt;/span&gt;simple-calc2 twice)
+=&amp;gt; &lt;span style=&#34;color:#f92672&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;user/simple-calc2&lt;/span&gt;
+(&lt;span style=&#34;color:#a6e22e&#34;&gt;simple-calc2&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;3&lt;/span&gt;)
+=&amp;gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;6.0&lt;/span&gt;
+
+&lt;span style=&#34;color:#75715e&#34;&gt;;; 更新了 twice 的内容，两个 simple-calc 的表现就不一样了&lt;/span&gt;
+&lt;span style=&#34;color:#75715e&#34;&gt;;; twice version 2&lt;/span&gt;
+(&lt;span style=&#34;color:#66d9ef&#34;&gt;defn &lt;/span&gt;twice [n] (* n &lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;))
+=&amp;gt; &lt;span style=&#34;color:#f92672&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;user/twice&lt;/span&gt;
+
+&lt;span style=&#34;color:#75715e&#34;&gt;;; 结果随着twice的变动更新了&lt;/span&gt;
+&lt;span style=&#34;color:#75715e&#34;&gt;;; 每次运行 simple-calc，都会执行 (var twice)，保证取twice最新的内容内存地址。&lt;/span&gt;
+(&lt;span style=&#34;color:#a6e22e&#34;&gt;simple-calc&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;3&lt;/span&gt;)
+=&amp;gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;6&lt;/span&gt;
+
+&lt;span style=&#34;color:#75715e&#34;&gt;;; 结果没变。因为内部使用的还是编译前的twice的内容内存地址。&lt;/span&gt;
+(&lt;span style=&#34;color:#a6e22e&#34;&gt;simple-calc2&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;3&lt;/span&gt;)
+=&amp;gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;6.0&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;这个回答是很好的解释：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Dynamic handler update in Clojure Ring/Compojure REPL &lt;a href=&#34;https://stackoverflow.com/questions/28904260/dynamic-handler-update-in-clojure-ring-compojure-repl&#34;&gt;https://stackoverflow.com/questions/28904260/dynamic-handler-update-in-clojure-ring-compojure-repl&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;其实 Clojure 中最常用到的就是Var类型了，使用defn/def定义方法、变量都是定义Var类型，Var类型可以理解为一个容器，指向Function、Value。Clojure之所以如此动态，就是因为Var类型指向的内容可以随时更新。参考以下：&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/clojure-functional-concurrency-for-the-jvm-presented-at-oscon-47-728.jpg&#34; alt=&#34;Everything&amp;rsquo;s a Var! Function Namespace&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://www.slideshare.net/hlship/clojure-functional-concurrency-for-the-jvm-presented-at-oscon/47-Everythings_a_Var_Function_Namespace&#34;&gt;https://www.slideshare.net/hlship/clojure-functional-concurrency-for-the-jvm-presented-at-oscon/47-Everythings_a_Var_Function_Namespace&lt;/a&gt;&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Vars (instances of &lt;a href=&#34;https://github.com/clojure/clojure/blob/master/src/jvm/clojure/lang/Var.java&#34;&gt;&lt;code&gt;clojure.lang.Var&lt;/code&gt;&lt;/a&gt;) are one of four constructs the Clojure language gives us to maintain a persistent reference to a changing value.&lt;a href=&#34;https://8thlight.com/blog/aaron-lahey/2016/07/20/relationship-between-clojure-functions-symbols-vars-namespaces.html#footnote-3&#34;&gt;3&lt;/a&gt; In fact, of the four constructs (&lt;a href=&#34;http://clojure.org/reference/vars&#34;&gt;vars&lt;/a&gt;, &lt;a href=&#34;http://clojure.org/reference/atoms&#34;&gt;atoms&lt;/a&gt;, &lt;a href=&#34;http://clojure.org/reference/refs&#34;&gt;refs&lt;/a&gt;, and &lt;a href=&#34;http://clojure.org/reference/agents&#34;&gt;agents&lt;/a&gt;), they&amp;rsquo;re probably the one you use the most without even realizing it! Every time something is defined using the special form &lt;code&gt;def&lt;/code&gt; (or the &lt;code&gt;defn&lt;/code&gt; macro which uses &lt;code&gt;def&lt;/code&gt; internally), Clojure creates a new var and places the value or function inside&amp;hellip;&lt;/p&gt;
+&lt;p&gt;Having this mutable container act as a layer of indirection between a caller and the function being called is what allows Clojure to be so dynamic at runtime. If all invocations of a particular function are routed through this container, we&amp;rsquo;re given the opportunity to dynamically update the behavior of our program by changing or altering what is inside&amp;hellip;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://8thlight.com/blog/aaron-lahey/2016/07/20/relationship-between-clojure-functions-symbols-vars-namespaces.html&#34;&gt;https://8thlight.com/blog/aaron-lahey/2016/07/20/relationship-between-clojure-functions-symbols-vars-namespaces.html&lt;/a&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;Metabase 代码里就有很多&lt;code&gt;#&#39;&lt;/code&gt;的使用，比如这里定义的HTTP请求的middleware，保证开发时随时更改随时生效，提高开发效率。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-clojure&#34; data-lang=&#34;clojure&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;;; default-middleware是一个Vector（数组），每个元素都是一个含相同方法签名的方法。&lt;/span&gt;
+(&lt;span style=&#34;color:#66d9ef&#34;&gt;def &lt;/span&gt;default-middleware
+  &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;The default set of middleware applied to queries ran via `process-query`.&amp;#34;&lt;/span&gt;
+  [&lt;span style=&#34;color:#f92672&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;mbql-to-native/mbql-&amp;gt;native&lt;/span&gt;
+   &lt;span style=&#34;color:#f92672&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;check-features/check-features&lt;/span&gt;
+   &lt;span style=&#34;color:#f92672&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;optimize-datetime-filters/optimize-datetime-filters&lt;/span&gt;
+   ...])
+
+(&lt;span style=&#34;color:#66d9ef&#34;&gt;def &lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;^&lt;/span&gt;{&lt;span style=&#34;color:#e6db74&#34;&gt;:arglists&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;&amp;#39;&lt;/span&gt;([query] [query context])} process-query-async
+  &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Process a query asynchronously, returning a `core.async` channel that is called with the final result (or Throwable).&amp;#34;&lt;/span&gt;
+  (&lt;span style=&#34;color:#a6e22e&#34;&gt;base-qp&lt;/span&gt; default-middleware))
+
+&lt;span style=&#34;color:#75715e&#34;&gt;;; In REPL-based dev rebuild the QP every time it is called; this way we don&amp;#39;t need to reload this namespace when&lt;/span&gt;
+&lt;span style=&#34;color:#75715e&#34;&gt;;; middleware is changed. Outside of dev only build the QP once for performance/locality （build once? HOW?）&lt;/span&gt;
+(&lt;span style=&#34;color:#66d9ef&#34;&gt;defn- &lt;/span&gt;base-qp [middleware]
+  &lt;span style=&#34;color:#75715e&#34;&gt;;; letfn与let类似，定义一个本地变量，letfn定义的是一个方法（变量）。&lt;/span&gt;
+  (&lt;span style=&#34;color:#a6e22e&#34;&gt;letfn&lt;/span&gt; [(&lt;span style=&#34;color:#a6e22e&#34;&gt;qp&lt;/span&gt; [] &lt;span style=&#34;color:#75715e&#34;&gt;;; qp 方法名 [] 入参&lt;/span&gt;
+              &lt;span style=&#34;color:#75715e&#34;&gt;;; 将middleware数组合并成一个middleware，可以合并是因为方法签名是一致的&lt;/span&gt;
+            (&lt;span style=&#34;color:#a6e22e&#34;&gt;qp.reducible/async-qp&lt;/span&gt; (&lt;span style=&#34;color:#a6e22e&#34;&gt;qp.reducible/combine-middleware&lt;/span&gt; middleware)))]
+    (&lt;span style=&#34;color:#66d9ef&#34;&gt;if &lt;/span&gt;config/is-dev?
+      (&lt;span style=&#34;color:#66d9ef&#34;&gt;fn &lt;/span&gt;[&lt;span style=&#34;color:#f92672&#34;&gt;&amp;amp;&lt;/span&gt; args]
+        (apply (&lt;span style=&#34;color:#a6e22e&#34;&gt;qp&lt;/span&gt;) args))
+      (&lt;span style=&#34;color:#a6e22e&#34;&gt;qp&lt;/span&gt;))))
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;总结&#34;&gt;总结&lt;/h2&gt;
 &lt;p&gt;REPL 的方式调试代码还是蛮新奇的，对我来说。&lt;/p&gt;
 - https://xujiahua.github.io/posts/20200604-clojure-repl-debug/ - </description>
         </item>
@@ -817,13 +893,13 @@ size_options &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; [
 &lt;p&gt;&lt;em&gt;仅作记录&lt;/em&gt;&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;Boot -&amp;gt; Boot Configuration, disable &amp;ldquo;&lt;strong&gt;Network Boot&lt;/strong&gt;&amp;rdquo;&lt;/li&gt;
-&lt;li&gt;Power -&amp;gt; Secondary Power Settings, &amp;ldquo;&lt;strong&gt;Wake on LAN from S4/S5&lt;/strong&gt;&amp;rdquo;, set to &amp;ldquo;&lt;strong&gt;Stay Off&lt;/strong&gt;&amp;rdquo;&lt;/li&gt;
+&lt;li&gt;Power -&amp;gt; Secondary Power Settings, &amp;ldquo;&lt;strong&gt;Wake on LAN from S4/S5&lt;/strong&gt;&amp;quot;, set to &amp;ldquo;&lt;strong&gt;Stay Off&lt;/strong&gt;&amp;rdquo;&lt;/li&gt;
 &lt;li&gt;Boot -&amp;gt; Secure Boot, disable &amp;ldquo;&lt;strong&gt;Secure Boot&lt;/strong&gt;&amp;rdquo;&lt;/li&gt;
 &lt;li&gt;Devices -&amp;gt; OnBoard Devices, disable &amp;ldquo;&lt;strong&gt;Bluetooth&lt;/strong&gt;&amp;rdquo; (macOS is not compatible well with Intel Wi-Fi/Bluetooth)&lt;/li&gt;
 &lt;/ul&gt;
 &lt;p&gt;Suggested:&lt;/p&gt;
 &lt;ul&gt;
-&lt;li&gt;Boot -&amp;gt; Boot Priority -&amp;gt; Legacy Boot Priority, enable &amp;ldquo;&lt;strong&gt;Legacy Boot&lt;/strong&gt;&amp;rdquo;.&lt;/li&gt;
+&lt;li&gt;Boot -&amp;gt; Boot Priority -&amp;gt; Legacy Boot Priority, enable &amp;ldquo;&lt;strong&gt;Legacy Boot&lt;/strong&gt;&amp;quot;.&lt;/li&gt;
 &lt;/ul&gt;
 &lt;p&gt;参考 &lt;a href=&#34;https://github.com/sarkrui/NUC8i7BEH-Hackintosh-Build&#34;&gt;https://github.com/sarkrui/NUC8i7BEH-Hackintosh-Build&lt;/a&gt;&lt;/p&gt;
 &lt;h4 id=&#34;apple-id--icloud--app-store&#34;&gt;Apple ID / iCloud / App Store&lt;/h4&gt;
