@@ -199,16 +199,12 @@ Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopene
 						
 							<ul>
 						
-							<ul>
-						
 						
 								<li>
 				 					<a href="#string%e7%b1%bb%e5%9e%8b%e4%b9%9f%e4%bd%bf%e7%94%a8%e6%97%a5%e6%9c%9f%e7%ad%9b%e9%80%89%e6%8e%a7%e4%bb%b6" v-on:click="closeDrawer" id="string类型也使用日期筛选控件-nav">
 										 string类型也使用日期筛选控件？
 									</a>
 								</li>
-						
-							</ul>
 						
 							</ul>
 						
@@ -370,16 +366,12 @@ Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopene
 						
 							<ul>
 						
-							<ul>
-						
 						
 								<li>
 				 					<a href="#string%e7%b1%bb%e5%9e%8b%e4%b9%9f%e4%bd%bf%e7%94%a8%e6%97%a5%e6%9c%9f%e7%ad%9b%e9%80%89%e6%8e%a7%e4%bb%b6" v-on:click="closeDrawer" id="string类型也使用日期筛选控件-nav">
 										 string类型也使用日期筛选控件？
 									</a>
 								</li>
-						
-							</ul>
 						
 							</ul>
 						
@@ -532,7 +524,7 @@ Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopene
 <p>因为用到分区键，Impala 少读不少文件，查询速度也快了很多。</p>
 <p>所以关键是要定义一个日期小表，查询使用分区键是常识。这样一个日期小表，还能解决如下的问题：</p>
 <p>一个<code>Question</code>涉及多个事实表查询的，每个表都有时间戳字段。定义两个<code>Variable</code>显得啰嗦，定义一个<code>Variable</code>就无法处理了（每个Variable对应一个table column）。这时候共同关联到日期小表，用日期小表进行日期筛选。</p>
-<h4 id="string类型也使用日期筛选控件">string类型也使用日期筛选控件？</h4>
+<h3 id="string类型也使用日期筛选控件">string类型也使用日期筛选控件？</h3>
 <p><code>dt</code>字段是<code>string</code>类型。以下查询与上文多表关联查询效果是一样的，但是少了定义日期小表的工作。</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">SELECT</span> <span style="color:#66d9ef">count</span>(<span style="color:#66d9ef">distinct</span> openid)
 <span style="color:#66d9ef">FROM</span> dwd_fact_dks_wx_subscribe_v3

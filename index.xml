@@ -67,7 +67,7 @@
 &lt;p&gt;因为用到分区键，Impala 少读不少文件，查询速度也快了很多。&lt;/p&gt;
 &lt;p&gt;所以关键是要定义一个日期小表，查询使用分区键是常识。这样一个日期小表，还能解决如下的问题：&lt;/p&gt;
 &lt;p&gt;一个&lt;code&gt;Question&lt;/code&gt;涉及多个事实表查询的，每个表都有时间戳字段。定义两个&lt;code&gt;Variable&lt;/code&gt;显得啰嗦，定义一个&lt;code&gt;Variable&lt;/code&gt;就无法处理了（每个Variable对应一个table column）。这时候共同关联到日期小表，用日期小表进行日期筛选。&lt;/p&gt;
-&lt;h4 id=&#34;string类型也使用日期筛选控件&#34;&gt;string类型也使用日期筛选控件？&lt;/h4&gt;
+&lt;h3 id=&#34;string类型也使用日期筛选控件&#34;&gt;string类型也使用日期筛选控件？&lt;/h3&gt;
 &lt;p&gt;&lt;code&gt;dt&lt;/code&gt;字段是&lt;code&gt;string&lt;/code&gt;类型。以下查询与上文多表关联查询效果是一样的，但是少了定义日期小表的工作。&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sql&#34; data-lang=&#34;sql&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;SELECT&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;count&lt;/span&gt;(&lt;span style=&#34;color:#66d9ef&#34;&gt;distinct&lt;/span&gt; openid)
 &lt;span style=&#34;color:#66d9ef&#34;&gt;FROM&lt;/span&gt; dwd_fact_dks_wx_subscribe_v3
