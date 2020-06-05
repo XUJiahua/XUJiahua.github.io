@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Metabase on 许嘉华的博客</title>
-    <link>https://xujiahua.github.io/tags/metabase/</link>
-    <description>Recent content in Metabase on 许嘉华的博客</description>
+    <title>Impala on 许嘉华的博客</title>
+    <link>https://xujiahua.github.io/tags/impala/</link>
+    <description>Recent content in Impala on 许嘉华的博客</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
     <lastBuildDate>Fri, 05 Jun 2020 14:41:44 +0800</lastBuildDate>
     
-	<atom:link href="https://xujiahua.github.io/tags/metabase/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://xujiahua.github.io/tags/impala/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
@@ -40,22 +40,6 @@ CAST(from_unixtime(unix_timestamp(from_timestamp(CAST(`table`.`column` AS timest
 Metabase 数据库类型会映射为 Clojure类型，数据库类型的名称是大小写敏感的。所以不能复用hive-like中的实现（都是小写的），而且Hive与Impala的类型还是有些不同的。
 Hive Impala的数据类型异同 以 Hive Data Types 为基准。
    Type Name Type Catgory Comment Impala Support?     TINYINT Numeric Types  Yes   SMALLINT Numeric Types  Yes   INT Numeric Types  Yes   BIGINT Numeric Types  Yes   FLOAT Numeric Types  Yes   DOUBLE Numeric Types  Yes   DOUBLE PRECISION Numeric Types alias for DOUBLE, only available starting with Hive 2.</description>
-    </item>
-    
-    <item>
-      <title>Metabase &#43; Spark SQL</title>
-      <link>https://xujiahua.github.io/posts/20200410-metabase-spark-sql/</link>
-      <pubDate>Fri, 10 Apr 2020 16:41:53 +0800</pubDate>
-      
-      <guid>https://xujiahua.github.io/posts/20200410-metabase-spark-sql/</guid>
-      <description>这是大数据 BI 平台的第二步，BI 工具的搭建。假设已经配置好 Spark SQL JDBC Server，并启用了Kerberos。参考 https://xujiahua.github.io/posts/20200410-spark-thrift-server-cdh/
-这里，我们选择了开源产品 Metabase。
-最终，大数据 BI 平台，是由 1) 以Metabase作为BI可视化，2) 由HDFS（分布式文件存储） + parquet（列式数据存储格式）+ Hive metastore（SQL表结构信息维护） + Spark SQL（批处理引擎）组合的OLAP数据库组成。
-Metabase 简介 Metabase is the easy, open source way for everyone in your company to ask questions and learn from data.
-https://www.metabase.com/
-数据库支持  BigQuery Druid Google Analytics H2 MongoDB MySQL/MariaDB PostgreSQL Presto Amazon Redshift Snowflake Spark SQL SQLite SQL Server  https://www.metabase.com/docs/latest/faq/setup/which-databases-does-metabase-support.html
-这里有我们需要的Spark SQL，我们的大数据集群可以支持。比较遗憾的是没有Impala。
-Metabase 安装 MySQL 使用MySQL作为元数据存储。复用之前CDH的MySQL实例。</description>
     </item>
     
   </channel>

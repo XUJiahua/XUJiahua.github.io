@@ -6,10 +6,27 @@
     <description>Recent content in Posts on 许嘉华的博客</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Thu, 04 Jun 2020 16:13:27 +0800</lastBuildDate>
+    <lastBuildDate>Fri, 05 Jun 2020 14:41:44 +0800</lastBuildDate>
     
 	<atom:link href="https://xujiahua.github.io/posts/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Metabase 日期筛选控件实践</title>
+      <link>https://xujiahua.github.io/posts/20200605-metabase-field-filter/</link>
+      <pubDate>Fri, 05 Jun 2020 14:41:44 +0800</pubDate>
+      
+      <guid>https://xujiahua.github.io/posts/20200605-metabase-field-filter/</guid>
+      <description>Metabase Dashboard 可以是动态的，常用的是指定时间范围筛选，查看这个时间段的指标。
+简单示范 使用 SAMPLE DATASET 数据库。定义一个Question：在某一时间段，订单数是多少。使用以下 SQL模板。
+select count(1) FROM ORDERS WHERE 1=1 [[AND {{CREATED_AT}} ]] 在Variables侧栏选择如下：
+ Variable type：Field Filter。（其他选项，Text/Number/Date 都是单值，没有范围。） Field to map to：选择对应的数据表字段，这里使用ORDERS表的CREATED_AT字段。 Filter widget type：Date Range。注意，只有日期类型（date/ timestamp）有这些选择。（其他选项，大同小异，都会生成对应SQL语句。）  在日期控件中选择时间范围，实际执行的SQL语句如下。
+select count(1) FROM ORDERS WHERE 1=1 AND CAST(&amp;#34;PUBLIC&amp;#34;.&amp;#34;ORDERS&amp;#34;.&amp;#34;CREATED_AT&amp;#34; AS date) BETWEEN date &amp;#39;2020-06-03&amp;#39; AND date &amp;#39;2020-06-04&amp;#39; 打开浏览器开发者工具就能看到。
+可以看到，生成了这个过滤条件：CAST(&amp;quot;PUBLIC&amp;quot;.&amp;quot;ORDERS&amp;quot;.&amp;quot;CREATED_AT&amp;quot; AS date) BETWEEN date &#39;2020-06-03&#39; AND date &#39;2020-06-04&#39;替代了。
+column CREATED_AT 被转为date类型。因为日期控件的日期精度只到年月日，没有时分秒，实际使用中确实也没必要时分秒。
+不同的数据库，支持的数据类型是不同的，比如Impala就不支持date类型。Metabase 用如下语句达到相同效果（由各个数据库驱动负责实现），将timestamp类型的精度截断到年月日：
+CAST(from_unixtime(unix_timestamp(from_timestamp(CAST(`table`.`column` AS timestamp), &amp;#39;yyyy-MM-dd&amp;#39;), &amp;#39;yyyy-MM-dd&amp;#39;)) AS timestamp) BETWEEN to_timestamp(&amp;#39;2020-05-25 00:00:00&amp;#39;, &amp;#39;yyyy-MM-dd HH:mm:ss&amp;#39;) AND to_timestamp(&amp;#39;2020-05-31 00:00:00&amp;#39;, &amp;#39;yyyy-MM-dd HH:mm:ss&amp;#39;) 参考：</description>
+    </item>
     
     <item>
       <title>使用 REPL 调试 Clojure 项目</title>
