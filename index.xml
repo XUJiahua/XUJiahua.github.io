@@ -5,9 +5,97 @@
     <description>Recent content on 许嘉华的博客</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Tue, 09 Jun 2020 10:37:09 +0800</lastBuildDate>
+    <lastBuildDate>Thu, 11 Jun 2020 11:38:55 +0800</lastBuildDate>
     
         <atom:link href="https://xujiahua.github.io/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    
+        <item>
+        <title>使用 Perceptual hashing 去除微信头像内容干扰</title>
+        <link>https://xujiahua.github.io/posts/20200611-phash/</link>
+        <pubDate>Thu, 11 Jun 2020 11:38:55 +0800</pubDate>
+        
+        <guid>https://xujiahua.github.io/posts/20200611-phash/</guid>
+        <description>许嘉华的博客 https://xujiahua.github.io/posts/20200611-phash/ -&lt;p&gt;本文是&lt;a href=&#34;https://xujiahua.github.io/posts/20200514-wx-avatar/&#34;&gt;「微信用户授权头像内容带随机干扰的问题」&lt;/a&gt;的延续。本文对效果进行量化，并找到一个phash库，达到了更好的效果。&lt;/p&gt;
+&lt;h2 id=&#34;实验框架&#34;&gt;实验框架&lt;/h2&gt;
+&lt;p&gt;相关脚本&lt;a href=&#34;https://github.com/XUJiahua/phash_test&#34;&gt;点此&lt;/a&gt;。&lt;/p&gt;
+&lt;h3 id=&#34;实验数据&#34;&gt;实验数据&lt;/h3&gt;
+&lt;p&gt;10 组微信头像，每组 10万个头像。&lt;/p&gt;
+&lt;p&gt;准备 10万 微信头像链接，重复下载10次：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;./download.sh
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;实验期望&#34;&gt;实验期望&lt;/h3&gt;
+&lt;p&gt;期望目标：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;1 个头像链接对应 1 个特征：期望特征抽取算法能够剥离微信对头像内容加入的干扰。不然使用密码学哈希算法，1 个头像链接下载 10 次可能就对应 10 个特征了。&lt;/li&gt;
+&lt;li&gt;1 个特征对应 1 个头像链接。跟哈希算法一样，希望哈希冲突尽可能小。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2 id=&#34;实验&#34;&gt;实验&lt;/h2&gt;
+&lt;h3 id=&#34;图像降维方法&#34;&gt;图像降维方法&lt;/h3&gt;
+&lt;p&gt;延续上文中在有限数据下得出的规则，图像降维到：32级灰度，10x10 尺寸。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;python extract_feature_p2.py
+
+echo &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;file,feature&amp;#34;&lt;/span&gt; &amp;gt; header.csv
+cat header.csv download_1.csv download_2.csv download_3.csv download_4.csv download_5.csv download_6.csv download_7.csv download_8.csv download_9.csv download_10.csv &amp;gt; data.csv
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;两个指标分析如下：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;csvsql --query &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;select avg(cnt) as expect1 from (select file, count(distinct feature) as cnt from &amp;#39;data&amp;#39; group by file)&amp;#34;&lt;/span&gt; data.csv
+
+expect1
+2.186088754189832
+
+csvsql --query &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;select avg(cnt) as expect1 from (select feature, count(distinct file) as cnt from &amp;#39;data&amp;#39; group by feature)&amp;#34;&lt;/span&gt; data.csv
+
+expect1
+1.0051170602511927
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;每个头像链接，重复下载 10 次的情况下，平均有生成 2.18 个特征。&lt;/p&gt;
+&lt;p&gt;每个特征，平均对应 1 个头像链接。在期望内，毕竟是密码学哈希算出的特征。&lt;/p&gt;
+&lt;h3 id=&#34;perceptual-hashing&#34;&gt;Perceptual hashing&lt;/h3&gt;
+&lt;p&gt;使用了&lt;a href=&#34;https://github.com/JohannesBuchner/imagehash&#34;&gt;这个库&lt;/a&gt;。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;python extract_feature_p.py
+
+echo &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;file,feature&amp;#34;&lt;/span&gt; &amp;gt; header.csv
+cat header.csv download_1.csv download_2.csv download_3.csv download_4.csv download_5.csv download_6.csv download_7.csv download_8.csv download_9.csv download_10.csv &amp;gt; data.csv
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;两个指标分析如下：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;csvsql --query &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;select avg(cnt) as expect1 from (select file, count(distinct feature) as cnt from &amp;#39;data&amp;#39; group by file)&amp;#34;&lt;/span&gt; data.csv
+
+expect1
+1.1413604158721875
+
+csvsql --query &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;select avg(cnt) as expect1 from (select feature, count(distinct file) as cnt from &amp;#39;data&amp;#39; group by feature)&amp;#34;&lt;/span&gt; data.csv
+
+expect1
+1.0312553837783924
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;每个头像链接，重复下载 10 次的情况下，平均有生成 1.1 个特征，效果很惊艳！&lt;/p&gt;
+&lt;p&gt;每个特征，平均对应 1.03 个头像链接。性能也很好了。&lt;/p&gt;
+&lt;h4 id=&#34;详细分析&#34;&gt;详细分析&lt;/h4&gt;
+&lt;p&gt;1 个头像链接对应不同特征数的区间分布：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;csvsql --query &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;select cnt, count(1) from (select file, count(distinct feature) as cnt from &amp;#39;data&amp;#39; group by file) group by cnt order by cnt&amp;#34;&lt;/span&gt; data.csv &amp;gt; dist1.csv
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;img src=&#34;../../images/image-20200611172502130.png&#34; alt=&#34;image-20200611172502130&#34;&gt;&lt;/p&gt;
+&lt;p&gt;重复下载 10 次的情况下，89%的头像链接都映射到了唯一值。&lt;/p&gt;
+&lt;p&gt;还有11%都是什么表现呢？大部分如图所示，只有部分位不同。可以理解，phash就是为了相似图搜索设计的。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200611174113623.png&#34; alt=&#34;image-20200611174113623&#34;&gt;&lt;/p&gt;
+&lt;p&gt;一个特征值对应不同头像链接的区间分布：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;csvsql --query &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;select cnt, count(1) from (select feature, count(distinct file) as cnt from &amp;#39;data&amp;#39; group by feature) group by cnt order by cnt&amp;#34;&lt;/span&gt; data.csv &amp;gt; dist2.csv
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;img src=&#34;../../images/image-20200611172438551.png&#34; alt=&#34;image-20200611172438551&#34;&gt;&lt;/p&gt;
+&lt;p&gt;98%的特征值对应一个头像链接。分析下剩余的2%的特征值，一个个处理。&lt;/p&gt;
+&lt;p&gt;使用如下脚本将相同特征值的图像放一块比较，参数为特征值。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;./open_same_hash_images.sh ec9e1413e268c377
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;有两组图是比较异常的。如图169张图的特征值是一样的。共性是纯色。特征值也很奇怪 8000000000000000。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200611155105274.png&#34; alt=&#34;image-20200611155105274&#34;&gt;&lt;/p&gt;
+&lt;p&gt;如图46张图的特征值是一样的，共性是纯色。hash值也很奇怪 0000000000000000。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200611155003908.png&#34; alt=&#34;image-20200611155003908&#34;&gt;&lt;/p&gt;
+&lt;p&gt;其他hash值相同的图像文件，确实是相同的图像（肉眼看是一样的），如预期。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200611162618300.png&#34; alt=&#34;image-20200611162618300&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200611162511234.png&#34; alt=&#34;image-20200611162511234&#34;&gt;&lt;/p&gt;
+&lt;h4 id=&#34;todo&#34;&gt;TODO&lt;/h4&gt;
+&lt;ol&gt;
+&lt;li&gt;phash对不同纯色的图，生成的hash值是相同的。8000000000000000/0000000000000000这两个hash值很奇怪。&lt;/li&gt;
+&lt;li&gt;相似的图，生成的hash值可能不同的，2-3位的数字可能不同。查看原理。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2 id=&#34;总结&#34;&gt;总结&lt;/h2&gt;
+&lt;p&gt;虽然对 phash 算法还是有点陌生，但是其效果基本满足了业务需求。至少比自己分析出的规则好很多。&lt;/p&gt;
+- https://xujiahua.github.io/posts/20200611-phash/ - </description>
+        </item>
     
     
     
@@ -1333,85 +1421,6 @@ size_options &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; [
 &lt;li&gt;Service registry bridge for Docker 监听Docker的Unix套接字来获取Docker容器启动和消亡时的事件，并且它会通过在事先配置好的一个可插拔的后端服务中创建新记录的形式自动完成容器的服务注册 &lt;a href=&#34;https://gliderlabs.github.io/registrator/latest/&#34;&gt;https://gliderlabs.github.io/registrator/latest/&lt;/a&gt;&lt;/li&gt;
 &lt;/ol&gt;
 - https://xujiahua.github.io/posts/20200421-use-consul/ - </description>
-        </item>
-    
-    
-    
-        <item>
-        <title>etcd 小结</title>
-        <link>https://xujiahua.github.io/posts/20200420-use_etcd/</link>
-        <pubDate>Mon, 20 Apr 2020 14:12:38 +0800</pubDate>
-        
-        <guid>https://xujiahua.github.io/posts/20200420-use_etcd/</guid>
-        <description>许嘉华的博客 https://xujiahua.github.io/posts/20200420-use_etcd/ -&lt;h2 id=&#34;简介&#34;&gt;简介&lt;/h2&gt;
-&lt;p&gt;取名有意思。Linux下的/etc目录放的是配置文件。etcd，etc代表配置，d代表distributed，代表分布式配置。&lt;/p&gt;
-&lt;p&gt;特点：&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;designed to reliably store infrequently updated data and provide reliable watch queries &lt;a href=&#34;https://etcd.io/docs/v3.4.0/learning/data_model/&#34;&gt;https://etcd.io/docs/v3.4.0/learning/data_model/&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;KV 核心用户接口&lt;/li&gt;
-&lt;li&gt;MVCC Multi-version Concurrency Control 也确实能读历史版本&lt;/li&gt;
-&lt;li&gt;Raft consensus algorithms 共识算法&lt;/li&gt;
-&lt;li&gt;Watch 配置更新能及时&amp;quot;通知&amp;quot;应用&lt;/li&gt;
-&lt;li&gt;RBAC 用户、角色、权限&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;基于 etcd 可以做哪些事情：&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;配置中心。元数据存储。应用的配置集中存储在配置中心。&lt;/li&gt;
-&lt;li&gt;服务发现。配置中心的一个特例。相比起来，consul的服务发现是开箱即用的。&lt;/li&gt;
-&lt;li&gt;分布式锁。分布式系统协调。选主。像是Hadoop使用Zookeeper做Namenode的选主。&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;vs. Consul。Consul 官方（https://www.consul.io/）定义的usecase是 service discovery和 service mesh。&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;etcd and Consul solve different problems. If looking for a distributed consistent key value store, etcd is a better choice over Consul. If looking for end-to-end cluster service discovery, etcd will not have enough features; choose Kubernetes, Consul, or SmartStack. &lt;a href=&#34;https://github.com/etcd-io/etcd/blob/master/Documentation/learning/why.md#consul&#34;&gt;https://github.com/etcd-io/etcd/blob/master/Documentation/learning/why.md#consul&lt;/a&gt;&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;p&gt;如果是分布式配置中心，etcd是更好的选择。&lt;/p&gt;
-&lt;h3 id=&#34;参考&#34;&gt;参考&lt;/h3&gt;
-&lt;ol&gt;
-&lt;li&gt;etcd versus other key-value stores &lt;a href=&#34;https://github.com/etcd-io/etcd/blob/master/Documentation/learning/why.md&#34;&gt;https://github.com/etcd-io/etcd/blob/master/Documentation/learning/why.md&lt;/a&gt;&lt;/li&gt;
-&lt;/ol&gt;
-&lt;h2 id=&#34;etcd集群安装&#34;&gt;etcd集群安装&lt;/h2&gt;
-&lt;p&gt;&lt;a href=&#34;https://github.com/XUJiahua/linux_scripts/tree/master/etcd&#34;&gt;https://github.com/XUJiahua/linux_scripts/tree/master/etcd&lt;/a&gt;&lt;/p&gt;
-&lt;h2 id=&#34;常用操作&#34;&gt;常用操作&lt;/h2&gt;
-&lt;p&gt;etcdctl的命令主要是kv操作，以及集群管理，和RBAC用户权限管理。&lt;/p&gt;
-&lt;p&gt;参考 &lt;a href=&#34;https://etcd.io/docs/v3.4.0/demo/&#34;&gt;https://etcd.io/docs/v3.4.0/demo/&lt;/a&gt;&lt;/p&gt;
-&lt;h3 id=&#34;kv相关&#34;&gt;KV相关&lt;/h3&gt;
-&lt;ol&gt;
-&lt;li&gt;&lt;code&gt;put foo &amp;quot;Hello World&amp;quot;&lt;/code&gt;  KV写&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;get foo&lt;/code&gt; KV读，还可以读历史版本的值&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;get web --prefix&lt;/code&gt; KV前缀读，适用于服务发现&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;del key&lt;/code&gt; KV删除&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;del k --prefix&lt;/code&gt; KV前缀删除&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;txn --interactive&lt;/code&gt; KV事务&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;watch stock1&lt;/code&gt; KV关注value变化，适用于服务发现，服务发生变动&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;watch stock --prefix&lt;/code&gt;  watch也支持前缀匹配&lt;/li&gt;
-&lt;/ol&gt;
-&lt;h3 id=&#34;lease&#34;&gt;Lease&lt;/h3&gt;
-&lt;ol&gt;
-&lt;li&gt;&lt;code&gt;lease grant 300&lt;/code&gt; 创建300s的lease&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;put sample value --lease=2be7547fbc6a5afa&lt;/code&gt; 有效期300s的key。不设置 lease的put操作，值是永久存储的。&lt;/li&gt;
-&lt;li&gt;keep-alive 刷新TTL, list, revoke。&lt;/li&gt;
-&lt;/ol&gt;
-&lt;h3 id=&#34;分布式锁&#34;&gt;分布式锁&lt;/h3&gt;
-&lt;ol&gt;
-&lt;li&gt;&lt;code&gt;lock mutex1&lt;/code&gt; 获取锁后，其他请求被block&lt;/li&gt;
-&lt;/ol&gt;
-&lt;h3 id=&#34;集群管理&#34;&gt;集群管理&lt;/h3&gt;
-&lt;ol&gt;
-&lt;li&gt;&lt;code&gt;member list&lt;/code&gt; list etcd member，member命令还可以增加新node，node也包含不投票的。&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;endpoint status&lt;/code&gt; 集群状态，能看到leader server&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;endpoint health&lt;/code&gt; 健康检查&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;snapshot save my.db&lt;/code&gt; 数据快照存储到本地&lt;/li&gt;
-&lt;/ol&gt;
-&lt;h3 id=&#34;用户权限role-based-access-control&#34;&gt;用户权限（role based access control）&lt;/h3&gt;
-&lt;ol&gt;
-&lt;li&gt;&lt;code&gt;role add root&lt;/code&gt; 创建role&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;role grant-permission root readwrite foo&lt;/code&gt; role上赋予权限，这里赋予foo的读写权限&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;user add root&lt;/code&gt; 创建用户，并指定密码&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;user grant-role root root&lt;/code&gt; 赋予用户role&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;auth enable&lt;/code&gt; 开启认证，disable 即关闭auth。&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;--user=root:root put foo bar&lt;/code&gt; 操作时指定用户密码&lt;/li&gt;
-&lt;/ol&gt;
-- https://xujiahua.github.io/posts/20200420-use_etcd/ - </description>
         </item>
     
     

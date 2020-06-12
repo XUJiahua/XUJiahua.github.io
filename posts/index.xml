@@ -6,10 +6,26 @@
     <description>Recent content in Posts on 许嘉华的博客</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Tue, 09 Jun 2020 10:37:09 +0800</lastBuildDate>
+    <lastBuildDate>Thu, 11 Jun 2020 11:38:55 +0800</lastBuildDate>
     
 	<atom:link href="https://xujiahua.github.io/posts/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>使用 Perceptual hashing 去除微信头像内容干扰</title>
+      <link>https://xujiahua.github.io/posts/20200611-phash/</link>
+      <pubDate>Thu, 11 Jun 2020 11:38:55 +0800</pubDate>
+      
+      <guid>https://xujiahua.github.io/posts/20200611-phash/</guid>
+      <description>本文是「微信用户授权头像内容带随机干扰的问题」的延续。本文对效果进行量化，并找到一个phash库，达到了更好的效果。
+实验框架 相关脚本点此。
+实验数据 10 组微信头像，每组 10万个头像。
+准备 10万 微信头像链接，重复下载10次：
+./download.sh 实验期望 期望目标：
+ 1 个头像链接对应 1 个特征：期望特征抽取算法能够剥离微信对头像内容加入的干扰。不然使用密码学哈希算法，1 个头像链接下载 10 次可能就对应 10 个特征了。 1 个特征对应 1 个头像链接。跟哈希算法一样，希望哈希冲突尽可能小。  实验 图像降维方法 延续上文中在有限数据下得出的规则，图像降维到：32级灰度，10x10 尺寸。
+python extract_feature_p2.py echo &amp;#34;file,feature&amp;#34; &amp;gt; header.csv cat header.csv download_1.csv download_2.csv download_3.csv download_4.csv download_5.csv download_6.csv download_7.csv download_8.csv download_9.csv download_10.csv &amp;gt; data.csv 两个指标分析如下：
+csvsql --query &amp;#34;select avg(cnt) as expect1 from (select file, count(distinct feature) as cnt from &amp;#39;data&amp;#39; group by file)&amp;#34; data.</description>
+    </item>
     
     <item>
       <title>Metabase SSO 登录</title>
