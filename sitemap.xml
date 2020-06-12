@@ -3,32 +3,37 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
+    <loc>https://xujiahua.github.io/tags/metabase/</loc>
+    <lastmod>2020-06-09T10:37:09+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://xujiahua.github.io/posts/20200609-metabase-sso-login/</loc>
+    <lastmod>2020-06-09T10:37:09+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://xujiahua.github.io/posts/</loc>
+    <lastmod>2020-06-09T10:37:09+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://xujiahua.github.io/tags/</loc>
+    <lastmod>2020-06-09T10:37:09+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://xujiahua.github.io/</loc>
+    <lastmod>2020-06-09T10:37:09+08:00</lastmod>
+  </url>
+  
+  <url>
     <loc>https://xujiahua.github.io/tags/impala/</loc>
     <lastmod>2020-06-05T14:41:44+08:00</lastmod>
   </url>
   
   <url>
-    <loc>https://xujiahua.github.io/tags/metabase/</loc>
-    <lastmod>2020-06-05T14:41:44+08:00</lastmod>
-  </url>
-  
-  <url>
     <loc>https://xujiahua.github.io/posts/20200605-metabase-field-filter/</loc>
-    <lastmod>2020-06-05T14:41:44+08:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://xujiahua.github.io/posts/</loc>
-    <lastmod>2020-06-05T14:41:44+08:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://xujiahua.github.io/tags/</loc>
-    <lastmod>2020-06-05T14:41:44+08:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://xujiahua.github.io/</loc>
     <lastmod>2020-06-05T14:41:44+08:00</lastmod>
   </url>
   

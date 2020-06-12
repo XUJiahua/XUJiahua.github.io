@@ -6,10 +6,24 @@
     <description>Recent content in Posts on 许嘉华的博客</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Fri, 05 Jun 2020 14:41:44 +0800</lastBuildDate>
+    <lastBuildDate>Tue, 09 Jun 2020 10:37:09 +0800</lastBuildDate>
     
 	<atom:link href="https://xujiahua.github.io/posts/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Metabase SSO 登录</title>
+      <link>https://xujiahua.github.io/posts/20200609-metabase-sso-login/</link>
+      <pubDate>Tue, 09 Jun 2020 10:37:09 +0800</pubDate>
+      
+      <guid>https://xujiahua.github.io/posts/20200609-metabase-sso-login/</guid>
+      <description>探讨如何将 Metabase 融入业务系统（SaaS 服务）。
+为何需要集成 Metabase 到业务系统中呢？一般，通用的数据需求都做到SaaS服务中了。而现实情况是，客户是有很多定制化数据需求的。使用 Metabase 制作报表，直接跳过前后端开发，快速满足客户需求。
+（最终极地，进一步提高生产效率，把 Metabase 的组件化能力内化到 SaaS 服务中才是正道。）
+试分析下 Metabase 提供的方案，以及适配我们的场景，分析该怎么改。
+分析现存方案 开源版本的 Metabase 支持两种第三方登录：
+ LDAP: Allows users within your LDAP directory to log in to Metabase with their LDAP credentials, and allows automatic mapping of LDAP groups to Metabase groups. Sign in with Google: Allows users with existing Metabase accounts to login with a Google account that matches their email address in addition to their Metabase username and password.</description>
+    </item>
     
     <item>
       <title>Metabase 日期筛选控件实践</title>

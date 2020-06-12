@@ -1,0 +1,927 @@
+<!DOCTYPE html>
+<html><head>
+<title>Metabase SSO 登录</title>
+
+<meta charset="utf-8">
+<meta name="X-UA-Compatible" content="IE=edge">
+<meta name="google-site-verification" content="">
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport">
+<meta content="telephone=no" name="format-detection">
+<meta name="description" content="">
+<meta name="renderer" content="webkit">
+<meta name="theme-color" content="#ffffff">
+
+
+
+
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+	ga('create', 'UA-162706610-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+
+
+
+<script src="/vendor/js/jquery.min.js" ></script>
+<script src="/vendor/js/popper.min.js" ></script>
+<script src="/vendor/js/bootstrap.min.js" ></script>
+<script src="/vendor/js/smooth-scroll.polyfills.min.js" ></script>
+<link type="text/css" rel="stylesheet" href="/vendor/css/bootstrap.min.css">
+<script src="/vendor/js/vue.min.js" ></script>
+
+
+
+
+<link rel="stylesheet" href="https://xujiahua.github.io/scss/journal.min.5c667e74038e21ddbb9024b67930f8544e02af62491281cf73fdb817eec2947e.css" integrity="sha256-XGZ&#43;dAOOId27kCS2eTD4VE4Cr2JJEoHPc/24F&#43;7ClH4=" media="screen">
+
+<script src="https://xujiahua.github.io//js/loadCSS.js"></script>
+<script src="https://xujiahua.github.io//js/table.js"></script>
+
+
+<script src="https://xujiahua.github.io//js/toc.js"></script>
+
+
+<script>
+    loadCSS("https://fonts.googleapis.com/css?family=Lora|Montserrat|Fira+Mono|Noto+Serif+SC|Material+Icons");
+</script>
+
+
+
+
+
+
+</head><body>
+    	<div id="app"><div ref="sideContainer" class="side-container">
+    
+    <a class="a-block nav-head false" href="https://xujiahua.github.io/">
+    
+        <div class="nav-title">
+            许嘉华的博客
+        </div>
+        
+    </a>
+
+    <div class="nav-link-list">
+        
+        
+            
+            
+            
+                
+            
+            
+            
+            <a class="a-block nav-link-item active" href="/posts">
+                Archive
+            </a>
+            
+        
+            
+            
+            
+            
+            
+            <a class="a-block nav-link-item false" href="/categories">
+                Categories
+            </a>
+            
+        
+            
+            
+            
+            
+            
+            <a class="a-block nav-link-item false" href="/tags">
+                Tags
+            </a>
+            
+        
+            
+            
+            
+            
+            
+            <a class="a-block nav-link-item false" href="/index.xml">
+                RSS Feed
+            </a>
+            
+        
+    </div>
+
+    
+
+    <div class="nav-footer">
+        
+Hugo Theme <a href="https://github.com/amazingrise/hugo-theme-diary">Diary</a> by <a href="https://amazingrise.net">Rise</a>
+<br>
+Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopener">Makito</a>'s <a href="https://github.com/SumiMakito/hexo-theme-journal/" target="_blank" rel="noreferrer noopener">Journal.</a> <br>
+<br>
+
+&copy;
+	
+	2020 许嘉华的博客
+	
+    </div>
+    
+</div><div ref="extraContainer" class="extra-container">
+    
+    <div class="toc animated-visibility" :class="{ invisible: scrollY <= 140 }">
+
+
+	<div class="toc-content">
+	
+		
+		
+		
+		<center>- CATALOG -</center>
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e5%88%86%e6%9e%90%e7%8e%b0%e5%ad%98%e6%96%b9%e6%a1%88" v-on:click="closeDrawer" id="分析现存方案-nav">
+										 分析现存方案
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#sign-in-with-google" v-on:click="closeDrawer" id="sign-in-with-google-nav">
+										 Sign in with Google
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#ldap" v-on:click="closeDrawer" id="ldap-nav">
+										 LDAP
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#saml" v-on:click="closeDrawer" id="saml-nav">
+										 SAML
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e9%80%82%e9%85%8d-saas-%e6%9c%8d%e5%8a%a1" v-on:click="closeDrawer" id="适配-saas-服务-nav">
+										 适配 SaaS 服务
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e5%9f%ba%e4%ba%8e%e5%88%86%e7%bb%84%e7%9a%84%e6%95%b0%e6%8d%ae%e9%9a%94%e7%a6%bb" v-on:click="closeDrawer" id="基于分组的数据隔离-nav">
+										 基于分组的数据隔离
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e6%8a%a5%e8%a1%a8%e5%8a%9f%e8%83%bd%e5%a4%8d%e7%94%a8" v-on:click="closeDrawer" id="报表功能复用-nav">
+										 报表功能复用？
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e5%ae%9a%e5%88%b6-sso-%e7%b3%bb%e7%bb%9f" v-on:click="closeDrawer" id="定制-sso-系统-nav">
+										 定制 SSO 系统
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#metabase" v-on:click="closeDrawer" id="metabase-nav">
+										 Metabase
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+	</div>
+
+</div>
+    
+    <div class="pagination">
+        <a id="globalBackToTop" class="pagination-action animated-visibility" href="#top" :class="{ invisible: scrollY == 0 }">
+            <i class="material-icons pagination-action-icon">
+                keyboard_arrow_up
+            </i>
+        </a>
+        
+    </div>
+</div><div class="single-column-drawer-container" ref="drawer"
+     v-bind:class="{ 'single-column-drawer-container-active': isDrawerOpen }">
+    <div class="drawer-content">
+        <div class="drawer-menu">
+            
+            
+                
+                
+                
+                    
+                
+                
+                
+                <a class="a-block drawer-menu-item active" href="/posts">
+                    Archive
+                </a>
+                
+            
+                
+                
+                
+                
+                
+                <a class="a-block drawer-menu-item false" href="/categories">
+                    Categories
+                </a>
+                
+            
+                
+                
+                
+                
+                
+                <a class="a-block drawer-menu-item false" href="/tags">
+                    Tags
+                </a>
+                
+            
+                
+                
+                
+                
+                
+                <a class="a-block drawer-menu-item false" href="/index.xml">
+                    RSS Feed
+                </a>
+                
+            
+            
+            <div class="toc">
+
+
+	<div class="toc-content">
+	
+		
+		
+		
+		<center>- CATALOG -</center>
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e5%88%86%e6%9e%90%e7%8e%b0%e5%ad%98%e6%96%b9%e6%a1%88" v-on:click="closeDrawer" id="分析现存方案-nav">
+										 分析现存方案
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#sign-in-with-google" v-on:click="closeDrawer" id="sign-in-with-google-nav">
+										 Sign in with Google
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#ldap" v-on:click="closeDrawer" id="ldap-nav">
+										 LDAP
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#saml" v-on:click="closeDrawer" id="saml-nav">
+										 SAML
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e9%80%82%e9%85%8d-saas-%e6%9c%8d%e5%8a%a1" v-on:click="closeDrawer" id="适配-saas-服务-nav">
+										 适配 SaaS 服务
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e5%9f%ba%e4%ba%8e%e5%88%86%e7%bb%84%e7%9a%84%e6%95%b0%e6%8d%ae%e9%9a%94%e7%a6%bb" v-on:click="closeDrawer" id="基于分组的数据隔离-nav">
+										 基于分组的数据隔离
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e6%8a%a5%e8%a1%a8%e5%8a%9f%e8%83%bd%e5%a4%8d%e7%94%a8" v-on:click="closeDrawer" id="报表功能复用-nav">
+										 报表功能复用？
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e5%ae%9a%e5%88%b6-sso-%e7%b3%bb%e7%bb%9f" v-on:click="closeDrawer" id="定制-sso-系统-nav">
+										 定制 SSO 系统
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#metabase" v-on:click="closeDrawer" id="metabase-nav">
+										 Metabase
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+	</div>
+
+</div>
+            
+        </div>
+    </div>
+</div>
+<transition name="fade">
+    <div v-bind:class="{ 'single-column-drawer-mask': mounted }" v-if="isDrawerOpen" v-on:click="toggleDrawer"></div>
+</transition>
+<nav ref="navBar" class="navbar sticky-top navbar-light single-column-nav-container">
+    <div ref="navBackground" class="nav-background"></div>
+    <div class="container container-narrow nav-content">
+        <button id="nav_dropdown_btn" class="nav-dropdown-toggle" type="button" v-on:click="toggleDrawer">
+            <i class="material-icons">
+                menu
+            </i>
+        </button>
+        <a ref="navTitle" class="navbar-brand" href="https://xujiahua.github.io/">
+            许嘉华的博客
+        </a>
+    </div>
+</nav>
+<div class="single-column-header-container" ref="pageHead"
+     v-bind:style="{ transform: 'translateZ(0px) translateY('+.3*scrollY+'px)', opacity: 1-navOpacity }">
+    <a href="https://xujiahua.github.io/">
+        <div class="single-column-header-title">许嘉华的博客</div>
+        
+
+    </a>
+</div>
+            <div id="content">
+<div ref="streamContainer" class="stream-container">
+    <div class="post-list-container post-list-container-shadow">
+        <div class="post">
+            
+            
+            
+
+            <div class="post-head-wrapper-text-only"
+                 style="background-image: url('/')">
+                <div class="post-title">
+                    Metabase SSO 登录
+                    
+                    <div class="post-meta">
+                        
+                        <time itemprop="datePublished">
+                            2020-06-09 10:37
+                        </time>
+                        
+
+                        
+
+                        
+                            <i class="material-icons" style="">label</i>
+                            
+                                <a href="/tags/metabase">Metabase</a>
+                                &nbsp;
+                            
+                        
+                    </div>
+                </div>
+            </div>
+            
+            <div class="post-body-wrapper">
+                <div class="post-body">
+                    <p>探讨如何将 Metabase 融入业务系统（SaaS 服务）。</p>
+<p>为何需要集成 Metabase 到业务系统中呢？一般，通用的数据需求都做到SaaS服务中了。而现实情况是，客户是有很多定制化数据需求的。使用 Metabase 制作报表，直接跳过前后端开发，快速满足客户需求。</p>
+<p>（最终极地，进一步提高生产效率，把 Metabase 的组件化能力内化到 SaaS 服务中才是正道。）</p>
+<p>试分析下 Metabase 提供的方案，以及适配我们的场景，分析该怎么改。</p>
+<h2 id="分析现存方案">分析现存方案</h2>
+<p>开源版本的 Metabase 支持两种第三方登录：</p>
+<ol>
+<li>LDAP: Allows users within your LDAP directory to log in to Metabase with their LDAP credentials, and allows automatic mapping of LDAP groups to Metabase groups.</li>
+<li>Sign in with Google: Allows users with <strong>existing Metabase accounts</strong> to login with a Google account that <strong>matches their email address</strong> in addition to their Metabase username and password.</li>
+</ol>
+<p>企业版本：</p>
+<ol>
+<li>SAML</li>
+<li>JWT</li>
+</ol>
+<p>参考：</p>
+<ol>
+<li>Authenticating with Google Sign-In or LDAP <a href="https://www.metabase.com/docs/latest/administration-guide/10-single-sign-on.html">https://www.metabase.com/docs/latest/administration-guide/10-single-sign-on.html</a></li>
+<li>Authenticating with SAML <a href="https://www.metabase.com/docs/latest/enterprise-guide/authenticating-with-saml.html">https://www.metabase.com/docs/latest/enterprise-guide/authenticating-with-saml.html</a></li>
+<li>JWT-based Authentication <a href="https://www.metabase.com/docs/latest/enterprise-guide/authenticating-with-jwt.html">https://www.metabase.com/docs/latest/enterprise-guide/authenticating-with-jwt.html</a></li>
+</ol>
+<h3 id="sign-in-with-google">Sign in with Google</h3>
+<p>其底层对接的是Google的Sign-In for Website <a href="https://developers.google.com/identity/sign-in/web">https://developers.google.com/identity/sign-in/web</a> 。并假设 Google 返回的数据是完全可信的。</p>
+<p>根据文档配置获取 clientID。本地测试，Authorized JavaScript origins 设置成本地路径。</p>
+<p><img src="../../images/image-20200609164603642.png" alt="image-20200609164603642"></p>
+<p>管理员角色下 Metabase 配置 clientID。第二项，满足条件：email是@gmail.com结尾的，自动创建账户。</p>
+<p><img src="../../images/image-20200609170932819.png" alt="image-20200609170932819"></p>
+<p>不然，需先创建Metabase账户，其email等于Google登录返回的邮箱地址。</p>
+<p><img src="../../images/image-20200609171443922.png" alt="image-20200609171443922"></p>
+<p>Google登录的client-id由后端提供给前端。</p>
+<p><img src="../../images/image-20200609160327997.png" alt="image-20200609160327997"></p>
+<p>用户登录界面有了Google登录按钮。</p>
+<p><img src="../../images/image-20200609104044953.png" alt="image-20200609104044953"></p>
+<p>点击Google登录按钮，会唤起Google登录页面。登录成功，获取到Google返回结果。</p>
+<p><img src="../../images/image-20200609163652367.png" alt="image-20200609163652367"></p>
+<p>将Google返回里的token提交给Metabase服务器。</p>
+<p><img src="../../images/image-20200609155729926.png" alt="image-20200609155729926"></p>
+<p><code>google_auth</code>这个接口。</p>
+<p><img src="../../images/image-20200609155759738.png" alt="image-20200609155759738"></p>
+<p>通过token请求用户信息。参考：Calling the tokeninfo endpoint <a href="https://developers.google.com/identity/sign-in/web/backend-auth#calling-the-tokeninfo-endpoint">https://developers.google.com/identity/sign-in/web/backend-auth#calling-the-tokeninfo-endpoint</a></p>
+<p><img src="../../images/image-20200609171805849.png" alt="image-20200609171805849"></p>
+<p>整体流程如图：</p>
+<p><img src="../../images/image-20200609180555022.png" alt="image-20200609180555022"></p>
+<h3 id="ldap">LDAP</h3>
+<p>LDAP 可以理解为一个用户数据库、服务，常见用途就是单点登录，用户只需要记住一个密码就可以登录多个服务。了解更多参考：</p>
+<ol>
+<li>轻型目录访问协议 <a href="https://zh.wikipedia.org/wiki/%E8%BD%BB%E5%9E%8B%E7%9B%AE%E5%BD%95%E8%AE%BF%E9%97%AE%E5%8D%8F%E8%AE%AE">https://zh.wikipedia.org/wiki/%E8%BD%BB%E5%9E%8B%E7%9B%AE%E5%BD%95%E8%AE%BF%E9%97%AE%E5%8D%8F%E8%AE%AE</a></li>
+<li>What are CN, OU, DC in an LDAP search? <a href="https://stackoverflow.com/questions/18756688/what-are-cn-ou-dc-in-an-ldap-search">https://stackoverflow.com/questions/18756688/what-are-cn-ou-dc-in-an-ldap-search</a></li>
+</ol>
+<p>参考文档搭建一个LDAP环境。</p>
+<ol>
+<li>How to install OpenLDAP on Ubuntu 18.04 <a href="https://www.techrepublic.com/article/how-to-install-openldap-on-ubuntu-18-04/">https://www.techrepublic.com/article/how-to-install-openldap-on-ubuntu-18-04/</a></li>
+</ol>
+<p>其中：</p>
+<ol>
+<li>DNS domain name 使用 metabase.com，我们会使用metabase的测试配置。</li>
+<li>测试配置使用 <a href="https://github.com/metabase/metabase/blob/master/test_resources/ldap.ldif">https://github.com/metabase/metabase/blob/master/test_resources/ldap.ldif</a></li>
+</ol>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">ldapadd -x -D cn<span style="color:#f92672">=</span>admin,dc<span style="color:#f92672">=</span>metabase,dc<span style="color:#f92672">=</span>com -W -f test_resources/ldap.ldif
+</code></pre></div><p>用一个LDAP可视化管理工具（用的 Apache Directory Studio）可以看到这样的树状结构。</p>
+<p><img src="../../images/image-20200609105314696.png" alt="image-20200609105314696"></p>
+<p>Metabase 管理界面配置如下：</p>
+<p><img src="../../images/image-20200609104528576.png" alt="image-20200609104528576"></p>
+<p>LDAP用户还是使用邮箱密码登录。优先使用LDAP登录。</p>
+<p><img src="../../images/image-20200609110920538.png" alt="image-20200609110920538"></p>
+<p>LDAP用户、密码验证。</p>
+<p><img src="../../images/image-20200609111803290.png" alt="image-20200609111803290"></p>
+<p>验证通过，LDAP用户会映射为本地用户，但是不存密码。并同步group信息（LDAP group 与 metabase group 之间映射可配置）。</p>
+<p><img src="../../images/image-20200609112238354.png" alt="image-20200609112238354"></p>
+<p>LDAP 用户信息的字段映射到本地用户的email/first_name/last_name，可以配置。</p>
+<p><img src="../../images/image-20200609114531757.png" alt="image-20200609114531757"></p>
+<h3 id="saml">SAML</h3>
+<p>SAML是实现单点登录（SSO）的一种开放标准。仍然是服务方引导用户到认证中心认证，认证成功后，服务方从认证中心获取用户信息的逻辑。整体逻辑与Google Signin没两样。</p>
+<blockquote>
+<p>There three main roles in this communication:</p>
+<ul>
+<li>End User</li>
+<li>Identity Provider (IdP)</li>
+<li>Service Provider (SP)</li>
+</ul>
+<p>The end-user initiates the login process at the SP. The SP will redirect the user to the IdP with a SAML Request (AuthnRequest). The SAML Request will contain the necessary information for the IdP to authenticate the end-user and reply to the SP with the correct SAML Assertion (SAMLResponse).</p>
+<p><a href="https://www.secureauth.com/blog/introduction-to-saml">https://www.secureauth.com/blog/introduction-to-saml</a></p>
+</blockquote>
+<p><img src="../../images/1127182513244158.Xyqs8g4zWlwULTRe33zB_height640.png" alt="SAML SP Initiated SSO Flow"></p>
+<p>GitHub找了个例子，了解下SAML的流程，可以有一个更具象的认识。 <a href="https://github.com/crewjam/saml">https://github.com/crewjam/saml</a></p>
+<ol>
+<li>SP 需要知道 IDP 的认证地址。需要知道 SAML Request 往哪发。</li>
+<li>IDP 需要知道 SP 的接收地址，需要知道 SAML Response 往哪发。</li>
+<li>IDP 与 SP之间是通过公私钥认证的。</li>
+</ol>
+<p>参考：</p>
+<ol>
+<li>Security Assertion Markup Language <a href="https://en.wikipedia.org/wiki/Security_Assertion_Markup_Language">https://en.wikipedia.org/wiki/Security_Assertion_Markup_Language</a></li>
+<li>An Introduction to SAML (Security Assertion Markup Language) <a href="https://www.secureauth.com/blog/introduction-to-saml">https://www.secureauth.com/blog/introduction-to-saml</a></li>
+<li>SAML library for go <a href="https://github.com/crewjam/saml">https://github.com/crewjam/saml</a></li>
+</ol>
+<h2 id="适配-saas-服务">适配 SaaS 服务</h2>
+<p>企业内部使用，使用LDAP挺方便的。而 SaaS 服务怎么利用上Metabase呢？而且Metabase本身没有多租户（企业）的概念。</p>
+<p>大概分析如下：</p>
+<h3 id="基于分组的数据隔离">基于分组的数据隔离</h3>
+<p>SaaS 系统，多租户系统，最基本的要求是保证数据隔离。客户只能看到自己的数据（报表）。</p>
+<p>Metabase 数据隔离的手段只有分组。基于分组隔离客户，一个客户一个分组。因为少部分客户才会用到 Metabase 功能，所以分组不会非常多。</p>
+<h3 id="报表功能复用">报表功能复用？</h3>
+<p>这个有点难。只能一个个客户（对应每个分组）做报表。通用的功能，copy -&gt; SQL里修改客户隔离标识 -&gt; paste。</p>
+<h3 id="定制-sso-系统">定制 SSO 系统</h3>
+<p>认证页、获取用户信息，每个SSO系统都是有的。这里需要考虑的是用户字段与Metabase的映射。</p>
+<ol>
+<li>Metabase中用户信息有：<code>email</code>/<code>first name</code>/<code>last name</code>。SSO系统需要有对应的字段。</li>
+<li>不是每个SaaS客户都能使用Metabase。SSO用户信息加入用户标识<code>metabase_enabled</code>。没有标识，禁止进入 Metabase，Metabase 进行提示。</li>
+<li>用户信息中有客户隔离标识 <code>mid</code>。对应 Metabase 分组。</li>
+</ol>
+<h3 id="metabase">Metabase</h3>
+<p>前端，Auth Provider 配置页：</p>
+<ol>
+<li>配置SSO认证页地址。（不能写死，生产、测试环境地址不同）</li>
+<li>配置SSO Token API地址。</li>
+<li>客户隔离标识与Metabase group映射。</li>
+</ol>
+<p>前端，登录页：</p>
+<ol>
+<li>提供一个点击登录按钮。跳转到SSO认证页面。</li>
+</ol>
+<p>后端：</p>
+<ol>
+<li>对接 SSO 用户接口。</li>
+</ol>
+
+                    
+                    <HR width="100%" id="EOF">
+                    <p style="color:#777;">Last modified on 2020-06-09</p>
+                    
+                </div>
+            </div>
+            
+            
+            <nav class="post-pagination">
+
+                
+                <a class="newer-posts">
+                    Next<br>No newer posts.
+                </a>
+                
+                
+                
+                <a class="older-posts" href="https://xujiahua.github.io/posts/20200605-metabase-field-filter/">
+                    Previous<br>Metabase 日期筛选控件实践
+                </a>
+                
+            </nav>
+            <div class="post-comment-wrapper">
+                
+
+
+
+
+
+
+            </div>
+        </div>
+    </div>
+</div>
+
+            </div><div id="single-column-footer">
+Hugo Theme <a href="https://github.com/amazingrise/hugo-theme-diary">Diary</a> by <a href="https://amazingrise.net">Rise</a>
+<br>
+Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopener">Makito</a>'s <a href="https://github.com/SumiMakito/hexo-theme-journal/" target="_blank" rel="noreferrer noopener">Journal.</a> <br>
+<br>
+
+&copy;
+	
+	2020 许嘉华的博客
+	</div>
+    	</div>
+    <script src="https://xujiahua.github.io//js/journal.js"></script>
+    </body>
+</html>
