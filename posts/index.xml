@@ -6,10 +6,28 @@
     <description>Recent content in Posts on 许嘉华的博客</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Thu, 11 Jun 2020 11:38:55 +0800</lastBuildDate>
+    <lastBuildDate>Mon, 15 Jun 2020 17:19:50 +0800</lastBuildDate>
     
 	<atom:link href="https://xujiahua.github.io/posts/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Metabase 客户隔离</title>
+      <link>https://xujiahua.github.io/posts/20200615-metabase-customer-isolation/</link>
+      <pubDate>Mon, 15 Jun 2020 17:19:50 +0800</pubDate>
+      
+      <guid>https://xujiahua.github.io/posts/20200615-metabase-customer-isolation/</guid>
+      <description>之前有讨论，在不改动代码的情况下，可以使用分组功能来做客户隔离。但是该方案面临的问题是，每个客户一套模板，模板可维护性低。
+问题的关键就是如何共享SQL模板并客户隔离。需要改动源代码。
+目标  代码复用。同一套SQL代码。不用copy/paste，好维护。一个dashboard所有客户都能看。 客户隔离，保证数据安全。不同客户只能看到自己的数据。  实现 执行dashboard/chart中SQL代码时，动态插入客户隔离标识。
+首先来看下一次SQL Query的生命周期。
+找了个比较接近的处理逻辑，substitute-parameters用于将{ {xxx} }替换为widget中选的值。模仿之，SQL中定义一个##client_id##占位符，写了一个substitute-placeholder方法使用用户的client-id替代占位符。
+https://github.com/XUJiahua/metabase/commit/4c3490e1c475c0e6ee13f5a122a60f19b8879baa
+DEMO 效果
+使用Sample Data数据集测试。
+select * from PEOPLE where STATE={{STATE}} and SOURCE=##client_id## 返回的SQL中，可见占位符被替换为Google。
+因为还没有集成SSO系统，client-id临时用first-name来代替。</description>
+    </item>
     
     <item>
       <title>使用 Perceptual hashing 去除微信头像内容干扰</title>

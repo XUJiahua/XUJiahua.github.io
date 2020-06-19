@@ -852,7 +852,8 @@ Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopene
 <p>SaaS 系统，多租户系统，最基本的要求是保证数据隔离。客户只能看到自己的数据（报表）。</p>
 <p>Metabase 数据隔离的手段只有分组。基于分组隔离客户，一个客户一个分组。因为少部分客户才会用到 Metabase 功能，所以分组不会非常多。</p>
 <h3 id="报表功能复用">报表功能复用？</h3>
-<p>这个有点难。只能一个个客户（对应每个分组）做报表。通用的功能，copy -&gt; SQL里修改客户隔离标识 -&gt; paste。</p>
+<p><del>这个有点难。只能一个个客户（对应每个分组）做报表。通用的功能，copy -&gt; SQL里修改客户隔离标识 -&gt; paste。</del></p>
+<p>参考：<a href="https://xujiahua.github.io/posts/20200615-metabase-customer-isolation/">Metabase 客户隔离</a></p>
 <h3 id="定制-sso-系统">定制 SSO 系统</h3>
 <p>认证页、获取用户信息，每个SSO系统都是有的。这里需要考虑的是用户字段与Metabase的映射。</p>
 <ol>

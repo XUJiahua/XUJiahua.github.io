@@ -5,9 +5,43 @@
     <description>Recent content on 许嘉华的博客</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Thu, 11 Jun 2020 11:38:55 +0800</lastBuildDate>
+    <lastBuildDate>Mon, 15 Jun 2020 17:19:50 +0800</lastBuildDate>
     
         <atom:link href="https://xujiahua.github.io/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    
+        <item>
+        <title>Metabase 客户隔离</title>
+        <link>https://xujiahua.github.io/posts/20200615-metabase-customer-isolation/</link>
+        <pubDate>Mon, 15 Jun 2020 17:19:50 +0800</pubDate>
+        
+        <guid>https://xujiahua.github.io/posts/20200615-metabase-customer-isolation/</guid>
+        <description>许嘉华的博客 https://xujiahua.github.io/posts/20200615-metabase-customer-isolation/ -&lt;p&gt;之前有讨论，在不改动代码的情况下，可以使用分组功能来做客户隔离。但是该方案面临的问题是，每个客户一套模板，模板可维护性低。&lt;/p&gt;
+&lt;p&gt;问题的关键就是如何共享SQL模板并客户隔离。需要改动源代码。&lt;/p&gt;
+&lt;h3 id=&#34;目标&#34;&gt;目标&lt;/h3&gt;
+&lt;ol&gt;
+&lt;li&gt;代码复用。同一套SQL代码。不用copy/paste，好维护。一个dashboard所有客户都能看。&lt;/li&gt;
+&lt;li&gt;客户隔离，保证数据安全。不同客户只能看到自己的数据。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3 id=&#34;实现&#34;&gt;实现&lt;/h3&gt;
+&lt;p&gt;执行dashboard/chart中SQL代码时，动态插入客户隔离标识。&lt;/p&gt;
+&lt;p&gt;首先来看下一次SQL Query的生命周期。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200616151301507.png&#34; alt=&#34;image-20200616151301507&#34;&gt;&lt;/p&gt;
+&lt;p&gt;找了个比较接近的处理逻辑，&lt;code&gt;substitute-parameters&lt;/code&gt;用于将&lt;code&gt;{ {xxx} }&lt;/code&gt;替换为widget中选的值。模仿之，SQL中定义一个&lt;code&gt;##client_id##&lt;/code&gt;占位符，写了一个&lt;code&gt;substitute-placeholder&lt;/code&gt;方法使用用户的&lt;code&gt;client-id&lt;/code&gt;替代占位符。&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://github.com/XUJiahua/metabase/commit/4c3490e1c475c0e6ee13f5a122a60f19b8879baa&#34;&gt;https://github.com/XUJiahua/metabase/commit/4c3490e1c475c0e6ee13f5a122a60f19b8879baa&lt;/a&gt;&lt;/p&gt;
+&lt;h3 id=&#34;demo&#34;&gt;DEMO&lt;/h3&gt;
+&lt;p&gt;效果&lt;/p&gt;
+&lt;p&gt;使用Sample Data数据集测试。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sql&#34; data-lang=&#34;sql&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;select&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;from&lt;/span&gt; PEOPLE
+&lt;span style=&#34;color:#66d9ef&#34;&gt;where&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;STATE&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;{{&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;STATE&lt;/span&gt;&lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;}}&lt;/span&gt;
+&lt;span style=&#34;color:#66d9ef&#34;&gt;and&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;SOURCE&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;=##&lt;/span&gt;client_id&lt;span style=&#34;color:#f92672&#34;&gt;##&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;返回的SQL中，可见占位符被替换为Google。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200616150506812.png&#34; alt=&#34;image-20200616150506812&#34;&gt;&lt;/p&gt;
+&lt;p&gt;因为还没有集成SSO系统，&lt;code&gt;client-id&lt;/code&gt;临时用&lt;code&gt;first-name&lt;/code&gt;来代替。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200616150614876.png&#34; alt=&#34;image-20200616150614876&#34;&gt;&lt;/p&gt;
+- https://xujiahua.github.io/posts/20200615-metabase-customer-isolation/ - </description>
+        </item>
     
     
     
@@ -208,7 +242,8 @@ expect1
 &lt;p&gt;SaaS 系统，多租户系统，最基本的要求是保证数据隔离。客户只能看到自己的数据（报表）。&lt;/p&gt;
 &lt;p&gt;Metabase 数据隔离的手段只有分组。基于分组隔离客户，一个客户一个分组。因为少部分客户才会用到 Metabase 功能，所以分组不会非常多。&lt;/p&gt;
 &lt;h3 id=&#34;报表功能复用&#34;&gt;报表功能复用？&lt;/h3&gt;
-&lt;p&gt;这个有点难。只能一个个客户（对应每个分组）做报表。通用的功能，copy -&amp;gt; SQL里修改客户隔离标识 -&amp;gt; paste。&lt;/p&gt;
+&lt;p&gt;&lt;del&gt;这个有点难。只能一个个客户（对应每个分组）做报表。通用的功能，copy -&amp;gt; SQL里修改客户隔离标识 -&amp;gt; paste。&lt;/del&gt;&lt;/p&gt;
+&lt;p&gt;参考：&lt;a href=&#34;https://xujiahua.github.io/posts/20200615-metabase-customer-isolation/&#34;&gt;Metabase 客户隔离&lt;/a&gt;&lt;/p&gt;
 &lt;h3 id=&#34;定制-sso-系统&#34;&gt;定制 SSO 系统&lt;/h3&gt;
 &lt;p&gt;认证页、获取用户信息，每个SSO系统都是有的。这里需要考虑的是用户字段与Metabase的映射。&lt;/p&gt;
 &lt;ol&gt;
@@ -1231,196 +1266,6 @@ size_options &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; [
 &lt;p&gt;一个小问题：连三星显示器偶尔出现雪花屏，试验下来，是 HDMI 接口容易雪花。TYPEC 接口没这个问题。&lt;/p&gt;
 &lt;p&gt;workaround：关闭显示器电源，拔掉HDMI线，重新打开显示器电源，插入HDMI线。NUC HDMI 接口是过热了么？&lt;/p&gt;
 - https://xujiahua.github.io/posts/20200504-hackintosh/ - </description>
-        </item>
-    
-    
-    
-        <item>
-        <title>consul 小结</title>
-        <link>https://xujiahua.github.io/posts/20200421-use-consul/</link>
-        <pubDate>Tue, 21 Apr 2020 09:01:38 +0800</pubDate>
-        
-        <guid>https://xujiahua.github.io/posts/20200421-use-consul/</guid>
-        <description>许嘉华的博客 https://xujiahua.github.io/posts/20200421-use-consul/ -&lt;h2 id=&#34;简单介绍&#34;&gt;简单介绍&lt;/h2&gt;
-&lt;p&gt;hashicorp 对 Consul 的定位是服务间网络方案。&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;Consul is a service networking solution to connect and secure services across any runtime platform and public or private cloud. &lt;a href=&#34;https://www.consul.io/&#34;&gt;https://www.consul.io/&lt;/a&gt;&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;p&gt;官方的两个 use case 就是 service discovery, service mesh。&lt;/p&gt;
-&lt;h3 id=&#34;service-discovery&#34;&gt;service discovery&lt;/h3&gt;
-&lt;p&gt;与 etcd 比起来，Consul 的服务发现是开箱即用的。优点如下：&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;First class 的服务注册和获取接口。不需要像 etcd 那样在 kv 存储基础上做包装。&lt;/li&gt;
-&lt;li&gt;服务注册，可以是consul 命令，也可以是HTTP API。&lt;/li&gt;
-&lt;li&gt;获取服务注册表，除了 HTTP 接口，还可以使用  DNS 查询接口。&lt;/li&gt;
-&lt;li&gt;健康检查。服务注册的时候可以提供健康检查项。健康检查机制保证了拿到的服务注册表是“健康”的。健康检查也包括节点的检查。单纯利用 consul 健康检查这个功能，consul 就是一个分布式监控工具。&lt;/li&gt;
-&lt;li&gt;Web 管理界面。节点、服务、健康与否一目了然。&lt;/li&gt;
-&lt;li&gt;Watch 功能。通过 blocking queries/ long-polling HTTP API 的方式得到服务注册表的改变的通知。&lt;/li&gt;
-&lt;li&gt;跨数据中心（取资源）。When a request is made for a resource in another datacenter, the local Consul servers forward an RPC request to the remote Consul servers for that resource and return the results. &lt;a href=&#34;https://learn.hashicorp.com/consul/security-networking/datacenters#data-replication&#34;&gt;https://learn.hashicorp.com/consul/security-networking/datacenters#data-replication&lt;/a&gt;&lt;/li&gt;
-&lt;/ol&gt;
-&lt;h3 id=&#34;service-mesh&#34;&gt;service mesh&lt;/h3&gt;
-&lt;p&gt;service discovery 只是微服务治理的初级阶段。作为服务请求方，通过 consul/ etcd 获取到服务注册表，下一步就是选择其中一个服务实例，发送请求。这个步骤叫做负载均衡。可以想象，客户端的代码会越来越重了。&lt;/p&gt;
-&lt;p&gt;service mesh可以理解为 service discovery的升级版。为每个服务实例引入 sidecar proxy，接管服务实例的入、出流量。将 service discovery，load balancer 从 service 本身抽离出来，下沉到基础设施，也就是 sidecar proxy。&lt;/p&gt;
-&lt;p&gt;sidecar proxy 上的功能还有更多扩展，比如：&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;蓝绿部署，A/B 测试。打个比方，一个服务存在两个版本v1, v2，给v1分配80%的流量，给v2分配20%的流量。&lt;/li&gt;
-&lt;li&gt;流量加密。authentication and authorization。&lt;/li&gt;
-&lt;li&gt;服务指标的收集。比如HTTP协议的返回状态码。&lt;/li&gt;
-&lt;li&gt;调用链追踪。&lt;/li&gt;
-&lt;li&gt;Intention。可以设置服务与服务之间是否允许连接。Intentions define service based access control for services in the Consul service mesh and are used to control which services are allowed or not allowed to establish connections.&lt;/li&gt;
-&lt;li&gt;这一切服务本身是无感知的。这也简化了应用的开发。&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;这就是 Consul Connect 的功能。与之对应的竞品是 Istio。&lt;/p&gt;
-&lt;p&gt;当然，一切都有代价。&lt;strong&gt;给每个服务实例创建一个sidecar proxy，这在部署上需要做好准备。使用 Kubernetes 可以提高效率，会帮助自动创建 sidecar proxy。&lt;/strong&gt;&lt;/p&gt;
-&lt;h3 id=&#34;key-value-store&#34;&gt;key value store&lt;/h3&gt;
-&lt;p&gt;consul 也能当 kv store 使用，这是服务发现的底子。使用方式跟 etcd 差不多。&lt;/p&gt;
-&lt;p&gt;etcd 官方与 consul 做了比较。consul 在存储扩展性上不够好。也缺少KEY多版本存储，不方便追溯历史。key value store 这个场景，etcd 是更合适的。&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;&lt;a href=&#34;https://github.com/coreos/dbtester/tree/master/test-results/2018Q1-02-etcd-zookeeper-consul&#34;&gt;As it stands in Consul 1.0&lt;/a&gt;, the storage system does not scale as well as other systems like etcd or Zookeeper in key-value operations; systems requiring millions of keys will suffer from high latencies and memory pressure. The key value API is missing, most notably, multi-version keys, conditional transactions, and reliable streaming watches.&lt;/p&gt;
-&lt;p&gt;etcd and Consul solve different problems. If looking for a distributed consistent key value store, etcd is a better choice over Consul. If looking for end-to-end cluster service discovery, etcd will not have enough features; choose Kubernetes, Consul, or SmartStack.&lt;/p&gt;
-&lt;p&gt;&lt;a href=&#34;https://github.com/etcd-io/etcd/blob/master/Documentation/learning/why.md#consul&#34;&gt;https://github.com/etcd-io/etcd/blob/master/Documentation/learning/why.md#consul&lt;/a&gt;&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;p&gt;consul client agent的主要工作是健康检查，所以如果只是key value store的使用场景，可以直接与 consul server agent 交互，就像使用 etcd 那样。&lt;/p&gt;
-&lt;h3 id=&#34;distributed-system-coordinate&#34;&gt;distributed system coordinate&lt;/h3&gt;
-&lt;p&gt;分布式锁，分布式系统的协调 &lt;a href=&#34;https://www.consul.io/docs/internals/sessions.html&#34;&gt;https://www.consul.io/docs/internals/sessions.html&lt;/a&gt; 。使用场景比如Hadoop系统的选主。不过大部分开源分布式系统基本上使用zookeeper和etcd。&lt;/p&gt;
-&lt;h2 id=&#34;核心概念&#34;&gt;核心概念&lt;/h2&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/consul-arch-420ce04a.png&#34; alt=&#34;Consul Architecture&#34;&gt;&lt;/p&gt;
-&lt;p&gt;Consul 架构图&lt;/p&gt;
-&lt;table&gt;
-&lt;thead&gt;
-&lt;tr&gt;
-&lt;th&gt;名称&lt;/th&gt;
-&lt;th&gt;说明&lt;/th&gt;
-&lt;/tr&gt;
-&lt;/thead&gt;
-&lt;tbody&gt;
-&lt;tr&gt;
-&lt;td&gt;node&lt;/td&gt;
-&lt;td&gt;每个 node 安装并运行 consul agent。&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;consul server agent&lt;/td&gt;
-&lt;td&gt;1）维护核心状态并基于共识算法 consensus protocol raft 参与leader选举。2）server节点一般建议3个或是5个。写压力大的集群，考虑升级服务器实例的配置和低延迟的存储。&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;consul client agent&lt;/td&gt;
-&lt;td&gt;1）当前节点、当前节点上的服务的健康检查。2）RPC请求转发到 consul server agent。3）每个主机都有一个agent的好处是，只要与本地agent通信。&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;Datacenter&lt;/td&gt;
-&lt;td&gt;可以理解为一个 consul 集群。一个consul 集群至少有一个 consul server agent。&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;LAN gossip pool&lt;/td&gt;
-&lt;td&gt;单个 Datacenter 内，由 consul server agent 和 consul client agent 组成。pool内成员通过 gossip protocol 通信。&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;WAN gossip pool&lt;/td&gt;
-&lt;td&gt;跨 Datacenter，由所有 Datacenter 内的 consul server agent 组成。可以跨网络通信。pool内成员通过 gossip protocol 通信。&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;service&lt;/td&gt;
-&lt;td&gt;一个service对应多个service实例，注册时使用相同的service_name，并使用不同的service_id区分实例。&lt;/td&gt;
-&lt;/tr&gt;
-&lt;/tbody&gt;
-&lt;/table&gt;
-&lt;h4 id=&#34;参考&#34;&gt;参考&lt;/h4&gt;
-&lt;ol&gt;
-&lt;li&gt;&lt;a href=&#34;https://www.consul.io/docs/internals/architecture.html&#34;&gt;https://www.consul.io/docs/internals/architecture.html&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;https://www.consul.io/docs/glossary.html&#34;&gt;https://www.consul.io/docs/glossary.html&lt;/a&gt;&lt;/li&gt;
-&lt;/ol&gt;
-&lt;h2 id=&#34;consul-connect-体验&#34;&gt;Consul Connect 体验&lt;/h2&gt;
-&lt;h3 id=&#34;1-quickstart-consul-connect&#34;&gt;1. Quickstart: Consul Connect&lt;/h3&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/consul_connect_demo_service_flow.png&#34; alt=&#34;Flow diagram showing end user traffic being sent to the Dashboard Service at port 9002. The dashboard service makes requests for the counting service to the local Connect Proxy at port 5000. This traffic then traverses the Connect mesh over dynamic ports. The traffic exits the Connect mesh from the counting service&amp;rsquo;s local proxy. The proxy sends this traffic to the counting service itself at port 9003.&#34;&gt;&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;Secure Service-to-Service Communication &lt;a href=&#34;https://learn.hashicorp.com/consul/developer-mesh/connect-services&#34;&gt;https://learn.hashicorp.com/consul/developer-mesh/connect-services&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;code &lt;a href=&#34;https://github.com/hashicorp/demo-consul-101&#34;&gt;https://github.com/hashicorp/demo-consul-101&lt;/a&gt;&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;简单说明：&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;&lt;code&gt;consul agent -dev -config-dir=&amp;quot;./demo-config-localhost&amp;quot; -node=laptop&lt;/code&gt; 这里已经完成了service和proxy的注册。这个可以后续脚本化，按需服务注册。&lt;/li&gt;
-&lt;li&gt;service本身都不做服务发现和负载均衡。这些事情交给了 sidecar proxy。以dashboard service为例，&lt;code&gt;countingServiceURL = getEnvOrDefault(&amp;quot;COUNTING_SERVICE_URL&amp;quot;, &amp;quot;http://localhost:9001&amp;quot;)&lt;/code&gt;，默认读的是本地的9001端口，也就是sidecar proxy的绑定端口。这就是劫持流量。&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;consul connect proxy -sidecar-for counting-1&lt;/code&gt; 需要手动为service创建proxy。这个可以后续脚本化。&lt;/li&gt;
-&lt;li&gt;能看出Consul Connect /Service Mesh的好处了：不再侵入业务代码。重复的事情已下沉到基础设施，sidecar proxy处理。&lt;/li&gt;
-&lt;/ol&gt;
-&lt;h3 id=&#34;2-use-envoy&#34;&gt;2. use Envoy&lt;/h3&gt;
-&lt;p&gt;Use Envoy with Connect &lt;a href=&#34;https://learn.hashicorp.com/consul/developer-mesh/connect-envoy&#34;&gt;https://learn.hashicorp.com/consul/developer-mesh/connect-envoy&lt;/a&gt;&lt;/p&gt;
-&lt;h3 id=&#34;3-canary-deployments-using-traffic-splitting-and-resolution&#34;&gt;3. Canary deployments using traffic splitting and resolution&lt;/h3&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/consul-splitting-architecture.png&#34; alt=&#34;Architecture diagram of the splitting demo. A web service directly connects to two different versions of the API service through proxies. Consul configures those proxies.&#34;&gt;&lt;/p&gt;
-&lt;p&gt;Traffic Splitting for Service Deployments &lt;a href=&#34;https://learn.hashicorp.com/consul/developer-mesh/consul-splitting&#34;&gt;https://learn.hashicorp.com/consul/developer-mesh/consul-splitting&lt;/a&gt;&lt;/p&gt;
-&lt;p&gt;code &lt;a href=&#34;https://github.com/hashicorp/consul-demo-traffic-splitting&#34;&gt;https://github.com/hashicorp/consul-demo-traffic-splitting&lt;/a&gt;&lt;/p&gt;
-&lt;h3 id=&#34;4-zipkin-tracing&#34;&gt;4. Zipkin tracing&lt;/h3&gt;
-&lt;p&gt;code &lt;a href=&#34;https://github.com/hashicorp/consul-demo-tracing/tree/master/jaeger&#34;&gt;https://github.com/hashicorp/consul-demo-tracing/tree/master/jaeger&lt;/a&gt;&lt;/p&gt;
-&lt;h2 id=&#34;基于-consul-微服务改造&#34;&gt;基于 Consul 微服务改造&lt;/h2&gt;
-&lt;p&gt;暂不用 Kubernetes 和 Docker。&lt;/p&gt;
-&lt;p&gt;目前基本上是这种架构：&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image-20200421163153922.png&#34; alt=&#34;image-20200421163153922&#34;&gt;&lt;/p&gt;
-&lt;p&gt;预期架构：&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image-20200421164508506.png&#34; alt=&#34;image-20200421164508506&#34;&gt;&lt;/p&gt;
-&lt;p&gt;预期好处：&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;减少硬编码。&lt;/li&gt;
-&lt;li&gt;可动态新增服务实例。&lt;/li&gt;
-&lt;li&gt;基于sidecar做更多服务治理工作。&lt;/li&gt;
-&lt;/ol&gt;
-&lt;h3 id=&#34;服务间通信&#34;&gt;服务间通信&lt;/h3&gt;
-&lt;p&gt;目的：应用对 consul 无感知，降低应用开发的复杂度。&lt;/p&gt;
-&lt;p&gt;需要做如下准备：&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;独立服务器安装 consul server agent 集群。负责维护集群状态。&lt;/li&gt;
-&lt;li&gt;每台应用服务器都有 consul client agent 运行，并已经连入 consul server agent。负责健康检查，与请求转发。&lt;/li&gt;
-&lt;li&gt;每台应用服务器上安装有 envoy 二进制文件。负责sidecar proxy的创建。&lt;/li&gt;
-&lt;li&gt;服务注册、注销的工作交给应用的伙伴脚本。&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;伙伴脚本的工作：&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;启动应用。&lt;/li&gt;
-&lt;li&gt;服务注册和健康检查。所需的信息，比如IP可以通过命令取、端口可以从应用启动信息取、服务名是固定的。&lt;/li&gt;
-&lt;li&gt;启动 sidecar proxy 进程。&lt;/li&gt;
-&lt;li&gt;伙伴脚本还需要监测应用的状态，应用不存在后，发起服务注销。&lt;/li&gt;
-&lt;li&gt;consul的健康检查机制会自动把不健康的服务过滤掉，对伙伴脚本的要求没那么高了。&lt;/li&gt;
-&lt;/ol&gt;
-&lt;h3 id=&#34;对外服务&#34;&gt;对外服务&lt;/h3&gt;
-&lt;p&gt;目的：动态更新 nginx upstream。&lt;/p&gt;
-&lt;p&gt;目前，我们使用nginx作为对外服务。使用 consul-template，动态生成 nginx 配置（upstreams）并 reload nginx。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/consul-nginx-template-arch.png&#34; alt=&#34;NGINX and Consul template architecture&#34;&gt;&lt;/p&gt;
-&lt;h4 id=&#34;参考-1&#34;&gt;参考&lt;/h4&gt;
-&lt;ol&gt;
-&lt;li&gt;Load Balancing with NGINX and Consul Template &lt;a href=&#34;https://learn.hashicorp.com/consul/integrations/nginx-consul-template&#34;&gt;https://learn.hashicorp.com/consul/integrations/nginx-consul-template&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;consul-template &lt;a href=&#34;https://learn.hashicorp.com/consul/developer-configuration/consul-template&#34;&gt;https://learn.hashicorp.com/consul/developer-configuration/consul-template&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;Manage local application configuration files using templates and data from etcd or consul 与consul-template的思路是一样的 &lt;a href=&#34;https://github.com/kelseyhightower/confd&#34;&gt;https://github.com/kelseyhightower/conf&lt;/a&gt;&lt;/li&gt;
-&lt;/ol&gt;
-&lt;h2 id=&#34;基于-consul-的配置中心&#34;&gt;基于 Consul 的配置中心&lt;/h2&gt;
-&lt;p&gt;目前，应用读本地配置文件。&lt;/p&gt;
-&lt;p&gt;目标，从 consul 读配置文件，并监听配置变化。&lt;/p&gt;
-&lt;p&gt;基于 Viper 库和 consul 做了一个demo。 &lt;a href=&#34;https://github.com/XUJiahua/consul_config_demo&#34;&gt;https://github.com/XUJiahua/consul_config_demo&lt;/a&gt;&lt;/p&gt;
-&lt;h3 id=&#34;viper&#34;&gt;viper&lt;/h3&gt;
-&lt;p&gt;&lt;a href=&#34;https://github.com/spf13/viper&#34;&gt;https://github.com/spf13/viper&lt;/a&gt;&lt;/p&gt;
-&lt;p&gt;其中 Viper 的 remote config 支持的不够好：&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;OnConfigChange 对 remote config 无效。&lt;/li&gt;
-&lt;li&gt;WatchRemoteConfig()与ReadRemoteConfig() 完全没区别。&lt;/li&gt;
-&lt;li&gt;WatchRemoteConfigOnChannel() 是真正有watch功能的方法，但是没有通知应用代码。默默就更新配置了。&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;所以基于 PR &lt;a href=&#34;https://github.com/spf13/viper/pull/456/files&#34;&gt;https://github.com/spf13/viper/pull/456/files&lt;/a&gt; 更新了下viper。&lt;/p&gt;
-&lt;p&gt;还有个不足。viper remote config 只接收一个 consul/etcd 的地址。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image-20200422113501760.png&#34; alt=&#34;image-20200422113501760&#34;&gt;&lt;/p&gt;
-&lt;p&gt;viper 依赖的 crypt 库因为consul api 库只支持一个地址，也支持不了多地址。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image-20200422113617179.png&#34; alt=&#34;image-20200422113617179&#34;&gt;&lt;/p&gt;
-&lt;p&gt;有几个解决办法：&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;搭配 consul 服务发现使用，只连本地的 consul client agent，client 节点挂了，本机和其上的服务等会标记为失败了，不会影响其他服务。&lt;/li&gt;
-&lt;li&gt;保证 consul 地址是高可用的，比如 nginx 代理多个consul 地址。&lt;/li&gt;
-&lt;li&gt;更新库，让 consul api 库支持多个地址。参考下 etcd client 的写法。 &lt;a href=&#34;https://github.com/etcd-io/etcd/blob/master/client/client.go#L362&#34;&gt;https://github.com/etcd-io/etcd/blob/master/client/client.go#L362&lt;/a&gt;&lt;/li&gt;
-&lt;/ol&gt;
-&lt;h2 id=&#34;其他一些资料&#34;&gt;其他：一些资料&lt;/h2&gt;
-&lt;p&gt;可能有帮助。&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;Getting Started &lt;a href=&#34;https://learn.hashicorp.com/consul?track=getting-started#getting-started&#34;&gt;https://learn.hashicorp.com/consul?track=getting-started#getting-started&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;基于consul构建golang系统分布式服务发现机制（使用Consul HTTP API） &lt;a href=&#34;https://segmentfault.com/a/1190000008471221&#34;&gt;https://segmentfault.com/a/1190000008471221&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;Service registry bridge for Docker 监听Docker的Unix套接字来获取Docker容器启动和消亡时的事件，并且它会通过在事先配置好的一个可插拔的后端服务中创建新记录的形式自动完成容器的服务注册 &lt;a href=&#34;https://gliderlabs.github.io/registrator/latest/&#34;&gt;https://gliderlabs.github.io/registrator/latest/&lt;/a&gt;&lt;/li&gt;
-&lt;/ol&gt;
-- https://xujiahua.github.io/posts/20200421-use-consul/ - </description>
         </item>
     
     

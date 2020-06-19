@@ -5,9 +5,96 @@
     <description>Recent content on 许嘉华的博客</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Thu, 11 Jun 2020 11:38:55 +0800</lastBuildDate>
+    <lastBuildDate>Mon, 15 Jun 2020 17:19:50 +0800</lastBuildDate>
     
         <atom:link href="https://xujiahua.github.io/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    
+        <item>
+        <title>Google Vision API</title>
+        <link>https://xujiahua.github.io/posts/20200401-google-vision-api/</link>
+        <pubDate>Wed, 01 Apr 2020 14:20:51 +0800</pubDate>
+        
+        <guid>https://xujiahua.github.io/posts/20200401-google-vision-api/</guid>
+        <description>许嘉华的博客 https://xujiahua.github.io/posts/20200401-google-vision-api/ -&lt;h2 id=&#34;目标&#34;&gt;目标&lt;/h2&gt;
+&lt;p&gt;业务上需要识别出文本、图像敏感内容，降低业务风险。&lt;/p&gt;
+&lt;p&gt;调用下云服务的产品。&lt;/p&gt;
+&lt;h2 id=&#34;google-cloud-platform&#34;&gt;Google Cloud Platform&lt;/h2&gt;
+&lt;p&gt;GCP上，图像识别有两个产品：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Vision API 直接使用预先训练的模型&lt;/li&gt;
+&lt;li&gt;AutoML 迁移学习，使用用户提交的新分类数据，训练模型。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;关于文本识别的产品是类似的，也分直接使用预训练模型和迁移学习重新训练。&lt;/p&gt;
+&lt;h2 id=&#34;vision-api图像内容识别&#34;&gt;Vision API：图像内容识别&lt;/h2&gt;
+&lt;ol&gt;
+&lt;li&gt;Google Vision API的模型已经有审核内容的能力：暴力、成人内容的识别。&lt;/li&gt;
+&lt;li&gt;提供API，也提供了各个语言的SDK。&lt;/li&gt;
+&lt;li&gt;不需要开发者训练模型。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200401145549783.png&#34; alt=&#34;image-20200401145549783&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200401145658730.png&#34; alt=&#34;image-20200401145658730&#34;&gt;&lt;/p&gt;
+&lt;p&gt;参考：https://cloud.google.com/vision?hl=zh-cn&lt;/p&gt;
+&lt;h3 id=&#34;试用&#34;&gt;试用&lt;/h3&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200401142058025.png&#34; alt=&#34;image-20200401142058025&#34;&gt;&lt;/p&gt;
+&lt;h3 id=&#34;安全搜索的分类说明&#34;&gt;安全搜索的分类说明&lt;/h3&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200401144423857.png&#34; alt=&#34;image-20200401144423857&#34;&gt;&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Adult 成人内容&lt;/li&gt;
+&lt;li&gt;Spoof 恶搞，比如恶搞政治人物&lt;/li&gt;
+&lt;li&gt;Medical 医疗影像&lt;/li&gt;
+&lt;li&gt;Violence 暴力内容&lt;/li&gt;
+&lt;li&gt;Racy 猥亵类，类似成人内容&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;参考：https://cloud.google.com/vision/docs/reference/rpc/google.cloud.vision.v1?hl=zh-cn#google.cloud.vision.v1.SafeSearchAnnotation&lt;/p&gt;
+&lt;h3 id=&#34;对接流程&#34;&gt;对接流程&lt;/h3&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200401143626559.png&#34; alt=&#34;image-20200401143626559&#34;&gt;&lt;/p&gt;
+&lt;p&gt;参考：https://codelabs.developers.google.com/codelabs/cloud-vision-intro/index.html?index=..%2F..cloudai&amp;amp;hl=zh-cn&amp;amp;_ga=2.102874504.925825070.1585721382-1910642988.1585296097#0&lt;/p&gt;
+&lt;p&gt;注意，图像不一定需要上传到Google的云存储。&lt;/p&gt;
+&lt;p&gt;开发对接参考：检测露骨内容（安全搜索）https://cloud.google.com/vision/docs/detecting-safe-search?hl=zh-cn&lt;/p&gt;
+&lt;h3 id=&#34;demo&#34;&gt;DEMO&lt;/h3&gt;
+&lt;p&gt;创建服务账号、创建密钥，自动下载json文件：&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200401160832697.png&#34; alt=&#34;image-20200401160832697&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200401161206429.png&#34; alt=&#34;image-20200401161206429&#34;&gt;&lt;/p&gt;
+&lt;p&gt;code：&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://github.com/GoogleCloudPlatform/golang-samples/blob/master/vision/detect/README.md&#34;&gt;https://github.com/GoogleCloudPlatform/golang-samples/blob/master/vision/detect/README.md&lt;/a&gt;&lt;/p&gt;
+&lt;h3 id=&#34;请求次数限制&#34;&gt;请求次数限制&lt;/h3&gt;
+&lt;p&gt;对请求内容大小有限制外，需要注意请求配额，每分钟请求数1800，QPS也就是30。如果无法满足需求，需要在平台申请增加配额。&lt;/p&gt;
+&lt;p&gt;使用默认配额，业务上需要考虑采样数据，再调用Vision API。&lt;/p&gt;
+&lt;p&gt;参考 &lt;a href=&#34;https://cloud.google.com/vision/quotas?hl=zh-cn&#34;&gt;https://cloud.google.com/vision/quotas?hl=zh-cn&lt;/a&gt;&lt;/p&gt;
+&lt;h3 id=&#34;请求响应时间&#34;&gt;请求响应时间&lt;/h3&gt;
+&lt;p&gt;请求响应时间，取决于两个因素：&lt;/p&gt;
+&lt;h4 id=&#34;上传数据大小&#34;&gt;上传数据大小&lt;/h4&gt;
+&lt;p&gt;越大越慢。&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;手机拍照软件生成的图像一般3M，建议图像压缩后上传。&lt;/li&gt;
+&lt;li&gt;考虑gcloud上先存储图像文件。参考 &lt;a href=&#34;https://medium.com/bankify-tech-blog/how-to-optimize-the-speed-of-google-vision-api-cdc5e452104b&#34;&gt;https://medium.com/bankify-tech-blog/how-to-optimize-the-speed-of-google-vision-api-cdc5e452104b&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h4 id=&#34;vision-api本身&#34;&gt;Vision API本身&lt;/h4&gt;
+&lt;p&gt;对一张249K的图像进行简单压测。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;$ ll demo/trump.jpg 
+-rw-r--r--  &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt; jiahua  staff   249K Apr  &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt; 14:14 demo/trump.jpg
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Go benchmark。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;BenchmarkDetectSafeSearchForFile&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;b&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;testing&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;B&lt;/span&gt;) {
+	&lt;span style=&#34;color:#66d9ef&#34;&gt;for&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;i&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;:=&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;;&lt;span style=&#34;color:#a6e22e&#34;&gt;i&lt;/span&gt;&amp;lt;&lt;span style=&#34;color:#a6e22e&#34;&gt;b&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;N&lt;/span&gt;;&lt;span style=&#34;color:#a6e22e&#34;&gt;i&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;++&lt;/span&gt;{
+		&lt;span style=&#34;color:#a6e22e&#34;&gt;result&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;err&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;:=&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;DetectSafeSearchForFile&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;demo/trump.jpg&amp;#34;&lt;/span&gt;)
+		&lt;span style=&#34;color:#a6e22e&#34;&gt;assert&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Equal&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;b&lt;/span&gt;, &lt;span style=&#34;color:#66d9ef&#34;&gt;nil&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;err&lt;/span&gt;)
+		&lt;span style=&#34;color:#a6e22e&#34;&gt;spew&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Dump&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;result&lt;/span&gt;)
+	}
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;识别图像大概需要1秒。实际业务中使用，建议异步处理，事后处理，不然太影响正常体验了。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;$ go test -v -bench&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;DetectSafeSearchForFile -benchtime&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;30s
+
+BenchmarkDetectSafeSearchForFile-8            &lt;span style=&#34;color:#ae81ff&#34;&gt;33&lt;/span&gt;        &lt;span style=&#34;color:#ae81ff&#34;&gt;1011378355&lt;/span&gt; ns/op
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;natural-language-api-文本内容识别&#34;&gt;Natural Language API： 文本内容识别&lt;/h2&gt;
+&lt;p&gt;&lt;a href=&#34;https://cloud.google.com/natural-language/docs/how-to?hl=zh-cn&#34;&gt;https://cloud.google.com/natural-language/docs/how-to?hl=zh-cn&lt;/a&gt;&lt;/p&gt;
+&lt;h3 id=&#34;内容分类&#34;&gt;内容分类&lt;/h3&gt;
+&lt;p&gt;内容分类没有我们关注的敏感内容分类。&lt;/p&gt;
+&lt;p&gt;参考：https://cloud.google.com/natural-language/docs/categories?hl=zh-cn&lt;/p&gt;
+&lt;p&gt;通过简单的关键字过滤吧。&lt;/p&gt;
+- https://xujiahua.github.io/posts/20200401-google-vision-api/ - </description>
+        </item>
     
     
     
@@ -999,66 +1086,6 @@ export GOPROXY=https://goproxy.io
 &lt;h2 id=&#34;杂言&#34;&gt;杂言&lt;/h2&gt;
 &lt;p&gt;真正有颠覆性的，真正能突破人们想象力的，都在基础科学。比如材料科学，电池技术现在是瓶颈。离我很远。我做的事情真的对人类价值不大，只是个普通人，只能做到赚钱养家对家庭做贡献了。&lt;/p&gt;
 - https://xujiahua.github.io/posts/20200222-5g/ - </description>
-        </item>
-    
-    
-    
-        <item>
-        <title>Implicit：推荐系统协同过滤库的测评</title>
-        <link>https://xujiahua.github.io/posts/20200211-recsys-implicit/</link>
-        <pubDate>Tue, 11 Feb 2020 14:34:27 +0800</pubDate>
-        
-        <guid>https://xujiahua.github.io/posts/20200211-recsys-implicit/</guid>
-        <description>许嘉华的博客 https://xujiahua.github.io/posts/20200211-recsys-implicit/ -&lt;h2 id=&#34;简介&#34;&gt;简介&lt;/h2&gt;
-&lt;p&gt;Implicit是一个推荐系统协同过滤库。所谓协同过滤，只用到了user、item的ID和user、item交互后的评分（或是某个度量）。&lt;/p&gt;
-&lt;p&gt;GitHub：https://github.com/benfred/implicit&lt;/p&gt;
-&lt;h2 id=&#34;安装&#34;&gt;安装&lt;/h2&gt;
-&lt;pre&gt;&lt;code&gt;pip install implicit
-&lt;/code&gt;&lt;/pre&gt;&lt;h2 id=&#34;其他选择&#34;&gt;其他选择&lt;/h2&gt;
-&lt;p&gt;自己照着「推荐系统实战」里的基于物品推荐的相似度公式（类似关联分析中的Lift公式），也写了一个item-item recommender。&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;看推荐结果，自己写与implicit ALS有点差别，与implicit Cosine的结果差不多。&lt;/li&gt;
-&lt;li&gt;纯python，没有并行，没有用C/C++，果然很慢。&lt;/li&gt;
-&lt;li&gt;自己写一个的目的，除了练手，也想看看implicit的效果具体怎么样。&lt;/li&gt;
-&lt;li&gt;生产使用，不建议用自己手写的，水平真的有限。&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;Spark Mllib怎么样。&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;Spark Mllib支持分布式，感觉没必要。本来Implicit单机就很强了。只要把数据导出来，导到训练机器上即可。&lt;/li&gt;
-&lt;li&gt;Spark分布式，扩展性好，但是性能并没有Implicit那么好。&lt;/li&gt;
-&lt;li&gt;Spark还得搭配HDFS，真的蛮重的，开发效率也没那么好。&lt;/li&gt;
-&lt;/ol&gt;
-&lt;h2 id=&#34;背后的原理&#34;&gt;背后的原理&lt;/h2&gt;
-&lt;p&gt;今早根据作者文章Distance Metrics for Fun and Profit，整理了一份读后感，把之前的知识给梳理起来了。这篇文章主要介绍的是距离公式，用于K近邻的推荐算法。&lt;/p&gt;
-&lt;p&gt;协同过滤算法分两类：&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;基于记忆的，K近邻算法（基于“距离”公式），建议使用BM25。优势在读后感中有写。（实际效果怎么样，还得看数据）&lt;/li&gt;
-&lt;li&gt;基于模型的，矩阵分解算法，建议使用 (implicit) ALS，其变种是支持implicit dataset的。矩阵分解算法SGD，只适用于评分。&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;效果，见测评图。ALS的效果是最好的了。这是在movielens100k的结果。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/3D66F424-97FD-4236-8A57-98111FAF65A7.png&#34; alt=&#34;3D66F424-97FD-4236-8A57-98111FAF65A7&#34;&gt;&lt;/p&gt;
-&lt;p&gt;看起来指标都很低，「推荐系统实战」里差不多这个结果。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/FBC00415-D1AE-4F22-9B86-A0B070484ACF.png&#34; alt=&#34;FBC00415-D1AE-4F22-9B86-A0B070484ACF&#34;&gt;&lt;/p&gt;
-&lt;h2 id=&#34;遇到的小问题&#34;&gt;遇到的小问题&lt;/h2&gt;
-&lt;ol&gt;
-&lt;li&gt;K近邻算法的model没有model.recommend_all方法。&lt;/li&gt;
-&lt;li&gt;model.recommend与model.recommend_all的返回数据结构不同，model.recommend是包含评分的，而model.recommend_all只返回ID。&lt;/li&gt;
-&lt;li&gt;recommend(0)，传入第一个用户ID，与recommend_all[0]，取出第一个用户ID，两者的结果是不一样的，不管用什么算法都一样！去年12月就有这样的issue：https://github.com/benfred/implicit/issues/299，我解决了，回复了这个issue。&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;猜想，因为recommend方法用到indices的原因？试着重新构建下user-item维度的sparse matrix。改完后，果然就一致了。技术原因，sparse matrix transpose后，indices是未转置前的indices，没有变化。 具体地，user_items.indices与item_users.T.indices是不同的。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/159B8A3D-4238-401B-A4D3-61E086FF9F0B.png&#34; alt=&#34;159B8A3D-4238-401B-A4D3-61E086FF9F0B&#34;&gt;&lt;/p&gt;
-&lt;ol start=&#34;4&#34;&gt;
-&lt;li&gt;ALS算法在Mac上表现稀烂啊，同样的代码。ALS_Faiss还报错了。先在Linux上用吧。&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;Mac上的ALS效果：&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/409E288C-81F6-4588-8731-9849D1F3278B.png&#34; alt=&#34;409E288C-81F6-4588-8731-9849D1F3278B&#34;&gt;&lt;/p&gt;
-&lt;p&gt;Linux上的ALS效果：&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/8DD26395-F62D-4DA8-A801-493098799456.png&#34; alt=&#34;8DD26395-F62D-4DA8-A801-493098799456&#34;&gt;&lt;/p&gt;
-&lt;h2 id=&#34;冷启动&#34;&gt;冷启动&lt;/h2&gt;
-&lt;p&gt;一开始并没有那么多行为数据。训练出的结果肯定是挺一般的。这时候用标签推荐，运营根据经验配置标签和推荐的映射即可。&lt;/p&gt;
-&lt;h2 id=&#34;考虑用户特征商品特征而不仅仅是id&#34;&gt;考虑用户特征、商品特征（而不仅仅是ID）&lt;/h2&gt;
-&lt;p&gt;如果有user特征、item特征，可以使用更一般的监督学习算法。或是使用factorization machine。&lt;/p&gt;
-- https://xujiahua.github.io/posts/20200211-recsys-implicit/ - </description>
         </item>
     
     
