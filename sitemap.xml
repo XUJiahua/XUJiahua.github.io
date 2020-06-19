@@ -3,12 +3,32 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
+    <loc>https://xujiahua.github.io/categories/</loc>
+    <lastmod>2020-06-15T17:19:50+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://xujiahua.github.io/tags/metabase/</loc>
+    <lastmod>2020-06-15T17:19:50+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://xujiahua.github.io/categories/metabase/</loc>
+    <lastmod>2020-06-15T17:19:50+08:00</lastmod>
+  </url>
+  
+  <url>
     <loc>https://xujiahua.github.io/posts/20200615-metabase-customer-isolation/</loc>
     <lastmod>2020-06-15T17:19:50+08:00</lastmod>
   </url>
   
   <url>
     <loc>https://xujiahua.github.io/posts/</loc>
+    <lastmod>2020-06-15T17:19:50+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://xujiahua.github.io/tags/</loc>
     <lastmod>2020-06-15T17:19:50+08:00</lastmod>
   </url>
   
@@ -23,17 +43,7 @@
   </url>
   
   <url>
-    <loc>https://xujiahua.github.io/tags/metabase/</loc>
-    <lastmod>2020-06-09T10:37:09+08:00</lastmod>
-  </url>
-  
-  <url>
     <loc>https://xujiahua.github.io/posts/20200609-metabase-sso-login/</loc>
-    <lastmod>2020-06-09T10:37:09+08:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://xujiahua.github.io/tags/</loc>
     <lastmod>2020-06-09T10:37:09+08:00</lastmod>
   </url>
   
@@ -325,10 +335,6 @@
   <url>
     <loc>https://xujiahua.github.io/about/</loc>
     <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://xujiahua.github.io/categories/</loc>
   </url>
   
 </urlset>

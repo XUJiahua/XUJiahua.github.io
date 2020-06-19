@@ -2,13 +2,13 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Metabase on 许嘉华的博客</title>
-    <link>https://xujiahua.github.io/tags/metabase/</link>
+    <link>https://xujiahua.github.io/categories/metabase/</link>
     <description>Recent content in Metabase on 许嘉华的博客</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
     <lastBuildDate>Mon, 15 Jun 2020 17:19:50 +0800</lastBuildDate>
     
-	<atom:link href="https://xujiahua.github.io/tags/metabase/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://xujiahua.github.io/categories/metabase/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
