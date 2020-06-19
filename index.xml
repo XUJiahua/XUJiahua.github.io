@@ -29,7 +29,7 @@
 &lt;p&gt;首先来看下一次SQL Query的生命周期。&lt;/p&gt;
 &lt;p&gt;&lt;img src=&#34;../../images/image-20200616151301507.png&#34; alt=&#34;image-20200616151301507&#34;&gt;&lt;/p&gt;
 &lt;p&gt;找了个比较接近的处理逻辑，&lt;code&gt;substitute-parameters&lt;/code&gt;用于将&lt;code&gt;{ {xxx} }&lt;/code&gt;替换为widget中选的值。模仿之，SQL中定义一个&lt;code&gt;##client_id##&lt;/code&gt;占位符，写了一个&lt;code&gt;substitute-placeholder&lt;/code&gt;方法使用用户的&lt;code&gt;client-id&lt;/code&gt;替代占位符。&lt;/p&gt;
-&lt;p&gt;&lt;a href=&#34;https://github.com/XUJiahua/metabase/commit/4c3490e1c475c0e6ee13f5a122a60f19b8879baa&#34;&gt;https://github.com/XUJiahua/metabase/commit/4c3490e1c475c0e6ee13f5a122a60f19b8879baa&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;code: &lt;a href=&#34;https://github.com/XUJiahua/metabase/pull/4/files&#34;&gt;https://github.com/XUJiahua/metabase/pull/4/files&lt;/a&gt;&lt;/p&gt;
 &lt;h3 id=&#34;demo&#34;&gt;DEMO&lt;/h3&gt;
 &lt;p&gt;效果&lt;/p&gt;
 &lt;p&gt;使用Sample Data数据集测试。&lt;/p&gt;

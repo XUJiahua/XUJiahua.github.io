@@ -457,7 +457,7 @@ Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopene
 <p>首先来看下一次SQL Query的生命周期。</p>
 <p><img src="../../images/image-20200616151301507.png" alt="image-20200616151301507"></p>
 <p>找了个比较接近的处理逻辑，<code>substitute-parameters</code>用于将<code>{ {xxx} }</code>替换为widget中选的值。模仿之，SQL中定义一个<code>##client_id##</code>占位符，写了一个<code>substitute-placeholder</code>方法使用用户的<code>client-id</code>替代占位符。</p>
-<p><a href="https://github.com/XUJiahua/metabase/commit/4c3490e1c475c0e6ee13f5a122a60f19b8879baa">https://github.com/XUJiahua/metabase/commit/4c3490e1c475c0e6ee13f5a122a60f19b8879baa</a></p>
+<p>code: <a href="https://github.com/XUJiahua/metabase/pull/4/files">https://github.com/XUJiahua/metabase/pull/4/files</a></p>
 <h3 id="demo">DEMO</h3>
 <p>效果</p>
 <p>使用Sample Data数据集测试。</p>

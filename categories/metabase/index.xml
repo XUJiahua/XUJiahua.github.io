@@ -22,7 +22,7 @@
 目标  代码复用。同一套SQL代码。不用copy/paste，好维护。一个dashboard所有客户都能看。 客户隔离，保证数据安全。不同客户只能看到自己的数据。  实现 执行dashboard/chart中SQL代码时，动态插入客户隔离标识。
 首先来看下一次SQL Query的生命周期。
 找了个比较接近的处理逻辑，substitute-parameters用于将{ {xxx} }替换为widget中选的值。模仿之，SQL中定义一个##client_id##占位符，写了一个substitute-placeholder方法使用用户的client-id替代占位符。
-https://github.com/XUJiahua/metabase/commit/4c3490e1c475c0e6ee13f5a122a60f19b8879baa
+code: https://github.com/XUJiahua/metabase/pull/4/files
 DEMO 效果
 使用Sample Data数据集测试。
 select * from PEOPLE where STATE={{STATE}} and SOURCE=##client_id## 返回的SQL中，可见占位符被替换为Google。
