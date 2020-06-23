@@ -32,5 +32,28 @@ If your app needs to assign special meaning, the server can reprocess req.Reques
 使用小结  go.mod, go.sum加入版本管理 Both go.mod and go.sum should be checked into version control. 直接依赖体现在go.mod，间接依赖由直接依赖自己管理，这是个递归的过程 Only direct dependencies are recorded in the go.mod file. go命令自动管理go.mod，这可太方便了 When it encounters an import of a package not provided by any module in go.mod, the go command automatically looks up the module containing that package and adds it to go.mod, using the latest version. 看着比之前的依赖管理好用很多。比如dep。因为网络下载包等问题，最后把依赖包全checkin到vendor目录了。太臃肿。  常用命令  go mod init creates a new module, initializing the go.</description>
     </item>
     
+    <item>
+      <title>一点压力测试的经验</title>
+      <link>https://xujiahua.github.io/posts/20181017-perf-testing/</link>
+      <pubDate>Wed, 17 Oct 2018 07:42:56 +0800</pubDate>
+      
+      <guid>https://xujiahua.github.io/posts/20181017-perf-testing/</guid>
+      <description>（笔记迁移 @ 2020年）
+一、概念，最基础最重要 1. 响应时间 TP99, TP90是什么 除了要看TPS，也要看请求的响应时间是否在合理的范围内。太离谱，压测该停了。
+响应时间的指标有最大响应时间、平均响应时间、TPXXX等。
+TP – Top Percentile
+TP90 = 500ms ：90%的请求都是在500ms以内。
+2. 错误率 压测过程中发现异常或是错误，或者，错误率明显上升，这时候压测就该停了。
+3. 吞吐量 TPS 单纯看TPS是没有意义的。要结合上述两个指标，一般是0错误率，TP99在xxx ms（看具体应用场景）内的TPS。
+比如这么描述TPS，TP99小于100ms的前提下，系统没有错误，系统可承载的TPS是1000。
+4. 压测案例 选择生产环境中并发要求高的请求。
+二、工具选型，选最合适的 工具的选择，一要看场景，二要看自己是否趁手。
+ab (apache benchmark) ab -kc 1000 -n 10000 http://www.some-site.cc/tmp/index.html
+ -k Enables HTTP keep-alive -c Number of concurrent requests -n Number of total requests to make  不足：
+ 只能使用单核。本身就可能是压测的瓶颈。 对于带多个步骤的压测场景无力。 没有（没找到）自定义断言的能力。  reference: https://en.wikipedia.org/wiki/ApacheBench
+wrk wrk小巧，性能非常好，报告直观。
+wrk -t2 -c100 -d30s -R2000 http://127.</description>
+    </item>
+    
   </channel>
 </rss>
