@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>bigdata on 许嘉华的博客</title>
+    <link>https://xujiahua.github.io/tags/bigdata/</link>
+    <description>Recent content in bigdata on 许嘉华的博客</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Sat, 23 Nov 2019 16:13:01 +0800</lastBuildDate>
+    
+	<atom:link href="https://xujiahua.github.io/tags/bigdata/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>2019 eBay Big Data TechDay</title>
+      <link>https://xujiahua.github.io/posts/20191123-ebay-bigdata-techday/</link>
+      <pubDate>Sat, 23 Nov 2019 16:13:01 +0800</pubDate>
+      
+      <guid>https://xujiahua.github.io/posts/20191123-ebay-bigdata-techday/</guid>
+      <description>（笔记迁移 @ 2020年）
+现场听了下eBay大数据的分享。视频/PPT https://www.slidestalk.com/ebay
+总体感觉，很棒。
+ 环境很好。德国中心，提供了星巴克、点心。 技术氛围好。几百人做大数据呢！而且做得都比较深。 拥抱开源：基于开源的二次开发，外围开发，平台化（易用性）等工作。 风控经理演讲水平好棒。 Spark SQL / Flink Streaming / Spark Streaming / ElasticSearch 这些是目前大数据的主流 真正投身大数据，最优选择是学习Spark。 没有中奖，不过拿了小礼物，心里美滋滋。  【应用角度】Data Driven Payment Risk  演讲、台风挺好的。 内容方面没有很新颖但是很扎实（基于图算法的挖掘其实挺少听见的，是让人眼前一亮的东西，但是我之前正好看过这块了。）。 基本上是在支付风控这个应用角度。 如果去PayPal，这块支付风控是可以好好学习的。  【Flink Streaming】Rheos-SQL: A Real-Time Processing Language  两个年轻人联合做的分享。 基于Flink的，Flink还有SQL功能。Flink这块我没接触。 扩展SQL语法的思路，加入了一些新功能，比如sqlflow也是这么做的（阿里巴巴）。写SQL就能连Kafka、ES。这点很不错的扩展。 还做了一个平台。  【Spark Streaming】Designing ETL pipelines with Structured Streaming and Delta lake  干货不多，一些最佳实践（因为没怎么做过streaming，印象不深）。感觉是Delta Lake的推广。 Delta Lake能替换hive么？  【ElasticSearch】Pronto - ElasticSearch as a service at ebay  Kibaba插件开发扩展ELK 做了一个平台管理ES。  【AI+BigData】Nous - Empower Data Analysis through Augmented Analytics  增强分析。大数据分析+知识图谱，自然语言处理（英文）。这个topic太时髦了。 演示效果，界面真很好看了。 风趣的开场白。技术又好。 英语对话，这么流利。有被刺激到。 从规则引擎开始 积累数据，机器学习生成规则  【Spark SQL】Carmel - Optimizing SparkSQL for Interative Analysis  eBay优化Spark sql（改写内部代码）替换TeraData，作为MPP方案。Impala不好吗。。。 观众提问，SQL on spark没有索引，是不是历史的倒退。有个问题挺好。回答是下推到parquet，列式存储会过滤。 是大牛，技术做的很深。Druid/Kylin/Spark/Spark SQL。一句话很经典，批处理也可以很快。 演讲基本上是站着不动，看着PPT疯狂输出信息。  </description>
+    </item>
+    
+  </channel>
+</rss>
