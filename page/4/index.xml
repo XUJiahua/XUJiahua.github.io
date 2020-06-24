@@ -113,6 +113,59 @@
     
     
         <item>
+        <title>数字货币资料整理：FB Libra，央行 DCEP</title>
+        <link>https://xujiahua.github.io/posts/20191030-dcep-libra/</link>
+        <pubDate>Wed, 30 Oct 2019 15:31:21 +0800</pubDate>
+        
+        <guid>https://xujiahua.github.io/posts/20191030-dcep-libra/</guid>
+        <description>许嘉华的博客 https://xujiahua.github.io/posts/20191030-dcep-libra/ -&lt;p&gt;（笔记迁移 @ 2020年）&lt;/p&gt;
+&lt;p&gt;资料：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;「区块链到底能干嘛」，赏味不足，梁杰ggtalk博客&lt;/li&gt;
+&lt;li&gt;「Libra与数字货币展望」，央行_穆长春，得到课程&lt;/li&gt;
+&lt;li&gt;「有关DCEP/Libra/支付/金融科技企业」，Mikko，微博：现金（央行发行）- 存款（银行）- 余额（支付机构比如支付宝）- 货币基金之间的（层级）关系。第一次这么系统地去理解金融系统&lt;/li&gt;
+&lt;li&gt;Libra白皮书，官网&lt;/li&gt;
+&lt;li&gt;「参议院就Facebook的Libra听证会」 &lt;a href=&#34;https://www.bilibili.com/video/av59535863/&#34;&gt;https://www.bilibili.com/video/av59535863/&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;Libra：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Libra是分层架构（混合架构），节点与节点之间是用区块链，节点与用户之间是中心化服务&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;央行数字货币DCEP优势：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;DCEP是法币，价值属性等同现金，央行发行，国家信用担保&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;离线支付，应该是NFC技术，具体实现细节没有披露&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;保护国家货币主权和法币地位&lt;/li&gt;
+&lt;li&gt;便携性：现钞发行、运输、存储、防伪等环节成本高，使用DCEP可以规避这一点&lt;/li&gt;
+&lt;li&gt;匿名性：（现金支持匿名性，而支付宝、银行都没有隐私可言），DCEP也支持匿名性（一定程度上），具体实现细节见下文&lt;/li&gt;
+&lt;li&gt;防止犯罪：反洗钱、反逃税、反恐怖融资。这一点与匿名性有点相悖。文章提到使用大数据来挖掘特征，符合风险特征的会进行身份比对。（原文这么说：所以说，出于反洗钱的考虑，我们对数字钱包也是有分级和限额安排的。比如说你就用一个手机号码注册一个钱包，那你这个钱包当然可以用，但是级别一定是最低的，只能满足日常小额支付需求；但如果你要能上传一下身份证，或者再上传一个银行卡，就可以获得更高级别的数字钱包，如果你还能到柜台去面签一下，那可能就没有限额了。）也就是说小额支持匿名，而大额不行。&lt;/li&gt;
+&lt;li&gt;与区块链没有必然联系：央行没有要求使用区块链，央行调研结论也是区块链没法满足高并发需求（Libra是一个双层架构，节点与节点之间是用区块链，节点与用户之间是中心化服务）&lt;/li&gt;
+&lt;li&gt;采取的是&lt;strong&gt;双层运营体系&lt;/strong&gt;，央行做上层，商业银行做第二层；商业机构向央行全额、100%缴纳准备金，央行的数字货币依然是中央银行负债，由中央银行信用担保，具有无限法偿性：这些是与人民币现金一个路子。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;参考：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;DCEP：中国自己的数字货币 &lt;a href=&#34;https://mp.weixin.qq.com/s?__biz=MzA5MDAxMjcwOQ==&amp;amp;mid=2447616917&amp;amp;idx=1&amp;amp;sn=73207944a32667c50ea12d65e209c4c8&amp;amp;chksm=840526dfb372afc947bf188f9154a37b773320a1ab3a2bb8de87fbe5b7a89b8c05934a100b2d&amp;amp;scene=0&amp;amp;xtrack=1&#34;&gt;https://mp.weixin.qq.com/s?__biz=MzA5MDAxMjcwOQ==&amp;amp;mid=2447616917&amp;amp;idx=1&amp;amp;sn=73207944a32667c50ea12d65e209c4c8&amp;amp;chksm=840526dfb372afc947bf188f9154a37b773320a1ab3a2bb8de87fbe5b7a89b8c05934a100b2d&amp;amp;scene=0&amp;amp;xtrack=1&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;区块链的弱点（没法支持零售级别的交易）：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;并发性能低（可扩展性差），共识机制导致的天然劣势，所有节点一起竞争记账权，相当于堵死在一件事上了&lt;/li&gt;
+&lt;li&gt;存储的可扩展性差，这个只能定期archive历史数据来解决了。&lt;/li&gt;
+&lt;li&gt;安全性只保证了数据不会被篡改，至于匿名，通过大数据是可以破解的&lt;/li&gt;
+&lt;li&gt;没有原生的加密机制：公有链匿名性，通过大数据可以挖掘出真实身份&lt;/li&gt;
+&lt;li&gt;等待确认太慢，不适合日常使用&lt;/li&gt;
+&lt;li&gt;51%算力攻击&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;怎么思考区块链：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;去中心化？比中心化还要中心化。更集权。节点自己没法改。无法解决所有者作弊的问题，但对所有者（统治者）是利好的工具（赏味不足的说法，有道理）&lt;/li&gt;
+&lt;li&gt;（IT上能）提升效率：一份数据在各个系统流转，那么这份数据就存在区块链数据库上就可以了。&lt;/li&gt;
+&lt;/ol&gt;
+- https://xujiahua.github.io/posts/20191030-dcep-libra/ - </description>
+        </item>
+    
+    
+    
+        <item>
         <title>一点压力测试的经验</title>
         <link>https://xujiahua.github.io/posts/20181017-perf-testing/</link>
         <pubDate>Wed, 17 Oct 2018 07:42:56 +0800</pubDate>

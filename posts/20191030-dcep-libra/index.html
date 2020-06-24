@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html><head>
-<title>Posts</title>
+<title>数字货币资料整理：FB Libra，央行 DCEP</title>
 
 <meta charset="utf-8">
 <meta name="X-UA-Compatible" content="IE=edge">
@@ -45,11 +45,7 @@ if (!doNotTrack) {
 <script src="https://xujiahua.github.io//js/table.js"></script>
 
 
-<style>
-  .toc{
-    display: none !important;
-  }
-</style>
+<script src="https://xujiahua.github.io//js/toc.js"></script>
 
 
 <script>
@@ -136,30 +132,17 @@ Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopene
     
 </div><div ref="extraContainer" class="extra-container">
     
+    <div class="toc animated-visibility" :class="{ invisible: scrollY <= 140 }">
+
+
+</div>
+    
     <div class="pagination">
         <a id="globalBackToTop" class="pagination-action animated-visibility" href="#top" :class="{ invisible: scrollY == 0 }">
             <i class="material-icons pagination-action-icon">
                 keyboard_arrow_up
             </i>
         </a>
-        
-        
-            <div class="pagination-indicator">
-                <span style="text-align: center">
-                    4<br><div style="display: inline-block; transform: rotate(-28deg)">-</div><br>4
-                </span>
-            </div>
-            
-            
-            <a class="pagination-action" href="/posts/page/3/">
-                <i class="material-icons pagination-action-icon">
-                    chevron_left
-                </i>
-            </a>
-            
-
-            
-        
         
     </div>
 </div><div class="single-column-drawer-container" ref="drawer"
@@ -211,6 +194,11 @@ Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopene
                 
             
             
+            <div class="toc">
+
+
+</div>
+            
         </div>
     </div>
 </div>
@@ -241,144 +229,120 @@ Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopene
             <div id="content">
 <div ref="streamContainer" class="stream-container">
     <div class="post-list-container post-list-container-shadow">
-        
-            <a class="a-block">
-                <div class="post-item-wrapper post-item-wrapper-no-hover">
-                    <div class="post-item post-item-no-gaps">
-                        <div class="post-item-info-wrapper">
-                            <div class="post-item-title post-item-title-small year">
-                                2020
-                            </div>
-                        </div>
+        <div class="post">
+            
+            
+            
+
+            <div class="post-head-wrapper-text-only"
+                 style="background-image: url('/')">
+                <div class="post-title">
+                    数字货币资料整理：FB Libra，央行 DCEP
+                    
+                    <div class="post-meta">
+                        
+                        <time itemprop="datePublished">
+                            2019-10-30 15:31
+                        </time>
+                        
+
+                        
+
+                        
+                            <i class="material-icons" style="">label</i>
+                            
+                                <a href="/tags/read">READ</a>
+                                &nbsp;
+                            
+                                <a href="/tags/blockchain">blockchain</a>
+                                &nbsp;
+                            
+                        
                     </div>
                 </div>
-            </a>
+            </div>
             
-            <a href="/posts/20200211-recsys-implicit/" class="a-block">
-                <div class="post-item-wrapper">
-                    <div class="post-item post-item-no-gaps">
-                        <div class="post-item-info-wrapper">
-                            <div class="post-item-title">
-                                Implicit：推荐系统协同过滤库的测评
-                            </div>
-                            <div class="post-item-meta">
-                                Feb 11, 2020
-    
-                                
-                            </div>
-                        </div>
-                    </div>
+            <div class="post-body-wrapper">
+                <div class="post-body">
+                    <p>（笔记迁移 @ 2020年）</p>
+<p>资料：</p>
+<ol>
+<li>「区块链到底能干嘛」，赏味不足，梁杰ggtalk博客</li>
+<li>「Libra与数字货币展望」，央行_穆长春，得到课程</li>
+<li>「有关DCEP/Libra/支付/金融科技企业」，Mikko，微博：现金（央行发行）- 存款（银行）- 余额（支付机构比如支付宝）- 货币基金之间的（层级）关系。第一次这么系统地去理解金融系统</li>
+<li>Libra白皮书，官网</li>
+<li>「参议院就Facebook的Libra听证会」 <a href="https://www.bilibili.com/video/av59535863/">https://www.bilibili.com/video/av59535863/</a></li>
+</ol>
+<p>Libra：</p>
+<ol>
+<li>Libra是分层架构（混合架构），节点与节点之间是用区块链，节点与用户之间是中心化服务</li>
+</ol>
+<p>央行数字货币DCEP优势：</p>
+<ol>
+<li>DCEP是法币，价值属性等同现金，央行发行，国家信用担保</li>
+<li><strong>离线支付，应该是NFC技术，具体实现细节没有披露</strong></li>
+<li>保护国家货币主权和法币地位</li>
+<li>便携性：现钞发行、运输、存储、防伪等环节成本高，使用DCEP可以规避这一点</li>
+<li>匿名性：（现金支持匿名性，而支付宝、银行都没有隐私可言），DCEP也支持匿名性（一定程度上），具体实现细节见下文</li>
+<li>防止犯罪：反洗钱、反逃税、反恐怖融资。这一点与匿名性有点相悖。文章提到使用大数据来挖掘特征，符合风险特征的会进行身份比对。（原文这么说：所以说，出于反洗钱的考虑，我们对数字钱包也是有分级和限额安排的。比如说你就用一个手机号码注册一个钱包，那你这个钱包当然可以用，但是级别一定是最低的，只能满足日常小额支付需求；但如果你要能上传一下身份证，或者再上传一个银行卡，就可以获得更高级别的数字钱包，如果你还能到柜台去面签一下，那可能就没有限额了。）也就是说小额支持匿名，而大额不行。</li>
+<li>与区块链没有必然联系：央行没有要求使用区块链，央行调研结论也是区块链没法满足高并发需求（Libra是一个双层架构，节点与节点之间是用区块链，节点与用户之间是中心化服务）</li>
+<li>采取的是<strong>双层运营体系</strong>，央行做上层，商业银行做第二层；商业机构向央行全额、100%缴纳准备金，央行的数字货币依然是中央银行负债，由中央银行信用担保，具有无限法偿性：这些是与人民币现金一个路子。</li>
+</ol>
+<p>参考：</p>
+<ol>
+<li>DCEP：中国自己的数字货币 <a href="https://mp.weixin.qq.com/s?__biz=MzA5MDAxMjcwOQ==&amp;mid=2447616917&amp;idx=1&amp;sn=73207944a32667c50ea12d65e209c4c8&amp;chksm=840526dfb372afc947bf188f9154a37b773320a1ab3a2bb8de87fbe5b7a89b8c05934a100b2d&amp;scene=0&amp;xtrack=1">https://mp.weixin.qq.com/s?__biz=MzA5MDAxMjcwOQ==&amp;mid=2447616917&amp;idx=1&amp;sn=73207944a32667c50ea12d65e209c4c8&amp;chksm=840526dfb372afc947bf188f9154a37b773320a1ab3a2bb8de87fbe5b7a89b8c05934a100b2d&amp;scene=0&amp;xtrack=1</a></li>
+</ol>
+<p>区块链的弱点（没法支持零售级别的交易）：</p>
+<ol>
+<li>并发性能低（可扩展性差），共识机制导致的天然劣势，所有节点一起竞争记账权，相当于堵死在一件事上了</li>
+<li>存储的可扩展性差，这个只能定期archive历史数据来解决了。</li>
+<li>安全性只保证了数据不会被篡改，至于匿名，通过大数据是可以破解的</li>
+<li>没有原生的加密机制：公有链匿名性，通过大数据可以挖掘出真实身份</li>
+<li>等待确认太慢，不适合日常使用</li>
+<li>51%算力攻击</li>
+</ol>
+<p>怎么思考区块链：</p>
+<ol>
+<li>去中心化？比中心化还要中心化。更集权。节点自己没法改。无法解决所有者作弊的问题，但对所有者（统治者）是利好的工具（赏味不足的说法，有道理）</li>
+<li>（IT上能）提升效率：一份数据在各个系统流转，那么这份数据就存在区块链数据库上就可以了。</li>
+</ol>
+
+                    
+                    <HR width="100%" id="EOF">
+                    <p style="color:#777;">Last modified on 2019-10-30</p>
+                    
                 </div>
-            </a>
+            </div>
             
-        
-            <a class="a-block">
-                <div class="post-item-wrapper post-item-wrapper-no-hover">
-                    <div class="post-item post-item-no-gaps">
-                        <div class="post-item-info-wrapper">
-                            <div class="post-item-title post-item-title-small year">
-                                2019
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </a>
             
-            <a href="/posts/20191031-quantum-computer/" class="a-block">
-                <div class="post-item-wrapper">
-                    <div class="post-item post-item-no-gaps">
-                        <div class="post-item-info-wrapper">
-                            <div class="post-item-title">
-                                量子计算——读「古今密码学趣谈」展望未来的密码学
-                            </div>
-                            <div class="post-item-meta">
-                                Oct 31, 2019
-    
-                                
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </a>
-            
-            <a href="/posts/20191030-dcep-libra/" class="a-block">
-                <div class="post-item-wrapper">
-                    <div class="post-item post-item-no-gaps">
-                        <div class="post-item-info-wrapper">
-                            <div class="post-item-title">
-                                数字货币资料整理：FB Libra，央行 DCEP
-                            </div>
-                            <div class="post-item-meta">
-                                Oct 30, 2019
-    
-                                
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </a>
-            
-        
-            <a class="a-block">
-                <div class="post-item-wrapper post-item-wrapper-no-hover">
-                    <div class="post-item post-item-no-gaps">
-                        <div class="post-item-info-wrapper">
-                            <div class="post-item-title post-item-title-small year">
-                                2018
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </a>
-            
-            <a href="/posts/20181017-perf-testing/" class="a-block">
-                <div class="post-item-wrapper">
-                    <div class="post-item post-item-no-gaps">
-                        <div class="post-item-info-wrapper">
-                            <div class="post-item-title">
-                                一点压力测试的经验
-                            </div>
-                            <div class="post-item-meta">
-                                Oct 17, 2018
-    
-                                
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </a>
-            
-        
-    </div>
-</div>
+            <nav class="post-pagination">
+
+                
+                <a class="newer-posts" href="https://xujiahua.github.io/posts/20191031-quantum-computer/">
+                    Next<br>量子计算——读「古今密码学趣谈」展望未来的密码学
+                </a>
+                
+                
+                
+                <a class="older-posts" href="https://xujiahua.github.io/posts/20181017-perf-testing/">
+                    Previous<br>一点压力测试的经验
+                </a>
+                
+            </nav>
+            <div class="post-comment-wrapper">
+                
+
+
+
+
 
 
             </div>
-
-<div class="pagination">
-    
-    <a class="pagination-action" href="/posts/page/3/" style="opacity:1">
-    
-        <i class="material-icons pagination-action-icon">
-            chevron_left
-        </i>
-    </a>
-
-        <div class="pagination-indicator">
-            <span>4/4</span>
         </div>
-
-        
-            <a class="pagination-action" style="opacity:0">
-        
-                <i class="material-icons pagination-action-icon">
-                    chevron_right
-                </i>
-            </a>
+    </div>
 </div>
 
-
-<div id="single-column-footer">
+            </div><div id="single-column-footer">
 Hugo Theme <a href="https://github.com/amazingrise/hugo-theme-diary">Diary</a> by <a href="https://amazingrise.net">Rise</a>
 <br>
 Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopener">Makito</a>'s <a href="https://github.com/SumiMakito/hexo-theme-journal/" target="_blank" rel="noreferrer noopener">Journal.</a> <br>
