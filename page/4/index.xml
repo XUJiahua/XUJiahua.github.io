@@ -229,6 +229,111 @@
     
     
         <item>
+        <title>Go Plugin</title>
+        <link>https://xujiahua.github.io/posts/20190304-go-plugin/</link>
+        <pubDate>Mon, 04 Mar 2019 08:27:31 +0800</pubDate>
+        
+        <guid>https://xujiahua.github.io/posts/20190304-go-plugin/</guid>
+        <description>许嘉华的博客 https://xujiahua.github.io/posts/20190304-go-plugin/ -&lt;p&gt;（笔记迁移 @ 2020年）&lt;/p&gt;
+&lt;p&gt;早已忘记 C/C++ 中常用的动态链接库了。日常开发中，使用 Go 引入一个组件，常常是&lt;code&gt;go get&lt;/code&gt;引入其源码，放在一起编译。&lt;/p&gt;
+&lt;p&gt;Go 1.8 起也提供了动态链接库的功能。&lt;/p&gt;
+&lt;p&gt;因为看 HyperLedger Fabric 源码的关系，接触到这块，稍微记录下。&lt;/p&gt;
+&lt;h2 id=&#34;一使用流程&#34;&gt;一、使用流程&lt;/h2&gt;
+&lt;p&gt;这里有个demo可以参考下：&lt;a href=&#34;https://github.com/vladimirvivien/go-plugin-example&#34;&gt;https://github.com/vladimirvivien/go-plugin-example&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;作者写作时，Go 1.8，plugin特性尚不支持MacOS。目前（Go 1.11.4），是支持Linux/MacOS的。&lt;/p&gt;
+&lt;h3 id=&#34;1-编译模块module-so&#34;&gt;1. 编译模块（module, .so）&lt;/h3&gt;
+&lt;pre&gt;&lt;code&gt;go build -buildmode=plugin -o path/to/shared/object/file.so path/to/source/code.go
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;注意&lt;code&gt;-buildmode=plugin&lt;/code&gt;这个编译Flag。&lt;/p&gt;
+&lt;h3 id=&#34;2-引入plugin&#34;&gt;2. 引入&amp;quot;plugin&amp;rdquo;&lt;/h3&gt;
+&lt;pre&gt;&lt;code&gt;import &amp;quot;plugin&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;&lt;h3 id=&#34;3-加载module&#34;&gt;3. 加载module&lt;/h3&gt;
+&lt;pre&gt;&lt;code&gt;plug, err := plugin.Open(&amp;quot;path/to/shared/object/file.so&amp;quot;)
+&lt;/code&gt;&lt;/pre&gt;&lt;h3 id=&#34;4-查找symbol比如exported-functionvariable&#34;&gt;4. 查找symbol，比如exported function/variable&lt;/h3&gt;
+&lt;pre&gt;&lt;code&gt;symGreeter, err := plug.Lookup(&amp;quot;Greeter&amp;quot;)
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;plug.Lookup的返回类型是Symbol，其实就是&lt;a href=&#34;https://tip.golang.org/pkg/plugin/#Symbol&#34;&gt;interface{}&lt;/a&gt;，为了正常使用，需要做类型转换。&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;type Symbol interface{}
+&lt;/code&gt;&lt;/pre&gt;&lt;h3 id=&#34;5-类型转换-type-assertion&#34;&gt;5. 类型转换 type assertion&lt;/h3&gt;
+&lt;pre&gt;&lt;code&gt;var greeter Greeter
+greeter, ok := symGreeter.(Greeter)
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;很重要，不然没法使用。&lt;/p&gt;
+&lt;h3 id=&#34;6-正常使用&#34;&gt;6. 正常使用&lt;/h3&gt;
+&lt;pre&gt;&lt;code&gt;greeter.Greet()
+&lt;/code&gt;&lt;/pre&gt;&lt;h2 id=&#34;二已知问题&#34;&gt;二、已知问题&lt;/h2&gt;
+&lt;h3 id=&#34;无法debug&#34;&gt;无法debug&lt;/h3&gt;
+&lt;p&gt;分别在MacOS和Ubuntu尝试debug使用plugin包的应用，报错如下（Go 1.11.4）：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;MacOS, could not launch process: decoding dwarf section info at offset 0x0: too short&lt;/li&gt;
+&lt;li&gt;Linux, could not launch process: could not get .debug_frame section: could not find .debug_frame section&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;使用gvm安装了其他Go版本尝试，no luck。&lt;/p&gt;
+&lt;p&gt;算是已知bug，一些issue如下：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;官方说1.12会修复 &lt;a href=&#34;https://github.com/golang/go/issues/23733&#34;&gt;https://github.com/golang/go/issues/23733&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h4 id=&#34;go-112&#34;&gt;Go 1.12&lt;/h4&gt;
+&lt;p&gt;Go 1.12发布了。看release notes并没有提到这块 &lt;a href=&#34;https://golang.org/doc/go1.12&#34;&gt;https://golang.org/doc/go1.12&lt;/a&gt; 。&lt;/p&gt;
+&lt;p&gt;尝试下：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;go build -buildmode=plugin -o eng/eng.so eng/greeter.go
+dlv debug greeter.go
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;这次报错信息变了：&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;plugin.Open(&amp;rdquo;./eng/eng&amp;rdquo;): plugin was built with a different version of package math/bits
+Process 64622 has exited with status 1&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;TBC.&lt;/p&gt;
+&lt;h2 id=&#34;三总结&#34;&gt;三、总结&lt;/h2&gt;
+&lt;p&gt;目前plugin特性还不够稳定，谨慎使用。&lt;/p&gt;
+&lt;h2 id=&#34;四在fabric中的应用&#34;&gt;四、在Fabric中的应用&lt;/h2&gt;
+&lt;p&gt;&lt;a href=&#34;https://hyperledger-fabric.readthedocs.io/en/latest/systemchaincode.html&#34;&gt;https://hyperledger-fabric.readthedocs.io/en/latest/systemchaincode.html&lt;/a&gt;&lt;/p&gt;
+&lt;h3 id=&#34;system-chaincode&#34;&gt;system chaincode&lt;/h3&gt;
+&lt;p&gt;system chaincode是作为plugin引入的。
+一例：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;/*
+Copyright SecureKey Technologies Inc. All Rights Reserved.
+
+SPDX-License-Identifier: Apache-2.0
+*/
+
+package main
+
+import (
+	&amp;quot;github.com/hyperledger/fabric/core/chaincode/shim&amp;quot;
+	pb &amp;quot;github.com/hyperledger/fabric/protos/peer&amp;quot;
+)
+
+// New returns an implementation of the chaincode interface
+func New() shim.Chaincode {
+	return &amp;amp;scc{}
+}
+
+type scc struct{}
+
+// Init implements the chaincode shim interface
+func (s *scc) Init(stub shim.ChaincodeStubInterface) pb.Response {
+	return shim.Success(nil)
+}
+
+// Invoke implements the chaincode shim interface
+func (s *scc) Invoke(stub shim.ChaincodeStubInterface) pb.Response {
+	return shim.Success(nil)
+}
+
+func main() {}
+
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;倒是应用层的chaincode不需要实现New方法，只要实现一个interface的两个方法即可。&lt;/p&gt;
+&lt;h3 id=&#34;peerorderer-operation-implementation&#34;&gt;peer/orderer operation implementation&lt;/h3&gt;
+&lt;p&gt;另外一个是peer中的auth、endorer等操作的实现也是通过plugin加载进来的。&lt;/p&gt;
+&lt;p&gt;这是过度设计吧。有plugin形式，也有编译形式的。&lt;/p&gt;
+&lt;h3 id=&#34;加密服务&#34;&gt;加密服务&lt;/h3&gt;
+&lt;p&gt;BCCSP（Blockchain crypto provider)）也是plugin.&lt;/p&gt;
+&lt;p&gt;// BCCSP is the blockchain cryptographic service provider that offers
+// the implementation of cryptographic standards and algorithms.。&lt;/p&gt;
+- https://xujiahua.github.io/posts/20190304-go-plugin/ - </description>
+        </item>
+    
+    
+    
+        <item>
         <title>一点压力测试的经验</title>
         <link>https://xujiahua.github.io/posts/20181017-perf-testing/</link>
         <pubDate>Wed, 17 Oct 2018 07:42:56 +0800</pubDate>

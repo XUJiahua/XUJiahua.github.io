@@ -559,6 +559,24 @@ Linux上的ALS效果：
     </item>
     
     <item>
+      <title>Go Plugin</title>
+      <link>https://xujiahua.github.io/posts/20190304-go-plugin/</link>
+      <pubDate>Mon, 04 Mar 2019 08:27:31 +0800</pubDate>
+      
+      <guid>https://xujiahua.github.io/posts/20190304-go-plugin/</guid>
+      <description>（笔记迁移 @ 2020年）
+早已忘记 C/C++ 中常用的动态链接库了。日常开发中，使用 Go 引入一个组件，常常是go get引入其源码，放在一起编译。
+Go 1.8 起也提供了动态链接库的功能。
+因为看 HyperLedger Fabric 源码的关系，接触到这块，稍微记录下。
+一、使用流程 这里有个demo可以参考下：https://github.com/vladimirvivien/go-plugin-example
+作者写作时，Go 1.8，plugin特性尚不支持MacOS。目前（Go 1.11.4），是支持Linux/MacOS的。
+1. 编译模块（module, .so） go build -buildmode=plugin -o path/to/shared/object/file.so path/to/source/code.go 注意-buildmode=plugin这个编译Flag。
+2. 引入&amp;quot;plugin&amp;rdquo; import &amp;quot;plugin&amp;quot; 3. 加载module plug, err := plugin.Open(&amp;quot;path/to/shared/object/file.so&amp;quot;) 4. 查找symbol，比如exported function/variable symGreeter, err := plug.Lookup(&amp;quot;Greeter&amp;quot;) plug.Lookup的返回类型是Symbol，其实就是interface{}，为了正常使用，需要做类型转换。
+type Symbol interface{} 5. 类型转换 type assertion var greeter Greeter greeter, ok := symGreeter.(Greeter) 很重要，不然没法使用。
+6. 正常使用 greeter.Greet() 二、已知问题 无法debug 分别在MacOS和Ubuntu尝试debug使用plugin包的应用，报错如下（Go 1.</description>
+    </item>
+    
+    <item>
       <title>一点压力测试的经验</title>
       <link>https://xujiahua.github.io/posts/20181017-perf-testing/</link>
       <pubDate>Wed, 17 Oct 2018 07:42:56 +0800</pubDate>
