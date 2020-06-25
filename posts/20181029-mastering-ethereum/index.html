@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html><head>
+<title>读 Mastering Ethereum</title>
+
+<meta charset="utf-8">
+<meta name="X-UA-Compatible" content="IE=edge">
+<meta name="google-site-verification" content="">
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport">
+<meta content="telephone=no" name="format-detection">
+<meta name="description" content="">
+<meta name="renderer" content="webkit">
+<meta name="theme-color" content="#ffffff">
+
+
+
+
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+	ga('create', 'UA-162706610-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+
+
+
+<script src="/vendor/js/jquery.min.js" ></script>
+<script src="/vendor/js/popper.min.js" ></script>
+<script src="/vendor/js/bootstrap.min.js" ></script>
+<script src="/vendor/js/smooth-scroll.polyfills.min.js" ></script>
+<link type="text/css" rel="stylesheet" href="/vendor/css/bootstrap.min.css">
+<script src="/vendor/js/vue.min.js" ></script>
+
+
+
+
+<link rel="stylesheet" href="https://xujiahua.github.io/scss/journal.min.5c667e74038e21ddbb9024b67930f8544e02af62491281cf73fdb817eec2947e.css" integrity="sha256-XGZ&#43;dAOOId27kCS2eTD4VE4Cr2JJEoHPc/24F&#43;7ClH4=" media="screen">
+
+<script src="https://xujiahua.github.io//js/loadCSS.js"></script>
+<script src="https://xujiahua.github.io//js/table.js"></script>
+
+
+<script src="https://xujiahua.github.io//js/toc.js"></script>
+
+
+<script>
+    loadCSS("https://fonts.googleapis.com/css?family=Lora|Montserrat|Fira+Mono|Noto+Serif+SC|Material+Icons");
+</script>
+
+
+
+
+
+
+</head><body>
+    	<div id="app"><div ref="sideContainer" class="side-container">
+    
+    <a class="a-block nav-head false" href="https://xujiahua.github.io/">
+    
+        <div class="nav-title">
+            许嘉华的博客
+        </div>
+        
+    </a>
+
+    <div class="nav-link-list">
+        
+        
+            
+            
+            
+                
+            
+            
+            
+            <a class="a-block nav-link-item active" href="/posts">
+                Archive
+            </a>
+            
+        
+            
+            
+            
+            
+            
+            <a class="a-block nav-link-item false" href="/categories">
+                Categories
+            </a>
+            
+        
+            
+            
+            
+            
+            
+            <a class="a-block nav-link-item false" href="/tags">
+                Tags
+            </a>
+            
+        
+            
+            
+            
+            
+            
+            <a class="a-block nav-link-item false" href="/index.xml">
+                RSS Feed
+            </a>
+            
+        
+    </div>
+
+    
+
+    <div class="nav-footer">
+        
+Hugo Theme <a href="https://github.com/amazingrise/hugo-theme-diary">Diary</a> by <a href="https://amazingrise.net">Rise</a>
+<br>
+Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopener">Makito</a>'s <a href="https://github.com/SumiMakito/hexo-theme-journal/" target="_blank" rel="noreferrer noopener">Journal.</a> <br>
+<br>
+
+&copy;
+	
+	2020 许嘉华的博客
+	
+    </div>
+    
+</div><div ref="extraContainer" class="extra-container">
+    
+    <div class="toc animated-visibility" :class="{ invisible: scrollY <= 140 }">
+
+
+	<div class="toc-content">
+	
+		
+		
+		
+		<center>- CATALOG -</center>
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e7%9b%ae%e5%bd%95" v-on:click="closeDrawer" id="目录-nav">
+										 目录
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e7%ac%94%e8%ae%b0" v-on:click="closeDrawer" id="笔记-nav">
+										 笔记
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+	</div>
+
+</div>
+    
+    <div class="pagination">
+        <a id="globalBackToTop" class="pagination-action animated-visibility" href="#top" :class="{ invisible: scrollY == 0 }">
+            <i class="material-icons pagination-action-icon">
+                keyboard_arrow_up
+            </i>
+        </a>
+        
+    </div>
+</div><div class="single-column-drawer-container" ref="drawer"
+     v-bind:class="{ 'single-column-drawer-container-active': isDrawerOpen }">
+    <div class="drawer-content">
+        <div class="drawer-menu">
+            
+            
+                
+                
+                
+                    
+                
+                
+                
+                <a class="a-block drawer-menu-item active" href="/posts">
+                    Archive
+                </a>
+                
+            
+                
+                
+                
+                
+                
+                <a class="a-block drawer-menu-item false" href="/categories">
+                    Categories
+                </a>
+                
+            
+                
+                
+                
+                
+                
+                <a class="a-block drawer-menu-item false" href="/tags">
+                    Tags
+                </a>
+                
+            
+                
+                
+                
+                
+                
+                <a class="a-block drawer-menu-item false" href="/index.xml">
+                    RSS Feed
+                </a>
+                
+            
+            
+            <div class="toc">
+
+
+	<div class="toc-content">
+	
+		
+		
+		
+		<center>- CATALOG -</center>
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e7%9b%ae%e5%bd%95" v-on:click="closeDrawer" id="目录-nav">
+										 目录
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e7%ac%94%e8%ae%b0" v-on:click="closeDrawer" id="笔记-nav">
+										 笔记
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+	</div>
+
+</div>
+            
+        </div>
+    </div>
+</div>
+<transition name="fade">
+    <div v-bind:class="{ 'single-column-drawer-mask': mounted }" v-if="isDrawerOpen" v-on:click="toggleDrawer"></div>
+</transition>
+<nav ref="navBar" class="navbar sticky-top navbar-light single-column-nav-container">
+    <div ref="navBackground" class="nav-background"></div>
+    <div class="container container-narrow nav-content">
+        <button id="nav_dropdown_btn" class="nav-dropdown-toggle" type="button" v-on:click="toggleDrawer">
+            <i class="material-icons">
+                menu
+            </i>
+        </button>
+        <a ref="navTitle" class="navbar-brand" href="https://xujiahua.github.io/">
+            许嘉华的博客
+        </a>
+    </div>
+</nav>
+<div class="single-column-header-container" ref="pageHead"
+     v-bind:style="{ transform: 'translateZ(0px) translateY('+.3*scrollY+'px)', opacity: 1-navOpacity }">
+    <a href="https://xujiahua.github.io/">
+        <div class="single-column-header-title">许嘉华的博客</div>
+        
+
+    </a>
+</div>
+            <div id="content">
+<div ref="streamContainer" class="stream-container">
+    <div class="post-list-container post-list-container-shadow">
+        <div class="post">
+            
+            
+            
+
+            <div class="post-head-wrapper-text-only"
+                 style="background-image: url('/')">
+                <div class="post-title">
+                    读 Mastering Ethereum
+                    
+                    <div class="post-meta">
+                        
+                        <time itemprop="datePublished">
+                            2018-10-29 08:37
+                        </time>
+                        
+
+                        
+
+                        
+                            <i class="material-icons" style="">label</i>
+                            
+                                <a href="/tags/read">READ</a>
+                                &nbsp;
+                            
+                                <a href="/tags/blockchain">blockchain</a>
+                                &nbsp;
+                            
+                        
+                    </div>
+                </div>
+            </div>
+            
+            <div class="post-body-wrapper">
+                <div class="post-body">
+                    <p>（笔记迁移 @ 2020年）</p>
+<p>区块链上不应该只有数字货币。</p>
+<blockquote>
+<p>Ethereum was conceived at a time when people recognized the power of the Bitcoin model, and were trying to move beyond cryptocurrency applications.</p>
+<p>Ethereum’s founders were thinking about a blockchain without a specific purpose, that could support a broad variety of applications by being programmed.</p>
+<p>Ethereum has memory that stores both code and data, and it uses the Ethereum blockchain to track how this memory changes over time.</p>
+</blockquote>
+<h3 id="目录">目录</h3>
+<ol>
+<li>What Is Ethereum? <a href="https://github.com/ethereumbook/ethereumbook/blob/develop/01what-is.asciidoc">https://github.com/ethereumbook/ethereumbook/blob/develop/01what-is.asciidoc</a></li>
+<li>Ethereum Basics <a href="https://github.com/ethereumbook/ethereumbook/blob/develop/02intro.asciidoc">https://github.com/ethereumbook/ethereumbook/blob/develop/02intro.asciidoc</a> 【metaMask转账，在remix上smart contract开发、使用】</li>
+<li>Ethereum Clients <a href="https://github.com/ethereumbook/ethereumbook/blob/develop/03clients.asciidoc">https://github.com/ethereumbook/ethereumbook/blob/develop/03clients.asciidoc</a> 【安装节点，还有一些操作，需要等到数据同步完成】</li>
+<li>Cryptography <a href="https://github.com/ethereumbook/ethereumbook/blob/develop/04keys-addresses.asciidoc">https://github.com/ethereumbook/ethereumbook/blob/develop/04keys-addresses.asciidoc</a> 【密码学 公私钥】</li>
+<li>Wallets <a href="https://github.com/ethereumbook/ethereumbook/blob/develop/05wallets.asciidoc">https://github.com/ethereumbook/ethereumbook/blob/develop/05wallets.asciidoc</a> 【for user-facing】</li>
+<li>Transactions <a href="https://github.com/ethereumbook/ethereumbook/blob/develop/06transactions.asciidoc">https://github.com/ethereumbook/ethereumbook/blob/develop/06transactions.asciidoc</a> 【开始接触smart contract】</li>
+<li>Smart Contracts and Solidity <a href="https://github.com/ethereumbook/ethereumbook/blob/develop/07smart-contracts-solidity.asciidoc">https://github.com/ethereumbook/ethereumbook/blob/develop/07smart-contracts-solidity.asciidoc</a></li>
+</ol>
+<p>solidity文档是学习智能合约的好参考。https://solidity.readthedocs.io/en/v0.5.5/</p>
+<h3 id="笔记">笔记</h3>
+<p>两种账户类型：</p>
+<ol>
+<li>The type of account you created in the MetaMask wallet is called an externally owned account (EOA)</li>
+<li>A contract account has smart contract code, which a simple EOA can’t have. Furthermore, a contract account does not have a private key. Instead, it is owned (and controlled) by the logic of its smart contract code: the software program recorded on the Ethereum blockchain at the contract account’s creation and executed by the EVM.</li>
+</ol>
+<p>节点分两种：</p>
+<ol>
+<li>full node client （需要大磁盘服务器）</li>
+<li>remote client/ wallet (e.g., MetaMask)</li>
+</ol>
+<p>安装Ethereum节点。<em>不安装也行，安装MetaMask插件后，每个chrome tab都有了web3的上下文。可以使用web3执行创建合约，转账等操作。</em></p>
+<p>以安装Geth为例（Ethereum）。</p>
+<p>下载源代码</p>
+<p><code>git clone git@github.com:ethereum/go-ethereum.git</code></p>
+<p>OR</p>
+<p><code>go get -d github.com/ethereum/go-ethereum</code></p>
+<p>编译并配置文件</p>
+<pre><code>cd $GOPATH/src/github.com/ethereum/go-ethereum
+
+make geth
+
+geth dumpconfig &gt; geth.toml
+
+# modify geth.toml if nesserary
+
+geth --config geth.toml
+</code></pre><p>reference:</p>
+<ol>
+<li><a href="https://github.com/ethereumbook/ethereumbook/blob/develop/03clients.asciidoc">https://github.com/ethereumbook/ethereumbook/blob/develop/03clients.asciidoc</a></li>
+<li><a href="https://github.com/ethereum/go-ethereum/blob/master/README.md">https://github.com/ethereum/go-ethereum/blob/master/README.md</a></li>
+</ol>
+<p>以太坊的transaction应该是多了个data字段。除了金额，还能承载一些东西。</p>
+<blockquote>
+<p>A transaction with only value is a payment. A transaction with only data is an invocation. A transaction with both value and data is both a payment and an invocation. A transaction with neither value nor data—well that’s probably just a waste of gas! But it is still possible.</p>
+</blockquote>
+<p><img src="../../images/image-20200625085657502.png" alt="image-20200625085657502"></p>
+<p>MetaMask利用的是Web3的能力。打开chrome console就能拿到上下文。直接使用Web3的能力。</p>
+<p>Web3 JS API文档:
+<a href="https://github.com/ethereum/wiki/wiki/JavaScript-API">https://github.com/ethereum/wiki/wiki/JavaScript-API</a></p>
+<p>智能合约，如果转账地址是contract address，非EOA， data字段就会被EVM解析成合约调用。</p>
+<blockquote>
+<p>For now, let’s assume your transaction is delivering data to a contract address. In that case, the data will be interpreted by the EVM as a contract invocation. Most contracts use this data more specifically as a function invocation, calling the named function and passing any encoded arguments to the function.</p>
+</blockquote>
+<p>data字段</p>
+<p><img src="../../images/image-20200625085721182.png" alt="image-20200625085721182"></p>
+<p><img src="../../images/image-20200625085734912.png" alt="image-20200625085734912"></p>
+<p><img src="../../images/image-20200625085741766.png" alt="image-20200625085741766"></p>
+<ol>
+<li>function selector = 方法hash的前4个字节，</li>
+<li>function arguments = hex(input argument)</li>
+<li>payload = pad32(function selector, function arguments)</li>
+</ol>
+<p>往合约地址，包含data的交易，只是执行合约。</p>
+<p>往0x0地址（除了合约地址、EOA地址，所以0x0是第三种账户），包含data的交易，是合约的创建。</p>
+<p>向非EOA地址，发送value，就是销毁ETH。</p>
+<p>安装solc（编译合约代码成二进制）</p>
+<p><a href="https://solidity.readthedocs.io/en/v0.4.21/installing-solidity.html">https://solidity.readthedocs.io/en/v0.4.21/installing-solidity.html</a></p>
+<pre><code>solc --bin Faucet.sol
+
+
+src = web3.eth.accounts[0]
+
+faucet_code = ...
+
+web3.eth.sendTransaction({from: src, to: 0, data: faucet_code, gas: 113558, gasPrice: 200000000000}, function(error, result){
+   if(!error)
+       console.log(JSON.stringify(result));
+   else
+       console.error(error);
+})
+</code></pre>
+                    
+                    <HR width="100%" id="EOF">
+                    <p style="color:#777;">Last modified on 2018-10-29</p>
+                    
+                </div>
+            </div>
+            
+            
+            <nav class="post-pagination">
+
+                
+                <a class="newer-posts" href="https://xujiahua.github.io/posts/20190304-go-plugin/">
+                    Next<br>Go Plugin
+                </a>
+                
+                
+                
+                <a class="older-posts" href="https://xujiahua.github.io/posts/20181017-perf-testing/">
+                    Previous<br>一点压力测试的经验
+                </a>
+                
+            </nav>
+            <div class="post-comment-wrapper">
+                
+
+
+
+
+
+
+            </div>
+        </div>
+    </div>
+</div>
+
+            </div><div id="single-column-footer">
+Hugo Theme <a href="https://github.com/amazingrise/hugo-theme-diary">Diary</a> by <a href="https://amazingrise.net">Rise</a>
+<br>
+Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopener">Makito</a>'s <a href="https://github.com/SumiMakito/hexo-theme-journal/" target="_blank" rel="noreferrer noopener">Journal.</a> <br>
+<br>
+
+&copy;
+	
+	2020 许嘉华的博客
+	</div>
+    	</div>
+    <script src="https://xujiahua.github.io//js/journal.js"></script>
+    </body>
+</html>

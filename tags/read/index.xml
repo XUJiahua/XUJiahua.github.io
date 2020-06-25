@@ -42,5 +42,18 @@
  去中心化？比中心化还要中心化。更集权。节点自己没法改。无法解决所有者作弊的问题，但对所有者（统治者）是利好的工具（赏味不足的说法，有道理） （IT上能）提升效率：一份数据在各个系统流转，那么这份数据就存在区块链数据库上就可以了。  </description>
     </item>
     
+    <item>
+      <title>读 Mastering Ethereum</title>
+      <link>https://xujiahua.github.io/posts/20181029-mastering-ethereum/</link>
+      <pubDate>Mon, 29 Oct 2018 08:37:44 +0800</pubDate>
+      
+      <guid>https://xujiahua.github.io/posts/20181029-mastering-ethereum/</guid>
+      <description>（笔记迁移 @ 2020年）
+区块链上不应该只有数字货币。
+ Ethereum was conceived at a time when people recognized the power of the Bitcoin model, and were trying to move beyond cryptocurrency applications.
+Ethereum’s founders were thinking about a blockchain without a specific purpose, that could support a broad variety of applications by being programmed.
+Ethereum has memory that stores both code and data, and it uses the Ethereum blockchain to track how this memory changes over time.</description>
+    </item>
+    
   </channel>
 </rss>

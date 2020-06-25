@@ -577,6 +577,19 @@ type Symbol interface{} 5. 类型转换 type assertion var greeter Greeter greet
     </item>
     
     <item>
+      <title>读 Mastering Ethereum</title>
+      <link>https://xujiahua.github.io/posts/20181029-mastering-ethereum/</link>
+      <pubDate>Mon, 29 Oct 2018 08:37:44 +0800</pubDate>
+      
+      <guid>https://xujiahua.github.io/posts/20181029-mastering-ethereum/</guid>
+      <description>（笔记迁移 @ 2020年）
+区块链上不应该只有数字货币。
+ Ethereum was conceived at a time when people recognized the power of the Bitcoin model, and were trying to move beyond cryptocurrency applications.
+Ethereum’s founders were thinking about a blockchain without a specific purpose, that could support a broad variety of applications by being programmed.
+Ethereum has memory that stores both code and data, and it uses the Ethereum blockchain to track how this memory changes over time.</description>
+    </item>
+    
+    <item>
       <title>一点压力测试的经验</title>
       <link>https://xujiahua.github.io/posts/20181017-perf-testing/</link>
       <pubDate>Wed, 17 Oct 2018 07:42:56 +0800</pubDate>
