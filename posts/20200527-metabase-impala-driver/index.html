@@ -466,33 +466,6 @@ Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopene
 					
 				
 			
-				
-				
-					
-						
-						
-							<ul>
-						
-							<ul>
-						
-							<ul>
-						
-						
-								<li>
-				 					<a href="#%e6%9b%b4%e6%96%b0%e6%97%a5%e5%bf%97" v-on:click="closeDrawer" id="更新日志-nav">
-										 更新日志
-									</a>
-								</li>
-						
-							</ul>
-						
-							</ul>
-						
-							</ul>
-						
-					
-				
-			
 	</div>
 
 </div>
@@ -888,33 +861,6 @@ Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopene
 					
 				
 			
-				
-				
-					
-						
-						
-							<ul>
-						
-							<ul>
-						
-							<ul>
-						
-						
-								<li>
-				 					<a href="#%e6%9b%b4%e6%96%b0%e6%97%a5%e5%bf%97" v-on:click="closeDrawer" id="更新日志-nav">
-										 更新日志
-									</a>
-								</li>
-						
-							</ul>
-						
-							</ul>
-						
-							</ul>
-						
-					
-				
-			
 	</div>
 
 </div>
@@ -985,7 +931,11 @@ Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopene
             
             <div class="post-body-wrapper">
                 <div class="post-body">
-                    <p>Metabase 版本：v0.35.3</p>
+                    <p>更新日志</p>
+<ol>
+<li><a href="https://xujiahua.github.io/posts/20200528-metabase-impala-type/">Metabase Impala Driver 0528更新日志</a></li>
+<li><a href="https://xujiahua.github.io/posts/20200710-metabase-impala-driver/">Metabase Impala Driver 0710更新日志</a></li>
+</ol>
 <h2 id="背景">背景</h2>
 <p>我们的数据仓库是 Hadoop/Hive 体系的。Hadoop 版本采用的是 CDH 发行版。在这个背景下 SQL on Hadoop 的方案有 Hive/Impala/(SparkSQL)。作为 BI 数据库，Impala 在我们的场景下比较合适。</p>
 <ol>
@@ -1079,6 +1029,7 @@ java -DMB_JETTY_PORT<span style="color:#f92672">=</span><span style="color:#ae81
 <li>metadata没有同步，也没有报错信息。（作为对比，连mysql是有metadata同步的。）</li>
 </ol>
 <h3 id="使用官方-sparksql-驱动">使用官方 sparksql 驱动</h3>
+<p>Metabase 版本：v0.35.3</p>
 <p>尝试使用 sparksql 驱动来连接 Impala 数据库。</p>
 <p>因为 SparkSQL 的 thrift server 复用的是 HiveServer2 的实现，架构如下图。而 Impala 可以使用 Hive 的JDBC Driver （ <a href="https://impala.apache.org/docs/build/html/topics/impala_jdbc.html">https://impala.apache.org/docs/build/html/topics/impala_jdbc.html</a> <a href="https://docs.cloudera.com/documentation/enterprise/latest/topics/impala_jdbc.html#jdbc_driver_choice">https://docs.cloudera.com/documentation/enterprise/latest/topics/impala_jdbc.html#jdbc_driver_choice</a> ）。</p>
 <p><img src="../../images/image-20200520093534168.png" alt="image-20200520093534168"></p>
@@ -1166,11 +1117,6 @@ org.apache.hive/hive-jdbc &quot;1.2.1&quot;
 <h2 id="总结">总结</h2>
 <p>通过摸索，改进 Metabase sparksql 包后，我们可以使用 Impala 了。至于有多少坑，还得等我深度使用后才知道。</p>
 <p>代码 <a href="https://github.com/XUJiahua/metabase/tree/driver-impala-in-sparksql">https://github.com/XUJiahua/metabase/tree/driver-impala-in-sparksql</a></p>
-<p>因为时间关系，留下一些 TODO ，未完待续。</p>
-<h3 id="更新日志">更新日志</h3>
-<ol>
-<li>Metabase Impala Driver 0528更新日志 <a href="https://xujiahua.github.io/posts/20200528-metabase-impala-type/">https://xujiahua.github.io/posts/20200528-metabase-impala-type/</a></li>
-</ol>
 
                     
                     <HR width="100%" id="EOF">

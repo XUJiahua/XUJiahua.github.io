@@ -919,7 +919,11 @@ expect1
         <pubDate>Wed, 27 May 2020 12:16:36 +0800</pubDate>
         
         <guid>https://xujiahua.github.io/posts/20200527-metabase-impala-driver/</guid>
-        <description>许嘉华的博客 https://xujiahua.github.io/posts/20200527-metabase-impala-driver/ -&lt;p&gt;Metabase 版本：v0.35.3&lt;/p&gt;
+        <description>许嘉华的博客 https://xujiahua.github.io/posts/20200527-metabase-impala-driver/ -&lt;p&gt;更新日志&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;a href=&#34;https://xujiahua.github.io/posts/20200528-metabase-impala-type/&#34;&gt;Metabase Impala Driver 0528更新日志&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://xujiahua.github.io/posts/20200710-metabase-impala-driver/&#34;&gt;Metabase Impala Driver 0710更新日志&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
 &lt;h2 id=&#34;背景&#34;&gt;背景&lt;/h2&gt;
 &lt;p&gt;我们的数据仓库是 Hadoop/Hive 体系的。Hadoop 版本采用的是 CDH 发行版。在这个背景下 SQL on Hadoop 的方案有 Hive/Impala/(SparkSQL)。作为 BI 数据库，Impala 在我们的场景下比较合适。&lt;/p&gt;
 &lt;ol&gt;
@@ -1013,6 +1017,7 @@ java -DMB_JETTY_PORT&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;
 &lt;li&gt;metadata没有同步，也没有报错信息。（作为对比，连mysql是有metadata同步的。）&lt;/li&gt;
 &lt;/ol&gt;
 &lt;h3 id=&#34;使用官方-sparksql-驱动&#34;&gt;使用官方 sparksql 驱动&lt;/h3&gt;
+&lt;p&gt;Metabase 版本：v0.35.3&lt;/p&gt;
 &lt;p&gt;尝试使用 sparksql 驱动来连接 Impala 数据库。&lt;/p&gt;
 &lt;p&gt;因为 SparkSQL 的 thrift server 复用的是 HiveServer2 的实现，架构如下图。而 Impala 可以使用 Hive 的JDBC Driver （ &lt;a href=&#34;https://impala.apache.org/docs/build/html/topics/impala_jdbc.html&#34;&gt;https://impala.apache.org/docs/build/html/topics/impala_jdbc.html&lt;/a&gt; &lt;a href=&#34;https://docs.cloudera.com/documentation/enterprise/latest/topics/impala_jdbc.html#jdbc_driver_choice&#34;&gt;https://docs.cloudera.com/documentation/enterprise/latest/topics/impala_jdbc.html#jdbc_driver_choice&lt;/a&gt; ）。&lt;/p&gt;
 &lt;p&gt;&lt;img src=&#34;../../images/image-20200520093534168.png&#34; alt=&#34;image-20200520093534168&#34;&gt;&lt;/p&gt;
@@ -1100,11 +1105,6 @@ org.apache.hive/hive-jdbc &amp;quot;1.2.1&amp;quot;
 &lt;h2 id=&#34;总结&#34;&gt;总结&lt;/h2&gt;
 &lt;p&gt;通过摸索，改进 Metabase sparksql 包后，我们可以使用 Impala 了。至于有多少坑，还得等我深度使用后才知道。&lt;/p&gt;
 &lt;p&gt;代码 &lt;a href=&#34;https://github.com/XUJiahua/metabase/tree/driver-impala-in-sparksql&#34;&gt;https://github.com/XUJiahua/metabase/tree/driver-impala-in-sparksql&lt;/a&gt;&lt;/p&gt;
-&lt;p&gt;因为时间关系，留下一些 TODO ，未完待续。&lt;/p&gt;
-&lt;h3 id=&#34;更新日志&#34;&gt;更新日志&lt;/h3&gt;
-&lt;ol&gt;
-&lt;li&gt;Metabase Impala Driver 0528更新日志 &lt;a href=&#34;https://xujiahua.github.io/posts/20200528-metabase-impala-type/&#34;&gt;https://xujiahua.github.io/posts/20200528-metabase-impala-type/&lt;/a&gt;&lt;/li&gt;
-&lt;/ol&gt;
 - https://xujiahua.github.io/posts/20200527-metabase-impala-driver/ - </description>
         </item>
     
