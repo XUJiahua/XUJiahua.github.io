@@ -404,6 +404,37 @@ Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopene
 						
 						
 								<li>
+				 					<a href="#metabase-remote-repl" v-on:click="closeDrawer" id="metabase-remote-repl-nav">
+										 Metabase Remote REPL
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
 				 					<a href="#clojure-%e5%8a%a8%e6%80%81%e6%80%a7" v-on:click="closeDrawer" id="clojure-动态性-nav">
 										 Clojure 动态性：#’
 									</a>
@@ -776,6 +807,37 @@ Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopene
 						
 						
 								<li>
+				 					<a href="#metabase-remote-repl" v-on:click="closeDrawer" id="metabase-remote-repl-nav">
+										 Metabase Remote REPL
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
 				 					<a href="#clojure-%e5%8a%a8%e6%80%81%e6%80%a7" v-on:click="closeDrawer" id="clojure-动态性-nav">
 										 Clojure 动态性：#’
 									</a>
@@ -974,8 +1036,13 @@ Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopene
 <p>试验了下，<code>plugins</code>目录下的driver是可以成功加载的。</p>
 <p>开发模式下，按照加载机制，如果<code>plugins</code>下的driver与<code>modules/drivers</code>下的driver重名，会被后者覆盖掉。其实这是个bug，值没取对，导致两个目录下的同一个driver，重复加载并覆盖。（之前还好奇为何要加载两遍driver）</p>
 <p><img src="../../images/image-20200710160645843.png" alt="image-20200710160645843"></p>
-<p>总结，目前使用这种配置，调试<code>Metabase</code>核心包是没问题的，plugin driver建议放到<code>plugins</code>目录。如何调试plugin driver的源码，这个还得研究。TBD</p>
-<p>不用<code>Cursive</code>，直接运行<code>lein run-with-repl</code>是没问题的。</p>
+<p>总结，目前使用这种配置，调试<code>Metabase</code>核心包是没问题的，plugin driver建议放到<code>plugins</code>目录。Root Cause？</p>
+<p>不用<code>Cursive</code>，直接运行<code>lein run-with-repl</code>可以自然加载<code>modules/drivers</code>下的driver源码。</p>
+<h4 id="metabase-remote-repl">Metabase Remote REPL</h4>
+<p><em>Added 2020-07-10</em></p>
+<p>命令行中，<code>lein run-with-repl</code> Lein REPL会在本地生成一个<code>.nrepl-port</code>的文件，内含repl server的端口。</p>
+<p>创建一个Remote REPL配置，让其引用<code>.nrepl-port</code>文件。上节如何调试plugin driver源码的问题就是解决了。</p>
+<p><img src="../../images/image-20200710163401330.png" alt="image-20200710163401330"></p>
 <h4 id="clojure-动态性">Clojure 动态性：#&rsquo;</h4>
 <p><code>#'</code>是 Clojure 里的一个reader macro，可以理解为一个语法糖。 <a href="https://en.wikibooks.org/wiki/Learning_Clojure/Reader_Macros">https://en.wikibooks.org/wiki/Learning_Clojure/Reader_Macros</a></p>
 <p>实际展开为<code>var</code>方法。</p>

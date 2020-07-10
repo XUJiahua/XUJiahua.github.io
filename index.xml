@@ -448,8 +448,13 @@ expect1
 &lt;p&gt;试验了下，&lt;code&gt;plugins&lt;/code&gt;目录下的driver是可以成功加载的。&lt;/p&gt;
 &lt;p&gt;开发模式下，按照加载机制，如果&lt;code&gt;plugins&lt;/code&gt;下的driver与&lt;code&gt;modules/drivers&lt;/code&gt;下的driver重名，会被后者覆盖掉。其实这是个bug，值没取对，导致两个目录下的同一个driver，重复加载并覆盖。（之前还好奇为何要加载两遍driver）&lt;/p&gt;
 &lt;p&gt;&lt;img src=&#34;../../images/image-20200710160645843.png&#34; alt=&#34;image-20200710160645843&#34;&gt;&lt;/p&gt;
-&lt;p&gt;总结，目前使用这种配置，调试&lt;code&gt;Metabase&lt;/code&gt;核心包是没问题的，plugin driver建议放到&lt;code&gt;plugins&lt;/code&gt;目录。如何调试plugin driver的源码，这个还得研究。TBD&lt;/p&gt;
-&lt;p&gt;不用&lt;code&gt;Cursive&lt;/code&gt;，直接运行&lt;code&gt;lein run-with-repl&lt;/code&gt;是没问题的。&lt;/p&gt;
+&lt;p&gt;总结，目前使用这种配置，调试&lt;code&gt;Metabase&lt;/code&gt;核心包是没问题的，plugin driver建议放到&lt;code&gt;plugins&lt;/code&gt;目录。Root Cause？&lt;/p&gt;
+&lt;p&gt;不用&lt;code&gt;Cursive&lt;/code&gt;，直接运行&lt;code&gt;lein run-with-repl&lt;/code&gt;可以自然加载&lt;code&gt;modules/drivers&lt;/code&gt;下的driver源码。&lt;/p&gt;
+&lt;h4 id=&#34;metabase-remote-repl&#34;&gt;Metabase Remote REPL&lt;/h4&gt;
+&lt;p&gt;&lt;em&gt;Added 2020-07-10&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;命令行中，&lt;code&gt;lein run-with-repl&lt;/code&gt; Lein REPL会在本地生成一个&lt;code&gt;.nrepl-port&lt;/code&gt;的文件，内含repl server的端口。&lt;/p&gt;
+&lt;p&gt;创建一个Remote REPL配置，让其引用&lt;code&gt;.nrepl-port&lt;/code&gt;文件。上节如何调试plugin driver源码的问题就是解决了。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200710163401330.png&#34; alt=&#34;image-20200710163401330&#34;&gt;&lt;/p&gt;
 &lt;h4 id=&#34;clojure-动态性&#34;&gt;Clojure 动态性：#&amp;rsquo;&lt;/h4&gt;
 &lt;p&gt;&lt;code&gt;#&#39;&lt;/code&gt;是 Clojure 里的一个reader macro，可以理解为一个语法糖。 &lt;a href=&#34;https://en.wikibooks.org/wiki/Learning_Clojure/Reader_Macros&#34;&gt;https://en.wikibooks.org/wiki/Learning_Clojure/Reader_Macros&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt;实际展开为&lt;code&gt;var&lt;/code&gt;方法。&lt;/p&gt;
