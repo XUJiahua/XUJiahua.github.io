@@ -6,10 +6,21 @@
     <description>Recent content in Metabase on 许嘉华的博客</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Mon, 15 Jun 2020 17:19:50 +0800</lastBuildDate>
+    <lastBuildDate>Fri, 10 Jul 2020 10:35:08 +0800</lastBuildDate>
     
 	<atom:link href="https://xujiahua.github.io/tags/metabase/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Metabase Impala Driver 0710更新日志</title>
+      <link>https://xujiahua.github.io/posts/20200710-metabase-impala-driver/</link>
+      <pubDate>Fri, 10 Jul 2020 10:35:08 +0800</pubDate>
+      
+      <guid>https://xujiahua.github.io/posts/20200710-metabase-impala-driver/</guid>
+      <description>基于 Metabase 0.35.4 版本和Cloudera的Impala JDBC驱动，重构了一份独立的 Metabase Impala Driver。
+整体思路参考 Writing A Driver ，更多时间是参考其他驱动的代码和根据实际用例调试。还有不少待完善的地方：
+ 单元测试缺乏。 去除没有必要的方法（首先得理解方法的含义）。  </description>
+    </item>
     
     <item>
       <title>Metabase 客户隔离</title>

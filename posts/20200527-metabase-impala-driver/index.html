@@ -452,64 +452,6 @@ Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopene
 						
 							<ul>
 						
-							<ul>
-						
-						
-								<li>
-				 					<a href="#todo-%e6%96%b0%e5%a2%9e-impala-%e5%8c%85" v-on:click="closeDrawer" id="todo-新增-impala-包-nav">
-										 TODO 新增 impala 包
-									</a>
-								</li>
-						
-							</ul>
-						
-							</ul>
-						
-							</ul>
-						
-					
-				
-			
-				
-				
-					
-						
-						
-							<ul>
-						
-							<ul>
-						
-							<ul>
-						
-							<ul>
-						
-						
-								<li>
-				 					<a href="#impala-jdbc-driver" v-on:click="closeDrawer" id="impala-jdbc-driver-nav">
-										 Impala JDBC Driver
-									</a>
-								</li>
-						
-							</ul>
-						
-							</ul>
-						
-							</ul>
-						
-							</ul>
-						
-					
-				
-			
-				
-				
-					
-						
-						
-							<ul>
-						
-							<ul>
-						
 						
 								<li>
 				 					<a href="#%e6%80%bb%e7%bb%93" v-on:click="closeDrawer" id="总结-nav">
@@ -932,64 +874,6 @@ Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopene
 						
 							<ul>
 						
-							<ul>
-						
-						
-								<li>
-				 					<a href="#todo-%e6%96%b0%e5%a2%9e-impala-%e5%8c%85" v-on:click="closeDrawer" id="todo-新增-impala-包-nav">
-										 TODO 新增 impala 包
-									</a>
-								</li>
-						
-							</ul>
-						
-							</ul>
-						
-							</ul>
-						
-					
-				
-			
-				
-				
-					
-						
-						
-							<ul>
-						
-							<ul>
-						
-							<ul>
-						
-							<ul>
-						
-						
-								<li>
-				 					<a href="#impala-jdbc-driver" v-on:click="closeDrawer" id="impala-jdbc-driver-nav">
-										 Impala JDBC Driver
-									</a>
-								</li>
-						
-							</ul>
-						
-							</ul>
-						
-							</ul>
-						
-							</ul>
-						
-					
-				
-			
-				
-				
-					
-						
-						
-							<ul>
-						
-							<ul>
-						
 						
 								<li>
 				 					<a href="#%e6%80%bb%e7%bb%93" v-on:click="closeDrawer" id="总结-nav">
@@ -1273,21 +1157,12 @@ org.apache.hive/hive-jdbc &quot;1.2.1&quot;
 <h4 id="uberjar-的弊端">uberjar 的弊端</h4>
 <p>Metabase为了方便包的分发，整个项目、驱动都是uberjar的打包思路。弊端其实也挺明显。JDBC 驱动与数据库的兼容性问题，一般是适配数据库，JDBC 驱动被 uberjar 后，想换驱动就得重新编译源码。</p>
 <p>比如 Hive Server 1.1.0，Hive JDBC 1.2.1 就连不上。开源产品的兼容性问题让人头秃。</p>
-<p>TODO：驱动不再uberjar，可以使用自己需要的依赖版本，比如我们使用 CDH 6.x 的 hadoop/hive jar包。</p>
+<p><del>TODO：驱动不再uberjar，可以使用自己需要的依赖版本，比如我们使用 CDH 6.x 的 hadoop/hive jar包。</del></p>
+<p>编译<code>Metabase</code>时，<code>plugin driver</code>不要打包到<code>metabase.jar</code>即可。独立处理<code>plugin driver</code>的打包和安装。</p>
 <h4 id="题外话-sparksql-deps">题外话 sparksql-deps</h4>
 <p>网上有个老版本的sparksql 驱动包 <a href="https://s3.amazonaws.com/sparksql-deps/metabase-sparksql-deps-1.2.1.spark2-standalone.jar">https://s3.amazonaws.com/sparksql-deps/metabase-sparksql-deps-1.2.1.spark2-standalone.jar</a> 。之前解决这个问题，就是将其放到plugins目录。究其原因，其引用的hadoop-common版本是2.x的。</p>
 <p><img src="../../images/image-20200527111551416.png" alt="image-20200527111551416"></p>
 <p>而其源码包括历史记录（ <a href="https://github.com/metabase/sparksql-deps">https://github.com/metabase/sparksql-deps</a> ）的hadoop-common版本是3.1.0。不要被误导了。</p>
-<h3 id="todo-新增-impala-包">TODO 新增 impala 包</h3>
-<p>需要系统了解下驱动是怎么写的。</p>
-<ol>
-<li>有整体思路，教程有点缺失 <a href="https://github.com/metabase/metabase/wiki/Writing-a-Driver">https://github.com/metabase/metabase/wiki/Writing-a-Driver</a></li>
-<li>引用本地jar包（Impala jar包是本地） <a href="https://github.com/kumarshantanu/lein-localrepo">https://github.com/kumarshantanu/lein-localrepo</a></li>
-</ol>
-<h4 id="impala-jdbc-driver">Impala JDBC Driver</h4>
-<p>我们可以使用JDBC 4.2版本的。其兼容性也挺高的。本地Impala 2.5.0，生产Impala 3.2.0都覆盖了。</p>
-<p><img src="../../images/image-20200524093032785.png" alt="image-20200524093032785"></p>
-<p>（Impala JDBC Driver压缩包内的文档）</p>
 <h2 id="总结">总结</h2>
 <p>通过摸索，改进 Metabase sparksql 包后，我们可以使用 Impala 了。至于有多少坑，还得等我深度使用后才知道。</p>
 <p>代码 <a href="https://github.com/XUJiahua/metabase/tree/driver-impala-in-sparksql">https://github.com/XUJiahua/metabase/tree/driver-impala-in-sparksql</a></p>

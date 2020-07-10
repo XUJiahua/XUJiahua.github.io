@@ -5,9 +5,26 @@
     <description>Recent content on 许嘉华的博客</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Mon, 15 Jun 2020 17:19:50 +0800</lastBuildDate>
+    <lastBuildDate>Fri, 10 Jul 2020 10:35:08 +0800</lastBuildDate>
     
         <atom:link href="https://xujiahua.github.io/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    
+        <item>
+        <title>Metabase Impala Driver 0710更新日志</title>
+        <link>https://xujiahua.github.io/posts/20200710-metabase-impala-driver/</link>
+        <pubDate>Fri, 10 Jul 2020 10:35:08 +0800</pubDate>
+        
+        <guid>https://xujiahua.github.io/posts/20200710-metabase-impala-driver/</guid>
+        <description>许嘉华的博客 https://xujiahua.github.io/posts/20200710-metabase-impala-driver/ -&lt;p&gt;基于 Metabase 0.35.4 版本和Cloudera的Impala JDBC驱动，重构了一份独立的 &lt;a href=&#34;https://github.com/XUJiahua/metabase-impala-driver&#34;&gt;Metabase Impala Driver&lt;/a&gt;。&lt;/p&gt;
+&lt;p&gt;整体思路参考 &lt;a href=&#34;https://github.com/metabase/metabase/wiki/Writing-a-Driver&#34;&gt;Writing A Driver&lt;/a&gt; ，更多时间是参考其他驱动的代码和根据实际用例调试。还有不少待完善的地方：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;单元测试缺乏。&lt;/li&gt;
+&lt;li&gt;去除没有必要的方法（首先得理解方法的含义）。&lt;/li&gt;
+&lt;/ol&gt;
+- https://xujiahua.github.io/posts/20200710-metabase-impala-driver/ - </description>
+        </item>
     
     
     
@@ -1074,21 +1091,12 @@ org.apache.hive/hive-jdbc &amp;quot;1.2.1&amp;quot;
 &lt;h4 id=&#34;uberjar-的弊端&#34;&gt;uberjar 的弊端&lt;/h4&gt;
 &lt;p&gt;Metabase为了方便包的分发，整个项目、驱动都是uberjar的打包思路。弊端其实也挺明显。JDBC 驱动与数据库的兼容性问题，一般是适配数据库，JDBC 驱动被 uberjar 后，想换驱动就得重新编译源码。&lt;/p&gt;
 &lt;p&gt;比如 Hive Server 1.1.0，Hive JDBC 1.2.1 就连不上。开源产品的兼容性问题让人头秃。&lt;/p&gt;
-&lt;p&gt;TODO：驱动不再uberjar，可以使用自己需要的依赖版本，比如我们使用 CDH 6.x 的 hadoop/hive jar包。&lt;/p&gt;
+&lt;p&gt;&lt;del&gt;TODO：驱动不再uberjar，可以使用自己需要的依赖版本，比如我们使用 CDH 6.x 的 hadoop/hive jar包。&lt;/del&gt;&lt;/p&gt;
+&lt;p&gt;编译&lt;code&gt;Metabase&lt;/code&gt;时，&lt;code&gt;plugin driver&lt;/code&gt;不要打包到&lt;code&gt;metabase.jar&lt;/code&gt;即可。独立处理&lt;code&gt;plugin driver&lt;/code&gt;的打包和安装。&lt;/p&gt;
 &lt;h4 id=&#34;题外话-sparksql-deps&#34;&gt;题外话 sparksql-deps&lt;/h4&gt;
 &lt;p&gt;网上有个老版本的sparksql 驱动包 &lt;a href=&#34;https://s3.amazonaws.com/sparksql-deps/metabase-sparksql-deps-1.2.1.spark2-standalone.jar&#34;&gt;https://s3.amazonaws.com/sparksql-deps/metabase-sparksql-deps-1.2.1.spark2-standalone.jar&lt;/a&gt; 。之前解决这个问题，就是将其放到plugins目录。究其原因，其引用的hadoop-common版本是2.x的。&lt;/p&gt;
 &lt;p&gt;&lt;img src=&#34;../../images/image-20200527111551416.png&#34; alt=&#34;image-20200527111551416&#34;&gt;&lt;/p&gt;
 &lt;p&gt;而其源码包括历史记录（ &lt;a href=&#34;https://github.com/metabase/sparksql-deps&#34;&gt;https://github.com/metabase/sparksql-deps&lt;/a&gt; ）的hadoop-common版本是3.1.0。不要被误导了。&lt;/p&gt;
-&lt;h3 id=&#34;todo-新增-impala-包&#34;&gt;TODO 新增 impala 包&lt;/h3&gt;
-&lt;p&gt;需要系统了解下驱动是怎么写的。&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;有整体思路，教程有点缺失 &lt;a href=&#34;https://github.com/metabase/metabase/wiki/Writing-a-Driver&#34;&gt;https://github.com/metabase/metabase/wiki/Writing-a-Driver&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;引用本地jar包（Impala jar包是本地） &lt;a href=&#34;https://github.com/kumarshantanu/lein-localrepo&#34;&gt;https://github.com/kumarshantanu/lein-localrepo&lt;/a&gt;&lt;/li&gt;
-&lt;/ol&gt;
-&lt;h4 id=&#34;impala-jdbc-driver&#34;&gt;Impala JDBC Driver&lt;/h4&gt;
-&lt;p&gt;我们可以使用JDBC 4.2版本的。其兼容性也挺高的。本地Impala 2.5.0，生产Impala 3.2.0都覆盖了。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image-20200524093032785.png&#34; alt=&#34;image-20200524093032785&#34;&gt;&lt;/p&gt;
-&lt;p&gt;（Impala JDBC Driver压缩包内的文档）&lt;/p&gt;
 &lt;h2 id=&#34;总结&#34;&gt;总结&lt;/h2&gt;
 &lt;p&gt;通过摸索，改进 Metabase sparksql 包后，我们可以使用 Impala 了。至于有多少坑，还得等我深度使用后才知道。&lt;/p&gt;
 &lt;p&gt;代码 &lt;a href=&#34;https://github.com/XUJiahua/metabase/tree/driver-impala-in-sparksql&#34;&gt;https://github.com/XUJiahua/metabase/tree/driver-impala-in-sparksql&lt;/a&gt;&lt;/p&gt;
@@ -1209,101 +1217,6 @@ size_options &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; [
 &lt;p&gt;最终图像哈希用于 SQL JOIN，需要将有些许差异的图像映射成一个值。不考虑相似度算法。&lt;/p&gt;
 &lt;p&gt;通过在图像色彩、尺寸上降维，初步解决了这个问题。&lt;/p&gt;
 - https://xujiahua.github.io/posts/20200514-wx-avatar/ - </description>
-        </item>
-    
-    
-    
-        <item>
-        <title>NUC8i5BEH Hackintosh</title>
-        <link>https://xujiahua.github.io/posts/20200504-hackintosh/</link>
-        <pubDate>Mon, 04 May 2020 13:11:09 +0800</pubDate>
-        
-        <guid>https://xujiahua.github.io/posts/20200504-hackintosh/</guid>
-        <description>许嘉华的博客 https://xujiahua.github.io/posts/20200504-hackintosh/ -&lt;p&gt;买了个 NUC8i5BEH 当玩具，不怎么折腾的方式体验下黑苹果。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image-20200504145011481.png&#34; alt=&#34;image-20200504145011481&#34;&gt;&lt;/p&gt;
-&lt;h2 id=&#34;效果&#34;&gt;效果&lt;/h2&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image-20200504132303349.png&#34; alt=&#34;image-20200504132303349&#34;&gt;&lt;/p&gt;
-&lt;p&gt;与我的 2018 MBP 13.3 做对比。处理器、显卡是一样的。用很少的钱提升内存，16GB 2133 DDR3 -&amp;gt; 32GB 2400 DDR4。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image-20200504132417310.png&#34; alt=&#34;image-20200504132417310&#34;&gt;&lt;/p&gt;
-&lt;h3 id=&#34;成本&#34;&gt;成本&lt;/h3&gt;
-&lt;p&gt;大概 ￥4000。2018年买的MacBook近￥15000。&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;NUC8i5BEH ￥2379&lt;/li&gt;
-&lt;li&gt;DDR4 2400 16 GB X 2 笔记本内存条 ￥978&lt;/li&gt;
-&lt;li&gt;500GB M.2 SSD 大约￥600（不在这次消费计划里，从现有机器抠出来的）&lt;/li&gt;
-&lt;/ol&gt;
-&lt;h3 id=&#34;不足&#34;&gt;不足&lt;/h3&gt;
-&lt;p&gt;WiFi、蓝牙，以及之上的AirDrop等功能缺失。&lt;/p&gt;
-&lt;p&gt;网上有解决方案，主要是网卡使用Macbook的配件替代。感觉配件也不便宜，应该是炒热了。用网线，不折腾了。&lt;/p&gt;
-&lt;h2 id=&#34;why-nuc8i5beh&#34;&gt;WHY NUC8i5BEH&lt;/h2&gt;
-&lt;p&gt;豆子峡谷 NUC8i5BEH 机箱真的小！性能也不差。可以说，是最具性价比的了。&lt;/p&gt;
-&lt;p&gt;能做这么小，机箱与电源分离的设计功不可没。- -!&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/v2-80ec6cb9eb82fa2c5e0e16cbda516f41_720w.jpg&#34; alt=&#34;v2-80ec6cb9eb82fa2c5e0e16cbda516f41_720w&#34;&gt;&lt;/p&gt;
-&lt;h3 id=&#34;nuc8i5beh-vs-nuc8i5bek&#34;&gt;NUC8i5BEH vs NUC8i5BEK&lt;/h3&gt;
-&lt;p&gt;BEH 胖版，BEK 瘦版。瘦版差一个 2.5 寸盘位。硬盘只有一个M.2插槽。网卡魔改的方案使用M.2插槽，这样BEK就不能放硬盘了。BEH 虽然胖一点，还是很mini。&lt;/p&gt;
-&lt;h3 id=&#34;nuc8i5beh-vs-nuc8i7beh&#34;&gt;NUC8i5BEH vs NUC8i7BEH&lt;/h3&gt;
-&lt;p&gt;区别在CPU。差大约￥700。&lt;/p&gt;
-&lt;h3 id=&#34;nuc8i5beh-vs-nuc8i7hvk&#34;&gt;NUC8i5BEH vs NUC8i7HVK&lt;/h3&gt;
-&lt;p&gt;冥王峡谷 NUC8i7HVK 拥有 AMD 显卡。不玩电脑游戏，AMD卡又不方便做深度学习，另外小机身大功耗散热问题一定存在，就不考虑了。价格￥6000 起。那就非常没有必要了。&lt;/p&gt;
-&lt;h2 id=&#34;安装教程&#34;&gt;安装教程&lt;/h2&gt;
-&lt;h3 id=&#34;硬件安装&#34;&gt;硬件安装&lt;/h3&gt;
-&lt;p&gt;插内存条和硬盘，看说明书就行。&lt;/p&gt;
-&lt;h3 id=&#34;macos-安装&#34;&gt;MacOS 安装&lt;/h3&gt;
-&lt;p&gt;MacOS是认硬件的，所以直接按照Apple官方制作MacOS启动盘的方式肯定不行。目前主要是用 Clover/OpenCore 等 BootLoader 骗过系统。安装过程中有两个阶段：U盘启动，硬盘启动，为了能够顺利进入系统，都要对它们的EFI分区进行修改。&lt;/p&gt;
-&lt;p&gt;根据这个图文教程（NUC8i5BEH 黑果安装教程 &lt;a href=&#34;https://www.jianshu.com/p/ebd6054d4799&#34;&gt;https://www.jianshu.com/p/ebd6054d4799&lt;/a&gt; ），完成了 Mojave 的安装。图文教程对新人来说比较友好，对细节也有详细描述。（因为使用高手们封装好的镜像，U盘 EFI 分区在这个教程里就忽略了。）&lt;/p&gt;
-&lt;p&gt;这个教程大差不差，但也是费了很长时间。&lt;/p&gt;
-&lt;h4 id=&#34;意外情况&#34;&gt;意外情况&lt;/h4&gt;
-&lt;ol&gt;
-&lt;li&gt;主要问题，引导很慢，一直是白苹果进度条的画面。睡了一觉起来还是这个状态，真的很气啊。&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;重启重试多几次。慢慢发现，要是2~3分钟进度条没走完，大概率是卡住了。多重启几次，总会有转机的。不明白到底发生了什么，所以这步操作运气成分很大。&lt;/p&gt;
-&lt;ol start=&#34;2&#34;&gt;
-&lt;li&gt;引导过程中遇到白苹果变成了禁止标志。&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;重启重试即可。&lt;/p&gt;
-&lt;ol start=&#34;3&#34;&gt;
-&lt;li&gt;Mojave的镜像文件，内置的证书过期了。报错信息应用程序副本已损坏。&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;参考 &lt;a href=&#34;https://blog.csdn.net/qq_41855420/article/details/102762647&#34;&gt;https://blog.csdn.net/qq_41855420/article/details/102762647&lt;/a&gt;&lt;/p&gt;
-&lt;ol start=&#34;4&#34;&gt;
-&lt;li&gt;另外注意，MacOS 选择文件系统 APFS（教程中用的默认选项），适合SSD。&lt;/li&gt;
-&lt;/ol&gt;
-&lt;h4 id=&#34;bios-配置&#34;&gt;BIOS 配置&lt;/h4&gt;
-&lt;p&gt;&lt;em&gt;仅作记录&lt;/em&gt;&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;Boot -&amp;gt; Boot Configuration, disable &amp;ldquo;&lt;strong&gt;Network Boot&lt;/strong&gt;&amp;rdquo;&lt;/li&gt;
-&lt;li&gt;Power -&amp;gt; Secondary Power Settings, &amp;ldquo;&lt;strong&gt;Wake on LAN from S4/S5&lt;/strong&gt;&amp;rdquo;, set to &amp;ldquo;&lt;strong&gt;Stay Off&lt;/strong&gt;&amp;rdquo;&lt;/li&gt;
-&lt;li&gt;Boot -&amp;gt; Secure Boot, disable &amp;ldquo;&lt;strong&gt;Secure Boot&lt;/strong&gt;&amp;rdquo;&lt;/li&gt;
-&lt;li&gt;Devices -&amp;gt; OnBoard Devices, disable &amp;ldquo;&lt;strong&gt;Bluetooth&lt;/strong&gt;&amp;rdquo; (macOS is not compatible well with Intel Wi-Fi/Bluetooth)&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;Suggested:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;Boot -&amp;gt; Boot Priority -&amp;gt; Legacy Boot Priority, enable &amp;ldquo;&lt;strong&gt;Legacy Boot&lt;/strong&gt;&amp;rdquo;.&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;参考 &lt;a href=&#34;https://github.com/sarkrui/NUC8i7BEH-Hackintosh-Build&#34;&gt;https://github.com/sarkrui/NUC8i7BEH-Hackintosh-Build&lt;/a&gt;&lt;/p&gt;
-&lt;h4 id=&#34;apple-id--icloud--app-store&#34;&gt;Apple ID / iCloud / App Store&lt;/h4&gt;
-&lt;p&gt;不考虑 iMessage / FaceTime，没使用场景。&lt;/p&gt;
-&lt;p&gt;按照网上说法，只要生成随机三码（工具按照规则生成），使用 iCloud / App Store 没什么问题。&lt;/p&gt;
-&lt;p&gt;怎么生成随机三码，参考：NUC8（豆子峡谷）在线安装macOS，这才是OpenCore正确的打开方式 &lt;a href=&#34;https://www.jianshu.com/p/78510cfa4a64&#34;&gt;https://www.jianshu.com/p/78510cfa4a64&lt;/a&gt; （最后一节）&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image-20200513100122246.png&#34; alt=&#34;image-20200513100122246&#34;&gt;&lt;/p&gt;
-&lt;p&gt;关于什么是三码、AppleID的安全性，参考：NUC8（豆子峡谷）黑苹果新手指南Q&amp;amp;A &lt;a href=&#34;https://www.jianshu.com/p/b298da6afef3&#34;&gt;https://www.jianshu.com/p/b298da6afef3&lt;/a&gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image-20200513100850310.png&#34; alt=&#34;image-20200513100850310&#34;&gt;&lt;/p&gt;
-&lt;h4 id=&#34;其他教程&#34;&gt;其他教程&lt;/h4&gt;
-&lt;ol&gt;
-&lt;li&gt;[GUIDE] Building a Mac mini beast with NUC8i7BEH &lt;a href=&#34;https://github.com/sarkrui/NUC8i7BEH-Hackintosh-Build&#34;&gt;https://github.com/sarkrui/NUC8i7BEH-Hackintosh-Build&lt;/a&gt;&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;包含如何处理WiFi、蓝牙模块。&lt;/p&gt;
-&lt;ol start=&#34;2&#34;&gt;
-&lt;li&gt;NUC8I5BEH Hackintosh &lt;a href=&#34;https://github.com/csrutil/NUC8I5BEH&#34;&gt;https://github.com/csrutil/NUC8I5BEH&lt;/a&gt;&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;配置文件可以直接使用。不算是教程。描述得比较简略。不懂的还是不懂。&lt;/p&gt;
-&lt;h2 id=&#34;使用后续&#34;&gt;使用后续&lt;/h2&gt;
-&lt;h3 id=&#34;2020-05-29&#34;&gt;2020-05-29&lt;/h3&gt;
-&lt;p&gt;NUC 差不多用了一个月，体验很不错，超预期。我是放在办公室使用的，下班锁屏，上班解锁，电脑工作状态一点没改变，上班来就进入状态了。因为价格便宜，猛跑程序，电脑呼呼响，情绪也很稳定。&lt;/p&gt;
-&lt;p&gt;一开始还担心不稳定，还带着 Macbook 备用，发现是多余的担心。&lt;/p&gt;
-&lt;p&gt;一个小问题：连三星显示器偶尔出现雪花屏，试验下来，是 HDMI 接口容易雪花。TYPEC 接口没这个问题。&lt;/p&gt;
-&lt;p&gt;workaround：关闭显示器电源，拔掉HDMI线，重新打开显示器电源，插入HDMI线。NUC HDMI 接口是过热了么？&lt;/p&gt;
-- https://xujiahua.github.io/posts/20200504-hackintosh/ - </description>
         </item>
     
     

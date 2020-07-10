@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html><head>
-<title>Metabase 客户隔离</title>
+<title>Metabase Impala Driver 0710更新日志</title>
 
 <meta charset="utf-8">
 <meta name="X-UA-Compatible" content="IE=edge">
@@ -135,96 +135,6 @@ Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopene
     <div class="toc animated-visibility" :class="{ invisible: scrollY <= 140 }">
 
 
-	<div class="toc-content">
-	
-		
-		
-		
-		<center>- CATALOG -</center>
-			
-				
-				
-					
-						
-						
-							<ul>
-						
-							<ul>
-						
-							<ul>
-						
-						
-								<li>
-				 					<a href="#%e7%9b%ae%e6%a0%87" v-on:click="closeDrawer" id="目标-nav">
-										 目标
-									</a>
-								</li>
-						
-							</ul>
-						
-							</ul>
-						
-							</ul>
-						
-					
-				
-			
-				
-				
-					
-						
-						
-							<ul>
-						
-							<ul>
-						
-							<ul>
-						
-						
-								<li>
-				 					<a href="#%e5%ae%9e%e7%8e%b0" v-on:click="closeDrawer" id="实现-nav">
-										 实现
-									</a>
-								</li>
-						
-							</ul>
-						
-							</ul>
-						
-							</ul>
-						
-					
-				
-			
-				
-				
-					
-						
-						
-							<ul>
-						
-							<ul>
-						
-							<ul>
-						
-						
-								<li>
-				 					<a href="#demo" v-on:click="closeDrawer" id="demo-nav">
-										 DEMO
-									</a>
-								</li>
-						
-							</ul>
-						
-							</ul>
-						
-							</ul>
-						
-					
-				
-			
-	</div>
-
 </div>
     
     <div class="pagination">
@@ -287,96 +197,6 @@ Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopene
             <div class="toc">
 
 
-	<div class="toc-content">
-	
-		
-		
-		
-		<center>- CATALOG -</center>
-			
-				
-				
-					
-						
-						
-							<ul>
-						
-							<ul>
-						
-							<ul>
-						
-						
-								<li>
-				 					<a href="#%e7%9b%ae%e6%a0%87" v-on:click="closeDrawer" id="目标-nav">
-										 目标
-									</a>
-								</li>
-						
-							</ul>
-						
-							</ul>
-						
-							</ul>
-						
-					
-				
-			
-				
-				
-					
-						
-						
-							<ul>
-						
-							<ul>
-						
-							<ul>
-						
-						
-								<li>
-				 					<a href="#%e5%ae%9e%e7%8e%b0" v-on:click="closeDrawer" id="实现-nav">
-										 实现
-									</a>
-								</li>
-						
-							</ul>
-						
-							</ul>
-						
-							</ul>
-						
-					
-				
-			
-				
-				
-					
-						
-						
-							<ul>
-						
-							<ul>
-						
-							<ul>
-						
-						
-								<li>
-				 					<a href="#demo" v-on:click="closeDrawer" id="demo-nav">
-										 DEMO
-									</a>
-								</li>
-						
-							</ul>
-						
-							</ul>
-						
-							</ul>
-						
-					
-				
-			
-	</div>
-
 </div>
             
         </div>
@@ -417,25 +237,24 @@ Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopene
             <div class="post-head-wrapper-text-only"
                  style="background-image: url('/')">
                 <div class="post-title">
-                    Metabase 客户隔离
+                    Metabase Impala Driver 0710更新日志
                     
                     <div class="post-meta">
                         
                         <time itemprop="datePublished">
-                            2020-06-15 17:19
+                            2020-07-10 10:35
                         </time>
                         
 
-                        
-                            <i class="material-icons" style="">folder</i>
-                                <a href="/categories/">[Metabase]</a>
-                                &nbsp;
                         
 
                         
                             <i class="material-icons" style="">label</i>
                             
                                 <a href="/tags/metabase">Metabase</a>
+                                &nbsp;
+                            
+                                <a href="/tags/impala">Impala</a>
                                 &nbsp;
                             
                         
@@ -445,33 +264,16 @@ Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopene
             
             <div class="post-body-wrapper">
                 <div class="post-body">
-                    <p>之前有讨论，在不改动代码的情况下，可以使用分组功能来做客户隔离。但是该方案面临的问题是，每个客户一套模板，模板可维护性低。</p>
-<p>问题的关键就是如何共享SQL模板并客户隔离。需要改动源代码。</p>
-<h3 id="目标">目标</h3>
+                    <p>基于 Metabase 0.35.4 版本和Cloudera的Impala JDBC驱动，重构了一份独立的 <a href="https://github.com/XUJiahua/metabase-impala-driver">Metabase Impala Driver</a>。</p>
+<p>整体思路参考 <a href="https://github.com/metabase/metabase/wiki/Writing-a-Driver">Writing A Driver</a> ，更多时间是参考其他驱动的代码和根据实际用例调试。还有不少待完善的地方：</p>
 <ol>
-<li>代码复用。同一套SQL代码。不用copy/paste，好维护。一个dashboard所有客户都能看。</li>
-<li>客户隔离，保证数据安全。不同客户只能看到自己的数据。</li>
+<li>单元测试缺乏。</li>
+<li>去除没有必要的方法（首先得理解方法的含义）。</li>
 </ol>
-<h3 id="实现">实现</h3>
-<p>执行dashboard/chart中SQL代码时，动态插入客户隔离标识。</p>
-<p>首先来看下一次SQL Query的生命周期。</p>
-<p><img src="../../images/image-20200616151301507.png" alt="image-20200616151301507"></p>
-<p>找了个比较接近的处理逻辑，<code>substitute-parameters</code>用于将<code>{ {xxx} }</code>替换为widget中选的值。模仿之，SQL中定义一个<code>##client_id##</code>占位符，写了一个<code>substitute-placeholder</code>方法使用用户的<code>client-id</code>替代占位符。</p>
-<p>code: <a href="https://github.com/XUJiahua/metabase/pull/4/files">https://github.com/XUJiahua/metabase/pull/4/files</a></p>
-<h3 id="demo">DEMO</h3>
-<p>效果</p>
-<p>使用Sample Data数据集测试。</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">select</span> <span style="color:#f92672">*</span> <span style="color:#66d9ef">from</span> PEOPLE
-<span style="color:#66d9ef">where</span> <span style="color:#66d9ef">STATE</span><span style="color:#f92672">=</span><span style="color:#960050;background-color:#1e0010">{{</span><span style="color:#66d9ef">STATE</span><span style="color:#960050;background-color:#1e0010">}}</span>
-<span style="color:#66d9ef">and</span> <span style="color:#66d9ef">SOURCE</span><span style="color:#f92672">=##</span>client_id<span style="color:#f92672">##</span>
-</code></pre></div><p>返回的SQL中，可见占位符被替换为Google。</p>
-<p><img src="../../images/image-20200616150506812.png" alt="image-20200616150506812"></p>
-<p>因为还没有集成SSO系统，<code>client-id</code>临时用<code>first-name</code>来代替。</p>
-<p><img src="../../images/image-20200616150614876.png" alt="image-20200616150614876"></p>
 
                     
                     <HR width="100%" id="EOF">
-                    <p style="color:#777;">Last modified on 2020-06-15</p>
+                    <p style="color:#777;">Last modified on 2020-07-10</p>
                     
                 </div>
             </div>
@@ -480,14 +282,14 @@ Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopene
             <nav class="post-pagination">
 
                 
-                <a class="newer-posts" href="https://xujiahua.github.io/posts/20200710-metabase-impala-driver/">
-                    Next<br>Metabase Impala Driver 0710更新日志
+                <a class="newer-posts">
+                    Next<br>No newer posts.
                 </a>
                 
                 
                 
-                <a class="older-posts" href="https://xujiahua.github.io/posts/20200611-phash/">
-                    Previous<br>使用 Perceptual hashing 去除微信头像内容干扰
+                <a class="older-posts" href="https://xujiahua.github.io/posts/20200615-metabase-customer-isolation/">
+                    Previous<br>Metabase 客户隔离
                 </a>
                 
             </nav>
