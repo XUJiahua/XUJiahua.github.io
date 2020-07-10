@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html><head>
-<title>使用 REPL 调试 Clojure 项目</title>
+<title>使用 REPL 调试 Clojure 项目（Metabase）</title>
 
 <meta charset="utf-8">
 <meta name="X-UA-Compatible" content="IE=edge">
@@ -232,6 +232,33 @@ Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopene
 						
 							<ul>
 						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#emacs" v-on:click="closeDrawer" id="emacs-nav">
+										 Emacs
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
 						
 								<li>
 				 					<a href="#%e5%ae%9e%e8%b7%b5" v-on:click="closeDrawer" id="实践-nav">
@@ -317,6 +344,37 @@ Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopene
 								<li>
 				 					<a href="#repl-%e4%bc%9a%e9%98%bb%e5%a1%9e" v-on:click="closeDrawer" id="repl-会阻塞-nav">
 										 REPL 会阻塞
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#metabase-run-with-repl" v-on:click="closeDrawer" id="metabase-run-with-repl-nav">
+										 metabase run-with-repl
 									</a>
 								</li>
 						
@@ -546,6 +604,33 @@ Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopene
 						
 							<ul>
 						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#emacs" v-on:click="closeDrawer" id="emacs-nav">
+										 Emacs
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
 						
 								<li>
 				 					<a href="#%e5%ae%9e%e8%b7%b5" v-on:click="closeDrawer" id="实践-nav">
@@ -660,6 +745,37 @@ Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopene
 						
 						
 								<li>
+				 					<a href="#metabase-run-with-repl" v-on:click="closeDrawer" id="metabase-run-with-repl-nav">
+										 metabase run-with-repl
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
 				 					<a href="#clojure-%e5%8a%a8%e6%80%81%e6%80%a7" v-on:click="closeDrawer" id="clojure-动态性-nav">
 										 Clojure 动态性：#’
 									</a>
@@ -741,7 +857,7 @@ Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopene
             <div class="post-head-wrapper-text-only"
                  style="background-image: url('/')">
                 <div class="post-title">
-                    使用 REPL 调试 Clojure 项目
+                    使用 REPL 调试 Clojure 项目（Metabase）
                     
                     <div class="post-meta">
                         
@@ -758,6 +874,9 @@ Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopene
                                 <a href="/tags/clojure">clojure</a>
                                 &nbsp;
                             
+                                <a href="/tags/metabase">Metabase</a>
+                                &nbsp;
+                            
                         
                     </div>
                 </div>
@@ -772,6 +891,10 @@ Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopene
 <h4 id="cursive-插件按键冲突">Cursive 插件按键冲突</h4>
 <p>比如我会用组合键<code>⌘ + [</code>浏览代码，与 Cursive 插件的按键冲突。可以取消 Cursive 的这个组合键。</p>
 <p><img src="../../images/image-20200604162732892.png" alt="image-20200604162732892"></p>
+<h3 id="emacs">Emacs</h3>
+<p><em>Added 2020-07-10</em></p>
+<p>参考：<a href="https://www.braveclojure.com/basic-emacs/">How to Use Emacs, an Excellent Clojure Editor</a></p>
+<p><em>实践<code>Metabase</code>代码库失败：在REPL中执行(-main)直接挂了，待研究。TBD</em></p>
 <h2 id="实践">实践</h2>
 <h3 id="metabase">Metabase</h3>
 <p>接触 Clojure 是因为 Metabase 这个项目 <a href="https://github.com/metabase/metabase">https://github.com/metabase/metabase</a> 。以 Metabase 为例，说明如何调试 Clojure 项目。</p>
@@ -824,6 +947,35 @@ Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopene
 <ol>
 <li>The Cursive REPL <a href="https://cursive-ide.com/userguide/repl.html">https://cursive-ide.com/userguide/repl.html</a></li>
 </ol>
+<h4 id="metabase-run-with-repl">metabase run-with-repl</h4>
+<p><em>Added 2020-07-10</em></p>
+<p>Cursive中也支持指定Profiles。</p>
+<p><img src="../../images/image-20200710155103818.png" alt="image-20200710155103818"></p>
+<p>这个profile的作用是设置<code>:mb-jetty-join</code>为<code>false</code>，不阻塞REPL主线程。另外启动<code>metabase.core/-main</code>。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-clojure" data-lang="clojure">project.clj
+
+...
+<span style="color:#e6db74">:run-with-repl</span>
+   [<span style="color:#e6db74">:exclude-tests</span>
+    <span style="color:#e6db74">:include-all-drivers</span>
+
+    {<span style="color:#e6db74">:env</span>
+     {<span style="color:#e6db74">:mb-jetty-join</span> <span style="color:#e6db74">&#34;false&#34;</span>}
+
+     <span style="color:#e6db74">:repl-options</span>
+     {<span style="color:#e6db74">:init</span>    (<span style="color:#66d9ef">do </span>(<span style="color:#a6e22e">require</span> <span style="color:#e6db74">&#39;metabase.core</span>)
+                   (<span style="color:#a6e22e">metabase.core/-main</span>))
+      <span style="color:#e6db74">:timeout</span> <span style="color:#ae81ff">60000</span>}}]
+...
+</code></pre></div><p>这种方式有一个缺点，<code>modules/drivers</code>下的（源码）驱动并不会成功加载，调试<code>src/</code>目录下的源码是没问题的。具体报错如下：（其中impala是driver名字）</p>
+<blockquote>
+<p>Could not locate metabase/driver/impala__init.class, metabase/driver/impala.clj or metabase/driver/impala.cljc on classpath.</p>
+</blockquote>
+<p>试验了下，<code>plugins</code>目录下的driver是可以成功加载的。</p>
+<p>开发模式下，按照加载机制，如果<code>plugins</code>下的driver与<code>modules/drivers</code>下的driver重名，会被后者覆盖掉。其实这是个bug，值没取对，导致两个目录下的同一个driver，重复加载并覆盖。（之前还好奇为何要加载两遍driver）</p>
+<p><img src="../../images/image-20200710160645843.png" alt="image-20200710160645843"></p>
+<p>总结，目前使用这种配置，调试<code>Metabase</code>核心包是没问题的，plugin driver建议放到<code>plugins</code>目录。如何调试plugin driver的源码，这个还得研究。TBD</p>
+<p>不用<code>Cursive</code>，直接运行<code>lein run-with-repl</code>是没问题的。</p>
 <h4 id="clojure-动态性">Clojure 动态性：#&rsquo;</h4>
 <p><code>#'</code>是 Clojure 里的一个reader macro，可以理解为一个语法糖。 <a href="https://en.wikibooks.org/wiki/Learning_Clojure/Reader_Macros">https://en.wikibooks.org/wiki/Learning_Clojure/Reader_Macros</a></p>
 <p>实际展开为<code>var</code>方法。</p>

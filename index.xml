@@ -353,7 +353,7 @@ expect1
     
     
         <item>
-        <title>使用 REPL 调试 Clojure 项目</title>
+        <title>使用 REPL 调试 Clojure 项目（Metabase）</title>
         <link>https://xujiahua.github.io/posts/20200604-clojure-repl-debug/</link>
         <pubDate>Thu, 04 Jun 2020 16:13:27 +0800</pubDate>
         
@@ -365,6 +365,10 @@ expect1
 &lt;h4 id=&#34;cursive-插件按键冲突&#34;&gt;Cursive 插件按键冲突&lt;/h4&gt;
 &lt;p&gt;比如我会用组合键&lt;code&gt;⌘ + [&lt;/code&gt;浏览代码，与 Cursive 插件的按键冲突。可以取消 Cursive 的这个组合键。&lt;/p&gt;
 &lt;p&gt;&lt;img src=&#34;../../images/image-20200604162732892.png&#34; alt=&#34;image-20200604162732892&#34;&gt;&lt;/p&gt;
+&lt;h3 id=&#34;emacs&#34;&gt;Emacs&lt;/h3&gt;
+&lt;p&gt;&lt;em&gt;Added 2020-07-10&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;参考：&lt;a href=&#34;https://www.braveclojure.com/basic-emacs/&#34;&gt;How to Use Emacs, an Excellent Clojure Editor&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;实践&lt;code&gt;Metabase&lt;/code&gt;代码库失败：在REPL中执行(-main)直接挂了，待研究。TBD&lt;/em&gt;&lt;/p&gt;
 &lt;h2 id=&#34;实践&#34;&gt;实践&lt;/h2&gt;
 &lt;h3 id=&#34;metabase&#34;&gt;Metabase&lt;/h3&gt;
 &lt;p&gt;接触 Clojure 是因为 Metabase 这个项目 &lt;a href=&#34;https://github.com/metabase/metabase&#34;&gt;https://github.com/metabase/metabase&lt;/a&gt; 。以 Metabase 为例，说明如何调试 Clojure 项目。&lt;/p&gt;
@@ -417,6 +421,35 @@ expect1
 &lt;ol&gt;
 &lt;li&gt;The Cursive REPL &lt;a href=&#34;https://cursive-ide.com/userguide/repl.html&#34;&gt;https://cursive-ide.com/userguide/repl.html&lt;/a&gt;&lt;/li&gt;
 &lt;/ol&gt;
+&lt;h4 id=&#34;metabase-run-with-repl&#34;&gt;metabase run-with-repl&lt;/h4&gt;
+&lt;p&gt;&lt;em&gt;Added 2020-07-10&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;Cursive中也支持指定Profiles。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200710155103818.png&#34; alt=&#34;image-20200710155103818&#34;&gt;&lt;/p&gt;
+&lt;p&gt;这个profile的作用是设置&lt;code&gt;:mb-jetty-join&lt;/code&gt;为&lt;code&gt;false&lt;/code&gt;，不阻塞REPL主线程。另外启动&lt;code&gt;metabase.core/-main&lt;/code&gt;。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-clojure&#34; data-lang=&#34;clojure&#34;&gt;project.clj
+
+...
+&lt;span style=&#34;color:#e6db74&#34;&gt;:run-with-repl&lt;/span&gt;
+   [&lt;span style=&#34;color:#e6db74&#34;&gt;:exclude-tests&lt;/span&gt;
+    &lt;span style=&#34;color:#e6db74&#34;&gt;:include-all-drivers&lt;/span&gt;
+
+    {&lt;span style=&#34;color:#e6db74&#34;&gt;:env&lt;/span&gt;
+     {&lt;span style=&#34;color:#e6db74&#34;&gt;:mb-jetty-join&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;false&amp;#34;&lt;/span&gt;}
+
+     &lt;span style=&#34;color:#e6db74&#34;&gt;:repl-options&lt;/span&gt;
+     {&lt;span style=&#34;color:#e6db74&#34;&gt;:init&lt;/span&gt;    (&lt;span style=&#34;color:#66d9ef&#34;&gt;do &lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;require&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;metabase.core&lt;/span&gt;)
+                   (&lt;span style=&#34;color:#a6e22e&#34;&gt;metabase.core/-main&lt;/span&gt;))
+      &lt;span style=&#34;color:#e6db74&#34;&gt;:timeout&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;60000&lt;/span&gt;}}]
+...
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;这种方式有一个缺点，&lt;code&gt;modules/drivers&lt;/code&gt;下的（源码）驱动并不会成功加载，调试&lt;code&gt;src/&lt;/code&gt;目录下的源码是没问题的。具体报错如下：（其中impala是driver名字）&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Could not locate metabase/driver/impala__init.class, metabase/driver/impala.clj or metabase/driver/impala.cljc on classpath.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;试验了下，&lt;code&gt;plugins&lt;/code&gt;目录下的driver是可以成功加载的。&lt;/p&gt;
+&lt;p&gt;开发模式下，按照加载机制，如果&lt;code&gt;plugins&lt;/code&gt;下的driver与&lt;code&gt;modules/drivers&lt;/code&gt;下的driver重名，会被后者覆盖掉。其实这是个bug，值没取对，导致两个目录下的同一个driver，重复加载并覆盖。（之前还好奇为何要加载两遍driver）&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200710160645843.png&#34; alt=&#34;image-20200710160645843&#34;&gt;&lt;/p&gt;
+&lt;p&gt;总结，目前使用这种配置，调试&lt;code&gt;Metabase&lt;/code&gt;核心包是没问题的，plugin driver建议放到&lt;code&gt;plugins&lt;/code&gt;目录。如何调试plugin driver的源码，这个还得研究。TBD&lt;/p&gt;
+&lt;p&gt;不用&lt;code&gt;Cursive&lt;/code&gt;，直接运行&lt;code&gt;lein run-with-repl&lt;/code&gt;是没问题的。&lt;/p&gt;
 &lt;h4 id=&#34;clojure-动态性&#34;&gt;Clojure 动态性：#&amp;rsquo;&lt;/h4&gt;
 &lt;p&gt;&lt;code&gt;#&#39;&lt;/code&gt;是 Clojure 里的一个reader macro，可以理解为一个语法糖。 &lt;a href=&#34;https://en.wikibooks.org/wiki/Learning_Clojure/Reader_Macros&#34;&gt;https://en.wikibooks.org/wiki/Learning_Clojure/Reader_Macros&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt;实际展开为&lt;code&gt;var&lt;/code&gt;方法。&lt;/p&gt;
