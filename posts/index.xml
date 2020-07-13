@@ -6,10 +6,23 @@
     <description>Recent content in Posts on 许嘉华的博客</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Fri, 10 Jul 2020 10:35:08 +0800</lastBuildDate>
+    <lastBuildDate>Mon, 13 Jul 2020 16:16:27 +0800</lastBuildDate>
     
 	<atom:link href="https://xujiahua.github.io/posts/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Impala TIMESTAMP 时区处理</title>
+      <link>https://xujiahua.github.io/posts/20200713-impala-timezone/</link>
+      <pubDate>Mon, 13 Jul 2020 16:16:27 +0800</pubDate>
+      
+      <guid>https://xujiahua.github.io/posts/20200713-impala-timezone/</guid>
+      <description>现象 Hive 以Parquet数据存储格式写入的 TIMESTAMP字段内容，Impala读取，时间差8小时。
+Hive写入
+Impala读取
+原因 Hive写Parquet数据文件，TIMESTAMP先规范化到UTC格式再存储。而Impala直接读取数据文件中的内容，不会进行TIMEZONE的调整。
+ When Hive writes to Parquet data files, the TIMESTAMP values are normalized to UTC from the local time zone of the host where the data was written. On the other hand, Impala does not make any time zone adjustment when it writes or reads INT96 TIMESTAMP values to Parquet files. This difference in time zone handling can cause potentially inconsistent results when Impala processes TIMESTAMP values in the Parquet files written by Hive.</description>
+    </item>
     
     <item>
       <title>Metabase Impala Driver 0710更新日志</title>

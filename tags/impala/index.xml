@@ -53,5 +53,18 @@ Hive Impala的数据类型异同 以 Hive Data Types 为基准。
    Type Name Type Catgory Comment Impala Support?     TINYINT Numeric Types  Yes   SMALLINT Numeric Types  Yes   INT Numeric Types  Yes   BIGINT Numeric Types  Yes   FLOAT Numeric Types  Yes   DOUBLE Numeric Types  Yes   DOUBLE PRECISION Numeric Types alias for DOUBLE, only available starting with Hive 2.</description>
     </item>
     
+    <item>
+      <title>Metabase Impala Driver</title>
+      <link>https://xujiahua.github.io/posts/20200527-metabase-impala-driver/</link>
+      <pubDate>Wed, 27 May 2020 12:16:36 +0800</pubDate>
+      
+      <guid>https://xujiahua.github.io/posts/20200527-metabase-impala-driver/</guid>
+      <description>更新日志
+ Metabase Impala Driver 0528更新日志 Metabase Impala Driver 0710更新日志  背景 我们的数据仓库是 Hadoop/Hive 体系的。Hadoop 版本采用的是 CDH 发行版。在这个背景下 SQL on Hadoop 的方案有 Hive/Impala/(SparkSQL)。作为 BI 数据库，Impala 在我们的场景下比较合适。
+ Hive：太慢了。做 ETL 可以，BI 非常不适。 SparkSQL：CDH 官方 Spark 不含 Thrift Server。为了能够使用 Metabase ，独立于 CDH 启了个 Thrift Server，用着还不错。问题就在于缺乏统一管理，比如 Kerberos 的管理就得自己写脚本处理、进程 OOM 挂掉了 CDH Manager 也监测不到。 Impala：CDH 官方出品，为 BI 而设计，由 CDH Manager 管理。根据这份报告，见下参考链接，Impala 好于 SparkSQL。  出于尽可能复用已有基础设施的目的，选择 Impala。而 Metabase 官方、社区并不提供 Impala 驱动。本文就是为了探索并解决这个问题。
+参考：
+ 开源OLAP引擎测评报告(SparkSql、Presto、Impala、HAWQ、ClickHouse、GreenPlum) http://www.clickhouse.com.cn/topic/5c453371389ad55f127768ea  现有驱动探索 搭建 Impala 开发环境 使用 Cloudera Quickstart Docker 镜像（官方已经下架 quickstart vm ）。其中，Impala版本 2.</description>
+    </item>
+    
   </channel>
 </rss>

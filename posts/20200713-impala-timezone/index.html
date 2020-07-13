@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html><head>
-<title>Metabase Impala Driver 0710更新日志</title>
+<title>Impala TIMESTAMP 时区处理</title>
 
 <meta charset="utf-8">
 <meta name="X-UA-Compatible" content="IE=edge">
@@ -135,6 +135,84 @@ Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopene
     <div class="toc animated-visibility" :class="{ invisible: scrollY <= 140 }">
 
 
+	<div class="toc-content">
+	
+		
+		
+		
+		<center>- CATALOG -</center>
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e7%8e%b0%e8%b1%a1" v-on:click="closeDrawer" id="现象-nav">
+										 现象
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e5%8e%9f%e5%9b%a0" v-on:click="closeDrawer" id="原因-nav">
+										 原因
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e8%a7%a3%e5%86%b3" v-on:click="closeDrawer" id="解决-nav">
+										 解决
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+	</div>
+
 </div>
     
     <div class="pagination">
@@ -197,6 +275,84 @@ Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopene
             <div class="toc">
 
 
+	<div class="toc-content">
+	
+		
+		
+		
+		<center>- CATALOG -</center>
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e7%8e%b0%e8%b1%a1" v-on:click="closeDrawer" id="现象-nav">
+										 现象
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e5%8e%9f%e5%9b%a0" v-on:click="closeDrawer" id="原因-nav">
+										 原因
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e8%a7%a3%e5%86%b3" v-on:click="closeDrawer" id="解决-nav">
+										 解决
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+	</div>
+
 </div>
             
         </div>
@@ -237,26 +393,17 @@ Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopene
             <div class="post-head-wrapper-text-only"
                  style="background-image: url('/')">
                 <div class="post-title">
-                    Metabase Impala Driver 0710更新日志
+                    Impala TIMESTAMP 时区处理
                     
                     <div class="post-meta">
                         
                         <time itemprop="datePublished">
-                            2020-07-10 10:35
+                            2020-07-13 16:16
                         </time>
                         
 
                         
 
-                        
-                            <i class="material-icons" style="">label</i>
-                            
-                                <a href="/tags/metabase">Metabase</a>
-                                &nbsp;
-                            
-                                <a href="/tags/impala">Impala</a>
-                                &nbsp;
-                            
                         
                     </div>
                 </div>
@@ -264,16 +411,29 @@ Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopene
             
             <div class="post-body-wrapper">
                 <div class="post-body">
-                    <p>基于 Metabase 0.35.4 版本和Cloudera的Impala JDBC驱动，重构了一份独立的 <a href="https://github.com/XUJiahua/metabase-impala-driver">Metabase Impala Driver</a>。</p>
-<p>整体思路参考 <a href="https://github.com/metabase/metabase/wiki/Writing-a-Driver">Writing A Driver</a> ，更多时间是参考其他驱动的代码和根据实际用例调试。还有不少待完善的地方：</p>
-<ol>
-<li>单元测试缺乏。</li>
-<li>去除没有必要的方法（首先得理解方法的含义）。</li>
-</ol>
+                    <h2 id="现象">现象</h2>
+<p><code>Hive</code> 以<code>Parquet</code>数据存储格式写入的 <code>TIMESTAMP</code>字段内容，<code>Impala</code>读取，时间差8小时。</p>
+<p><img src="../../images/image-20200713162929821.png" alt="image-20200713162929821"></p>
+<p><code>Hive</code>写入</p>
+<p><img src="../../images/image-20200713163001445.png" alt="image-20200713163001445"></p>
+<p><code>Impala</code>读取</p>
+<h2 id="原因">原因</h2>
+<p><code>Hive</code>写<code>Parquet</code>数据文件，<code>TIMESTAMP</code>先规范化到UTC格式再存储。而<code>Impala</code>直接读取数据文件中的内容，不会进行TIMEZONE的调整。</p>
+<blockquote>
+<p>When Hive writes to Parquet data files, the TIMESTAMP values are normalized to UTC from the local time zone of the host where the data was written. On the other hand, Impala does not make any time zone adjustment when it writes or reads INT96 TIMESTAMP values to Parquet files. This difference in time zone handling can cause potentially inconsistent results when Impala processes TIMESTAMP values in the Parquet files written by Hive.</p>
+</blockquote>
+<p><a href="https://docs.cloudera.com/documentation/enterprise/latest/topics/impala_timestamp.html">https://docs.cloudera.com/documentation/enterprise/latest/topics/impala_timestamp.html</a></p>
+<h2 id="解决">解决</h2>
+<p><code>impalad</code>加入如下参数：</p>
+<pre><code>--use_local_tz_for_unix_timestamp_conversions=true
+--convert_legacy_hive_parquet_utc_timestamps=true
+</code></pre><p>CDH 配置：</p>
+<p><img src="../../images/image-20200713163849195.png" alt="image-20200713163849195"></p>
+<p>重启即可生效。</p>
 
                     
                     <HR width="100%" id="EOF">
-                    <p style="color:#777;">Last modified on 2020-07-10</p>
+                    <p style="color:#777;">Last modified on 2020-07-13</p>
                     
                 </div>
             </div>
@@ -282,14 +442,14 @@ Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopene
             <nav class="post-pagination">
 
                 
-                <a class="newer-posts" href="https://xujiahua.github.io/posts/20200713-impala-timezone/">
-                    Next<br>Impala TIMESTAMP 时区处理
+                <a class="newer-posts">
+                    Next<br>No newer posts.
                 </a>
                 
                 
                 
-                <a class="older-posts" href="https://xujiahua.github.io/posts/20200615-metabase-customer-isolation/">
-                    Previous<br>Metabase 客户隔离
+                <a class="older-posts" href="https://xujiahua.github.io/posts/20200710-metabase-impala-driver/">
+                    Previous<br>Metabase Impala Driver 0710更新日志
                 </a>
                 
             </nav>
