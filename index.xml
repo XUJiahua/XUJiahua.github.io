@@ -22,7 +22,7 @@
 &lt;p&gt;&lt;img src=&#34;../../images/image-20200713162929821.png&#34; alt=&#34;image-20200713162929821&#34;&gt;&lt;/p&gt;
 &lt;p&gt;&lt;code&gt;Hive&lt;/code&gt;写入&lt;/p&gt;
 &lt;p&gt;&lt;img src=&#34;../../images/image-20200713163001445.png&#34; alt=&#34;image-20200713163001445&#34;&gt;&lt;/p&gt;
-&lt;p&gt;&lt;code&gt;Impala&lt;/code&gt;读取&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;Impala&lt;/code&gt;读取差8小时，北京时间与UTC差8小时。&lt;/p&gt;
 &lt;h2 id=&#34;原因&#34;&gt;原因&lt;/h2&gt;
 &lt;p&gt;&lt;code&gt;Hive&lt;/code&gt;写&lt;code&gt;Parquet&lt;/code&gt;数据文件，&lt;code&gt;TIMESTAMP&lt;/code&gt;先规范化到UTC格式再存储。而&lt;code&gt;Impala&lt;/code&gt;直接读取数据文件中的内容，不会进行TIMEZONE的调整。&lt;/p&gt;
 &lt;blockquote&gt;

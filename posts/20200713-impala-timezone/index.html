@@ -416,7 +416,7 @@ Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopene
 <p><img src="../../images/image-20200713162929821.png" alt="image-20200713162929821"></p>
 <p><code>Hive</code>写入</p>
 <p><img src="../../images/image-20200713163001445.png" alt="image-20200713163001445"></p>
-<p><code>Impala</code>读取</p>
+<p><code>Impala</code>读取差8小时，北京时间与UTC差8小时。</p>
 <h2 id="原因">原因</h2>
 <p><code>Hive</code>写<code>Parquet</code>数据文件，<code>TIMESTAMP</code>先规范化到UTC格式再存储。而<code>Impala</code>直接读取数据文件中的内容，不会进行TIMEZONE的调整。</p>
 <blockquote>
