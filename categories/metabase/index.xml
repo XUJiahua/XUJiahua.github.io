@@ -6,10 +6,37 @@
     <description>Recent content in Metabase on 许嘉华的博客</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Mon, 15 Jun 2020 17:19:50 +0800</lastBuildDate>
+    <lastBuildDate>Tue, 14 Jul 2020 10:14:14 +0800</lastBuildDate>
     
 	<atom:link href="https://xujiahua.github.io/categories/metabase/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Metabase Impala Driver 时区问题</title>
+      <link>https://xujiahua.github.io/posts/20200714-metabase-timezone/</link>
+      <pubDate>Tue, 14 Jul 2020 10:14:14 +0800</pubDate>
+      
+      <guid>https://xujiahua.github.io/posts/20200714-metabase-timezone/</guid>
+      <description>问题 实际日期是上午11点，而Metabase显示是下午7点。差8小时。
+select CURRENT_TIMESTAMP(),hour(CURRENT_TIMESTAMP()) 分析 参考：
+ Handling timezones in Metabase troubleshooting-guide/timezones  有几个时区有关的设置：
+ Database TimeZone，其中 impalad 启动环境是东八区，TIMESTAMP 不存储时区信息，存储的是东八区本地时间。 Metabase TimeZone = JVM TimeZone = OS TimeZone，使用的是东八区。 “Report Time Zone” setting，对 Impala 是不起作用的。  同样的SQL在MySQL上试了下，没问题。问题定位基本在metabase到impala的Driver层。
+发现从impala读取TIMESTAMP的值，TIMEZONE写死了UTC，应该是东八区。（Metabase SparkSQL Driver 也有这个问题，因为代码是从那copy的。）
+https://github.com/XUJiahua/metabase-impala-driver/commit/0963f9890a9213d53511c61b53870476f8f82cf4
+metabase东八区启动，用北京时间显示，就会多加8小时。
+修复 </description>
+    </item>
+    
+    <item>
+      <title>Metabase Impala Driver 0710更新日志</title>
+      <link>https://xujiahua.github.io/posts/20200710-metabase-impala-driver/</link>
+      <pubDate>Fri, 10 Jul 2020 10:35:08 +0800</pubDate>
+      
+      <guid>https://xujiahua.github.io/posts/20200710-metabase-impala-driver/</guid>
+      <description>基于 Metabase 0.35.4 版本和Cloudera的Impala JDBC驱动，重构了一份独立的 Metabase Impala Driver。
+整体思路参考 Writing A Driver ，更多时间是参考其他驱动的代码和根据实际用例调试。还有不少待完善的地方：
+ 单元测试缺乏。 去除没有必要的方法（首先得理解方法的含义）。  </description>
+    </item>
     
     <item>
       <title>Metabase 客户隔离</title>
@@ -58,6 +85,24 @@ select count(1) FROM ORDERS WHERE 1=1 AND CAST(&amp;#34;PUBLIC&amp;#34;.&amp;#34
 column CREATED_AT 被转为date类型。因为日期控件的日期精度只到年月日，没有时分秒，实际使用中确实也没必要时分秒。
 不同的数据库，支持的数据类型是不同的，比如Impala就不支持date类型。Metabase 用如下语句达到相同效果（由各个数据库驱动负责实现），将timestamp类型的精度截断到年月日：
 CAST(from_unixtime(unix_timestamp(from_timestamp(CAST(`table`.`column` AS timestamp), &amp;#39;yyyy-MM-dd&amp;#39;), &amp;#39;yyyy-MM-dd&amp;#39;)) AS timestamp) BETWEEN to_timestamp(&amp;#39;2020-05-25 00:00:00&amp;#39;, &amp;#39;yyyy-MM-dd HH:mm:ss&amp;#39;) AND to_timestamp(&amp;#39;2020-05-31 00:00:00&amp;#39;, &amp;#39;yyyy-MM-dd HH:mm:ss&amp;#39;) 参考：</description>
+    </item>
+    
+    <item>
+      <title>使用 REPL 调试 Clojure 项目（Metabase）</title>
+      <link>https://xujiahua.github.io/posts/20200604-clojure-repl-debug/</link>
+      <pubDate>Thu, 04 Jun 2020 16:13:27 +0800</pubDate>
+      
+      <guid>https://xujiahua.github.io/posts/20200604-clojure-repl-debug/</guid>
+      <description>开发工具 Intellij IDEA + Cursive 安装 IDEA 社区版即可，并安装插件 Cursive。
+Cursive 插件按键冲突 比如我会用组合键⌘ + [浏览代码，与 Cursive 插件的按键冲突。可以取消 Cursive 的这个组合键。
+Emacs Added 2020-07-10
+参考：How to Use Emacs, an Excellent Clojure Editor
+实践Metabase代码库失败：在REPL中执行(-main)直接挂了，待研究。TBD
+实践 Metabase 接触 Clojure 是因为 Metabase 这个项目 https://github.com/metabase/metabase 。以 Metabase 为例，说明如何调试 Clojure 项目。
+Metabase 由前后端两部分组成，后端是由 Clojure 写的 REST API 项目。启动前端工程，需要在前端界面上触发 API 请求。
+yarn build-hot 参考
+ Metabase developers-guide https://github.com/metabase/metabase/blob/master/docs/developers-guide.md  REPL 调试 Clojure 项目 新建一个 Clojure REPL 配置。
+展开右下角的 REPL 子窗口，Run REPL for metabase-core。（注意，此时，项目中的 clojure namespace 并没有实际加载。代码编辑区运行 Clojure 函数，会报错，Error: :namespace-not-found）</description>
     </item>
     
     <item>

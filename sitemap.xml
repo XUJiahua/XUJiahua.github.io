@@ -3,12 +3,22 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
+    <loc>https://xujiahua.github.io/categories/</loc>
+    <lastmod>2020-07-14T10:14:14+08:00</lastmod>
+  </url>
+  
+  <url>
     <loc>https://xujiahua.github.io/tags/impala/</loc>
     <lastmod>2020-07-14T10:14:14+08:00</lastmod>
   </url>
   
   <url>
     <loc>https://xujiahua.github.io/tags/metabase/</loc>
+    <lastmod>2020-07-14T10:14:14+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://xujiahua.github.io/categories/metabase/</loc>
     <lastmod>2020-07-14T10:14:14+08:00</lastmod>
   </url>
   
@@ -40,16 +50,6 @@
   <url>
     <loc>https://xujiahua.github.io/posts/20200710-metabase-impala-driver/</loc>
     <lastmod>2020-07-10T10:35:08+08:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://xujiahua.github.io/categories/</loc>
-    <lastmod>2020-06-15T17:19:50+08:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://xujiahua.github.io/categories/metabase/</loc>
-    <lastmod>2020-06-15T17:19:50+08:00</lastmod>
   </url>
   
   <url>
