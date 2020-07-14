@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html><head>
-<title>Impala TIMESTAMP 时区处理</title>
+<title>Metabase Impala Driver 时区问题</title>
 
 <meta charset="utf-8">
 <meta name="X-UA-Compatible" content="IE=edge">
@@ -153,8 +153,8 @@ Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopene
 						
 						
 								<li>
-				 					<a href="#%e7%8e%b0%e8%b1%a1" v-on:click="closeDrawer" id="现象-nav">
-										 现象
+				 					<a href="#%e9%97%ae%e9%a2%98" v-on:click="closeDrawer" id="问题-nav">
+										 问题
 									</a>
 								</li>
 						
@@ -176,8 +176,8 @@ Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopene
 						
 						
 								<li>
-				 					<a href="#%e5%8e%9f%e5%9b%a0" v-on:click="closeDrawer" id="原因-nav">
-										 原因
+				 					<a href="#%e5%88%86%e6%9e%90" v-on:click="closeDrawer" id="分析-nav">
+										 分析
 									</a>
 								</li>
 						
@@ -199,8 +199,8 @@ Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopene
 						
 						
 								<li>
-				 					<a href="#%e8%a7%a3%e5%86%b3" v-on:click="closeDrawer" id="解决-nav">
-										 解决
+				 					<a href="#%e4%bf%ae%e5%a4%8d" v-on:click="closeDrawer" id="修复-nav">
+										 修复
 									</a>
 								</li>
 						
@@ -293,8 +293,8 @@ Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopene
 						
 						
 								<li>
-				 					<a href="#%e7%8e%b0%e8%b1%a1" v-on:click="closeDrawer" id="现象-nav">
-										 现象
+				 					<a href="#%e9%97%ae%e9%a2%98" v-on:click="closeDrawer" id="问题-nav">
+										 问题
 									</a>
 								</li>
 						
@@ -316,8 +316,8 @@ Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopene
 						
 						
 								<li>
-				 					<a href="#%e5%8e%9f%e5%9b%a0" v-on:click="closeDrawer" id="原因-nav">
-										 原因
+				 					<a href="#%e5%88%86%e6%9e%90" v-on:click="closeDrawer" id="分析-nav">
+										 分析
 									</a>
 								</li>
 						
@@ -339,8 +339,8 @@ Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopene
 						
 						
 								<li>
-				 					<a href="#%e8%a7%a3%e5%86%b3" v-on:click="closeDrawer" id="解决-nav">
-										 解决
+				 					<a href="#%e4%bf%ae%e5%a4%8d" v-on:click="closeDrawer" id="修复-nav">
+										 修复
 									</a>
 								</li>
 						
@@ -393,23 +393,17 @@ Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopene
             <div class="post-head-wrapper-text-only"
                  style="background-image: url('/')">
                 <div class="post-title">
-                    Impala TIMESTAMP 时区处理
+                    Metabase Impala Driver 时区问题
                     
                     <div class="post-meta">
                         
                         <time itemprop="datePublished">
-                            2020-07-13 16:16
+                            2020-07-14 10:14
                         </time>
                         
 
                         
 
-                        
-                            <i class="material-icons" style="">label</i>
-                            
-                                <a href="/tags/impala">Impala</a>
-                                &nbsp;
-                            
                         
                     </div>
                 </div>
@@ -417,29 +411,34 @@ Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopene
             
             <div class="post-body-wrapper">
                 <div class="post-body">
-                    <h2 id="现象">现象</h2>
-<p><code>Hive</code> 以<code>Parquet</code>数据存储格式写入的 <code>TIMESTAMP</code>字段内容，<code>Impala</code>读取，时间差8小时。</p>
-<p><img src="../../images/image-20200713162929821.png" alt="image-20200713162929821"></p>
-<p><code>Hive</code>写入</p>
-<p><img src="../../images/image-20200713163001445.png" alt="image-20200713163001445"></p>
-<p><code>Impala</code>读取差8小时，北京时间与UTC差8小时。</p>
-<h2 id="原因">原因</h2>
-<p><code>Hive</code>写<code>Parquet</code>数据文件，<code>TIMESTAMP</code>先规范化到UTC格式再存储。而<code>Impala</code>直接读取数据文件中的内容，不会进行TIMEZONE的调整。</p>
-<blockquote>
-<p>When Hive writes to Parquet data files, the TIMESTAMP values are normalized to UTC from the local time zone of the host where the data was written. On the other hand, Impala does not make any time zone adjustment when it writes or reads INT96 TIMESTAMP values to Parquet files. This difference in time zone handling can cause potentially inconsistent results when Impala processes TIMESTAMP values in the Parquet files written by Hive.</p>
-</blockquote>
-<p><a href="https://docs.cloudera.com/documentation/enterprise/latest/topics/impala_timestamp.html">https://docs.cloudera.com/documentation/enterprise/latest/topics/impala_timestamp.html</a></p>
-<h2 id="解决">解决</h2>
-<p><code>impalad</code>加入如下参数：</p>
-<pre><code>--use_local_tz_for_unix_timestamp_conversions=true
---convert_legacy_hive_parquet_utc_timestamps=true
-</code></pre><p>CDH 配置：</p>
-<p><img src="../../images/image-20200713163849195.png" alt="image-20200713163849195"></p>
-<p>重启即可生效。</p>
+                    <h2 id="问题">问题</h2>
+<p>实际日期是上午11点，而<code>Metabase</code>显示是下午7点。差8小时。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">select</span> <span style="color:#66d9ef">CURRENT_TIMESTAMP</span>(),hour(<span style="color:#66d9ef">CURRENT_TIMESTAMP</span>())
+</code></pre></div><p><img src="../../images/image-20200714113556806.png" alt="image-20200714113556806"></p>
+<h2 id="分析">分析</h2>
+<p>参考：</p>
+<ol>
+<li><a href="https://www.metabase.com/docs/latest/operations-guide/handling-timezones.html">Handling timezones in Metabase</a></li>
+<li><a href="https://www.metabase.com/docs/latest/troubleshooting-guide/timezones.html">troubleshooting-guide/timezones</a></li>
+</ol>
+<p>有几个时区有关的设置：</p>
+<ol>
+<li>Database TimeZone，其中 impalad 启动环境是东八区，TIMESTAMP 不存储时区信息，存储的是东八区本地时间。</li>
+<li>Metabase TimeZone = JVM TimeZone = OS TimeZone，使用的是东八区。</li>
+<li>“Report Time Zone” setting，对 Impala 是不起作用的。</li>
+</ol>
+<p>同样的SQL在MySQL上试了下，没问题。问题定位基本在<code>metabase</code>到<code>impala</code>的Driver层。</p>
+<p>发现从<code>impala</code>读取TIMESTAMP的值，TIMEZONE写死了UTC，应该是东八区。（Metabase SparkSQL Driver 也有这个问题，因为代码是从那copy的。）</p>
+<p><img src="../../images/image-20200714113928339.png" alt="image-20200714113928339"></p>
+<p><a href="https://github.com/XUJiahua/metabase-impala-driver/commit/0963f9890a9213d53511c61b53870476f8f82cf4">https://github.com/XUJiahua/metabase-impala-driver/commit/0963f9890a9213d53511c61b53870476f8f82cf4</a></p>
+<p><code>metabase</code>东八区启动，用北京时间显示，就会多加8小时。</p>
+<p><img src="../../images/image-20200714131930694.png" alt="image-20200714131930694"></p>
+<h2 id="修复">修复</h2>
+<p><img src="../../images/image-20200714113658545.png" alt="image-20200714113658545"></p>
 
                     
                     <HR width="100%" id="EOF">
-                    <p style="color:#777;">Last modified on 2020-07-13</p>
+                    <p style="color:#777;">Last modified on 2020-07-14</p>
                     
                 </div>
             </div>
@@ -448,14 +447,14 @@ Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopene
             <nav class="post-pagination">
 
                 
-                <a class="newer-posts" href="https://xujiahua.github.io/posts/20200714-metabase-timezone/">
-                    Next<br>Metabase Impala Driver 时区问题
+                <a class="newer-posts">
+                    Next<br>No newer posts.
                 </a>
                 
                 
                 
-                <a class="older-posts" href="https://xujiahua.github.io/posts/20200710-metabase-impala-driver/">
-                    Previous<br>Metabase Impala Driver 0710更新日志
+                <a class="older-posts" href="https://xujiahua.github.io/posts/20200713-impala-timezone/">
+                    Previous<br>Impala TIMESTAMP 时区处理
                 </a>
                 
             </nav>

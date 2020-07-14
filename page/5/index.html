@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html><head>
-<title>Impala TIMESTAMP 时区处理</title>
+	<meta name="generator" content="Hugo 0.73.0" />
+<title>许嘉华的博客</title>
 
 <meta charset="utf-8">
 <meta name="X-UA-Compatible" content="IE=edge">
@@ -45,7 +46,11 @@ if (!doNotTrack) {
 <script src="https://xujiahua.github.io//js/table.js"></script>
 
 
-<script src="https://xujiahua.github.io//js/toc.js"></script>
+<style>
+  .toc{
+    display: none !important;
+  }
+</style>
 
 
 <script>
@@ -60,7 +65,7 @@ if (!doNotTrack) {
 </head><body>
     	<div id="app"><div ref="sideContainer" class="side-container">
     
-    <a class="a-block nav-head false" href="https://xujiahua.github.io/">
+    <a class="a-block nav-head active" href="https://xujiahua.github.io/">
     
         <div class="nav-title">
             许嘉华的博客
@@ -74,11 +79,9 @@ if (!doNotTrack) {
             
             
             
-                
             
             
-            
-            <a class="a-block nav-link-item active" href="/posts">
+            <a class="a-block nav-link-item false" href="/posts">
                 Archive
             </a>
             
@@ -132,95 +135,30 @@ Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopene
     
 </div><div ref="extraContainer" class="extra-container">
     
-    <div class="toc animated-visibility" :class="{ invisible: scrollY <= 140 }">
-
-
-	<div class="toc-content">
-	
-		
-		
-		
-		<center>- CATALOG -</center>
-			
-				
-				
-					
-						
-						
-							<ul>
-						
-							<ul>
-						
-						
-								<li>
-				 					<a href="#%e7%8e%b0%e8%b1%a1" v-on:click="closeDrawer" id="现象-nav">
-										 现象
-									</a>
-								</li>
-						
-							</ul>
-						
-							</ul>
-						
-					
-				
-			
-				
-				
-					
-						
-						
-							<ul>
-						
-							<ul>
-						
-						
-								<li>
-				 					<a href="#%e5%8e%9f%e5%9b%a0" v-on:click="closeDrawer" id="原因-nav">
-										 原因
-									</a>
-								</li>
-						
-							</ul>
-						
-							</ul>
-						
-					
-				
-			
-				
-				
-					
-						
-						
-							<ul>
-						
-							<ul>
-						
-						
-								<li>
-				 					<a href="#%e8%a7%a3%e5%86%b3" v-on:click="closeDrawer" id="解决-nav">
-										 解决
-									</a>
-								</li>
-						
-							</ul>
-						
-							</ul>
-						
-					
-				
-			
-	</div>
-
-</div>
-    
     <div class="pagination">
         <a id="globalBackToTop" class="pagination-action animated-visibility" href="#top" :class="{ invisible: scrollY == 0 }">
             <i class="material-icons pagination-action-icon">
                 keyboard_arrow_up
             </i>
         </a>
+        
+        
+            <div class="pagination-indicator">
+                <span style="text-align: center">
+                    5<br><div style="display: inline-block; transform: rotate(-28deg)">-</div><br>5
+                </span>
+            </div>
+            
+            
+            <a class="pagination-action" href="/page/4/">
+                <i class="material-icons pagination-action-icon">
+                    chevron_left
+                </i>
+            </a>
+            
+
+            
+        
         
     </div>
 </div><div class="single-column-drawer-container" ref="drawer"
@@ -232,11 +170,9 @@ Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopene
                 
                 
                 
-                    
                 
                 
-                
-                <a class="a-block drawer-menu-item active" href="/posts">
+                <a class="a-block drawer-menu-item false" href="/posts">
                     Archive
                 </a>
                 
@@ -272,89 +208,6 @@ Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopene
                 
             
             
-            <div class="toc">
-
-
-	<div class="toc-content">
-	
-		
-		
-		
-		<center>- CATALOG -</center>
-			
-				
-				
-					
-						
-						
-							<ul>
-						
-							<ul>
-						
-						
-								<li>
-				 					<a href="#%e7%8e%b0%e8%b1%a1" v-on:click="closeDrawer" id="现象-nav">
-										 现象
-									</a>
-								</li>
-						
-							</ul>
-						
-							</ul>
-						
-					
-				
-			
-				
-				
-					
-						
-						
-							<ul>
-						
-							<ul>
-						
-						
-								<li>
-				 					<a href="#%e5%8e%9f%e5%9b%a0" v-on:click="closeDrawer" id="原因-nav">
-										 原因
-									</a>
-								</li>
-						
-							</ul>
-						
-							</ul>
-						
-					
-				
-			
-				
-				
-					
-						
-						
-							<ul>
-						
-							<ul>
-						
-						
-								<li>
-				 					<a href="#%e8%a7%a3%e5%86%b3" v-on:click="closeDrawer" id="解决-nav">
-										 解决
-									</a>
-								</li>
-						
-							</ul>
-						
-							</ul>
-						
-					
-				
-			
-	</div>
-
-</div>
-            
         </div>
     </div>
 </div>
@@ -383,96 +236,42 @@ Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopene
     </a>
 </div>
             <div id="content">
+
 <div ref="streamContainer" class="stream-container">
-    <div class="post-list-container post-list-container-shadow">
-        <div class="post">
+    <div class="post-list-container post-list-container-no-background">
+        
             
-            
-            
-
-            <div class="post-head-wrapper-text-only"
-                 style="background-image: url('/')">
-                <div class="post-title">
-                    Impala TIMESTAMP 时区处理
-                    
-                    <div class="post-meta">
-                        
-                        <time itemprop="datePublished">
-                            2020-07-13 16:16
-                        </time>
-                        
-
-                        
-
-                        
-                            <i class="material-icons" style="">label</i>
-                            
-                                <a href="/tags/impala">Impala</a>
-                                &nbsp;
-                            
-                        
-                    </div>
-                </div>
-            </div>
-            
-            <div class="post-body-wrapper">
-                <div class="post-body">
-                    <h2 id="现象">现象</h2>
-<p><code>Hive</code> 以<code>Parquet</code>数据存储格式写入的 <code>TIMESTAMP</code>字段内容，<code>Impala</code>读取，时间差8小时。</p>
-<p><img src="../../images/image-20200713162929821.png" alt="image-20200713162929821"></p>
-<p><code>Hive</code>写入</p>
-<p><img src="../../images/image-20200713163001445.png" alt="image-20200713163001445"></p>
-<p><code>Impala</code>读取差8小时，北京时间与UTC差8小时。</p>
-<h2 id="原因">原因</h2>
-<p><code>Hive</code>写<code>Parquet</code>数据文件，<code>TIMESTAMP</code>先规范化到UTC格式再存储。而<code>Impala</code>直接读取数据文件中的内容，不会进行TIMEZONE的调整。</p>
-<blockquote>
-<p>When Hive writes to Parquet data files, the TIMESTAMP values are normalized to UTC from the local time zone of the host where the data was written. On the other hand, Impala does not make any time zone adjustment when it writes or reads INT96 TIMESTAMP values to Parquet files. This difference in time zone handling can cause potentially inconsistent results when Impala processes TIMESTAMP values in the Parquet files written by Hive.</p>
-</blockquote>
-<p><a href="https://docs.cloudera.com/documentation/enterprise/latest/topics/impala_timestamp.html">https://docs.cloudera.com/documentation/enterprise/latest/topics/impala_timestamp.html</a></p>
-<h2 id="解决">解决</h2>
-<p><code>impalad</code>加入如下参数：</p>
-<pre><code>--use_local_tz_for_unix_timestamp_conversions=true
---convert_legacy_hive_parquet_utc_timestamps=true
-</code></pre><p>CDH 配置：</p>
-<p><img src="../../images/image-20200713163849195.png" alt="image-20200713163849195"></p>
-<p>重启即可生效。</p>
-
-                    
-                    <HR width="100%" id="EOF">
-                    <p style="color:#777;">Last modified on 2020-07-13</p>
-                    
-                </div>
-            </div>
-            
-            
-            <nav class="post-pagination">
-
-                
-                <a class="newer-posts" href="https://xujiahua.github.io/posts/20200714-metabase-timezone/">
-                    Next<br>Metabase Impala Driver 时区问题
-                </a>
-                
-                
-                
-                <a class="older-posts" href="https://xujiahua.github.io/posts/20200710-metabase-impala-driver/">
-                    Previous<br>Metabase Impala Driver 0710更新日志
-                </a>
-                
-            </nav>
-            <div class="post-comment-wrapper">
-                
-
-
-
-
-
-
-            </div>
-        </div>
+        
+        </a>
     </div>
 </div>
 
-            </div><div id="single-column-footer">
+            </div>
+
+<div class="pagination">
+    
+    <a class="pagination-action" href="/page/4/" style="opacity:1">
+    
+        <i class="material-icons pagination-action-icon">
+            chevron_left
+        </i>
+    </a>
+
+        <div class="pagination-indicator">
+            <span>5/5</span>
+        </div>
+
+        
+            <a class="pagination-action" style="opacity:0">
+        
+                <i class="material-icons pagination-action-icon">
+                    chevron_right
+                </i>
+            </a>
+</div>
+
+
+<div id="single-column-footer">
 Hugo Theme <a href="https://github.com/amazingrise/hugo-theme-diary">Diary</a> by <a href="https://amazingrise.net">Rise</a>
 <br>
 Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopener">Makito</a>'s <a href="https://github.com/SumiMakito/hexo-theme-journal/" target="_blank" rel="noreferrer noopener">Journal.</a> <br>

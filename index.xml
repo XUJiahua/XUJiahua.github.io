@@ -5,9 +5,44 @@
     <description>Recent content on 许嘉华的博客</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Mon, 13 Jul 2020 16:16:27 +0800</lastBuildDate>
+    <lastBuildDate>Tue, 14 Jul 2020 10:14:14 +0800</lastBuildDate>
     
         <atom:link href="https://xujiahua.github.io/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    
+        <item>
+        <title>Metabase Impala Driver 时区问题</title>
+        <link>https://xujiahua.github.io/posts/20200714-metabase-timezone/</link>
+        <pubDate>Tue, 14 Jul 2020 10:14:14 +0800</pubDate>
+        
+        <guid>https://xujiahua.github.io/posts/20200714-metabase-timezone/</guid>
+        <description>许嘉华的博客 https://xujiahua.github.io/posts/20200714-metabase-timezone/ -&lt;h2 id=&#34;问题&#34;&gt;问题&lt;/h2&gt;
+&lt;p&gt;实际日期是上午11点，而&lt;code&gt;Metabase&lt;/code&gt;显示是下午7点。差8小时。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sql&#34; data-lang=&#34;sql&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;select&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;CURRENT_TIMESTAMP&lt;/span&gt;(),hour(&lt;span style=&#34;color:#66d9ef&#34;&gt;CURRENT_TIMESTAMP&lt;/span&gt;())
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;img src=&#34;../../images/image-20200714113556806.png&#34; alt=&#34;image-20200714113556806&#34;&gt;&lt;/p&gt;
+&lt;h2 id=&#34;分析&#34;&gt;分析&lt;/h2&gt;
+&lt;p&gt;参考：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;a href=&#34;https://www.metabase.com/docs/latest/operations-guide/handling-timezones.html&#34;&gt;Handling timezones in Metabase&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://www.metabase.com/docs/latest/troubleshooting-guide/timezones.html&#34;&gt;troubleshooting-guide/timezones&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;有几个时区有关的设置：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Database TimeZone，其中 impalad 启动环境是东八区，TIMESTAMP 不存储时区信息，存储的是东八区本地时间。&lt;/li&gt;
+&lt;li&gt;Metabase TimeZone = JVM TimeZone = OS TimeZone，使用的是东八区。&lt;/li&gt;
+&lt;li&gt;“Report Time Zone” setting，对 Impala 是不起作用的。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;同样的SQL在MySQL上试了下，没问题。问题定位基本在&lt;code&gt;metabase&lt;/code&gt;到&lt;code&gt;impala&lt;/code&gt;的Driver层。&lt;/p&gt;
+&lt;p&gt;发现从&lt;code&gt;impala&lt;/code&gt;读取TIMESTAMP的值，TIMEZONE写死了UTC，应该是东八区。（Metabase SparkSQL Driver 也有这个问题，因为代码是从那copy的。）&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200714113928339.png&#34; alt=&#34;image-20200714113928339&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://github.com/XUJiahua/metabase-impala-driver/commit/0963f9890a9213d53511c61b53870476f8f82cf4&#34;&gt;https://github.com/XUJiahua/metabase-impala-driver/commit/0963f9890a9213d53511c61b53870476f8f82cf4&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;metabase&lt;/code&gt;东八区启动，用北京时间显示，就会多加8小时。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200714131930694.png&#34; alt=&#34;image-20200714131930694&#34;&gt;&lt;/p&gt;
+&lt;h2 id=&#34;修复&#34;&gt;修复&lt;/h2&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200714113658545.png&#34; alt=&#34;image-20200714113658545&#34;&gt;&lt;/p&gt;
+- https://xujiahua.github.io/posts/20200714-metabase-timezone/ - </description>
+        </item>
     
     
     
@@ -939,203 +974,6 @@ expect1
 &lt;p&gt;这2个选项还在报错，应该是不支持对应的方法。还好暂时用不到。&lt;/p&gt;
 &lt;p&gt;&lt;img src=&#34;../../images/image-20200528213420179.png&#34; alt=&#34;image-20200528213420179&#34;&gt;&lt;/p&gt;
 - https://xujiahua.github.io/posts/20200528-metabase-impala-type/ - </description>
-        </item>
-    
-    
-    
-        <item>
-        <title>Metabase Impala Driver</title>
-        <link>https://xujiahua.github.io/posts/20200527-metabase-impala-driver/</link>
-        <pubDate>Wed, 27 May 2020 12:16:36 +0800</pubDate>
-        
-        <guid>https://xujiahua.github.io/posts/20200527-metabase-impala-driver/</guid>
-        <description>许嘉华的博客 https://xujiahua.github.io/posts/20200527-metabase-impala-driver/ -&lt;p&gt;更新日志&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;&lt;a href=&#34;https://xujiahua.github.io/posts/20200528-metabase-impala-type/&#34;&gt;Metabase Impala Driver 0528更新日志&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;https://xujiahua.github.io/posts/20200710-metabase-impala-driver/&#34;&gt;Metabase Impala Driver 0710更新日志&lt;/a&gt;&lt;/li&gt;
-&lt;/ol&gt;
-&lt;h2 id=&#34;背景&#34;&gt;背景&lt;/h2&gt;
-&lt;p&gt;我们的数据仓库是 Hadoop/Hive 体系的。Hadoop 版本采用的是 CDH 发行版。在这个背景下 SQL on Hadoop 的方案有 Hive/Impala/(SparkSQL)。作为 BI 数据库，Impala 在我们的场景下比较合适。&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;Hive：太慢了。做 ETL 可以，BI 非常不适。&lt;/li&gt;
-&lt;li&gt;SparkSQL：CDH 官方 Spark 不含 Thrift Server。为了能够使用 Metabase ，独立于 CDH 启了个 Thrift Server，用着还不错。问题就在于缺乏统一管理，比如 Kerberos 的管理就得自己写脚本处理、进程 OOM 挂掉了 CDH Manager 也监测不到。&lt;/li&gt;
-&lt;li&gt;Impala：CDH 官方出品，为 BI 而设计，由 CDH Manager 管理。根据这份报告，见下参考链接，Impala 好于 SparkSQL。&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;出于尽可能复用已有基础设施的目的，选择 Impala。而 Metabase 官方、社区并不提供 Impala 驱动。本文就是为了探索并解决这个问题。&lt;/p&gt;
-&lt;p&gt;参考：&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;开源OLAP引擎测评报告(SparkSql、Presto、Impala、HAWQ、ClickHouse、GreenPlum) &lt;a href=&#34;http://www.clickhouse.com.cn/topic/5c453371389ad55f127768ea&#34;&gt;http://www.clickhouse.com.cn/topic/5c453371389ad55f127768ea&lt;/a&gt;&lt;/li&gt;
-&lt;/ol&gt;
-&lt;h2 id=&#34;现有驱动探索&#34;&gt;现有驱动探索&lt;/h2&gt;
-&lt;h3 id=&#34;搭建-impala-开发环境&#34;&gt;搭建 Impala 开发环境&lt;/h3&gt;
-&lt;p&gt;使用 Cloudera Quickstart Docker 镜像（官方已经下架 quickstart vm ）。其中，Impala版本 2.5.0。（我们的生产环境：CDH 6.3.2 Impala 3.2.0 Hive 2.1.1）&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;docker run --name cloudera_quickstart --hostname&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;quickstart.cloudera &lt;span style=&#34;color:#ae81ff&#34;&gt;\
-&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;&lt;/span&gt;--privileged&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;true -t -i -d -p 8888:8888 -p 80:80 -p 10000:10000 -p 7180:7180 &lt;span style=&#34;color:#ae81ff&#34;&gt;\
-&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;&lt;/span&gt;-p 21050:21050 -p 50070:50070 -p 50075:50075 -p 50010:50010 -p 50020:50020 &lt;span style=&#34;color:#ae81ff&#34;&gt;\
-&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;&lt;/span&gt;-p 8020:8020 cloudera/quickstart /usr/bin/docker-quickstart
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;一些端口使用的说明：&lt;/p&gt;
-&lt;table&gt;
-&lt;thead&gt;
-&lt;tr&gt;
-&lt;th&gt;Port&lt;/th&gt;
-&lt;th&gt;Use&lt;/th&gt;
-&lt;/tr&gt;
-&lt;/thead&gt;
-&lt;tbody&gt;
-&lt;tr&gt;
-&lt;td&gt;80&lt;/td&gt;
-&lt;td&gt;Tutorial&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;8888&lt;/td&gt;
-&lt;td&gt;HUE&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;21050&lt;/td&gt;
-&lt;td&gt;Impala&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;10000&lt;/td&gt;
-&lt;td&gt;Hive&lt;/td&gt;
-&lt;/tr&gt;
-&lt;/tbody&gt;
-&lt;/table&gt;
-&lt;p&gt;注意：关闭再启动容器，Impala进程并没有重启。重启 Impala 最直接的方法就是重建容器。&lt;/p&gt;
-&lt;p&gt;参考：&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;quickstart docker image &lt;a href=&#34;https://hub.docker.com/r/cloudera/quickstart&#34;&gt;https://hub.docker.com/r/cloudera/quickstart&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;15分钟——在Docker启动Cloudera并开始体验 &lt;a href=&#34;https://xieshaohu.wordpress.com/2019/02/26/15%E5%88%86%E9%92%9F-%E5%9C%A8docker%E5%90%AF%E5%8A%A8cloudera%E5%B9%B6%E5%BC%80%E5%A7%8B%E4%BD%93%E9%AA%8C/&#34;&gt;https://xieshaohu.wordpress.com/2019/02/26/15%E5%88%86%E9%92%9F-%E5%9C%A8docker%E5%90%AF%E5%8A%A8cloudera%E5%B9%B6%E5%BC%80%E5%A7%8B%E4%BD%93%E9%AA%8C/&lt;/a&gt;&lt;/li&gt;
-&lt;/ol&gt;
-&lt;h3 id=&#34;尝试-mwullinkmetabase&#34;&gt;尝试 mwullink/metabase&lt;/h3&gt;
-&lt;p&gt;在 metabase issue 里看到一个关掉的关于Impala的PR，这方面的资料真的很少。如下：&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;Support Apache Impala database #3002 #3749 &lt;a href=&#34;https://github.com/metabase/metabase/pull/3749&#34;&gt;https://github.com/metabase/metabase/pull/3749&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;Support Apache Impala database #3002 &lt;a href=&#34;https://github.com/metabase/metabase/issues/3002&#34;&gt;https://github.com/metabase/metabase/issues/3002&lt;/a&gt;&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;可惜，并没有被合并到官方库。尝试编译作者mwullink的metabase版本。 &lt;a href=&#34;https://github.com/mwullink/metabase&#34;&gt;https://github.com/mwullink/metabase&lt;/a&gt;&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;git clone https://github.com/mwullink/metabase.git metabase-mwullink
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;这个metabase版本太老了，前端依赖还是node 4.4.7（warning You are using Node &amp;ldquo;4.4.7&amp;rdquo; which is not supported and may encounter bugs or unexpected behavior. Yarn supports the following semver range: &amp;ldquo;^4.8.0 || ^5.7.0 || ^6.2.2 || &amp;gt;=8.0.0&amp;rdquo;），另外yarn对node4.x也有兼容问题（ &lt;a href=&#34;https://github.com/yarnpkg/yarn/issues/6900&#34;&gt;https://github.com/yarnpkg/yarn/issues/6900&lt;/a&gt; ）。&lt;/p&gt;
-&lt;p&gt;特殊处理逻辑：&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# nvm 安装 node 4.x 版本&lt;/span&gt;
-nvm install lts/argon
-
-&lt;span style=&#34;color:#75715e&#34;&gt;# 修改 node 版本&lt;/span&gt;
-vim package.json
-  &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;engines&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#f92672&#34;&gt;{&lt;/span&gt;
-    &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;node&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;4.9.1&amp;#34;&lt;/span&gt;,
-    &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;npm&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;2.15.11&amp;#34;&lt;/span&gt;
-  &lt;span style=&#34;color:#f92672&#34;&gt;}&lt;/span&gt;,
-  
-&lt;span style=&#34;color:#75715e&#34;&gt;# 安装老版本的yarn&lt;/span&gt;
-npm --global install yarn@1.12.3
-
-&lt;span style=&#34;color:#75715e&#34;&gt;# 这样就可以了&lt;/span&gt;
-./bin/build
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;运行：&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# jar目录&lt;/span&gt;
-cd ./target/uberjar
-
-&lt;span style=&#34;color:#75715e&#34;&gt;# 将impala驱动放这里。下载和安装参考 https://github.com/metabase/metabase/pull/3749/files&lt;/span&gt;
-mkdir plugins
-
-&lt;span style=&#34;color:#75715e&#34;&gt;# 换个端口号，本地还有其他版本metabase运行&lt;/span&gt;
-java -DMB_JETTY_PORT&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;12345&lt;/span&gt; -jar metabase.jar
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;效果：&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;可以直接写SQL查询，基于查询结果也能做 chart/dashboard。&lt;/li&gt;
-&lt;li&gt;但是metadata（比如表结构）并没有同步。SQL查询的右边表结构也不会显示，filter功能受影响。&lt;/li&gt;
-&lt;li&gt;metadata没有同步，也没有报错信息。（作为对比，连mysql是有metadata同步的。）&lt;/li&gt;
-&lt;/ol&gt;
-&lt;h3 id=&#34;使用官方-sparksql-驱动&#34;&gt;使用官方 sparksql 驱动&lt;/h3&gt;
-&lt;p&gt;Metabase 版本：v0.35.3&lt;/p&gt;
-&lt;p&gt;尝试使用 sparksql 驱动来连接 Impala 数据库。&lt;/p&gt;
-&lt;p&gt;因为 SparkSQL 的 thrift server 复用的是 HiveServer2 的实现，架构如下图。而 Impala 可以使用 Hive 的JDBC Driver （ &lt;a href=&#34;https://impala.apache.org/docs/build/html/topics/impala_jdbc.html&#34;&gt;https://impala.apache.org/docs/build/html/topics/impala_jdbc.html&lt;/a&gt; &lt;a href=&#34;https://docs.cloudera.com/documentation/enterprise/latest/topics/impala_jdbc.html#jdbc_driver_choice&#34;&gt;https://docs.cloudera.com/documentation/enterprise/latest/topics/impala_jdbc.html#jdbc_driver_choice&lt;/a&gt; ）。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image-20200520093534168.png&#34; alt=&#34;image-20200520093534168&#34;&gt;&lt;/p&gt;
-&lt;p&gt;效果：&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;可以直接写SQL查询，基于查询结果也能做chart/dashboard。&lt;/li&gt;
-&lt;li&gt;但是表结构并没有同步。SQL查询的右边表结构也不会显示，filter功能受影响。&lt;/li&gt;
-&lt;li&gt;&lt;strong&gt;同步有报错信息。终于有线索了&lt;/strong&gt;&lt;/li&gt;
-&lt;/ol&gt;
-&lt;h4 id=&#34;db-metadata-同步出错&#34;&gt;db-metadata 同步出错&lt;/h4&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image-20200525102147780.png&#34; alt=&#34;image-20200525102147780&#34;&gt;&lt;/p&gt;
-&lt;p&gt;第10行的这个方法崩了。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image-20200525162346701.png&#34; alt=&#34;image-20200525162346701&#34;&gt;&lt;/p&gt;
-&lt;p&gt;方法 &lt;code&gt;driver/describe-database&lt;/code&gt; 的作用是获取db的所有表。方法 &lt;code&gt;driver/describe-table&lt;/code&gt;的作用是获取table的字段信息 。&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-clojure&#34; data-lang=&#34;clojure&#34;&gt;(&lt;span style=&#34;color:#66d9ef&#34;&gt;defmulti &lt;/span&gt;describe-database
-  &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Return a map containing information that describes all of the tables in a `database`, an instance of the `Database`
-&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;  model. It is expected that this function will be peformant and avoid draining meaningful resources of the database.
-&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;  Results should match the `metabase.sync.interface/DatabaseMetadata` schema.&amp;#34;&lt;/span&gt;
-  {&lt;span style=&#34;color:#e6db74&#34;&gt;:arglists&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;&amp;#39;&lt;/span&gt;([driver database])}
-  dispatch-on-initialized-driver
-  &lt;span style=&#34;color:#e6db74&#34;&gt;:hierarchy&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;hierarchy&lt;/span&gt;)
-
-(&lt;span style=&#34;color:#66d9ef&#34;&gt;defmulti &lt;/span&gt;describe-table
-  &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Return a map containing information that describes the physical schema of `table` (i.e. the fields contained
-&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;  therein). `database` will be an instance of the `Database` model; and `table`, an instance of the `Table` model. It is
-&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;  expected that this function will be peformant and avoid draining meaningful resources of the database. Results
-&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;  should match the `metabase.sync.interface/TableMetadata` schema.&amp;#34;&lt;/span&gt;
-  {&lt;span style=&#34;color:#e6db74&#34;&gt;:arglists&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;&amp;#39;&lt;/span&gt;([driver database table])}
-  dispatch-on-initialized-driver
-  &lt;span style=&#34;color:#e6db74&#34;&gt;:hierarchy&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;hierarchy&lt;/span&gt;)
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;这（两）个方法调用失败，Metabase 上自然就没有表结构信息了。&lt;/p&gt;
-&lt;p&gt;sparksql驱动“重载”了这两个方法。初步怀疑与重载有关，sparksql 的父驱动 jdbc-sql 是有默认实现的，尝试注释掉重载。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image-20200525163902594.png&#34; alt=&#34;image-20200525163902594&#34;&gt;&lt;/p&gt;
-&lt;p&gt;神奇地发现，注释掉这两个方法，可以直接通过sparksql驱动连接impala服务器了。&lt;/p&gt;
-&lt;p&gt;猜想，SparkSQL的Thrift Server和Impala  Server实现有差异，SparkSQL Thrift Server可能因为有设计缺陷，需要在驱动上打上补丁。&lt;/p&gt;
-&lt;h2 id=&#34;自己写驱动&#34;&gt;自己写驱动&lt;/h2&gt;
-&lt;p&gt;基于最新版 Metabase 0.35.3 开发。（尝试编译 master 分支，发现打包结果 &lt;code&gt;java -jar metabase.jar&lt;/code&gt; 报错。）&lt;/p&gt;
-&lt;p&gt;自己写驱动，目前来看有两条路：&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;通过分析 sparksql 驱动的报错信息，貌似找到了连接 Impala 数据库的方式。为了兼容现有的 sparksql 实现，在 sparksql 包中新增一个 impala 文件（复用hive-like父类实现，与sparksql 平行）。&lt;/li&gt;
-&lt;li&gt;新增一个驱动包 impala。基于Impala官方的JDBC驱动实现。需要系统理解下 Metabase 驱动开发逻辑。&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;当然，都需要对 Metabase 有一定熟悉程度，先看下文档。&lt;/p&gt;
-&lt;h3 id=&#34;sparksql-包中新增一个-impala-driver&#34;&gt;sparksql 包中新增一个 impala driver&lt;/h3&gt;
-&lt;p&gt;按照上述思路，代码提交在这里。&lt;/p&gt;
-&lt;p&gt;&lt;a href=&#34;https://github.com/XUJiahua/metabase/tree/driver-impala-in-sparksql/modules/drivers/sparksql&#34;&gt;https://github.com/XUJiahua/metabase/tree/driver-impala-in-sparksql/modules/drivers/sparksql&lt;/a&gt;&lt;/p&gt;
-&lt;p&gt;本地测试。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image-20200526165539889.png&#34; alt=&#34;image-20200526165539889&#34;&gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image-20200526165644979.png&#34; alt=&#34;image-20200526165644979&#34;&gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image-20200526165735569.png&#34; alt=&#34;image-20200526165735569&#34;&gt;&lt;/p&gt;
-&lt;h4 id=&#34;sparksql-包的依赖问题-存量bug&#34;&gt;sparksql 包的依赖问题 （存量bug）&lt;/h4&gt;
-&lt;p&gt;如果服务端启用了 Kerberos 认证，会有这个问题。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image-20200527105225274.png&#34; alt=&#34;image-20200527105225274&#34;&gt;&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;05-27 10:39:39 ERROR driver.util :: Database connection error
-java.lang.IllegalArgumentException: Unrecognized Hadoop major version number: 3.1.1
-	at org.apache.hadoop.hive.shims.ShimLoader.getMajorVersion(ShimLoader.java:174)
-	at org.apache.hadoop.hive.shims.ShimLoader.loadShims(ShimLoader.java:139)
-	at org.apache.hadoop.hive.shims.ShimLoader.getHadoopThriftAuthBridge(ShimLoader.java:125)
-	at org.apache.hive.service.auth.KerberosSaslHelper.getKerberosTransport(KerberosSaslHelper.java:54)
-	at org.apache.hive.jdbc.HiveConnection.createBinaryTransport(HiveConnection.java:445)
-	at org.apache.hive.jdbc.HiveConnection.openTransport(HiveConnection.java:201)
-	at org.apache.hive.jdbc.HiveConnection.&amp;lt;init&amp;gt;(HiveConnection.java:176)
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;sparksql jar 包依赖：&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;# 作为 hadoop 基础包，含 Kerberos 认证逻辑代码
-org.apache.hadoop/hadoop-common &amp;quot;3.1.1&amp;quot;
-
-# 1.x 系列最后一个版本
-org.apache.hive/hive-jdbc &amp;quot;1.2.1&amp;quot;
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;根据报错信息找到了Hive的源代码：&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image-20200527110418542.png&#34; alt=&#34;image-20200527110418542&#34;&gt;&lt;/p&gt;
-&lt;p&gt;&lt;a href=&#34;https://github.com/apache/hive/blob/release-1.2.1/shims/common/src/main/java/org/apache/hadoop/hive/shims/ShimLoader.java#L159&#34;&gt;https://github.com/apache/hive/blob/release-1.2.1/shims/common/src/main/java/org/apache/hadoop/hive/shims/ShimLoader.java#L159&lt;/a&gt;&lt;/p&gt;
-&lt;p&gt;所以 org.apache.hive/hive-jdbc &amp;ldquo;1.2.1&amp;rdquo; 压根就不兼容 org.apache.hadoop/hadoop-common &amp;ldquo;3.x&amp;rdquo; 版本的。人写代码的时候没测到这个case。&lt;/p&gt;
-&lt;p&gt;解决方式，引用hadoop-common 2.x最后一个版本：&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;org.apache.hadoop/hadoop-common &amp;quot;2.10.0&amp;quot;
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;重新编译打包后效果OK。&lt;/p&gt;
-&lt;h4 id=&#34;uberjar-的弊端&#34;&gt;uberjar 的弊端&lt;/h4&gt;
-&lt;p&gt;Metabase为了方便包的分发，整个项目、驱动都是uberjar的打包思路。弊端其实也挺明显。JDBC 驱动与数据库的兼容性问题，一般是适配数据库，JDBC 驱动被 uberjar 后，想换驱动就得重新编译源码。&lt;/p&gt;
-&lt;p&gt;比如 Hive Server 1.1.0，Hive JDBC 1.2.1 就连不上。开源产品的兼容性问题让人头秃。&lt;/p&gt;
-&lt;p&gt;&lt;del&gt;TODO：驱动不再uberjar，可以使用自己需要的依赖版本，比如我们使用 CDH 6.x 的 hadoop/hive jar包。&lt;/del&gt;&lt;/p&gt;
-&lt;p&gt;编译&lt;code&gt;Metabase&lt;/code&gt;时，&lt;code&gt;plugin driver&lt;/code&gt;不要打包到&lt;code&gt;metabase.jar&lt;/code&gt;即可。独立处理&lt;code&gt;plugin driver&lt;/code&gt;的打包和安装。&lt;/p&gt;
-&lt;h4 id=&#34;题外话-sparksql-deps&#34;&gt;题外话 sparksql-deps&lt;/h4&gt;
-&lt;p&gt;网上有个老版本的sparksql 驱动包 &lt;a href=&#34;https://s3.amazonaws.com/sparksql-deps/metabase-sparksql-deps-1.2.1.spark2-standalone.jar&#34;&gt;https://s3.amazonaws.com/sparksql-deps/metabase-sparksql-deps-1.2.1.spark2-standalone.jar&lt;/a&gt; 。之前解决这个问题，就是将其放到plugins目录。究其原因，其引用的hadoop-common版本是2.x的。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image-20200527111551416.png&#34; alt=&#34;image-20200527111551416&#34;&gt;&lt;/p&gt;
-&lt;p&gt;而其源码包括历史记录（ &lt;a href=&#34;https://github.com/metabase/sparksql-deps&#34;&gt;https://github.com/metabase/sparksql-deps&lt;/a&gt; ）的hadoop-common版本是3.1.0。不要被误导了。&lt;/p&gt;
-&lt;h2 id=&#34;总结&#34;&gt;总结&lt;/h2&gt;
-&lt;p&gt;通过摸索，改进 Metabase sparksql 包后，我们可以使用 Impala 了。至于有多少坑，还得等我深度使用后才知道。&lt;/p&gt;
-&lt;p&gt;代码 &lt;a href=&#34;https://github.com/XUJiahua/metabase/tree/driver-impala-in-sparksql&#34;&gt;https://github.com/XUJiahua/metabase/tree/driver-impala-in-sparksql&lt;/a&gt;&lt;/p&gt;
-- https://xujiahua.github.io/posts/20200527-metabase-impala-driver/ - </description>
         </item>
     
     
