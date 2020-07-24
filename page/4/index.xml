@@ -5,9 +5,112 @@
     <description>Recent content on 许嘉华的博客</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Tue, 14 Jul 2020 10:14:14 +0800</lastBuildDate>
+    <lastBuildDate>Thu, 23 Jul 2020 16:12:51 +0800</lastBuildDate>
     
         <atom:link href="https://xujiahua.github.io/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    
+        <item>
+        <title>Github pages重新开始：使用Hugo、Typora</title>
+        <link>https://xujiahua.github.io/posts/20200310-github-pages-restart/</link>
+        <pubDate>Tue, 10 Mar 2020 11:24:49 +0800</pubDate>
+        
+        <guid>https://xujiahua.github.io/posts/20200310-github-pages-restart/</guid>
+        <description>许嘉华的博客 https://xujiahua.github.io/posts/20200310-github-pages-restart/ -&lt;h2 id=&#34;重新开始github-pages&#34;&gt;重新开始GitHub pages&lt;/h2&gt;
+&lt;p&gt;曾使用&lt;code&gt;GitHub pages&lt;/code&gt; + &lt;code&gt; jekyll&lt;/code&gt; 写过一段时间博客，没啥营养。&lt;/p&gt;
+&lt;p&gt;打算重新开始：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;把我记录在Evernote和Typora中的资料迁移到&lt;code&gt;GitHub pages&lt;/code&gt;上。&lt;/li&gt;
+&lt;li&gt;另外做一些Web形式的小工具，挂载在一个子目录里，方便平时使用。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2 id=&#34;hugo--typora&#34;&gt;Hugo + Typora&lt;/h2&gt;
+&lt;p&gt;打算如下：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Markdown文件还是使用Typora写。用过MWeb、Typora，Typora使用感受更好些（这么好用还不要钱）。&lt;/li&gt;
+&lt;li&gt;Hugo作为静态网站生成，创建一个博客模板。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3 id=&#34;hugo-quickstart&#34;&gt;Hugo quickstart&lt;/h3&gt;
+&lt;pre&gt;&lt;code&gt;# 安装hugo（其实是Go编译的二进制文件）
+brew install hugo
+
+# 创建site
+hugo new site quickstart
+
+# 通过git submodule的方式下载主题
+git init
+git submodule -b master add https://github.com/dillonzq/LoveIt themes/LoveIt
+
+# 更新config.toml，配置主题参数，见loveit配置
+
+# 创建博客，创建的posts在content目录下。文件格式为：content/&amp;lt;CATEGORY&amp;gt;/&amp;lt;FILE&amp;gt;.&amp;lt;FORMAT&amp;gt;
+# hugo new 会采用 archetypes/default.md作为模板，把一些共性配置放在这个模板里吧。
+hugo new posts/my-first-post.md
+
+# 本地看blog效果，-D表示草稿状态的博客也显示
+hugo server -D
+
+# 生成静态网站到./public/，也可以指定目录
+hugo -D
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;挑选了一个比较实用的主题 &lt;a href=&#34;https://hugoloveit.com/&#34;&gt;https://hugoloveit.com/&lt;/a&gt;&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;比较基本的posts, tags, categories&lt;/li&gt;
+&lt;li&gt;文章页面右边可显示文章的目录表&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;参考：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;a href=&#34;https://gohugo.io/getting-started/quick-start/&#34;&gt;https://gohugo.io/getting-started/quick-start/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://hugoloveit.com/theme-documentation-basics/&#34;&gt;https://hugoloveit.com/theme-documentation-basics/&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3 id=&#34;图片文件夹的配置&#34;&gt;图片文件夹的配置&lt;/h3&gt;
+&lt;p&gt;Typora的贴图功能很方便：配置好图片文件夹，从剪贴板粘贴图像会自动将图片保存到图片文件夹，并自动命名。&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;hugo&lt;/code&gt;管理静态资源的方式跟Typora默认是不适配的，需要做些调整。&lt;/p&gt;
+&lt;h5 id=&#34;长话短说&#34;&gt;长话短说&lt;/h5&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;code&gt;hugo&lt;/code&gt;项目中，创建&lt;code&gt;static/images&lt;/code&gt;文件夹，并且软链接到项目根目录下：&lt;/li&gt;
+&lt;/ol&gt;
+&lt;pre&gt;&lt;code&gt;mkdir -p static/images &amp;amp;&amp;amp; ln -s `pwd`/static/images images
+&lt;/code&gt;&lt;/pre&gt;&lt;ol start=&#34;2&#34;&gt;
+&lt;li&gt;Typora打开content目录，并做配置如下。之后，像平常那样用Typora写文字吧。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200310184153667.png&#34; alt=&#34;image-20200310184153667&#34;&gt;&lt;/p&gt;
+&lt;h5 id=&#34;在根目录建images软链接的理由&#34;&gt;在根目录建&lt;code&gt;images&lt;/code&gt;软链接的理由&lt;/h5&gt;
+&lt;p&gt;一些信息和思路：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;code&gt;hugo&lt;/code&gt;的静态资源放在static目录下。&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;hugo&lt;/code&gt;生成静态文件，static目录会将其下的文件、文件夹平移到目标网站目录的根目录，比如&lt;code&gt;static/images/1.png&lt;/code&gt;，平移后为&lt;code&gt;images/1.png&lt;/code&gt;。html里使用&lt;code&gt;/images/*&lt;/code&gt;的方式引用。（可查看public文件夹的目录结构）&lt;/li&gt;
+&lt;li&gt;hugo static目录下的资源目录不能是软链接，WTF。Unsupported symlink found &lt;a href=&#34;https://github.com/gohugoio/hugo/issues/6225&#34;&gt;https://github.com/gohugoio/hugo/issues/6225&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;万幸Typora可以用软链接。&lt;/li&gt;
+&lt;li&gt;一篇post，在浏览器和文件系统上的目录结构是不同的。以最末层的文件夹为&lt;code&gt;./&lt;/code&gt;。浏览器下目录结构如下：&lt;/li&gt;
+&lt;/ol&gt;
+&lt;pre&gt;&lt;code&gt;/ =&amp;gt; ../.. 举例来说，以图片文件夹名称为`image`为例，`../../images/*` = `/images/*`
+	/posts/ =&amp;gt; ../
+		/posts/post_name/ =&amp;gt; ./
+&lt;/code&gt;&lt;/pre&gt;&lt;ol start=&#34;6&#34;&gt;
+&lt;li&gt;文件系统下的目录结构：&lt;/li&gt;
+&lt;/ol&gt;
+&lt;pre&gt;&lt;code&gt;hugo-blogger =&amp;gt; ../../
+	content =&amp;gt; ../
+		posts =&amp;gt; ./
+			post_name
+&lt;/code&gt;&lt;/pre&gt;&lt;ol start=&#34;7&#34;&gt;
+&lt;li&gt;所以为了能让文件系统和浏览器上都显示图像，&lt;code&gt;images&lt;/code&gt;软链接放在项目根目录下比较合适。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3 id=&#34;github-pages&#34;&gt;GitHub pages&lt;/h3&gt;
+&lt;p&gt;静态文件输出到xujiahua.github.io上去。&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;git submodule add -b master https://github.com/XUJiahua/XUJiahua.github.io.git public
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;复用这里的deploy脚本。https://gohugo.io/hosting-and-deployment/hosting-on-github/#put-it-into-a-script&lt;/p&gt;
+&lt;h4 id=&#34;图片资源404的问题&#34;&gt;图片资源404的问题&lt;/h4&gt;
+&lt;p&gt;_images文件夹下的资源404了。太奇怪了，路径OK，也没大小问题。过了很久还是不见效。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200312190900210.png&#34; alt=&#34;image-20200312190900210&#34;&gt;&lt;/p&gt;
+&lt;p&gt;尝试在images文件夹下放了个1.txt，理论上链接应该是 &lt;a href=&#34;https://xujiahua.github.io/images/1.txt&#34;&gt;https://xujiahua.github.io/images/1.txt&lt;/a&gt;，一开始也是404。过了半小时OK了。&lt;/p&gt;
+&lt;p&gt;结论是，_images文件夹取名可能有问题。那就改用images。&lt;/p&gt;
+&lt;p&gt;参考：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;a href=&#34;https://gohugo.io/hosting-and-deployment/hosting-on-github/&#34;&gt;https://gohugo.io/hosting-and-deployment/hosting-on-github/&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+- https://xujiahua.github.io/posts/20200310-github-pages-restart/ - </description>
+        </item>
     
     
     
@@ -623,147 +726,6 @@ web3.eth.sendTransaction({from: src, to: 0, data: faucet_code, gas: 113558, gasP
        console.error(error);
 })
 &lt;/code&gt;&lt;/pre&gt;- https://xujiahua.github.io/posts/20181029-mastering-ethereum/ - </description>
-        </item>
-    
-    
-    
-        <item>
-        <title>一点压力测试的经验</title>
-        <link>https://xujiahua.github.io/posts/20181017-perf-testing/</link>
-        <pubDate>Wed, 17 Oct 2018 07:42:56 +0800</pubDate>
-        
-        <guid>https://xujiahua.github.io/posts/20181017-perf-testing/</guid>
-        <description>许嘉华的博客 https://xujiahua.github.io/posts/20181017-perf-testing/ -&lt;p&gt;（笔记迁移 @ 2020年）&lt;/p&gt;
-&lt;h2 id=&#34;一概念最基础最重要&#34;&gt;一、概念，最基础最重要&lt;/h2&gt;
-&lt;h3 id=&#34;1-响应时间-tp99-tp90是什么&#34;&gt;1. 响应时间 TP99, TP90是什么&lt;/h3&gt;
-&lt;p&gt;除了要看TPS，也要看请求的响应时间是否在合理的范围内。太离谱，压测该停了。&lt;/p&gt;
-&lt;p&gt;响应时间的指标有最大响应时间、平均响应时间、TPXXX等。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/90-percentile1.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
-&lt;p&gt;&lt;code&gt;TP – Top Percentile&lt;/code&gt;&lt;/p&gt;
-&lt;p&gt;&lt;code&gt;TP90 = 500ms ：90%的请求都是在500ms以内。&lt;/code&gt;&lt;/p&gt;
-&lt;h3 id=&#34;2-错误率&#34;&gt;2. 错误率&lt;/h3&gt;
-&lt;p&gt;压测过程中发现异常或是错误，或者，错误率明显上升，这时候压测就该停了。&lt;/p&gt;
-&lt;h3 id=&#34;3-吞吐量-tps&#34;&gt;3. 吞吐量 TPS&lt;/h3&gt;
-&lt;p&gt;单纯看TPS是没有意义的。要结合上述两个指标，一般是0错误率，TP99在xxx ms（看具体应用场景）内的TPS。&lt;/p&gt;
-&lt;p&gt;比如这么描述TPS，TP99小于100ms的前提下，系统没有错误，系统可承载的TPS是1000。&lt;/p&gt;
-&lt;h3 id=&#34;4-压测案例&#34;&gt;4. 压测案例&lt;/h3&gt;
-&lt;p&gt;选择生产环境中并发要求高的请求。&lt;/p&gt;
-&lt;h2 id=&#34;二工具选型选最合适的&#34;&gt;二、工具选型，选最合适的&lt;/h2&gt;
-&lt;p&gt;工具的选择，一要看场景，二要看自己是否趁手。&lt;/p&gt;
-&lt;h3 id=&#34;ab-apache-benchmark&#34;&gt;ab (apache benchmark)&lt;/h3&gt;
-&lt;p&gt;&lt;code&gt;ab -kc 1000 -n 10000 http://www.some-site.cc/tmp/index.html&lt;/code&gt;&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;-k   Enables HTTP keep-alive&lt;/li&gt;
-&lt;li&gt;-c   Number of concurrent requests&lt;/li&gt;
-&lt;li&gt;-n   Number of total requests to make&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;不足：&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;只能使用单核。本身就可能是压测的瓶颈。&lt;/li&gt;
-&lt;li&gt;对于带多个步骤的压测场景无力。&lt;/li&gt;
-&lt;li&gt;没有（没找到）自定义断言的能力。&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;reference: &lt;a href=&#34;https://en.wikipedia.org/wiki/ApacheBench&#34;&gt;https://en.wikipedia.org/wiki/ApacheBench&lt;/a&gt;&lt;/p&gt;
-&lt;h3 id=&#34;wrk&#34;&gt;wrk&lt;/h3&gt;
-&lt;p&gt;wrk小巧，性能非常好，报告直观。&lt;/p&gt;
-&lt;p&gt;&lt;code&gt;wrk -t2 -c100 -d30s -R2000 http://127.0.0.1:8080/index.html&lt;/code&gt;&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;-d30s: 压测时间30s&lt;/li&gt;
-&lt;li&gt;-t2: 2个线程&lt;/li&gt;
-&lt;li&gt;-c100: 100个&amp;quot;用户数&amp;rdquo;&lt;/li&gt;
-&lt;li&gt;-R2000: constant throughput of 2000 requests per second&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;不足：&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;对于带多个步骤的压测场景无力。lua脚本写的很费劲。&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;reference: &lt;a href=&#34;https://github.com/giltene/wrk2&#34;&gt;https://github.com/giltene/wrk2&lt;/a&gt;&lt;/p&gt;
-&lt;h3 id=&#34;jmeter&#34;&gt;jmeter&lt;/h3&gt;
-&lt;p&gt;框架功能强大。个人感觉太重了，全是界面的配置。&lt;/p&gt;
-&lt;h3 id=&#34;locust&#34;&gt;locust&lt;/h3&gt;
-&lt;ol&gt;
-&lt;li&gt;使用python脚本编写案例。脚本化，方便peer review。&lt;/li&gt;
-&lt;li&gt;大并发的支持：因为python本身对多核的利用不够好，提高并发量的办法是多起几个进程作为slave。&lt;/li&gt;
-&lt;li&gt;统计能力满足需求。&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;reference: &lt;a href=&#34;https://locust.io/&#34;&gt;https://locust.io/&lt;/a&gt;&lt;/p&gt;
-&lt;h2 id=&#34;三实战中的经验&#34;&gt;三、实战中的经验&lt;/h2&gt;
-&lt;p&gt;TPS压不上去怎么办。看下请求的链路，从源头开始排查瓶颈。&lt;/p&gt;
-&lt;p&gt;&lt;code&gt;压测源 -&amp;gt; （对外）网络 -&amp;gt; 负载均衡 -&amp;gt; 内部网络 -&amp;gt; 应用服务器 -&amp;gt; 数据库、共享内存&lt;/code&gt;&lt;/p&gt;
-&lt;h3 id=&#34;压测源&#34;&gt;压测源&lt;/h3&gt;
-&lt;p&gt;一次http请求，客户端也是占用资源的。请求的构造与发送、返回结果的接收与解析。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/http-requests.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
-&lt;p&gt;根据你选用的压测框架找下瓶颈。&lt;/p&gt;
-&lt;p&gt;举例：&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;jmeter线程数是否不够了&lt;/li&gt;
-&lt;li&gt;locust的slave进程是否都已占用100%的CPU。&lt;/li&gt;
-&lt;/ol&gt;
-&lt;h3 id=&#34;网络&#34;&gt;网络&lt;/h3&gt;
-&lt;p&gt;一般内部网络不会是瓶颈。
-对外网络因为带宽费用问题，手头拮据点的会使用1M带宽。再怎么测试，压的都是网络的瓶颈。&lt;/p&gt;
-&lt;p&gt;建议把压力源放到内部网络内，再测试。&lt;/p&gt;
-&lt;h3 id=&#34;应用服务器&#34;&gt;应用服务器&lt;/h3&gt;
-&lt;p&gt;服务器的指标有这么几项：&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;CPU&lt;/li&gt;
-&lt;li&gt;内存&lt;/li&gt;
-&lt;li&gt;磁盘IO&lt;/li&gt;
-&lt;li&gt;网络IO&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;查看的方式：&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;简单粗暴，登录服务器敲命令 &lt;code&gt;htop&lt;/code&gt;等&lt;/li&gt;
-&lt;li&gt;插件取数据&lt;/li&gt;
-&lt;li&gt;阿里云监控，如果是阿里云机器&lt;/li&gt;
-&lt;/ol&gt;
-&lt;h2 id=&#34;四golang应用监控开发篇&#34;&gt;四、golang应用监控（开发篇）&lt;/h2&gt;
-&lt;h3 id=&#34;开发者角度分析并发瓶颈&#34;&gt;开发者角度分析并发瓶颈&lt;/h3&gt;
-&lt;p&gt;自己写的代码已经忘了，或是别人的代码不了解，建议通过阅读代码画出时序图。&lt;/p&gt;
-&lt;h3 id=&#34;pprof火焰图查看cpu耗时内存占用&#34;&gt;pprof火焰图，查看CPU耗时、内存占用&lt;/h3&gt;
-&lt;p&gt;最新版本的pprof已经支持了火焰图。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image-20200624075225452.png&#34; alt=&#34;image-20200624075225452&#34;&gt;&lt;/p&gt;
-&lt;p&gt;火焰图的y轴表示cpu调用方法的先后，x轴表示在每个采样调用时间内，方法所占的时间百分比，越宽代表占据cpu时间越多。&lt;/p&gt;
-&lt;h4 id=&#34;1-安装最新版的pprof&#34;&gt;1. 安装最新版的pprof&lt;/h4&gt;
-&lt;pre&gt;&lt;code&gt;go get -u github.com/google/pprof
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;pprof具体路径为 $GOPATH/bin/pprof&lt;/p&gt;
-&lt;h4 id=&#34;2-数据采用代码引用&#34;&gt;2. 数据采用代码引用&lt;/h4&gt;
-&lt;p&gt;web应用，通过http接口的方式获得采样数据（非web应用也建议这么做，接口比较high level）。&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;// pprof
-go func() {
-   r := http.NewServeMux()
-   // Register pprof handlers
-   r.HandleFunc(&amp;quot;/debug/pprof/&amp;quot;, pprof.Index)
-   r.HandleFunc(&amp;quot;/debug/pprof/cmdline&amp;quot;, pprof.Cmdline)
-   r.HandleFunc(&amp;quot;/debug/pprof/profile&amp;quot;, pprof.Profile)
-   r.HandleFunc(&amp;quot;/debug/pprof/symbol&amp;quot;, pprof.Symbol)
-   r.HandleFunc(&amp;quot;/debug/pprof/trace&amp;quot;, pprof.Trace)
-
-   http.ListenAndServe(&amp;quot;:8000&amp;quot;, r)
-}()
-&lt;/code&gt;&lt;/pre&gt;&lt;h4 id=&#34;3-打开管理工具&#34;&gt;3. 打开管理工具&lt;/h4&gt;
-&lt;pre&gt;&lt;code&gt;-- CPU
-$GOPATH/bin/pprof -http=:9000 coupon http://localhost:8000/debug/pprof/profile
--- Memory
-$GOPATH/bin/pprof -http=:9000 coupon http://localhost:8000/debug/pprof/heap
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;中间的&lt;code&gt;coupon&lt;/code&gt;是二进制文件。用于取symbol。发布的时候留一份copy。&lt;/p&gt;
-&lt;h4 id=&#34;4-总结&#34;&gt;4. 总结&lt;/h4&gt;
-&lt;pre&gt;&lt;code&gt;go build -o &#39;coupon&#39;
-
-./coupon &amp;gt; coupon.log &amp;amp;
-
-$GOPATH/bin/pprof -http=:9000 coupon http://localhost:8000/debug/pprof/profile
-
-&lt;/code&gt;&lt;/pre&gt;&lt;h4 id=&#34;reference&#34;&gt;reference&lt;/h4&gt;
-&lt;ol&gt;
-&lt;li&gt;&lt;a href=&#34;http://artem.krylysov.com/blog/2017/03/13/profiling-and-optimizing-go-web-applications/&#34;&gt;http://artem.krylysov.com/blog/2017/03/13/profiling-and-optimizing-go-web-applications/&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;https://github.com/google/pprof/blob/master/doc/pprof.md&#34;&gt;https://github.com/google/pprof/blob/master/doc/pprof.md&lt;/a&gt;&lt;/li&gt;
-&lt;/ol&gt;
-&lt;h2 id=&#34;参考&#34;&gt;参考&lt;/h2&gt;
-&lt;ol&gt;
-&lt;li&gt;性能测试应该怎么做？ &lt;a href=&#34;https://coolshell.cn/articles/17381.html&#34;&gt;https://coolshell.cn/articles/17381.html&lt;/a&gt;&lt;/li&gt;
-&lt;/ol&gt;
-- https://xujiahua.github.io/posts/20181017-perf-testing/ - </description>
         </item>
     
     

@@ -5,9 +5,359 @@
     <description>Recent content on 许嘉华的博客</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Tue, 14 Jul 2020 10:14:14 +0800</lastBuildDate>
+    <lastBuildDate>Thu, 23 Jul 2020 16:12:51 +0800</lastBuildDate>
     
         <atom:link href="https://xujiahua.github.io/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    
+        <item>
+        <title>实验说明 Golang HTTP 连接池参数</title>
+        <link>https://xujiahua.github.io/posts/20200723-golang-http-reuse/</link>
+        <pubDate>Thu, 23 Jul 2020 16:12:51 +0800</pubDate>
+        
+        <guid>https://xujiahua.github.io/posts/20200723-golang-http-reuse/</guid>
+        <description>许嘉华的博客 https://xujiahua.github.io/posts/20200723-golang-http-reuse/ -&lt;p&gt;连接相对于其他对象，创建成本较高，资源也有限。如果没有连接池，在高并发场景下，连接关闭又新建，很快就会因为过多的TIME_WAIT（连接主动关闭方）导致无法创建更多连接了，程序被压死。&lt;/p&gt;
+&lt;h2 id=&#34;nethttp-连接池参数&#34;&gt;net/http 连接池参数&lt;/h2&gt;
+&lt;p&gt;Go （测试版本 go 1.14）的net/http包是有连接池功能的，具体地，是 Transport 用于连接池化。https://golang.org/pkg/net/http/#Transport&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Transport is an implementation of RoundTripper that supports HTTP, HTTPS, and HTTP proxies (for either HTTP or HTTPS with CONNECT).&lt;/p&gt;
+&lt;p&gt;By default, Transport caches connections for future re-use.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;	&lt;span style=&#34;color:#75715e&#34;&gt;// MaxIdleConns controls the maximum number of idle (keep-alive)
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;	&lt;span style=&#34;color:#75715e&#34;&gt;// connections across all hosts. Zero means no limit.
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;	&lt;span style=&#34;color:#a6e22e&#34;&gt;MaxIdleConns&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;int&lt;/span&gt;
+
+	&lt;span style=&#34;color:#75715e&#34;&gt;// MaxIdleConnsPerHost, if non-zero, controls the maximum idle
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;	&lt;span style=&#34;color:#75715e&#34;&gt;// (keep-alive) connections to keep per-host. If zero,
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;	&lt;span style=&#34;color:#75715e&#34;&gt;// DefaultMaxIdleConnsPerHost is used.
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;	&lt;span style=&#34;color:#a6e22e&#34;&gt;MaxIdleConnsPerHost&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;int&lt;/span&gt;
+
+	&lt;span style=&#34;color:#75715e&#34;&gt;// MaxConnsPerHost optionally limits the total number of
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;	&lt;span style=&#34;color:#75715e&#34;&gt;// connections per host, including connections in the dialing,
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;	&lt;span style=&#34;color:#75715e&#34;&gt;// active, and idle states. On limit violation, dials will block.
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;	&lt;span style=&#34;color:#75715e&#34;&gt;//
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;	&lt;span style=&#34;color:#75715e&#34;&gt;// Zero means no limit.
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;	&lt;span style=&#34;color:#a6e22e&#34;&gt;MaxConnsPerHost&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;int&lt;/span&gt;
+
+	&lt;span style=&#34;color:#75715e&#34;&gt;// IdleConnTimeout is the maximum amount of time an idle
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;	&lt;span style=&#34;color:#75715e&#34;&gt;// (keep-alive) connection will remain idle before closing
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;	&lt;span style=&#34;color:#75715e&#34;&gt;// itself.
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;	&lt;span style=&#34;color:#75715e&#34;&gt;// Zero means no limit.
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;	&lt;span style=&#34;color:#a6e22e&#34;&gt;IdleConnTimeout&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;time&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Duration&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;默认值&#34;&gt;默认值&lt;/h3&gt;
+&lt;p&gt;MaxIdleConns=100，MaxIdleConnsPerHost=2（=DefaultMaxIdleConnsPerHost），MaxConnsPerHost=0（不限制）。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;// DefaultTransport is the default implementation of Transport and is
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;// used by DefaultClient. It establishes network connections as needed
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;// and caches them for reuse by subsequent calls. It uses HTTP proxies
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;// as directed by the $HTTP_PROXY and $NO_PROXY (or $http_proxy and
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;// $no_proxy) environment variables.
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;var&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;DefaultTransport&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;RoundTripper&lt;/span&gt; = &lt;span style=&#34;color:#f92672&#34;&gt;&amp;amp;&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;Transport&lt;/span&gt;{
+	&lt;span style=&#34;color:#a6e22e&#34;&gt;Proxy&lt;/span&gt;: &lt;span style=&#34;color:#a6e22e&#34;&gt;ProxyFromEnvironment&lt;/span&gt;,
+	&lt;span style=&#34;color:#a6e22e&#34;&gt;DialContext&lt;/span&gt;: (&lt;span style=&#34;color:#f92672&#34;&gt;&amp;amp;&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;net&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Dialer&lt;/span&gt;{
+		&lt;span style=&#34;color:#a6e22e&#34;&gt;Timeout&lt;/span&gt;:   &lt;span style=&#34;color:#ae81ff&#34;&gt;30&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;time&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Second&lt;/span&gt;,
+		&lt;span style=&#34;color:#a6e22e&#34;&gt;KeepAlive&lt;/span&gt;: &lt;span style=&#34;color:#ae81ff&#34;&gt;30&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;time&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Second&lt;/span&gt;,
+		&lt;span style=&#34;color:#a6e22e&#34;&gt;DualStack&lt;/span&gt;: &lt;span style=&#34;color:#66d9ef&#34;&gt;true&lt;/span&gt;,
+	}).&lt;span style=&#34;color:#a6e22e&#34;&gt;DialContext&lt;/span&gt;,
+	&lt;span style=&#34;color:#a6e22e&#34;&gt;ForceAttemptHTTP2&lt;/span&gt;:     &lt;span style=&#34;color:#66d9ef&#34;&gt;true&lt;/span&gt;,
+	&lt;span style=&#34;color:#a6e22e&#34;&gt;MaxIdleConns&lt;/span&gt;:          &lt;span style=&#34;color:#ae81ff&#34;&gt;100&lt;/span&gt;,
+	&lt;span style=&#34;color:#a6e22e&#34;&gt;IdleConnTimeout&lt;/span&gt;:       &lt;span style=&#34;color:#ae81ff&#34;&gt;90&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;time&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Second&lt;/span&gt;,
+	&lt;span style=&#34;color:#a6e22e&#34;&gt;TLSHandshakeTimeout&lt;/span&gt;:   &lt;span style=&#34;color:#ae81ff&#34;&gt;10&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;time&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Second&lt;/span&gt;,
+	&lt;span style=&#34;color:#a6e22e&#34;&gt;ExpectContinueTimeout&lt;/span&gt;: &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;time&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Second&lt;/span&gt;,
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;perhost-的-host-是-addrport&#34;&gt;PerHost 的 Host 是 addr+port&lt;/h3&gt;
+&lt;p&gt;单台服务器，多个端口的服务是不同的 Host。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;// canonicalAddr returns url.Host but always with a &amp;#34;:port&amp;#34; suffix
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;canonicalAddr&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;url&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;url&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;URL&lt;/span&gt;) &lt;span style=&#34;color:#66d9ef&#34;&gt;string&lt;/span&gt; {
+	&lt;span style=&#34;color:#a6e22e&#34;&gt;addr&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;:=&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;url&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Hostname&lt;/span&gt;()
+	&lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;v&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;err&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;:=&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;idnaASCII&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;addr&lt;/span&gt;); &lt;span style=&#34;color:#a6e22e&#34;&gt;err&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;nil&lt;/span&gt; {
+		&lt;span style=&#34;color:#a6e22e&#34;&gt;addr&lt;/span&gt; = &lt;span style=&#34;color:#a6e22e&#34;&gt;v&lt;/span&gt;
+	}
+	&lt;span style=&#34;color:#a6e22e&#34;&gt;port&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;:=&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;url&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Port&lt;/span&gt;()
+	&lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;port&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&amp;#34;&lt;/span&gt; {
+		&lt;span style=&#34;color:#a6e22e&#34;&gt;port&lt;/span&gt; = &lt;span style=&#34;color:#a6e22e&#34;&gt;portMap&lt;/span&gt;[&lt;span style=&#34;color:#a6e22e&#34;&gt;url&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Scheme&lt;/span&gt;]
+	}
+	&lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;net&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;JoinHostPort&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;addr&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;port&lt;/span&gt;)
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;参数试验&#34;&gt;参数试验&lt;/h2&gt;
+&lt;h3 id=&#34;服务端准备工作&#34;&gt;服务端准备工作&lt;/h3&gt;
+&lt;p&gt;&lt;a href=&#34;https://github.com/XUJiahua/go-http-conn-pool-test&#34;&gt;https://github.com/XUJiahua/go-http-conn-pool-test&lt;/a&gt;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# 长连接服务器 192.168.33.10:8087&lt;/span&gt;
+go run main.go -port &lt;span style=&#34;color:#ae81ff&#34;&gt;8087&lt;/span&gt;
+&lt;span style=&#34;color:#75715e&#34;&gt;# 长连接服务器 192.168.33.10:8089&lt;/span&gt;
+go run main.go -port &lt;span style=&#34;color:#ae81ff&#34;&gt;8089&lt;/span&gt;
+&lt;span style=&#34;color:#75715e&#34;&gt;# 短连接服务器 192.168.33.10:8088&lt;/span&gt;
+python3 -m http.server &lt;span style=&#34;color:#ae81ff&#34;&gt;8088&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;maxidleconnsperhost-控制单个host的连接池大小&#34;&gt;MaxIdleConnsPerHost 控制单个Host的连接池大小&lt;/h3&gt;
+&lt;p&gt;单个连接池数设置为1。设置 MaxConnsPerHost=MaxIdleConnsPerHost，保证连接都是长连接。方便抓包工具查看连接池的数量。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;// 参数配置
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;var&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;_httpCli&lt;/span&gt; = &lt;span style=&#34;color:#f92672&#34;&gt;&amp;amp;&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;http&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Client&lt;/span&gt;{
+	&lt;span style=&#34;color:#a6e22e&#34;&gt;Timeout&lt;/span&gt;: &lt;span style=&#34;color:#a6e22e&#34;&gt;time&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Duration&lt;/span&gt;(&lt;span style=&#34;color:#ae81ff&#34;&gt;15&lt;/span&gt;) &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;time&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Second&lt;/span&gt;,
+	&lt;span style=&#34;color:#a6e22e&#34;&gt;Transport&lt;/span&gt;: &lt;span style=&#34;color:#f92672&#34;&gt;&amp;amp;&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;http&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Transport&lt;/span&gt;{
+		&lt;span style=&#34;color:#a6e22e&#34;&gt;MaxIdleConnsPerHost&lt;/span&gt;:   &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;,
+		&lt;span style=&#34;color:#a6e22e&#34;&gt;MaxConnsPerHost&lt;/span&gt;:       &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;,
+		&lt;span style=&#34;color:#a6e22e&#34;&gt;IdleConnTimeout&lt;/span&gt;:       &lt;span style=&#34;color:#ae81ff&#34;&gt;90&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;time&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Second&lt;/span&gt;,
+		&lt;span style=&#34;color:#a6e22e&#34;&gt;TLSHandshakeTimeout&lt;/span&gt;:   &lt;span style=&#34;color:#ae81ff&#34;&gt;10&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;time&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Second&lt;/span&gt;,
+		&lt;span style=&#34;color:#a6e22e&#34;&gt;ExpectContinueTimeout&lt;/span&gt;: &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;time&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Second&lt;/span&gt;,
+	},
+}
+
+&lt;span style=&#34;color:#75715e&#34;&gt;// 测试
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;TestLong&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;t&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;testing&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;T&lt;/span&gt;) {
+	&lt;span style=&#34;color:#66d9ef&#34;&gt;go&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;func&lt;/span&gt;() {
+		&lt;span style=&#34;color:#66d9ef&#34;&gt;for&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;i&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;:=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;; &lt;span style=&#34;color:#a6e22e&#34;&gt;i&lt;/span&gt; &amp;lt; &lt;span style=&#34;color:#ae81ff&#34;&gt;1000&lt;/span&gt;; &lt;span style=&#34;color:#a6e22e&#34;&gt;i&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;++&lt;/span&gt; {
+			&lt;span style=&#34;color:#66d9ef&#34;&gt;go&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;get&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;http://192.168.33.10:8087&amp;#34;&lt;/span&gt;)
+		}
+	}()
+
+	&lt;span style=&#34;color:#a6e22e&#34;&gt;time&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Sleep&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;time&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Second&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;10&lt;/span&gt;)
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;img src=&#34;../../images/image-20200724143455526.png&#34; alt=&#34;image-20200724143455526&#34;&gt;&lt;/p&gt;
+&lt;h4 id=&#34;连接复用的效果&#34;&gt;连接复用的效果&lt;/h4&gt;
+&lt;p&gt;一个连接顺序处理多个HTTP请求。Wireshark 展示。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200724143722353.png&#34; alt=&#34;image-20200724143722353&#34;&gt;&lt;/p&gt;
+&lt;h3 id=&#34;maxconnsperhost-控制单个host的最大连接总数&#34;&gt;MaxConnsPerHost 控制单个Host的最大连接总数&lt;/h3&gt;
+&lt;p&gt;net/http包里没有全局性的连接总数限制参数。该值默认是0，也就是不限制，连接池里的连接能用就用，不能用创建新连接。无法进入连接池回收的短连接，被主动关闭。&lt;/p&gt;
+&lt;p&gt;如果不限制，直接 dialConn。如果限制，未达到限制，直接dialConn，计数+1；达到限制，进入等待队列中。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;// queueForDial queues w to wait for permission to begin dialing.
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;// Once w receives permission to dial, it will do so in a separate goroutine.
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;func&lt;/span&gt; (&lt;span style=&#34;color:#a6e22e&#34;&gt;t&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;Transport&lt;/span&gt;) &lt;span style=&#34;color:#a6e22e&#34;&gt;queueForDial&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;w&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;wantConn&lt;/span&gt;) {
+	&lt;span style=&#34;color:#a6e22e&#34;&gt;w&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;beforeDial&lt;/span&gt;()
+	&lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;t&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;MaxConnsPerHost&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt; {
+		&lt;span style=&#34;color:#66d9ef&#34;&gt;go&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;t&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;dialConnFor&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;w&lt;/span&gt;)
+		&lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt;
+	}
+
+	&lt;span style=&#34;color:#a6e22e&#34;&gt;t&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;connsPerHostMu&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Lock&lt;/span&gt;()
+	&lt;span style=&#34;color:#66d9ef&#34;&gt;defer&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;t&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;connsPerHostMu&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Unlock&lt;/span&gt;()
+
+	&lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;n&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;:=&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;t&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;connsPerHost&lt;/span&gt;[&lt;span style=&#34;color:#a6e22e&#34;&gt;w&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;key&lt;/span&gt;]; &lt;span style=&#34;color:#a6e22e&#34;&gt;n&lt;/span&gt; &amp;lt; &lt;span style=&#34;color:#a6e22e&#34;&gt;t&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;MaxConnsPerHost&lt;/span&gt; {
+		&lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;t&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;connsPerHost&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;nil&lt;/span&gt; {
+			&lt;span style=&#34;color:#a6e22e&#34;&gt;t&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;connsPerHost&lt;/span&gt; = make(&lt;span style=&#34;color:#66d9ef&#34;&gt;map&lt;/span&gt;[&lt;span style=&#34;color:#a6e22e&#34;&gt;connectMethodKey&lt;/span&gt;]&lt;span style=&#34;color:#66d9ef&#34;&gt;int&lt;/span&gt;)
+		}
+		&lt;span style=&#34;color:#a6e22e&#34;&gt;t&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;connsPerHost&lt;/span&gt;[&lt;span style=&#34;color:#a6e22e&#34;&gt;w&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;key&lt;/span&gt;] = &lt;span style=&#34;color:#a6e22e&#34;&gt;n&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;
+		&lt;span style=&#34;color:#66d9ef&#34;&gt;go&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;t&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;dialConnFor&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;w&lt;/span&gt;)
+		&lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt;
+	}
+
+	&lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;t&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;connsPerHostWait&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;nil&lt;/span&gt; {
+		&lt;span style=&#34;color:#a6e22e&#34;&gt;t&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;connsPerHostWait&lt;/span&gt; = make(&lt;span style=&#34;color:#66d9ef&#34;&gt;map&lt;/span&gt;[&lt;span style=&#34;color:#a6e22e&#34;&gt;connectMethodKey&lt;/span&gt;]&lt;span style=&#34;color:#a6e22e&#34;&gt;wantConnQueue&lt;/span&gt;)
+	}
+	&lt;span style=&#34;color:#a6e22e&#34;&gt;q&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;:=&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;t&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;connsPerHostWait&lt;/span&gt;[&lt;span style=&#34;color:#a6e22e&#34;&gt;w&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;key&lt;/span&gt;]
+	&lt;span style=&#34;color:#a6e22e&#34;&gt;q&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;cleanFront&lt;/span&gt;()
+	&lt;span style=&#34;color:#a6e22e&#34;&gt;q&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;pushBack&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;w&lt;/span&gt;)
+	&lt;span style=&#34;color:#a6e22e&#34;&gt;t&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;connsPerHostWait&lt;/span&gt;[&lt;span style=&#34;color:#a6e22e&#34;&gt;w&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;key&lt;/span&gt;] = &lt;span style=&#34;color:#a6e22e&#34;&gt;q&lt;/span&gt;
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;如果计数-1，从等待队列中释放一个进行 dialConn。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;// decConnsPerHost decrements the per-host connection count for key,
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;// which may in turn give a different waiting goroutine permission to dial.
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;func&lt;/span&gt; (&lt;span style=&#34;color:#a6e22e&#34;&gt;t&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;Transport&lt;/span&gt;) &lt;span style=&#34;color:#a6e22e&#34;&gt;decConnsPerHost&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;key&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;connectMethodKey&lt;/span&gt;) {
+	&lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;t&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;MaxConnsPerHost&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt; {
+		&lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt;
+	}
+
+	&lt;span style=&#34;color:#a6e22e&#34;&gt;t&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;connsPerHostMu&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Lock&lt;/span&gt;()
+	&lt;span style=&#34;color:#66d9ef&#34;&gt;defer&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;t&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;connsPerHostMu&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Unlock&lt;/span&gt;()
+	&lt;span style=&#34;color:#a6e22e&#34;&gt;n&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;:=&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;t&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;connsPerHost&lt;/span&gt;[&lt;span style=&#34;color:#a6e22e&#34;&gt;key&lt;/span&gt;]
+	&lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;n&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt; {
+		&lt;span style=&#34;color:#75715e&#34;&gt;// Shouldn&amp;#39;t happen, but if it does, the counting is buggy and could
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;		&lt;span style=&#34;color:#75715e&#34;&gt;// easily lead to a silent deadlock, so report the problem loudly.
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;		panic(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;net/http: internal error: connCount underflow&amp;#34;&lt;/span&gt;)
+	}
+
+	&lt;span style=&#34;color:#75715e&#34;&gt;// Can we hand this count to a goroutine still waiting to dial?
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;	&lt;span style=&#34;color:#75715e&#34;&gt;// (Some goroutines on the wait list may have timed out or
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;	&lt;span style=&#34;color:#75715e&#34;&gt;// gotten a connection another way. If they&amp;#39;re all gone,
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;	&lt;span style=&#34;color:#75715e&#34;&gt;// we don&amp;#39;t want to kick off any spurious dial operations.)
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;	&lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;q&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;:=&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;t&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;connsPerHostWait&lt;/span&gt;[&lt;span style=&#34;color:#a6e22e&#34;&gt;key&lt;/span&gt;]; &lt;span style=&#34;color:#a6e22e&#34;&gt;q&lt;/span&gt;.len() &amp;gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt; {
+		&lt;span style=&#34;color:#a6e22e&#34;&gt;done&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;:=&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;false&lt;/span&gt;
+		&lt;span style=&#34;color:#66d9ef&#34;&gt;for&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;q&lt;/span&gt;.len() &amp;gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt; {
+			&lt;span style=&#34;color:#a6e22e&#34;&gt;w&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;:=&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;q&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;popFront&lt;/span&gt;()
+			&lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;w&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;waiting&lt;/span&gt;() {
+				&lt;span style=&#34;color:#66d9ef&#34;&gt;go&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;t&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;dialConnFor&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;w&lt;/span&gt;)
+				&lt;span style=&#34;color:#a6e22e&#34;&gt;done&lt;/span&gt; = &lt;span style=&#34;color:#66d9ef&#34;&gt;true&lt;/span&gt;
+				&lt;span style=&#34;color:#66d9ef&#34;&gt;break&lt;/span&gt;
+			}
+		}
+		&lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;q&lt;/span&gt;.len() &lt;span style=&#34;color:#f92672&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt; {
+			delete(&lt;span style=&#34;color:#a6e22e&#34;&gt;t&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;connsPerHostWait&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;key&lt;/span&gt;)
+		} &lt;span style=&#34;color:#66d9ef&#34;&gt;else&lt;/span&gt; {
+			&lt;span style=&#34;color:#75715e&#34;&gt;// q is a value (like a slice), so we have to store
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;			&lt;span style=&#34;color:#75715e&#34;&gt;// the updated q back into the map.
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;			&lt;span style=&#34;color:#a6e22e&#34;&gt;t&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;connsPerHostWait&lt;/span&gt;[&lt;span style=&#34;color:#a6e22e&#34;&gt;key&lt;/span&gt;] = &lt;span style=&#34;color:#a6e22e&#34;&gt;q&lt;/span&gt;
+		}
+		&lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;done&lt;/span&gt; {
+			&lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt;
+		}
+	}
+
+	&lt;span style=&#34;color:#75715e&#34;&gt;// Otherwise, decrement the recorded count.
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;	&lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;n&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;--&lt;/span&gt;; &lt;span style=&#34;color:#a6e22e&#34;&gt;n&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt; {
+		delete(&lt;span style=&#34;color:#a6e22e&#34;&gt;t&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;connsPerHost&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;key&lt;/span&gt;)
+	} &lt;span style=&#34;color:#66d9ef&#34;&gt;else&lt;/span&gt; {
+		&lt;span style=&#34;color:#a6e22e&#34;&gt;t&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;connsPerHost&lt;/span&gt;[&lt;span style=&#34;color:#a6e22e&#34;&gt;key&lt;/span&gt;] = &lt;span style=&#34;color:#a6e22e&#34;&gt;n&lt;/span&gt;
+	}
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;试验：尝试连接池1，最大连接数2。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;// 参数配置
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;var&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;_httpCli&lt;/span&gt; = &lt;span style=&#34;color:#f92672&#34;&gt;&amp;amp;&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;http&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Client&lt;/span&gt;{
+	&lt;span style=&#34;color:#a6e22e&#34;&gt;Timeout&lt;/span&gt;: &lt;span style=&#34;color:#a6e22e&#34;&gt;time&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Duration&lt;/span&gt;(&lt;span style=&#34;color:#ae81ff&#34;&gt;15&lt;/span&gt;) &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;time&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Second&lt;/span&gt;,
+	&lt;span style=&#34;color:#a6e22e&#34;&gt;Transport&lt;/span&gt;: &lt;span style=&#34;color:#f92672&#34;&gt;&amp;amp;&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;http&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Transport&lt;/span&gt;{
+		&lt;span style=&#34;color:#a6e22e&#34;&gt;MaxIdleConnsPerHost&lt;/span&gt;:   &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;,
+		&lt;span style=&#34;color:#a6e22e&#34;&gt;MaxConnsPerHost&lt;/span&gt;:       &lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;,
+		&lt;span style=&#34;color:#a6e22e&#34;&gt;IdleConnTimeout&lt;/span&gt;:       &lt;span style=&#34;color:#ae81ff&#34;&gt;90&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;time&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Second&lt;/span&gt;,
+		&lt;span style=&#34;color:#a6e22e&#34;&gt;TLSHandshakeTimeout&lt;/span&gt;:   &lt;span style=&#34;color:#ae81ff&#34;&gt;10&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;time&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Second&lt;/span&gt;,
+		&lt;span style=&#34;color:#a6e22e&#34;&gt;ExpectContinueTimeout&lt;/span&gt;: &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;time&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Second&lt;/span&gt;,
+	},
+}
+
+&lt;span style=&#34;color:#75715e&#34;&gt;// 测试
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;TestLong&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;t&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;testing&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;T&lt;/span&gt;) {
+	&lt;span style=&#34;color:#66d9ef&#34;&gt;go&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;func&lt;/span&gt;() {
+		&lt;span style=&#34;color:#66d9ef&#34;&gt;for&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;i&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;:=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;; &lt;span style=&#34;color:#a6e22e&#34;&gt;i&lt;/span&gt; &amp;lt; &lt;span style=&#34;color:#ae81ff&#34;&gt;100&lt;/span&gt;; &lt;span style=&#34;color:#a6e22e&#34;&gt;i&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;++&lt;/span&gt; {
+			&lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;i&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;%&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;10&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt; {
+				&lt;span style=&#34;color:#a6e22e&#34;&gt;time&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Sleep&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;time&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Second&lt;/span&gt;)
+			}
+			&lt;span style=&#34;color:#66d9ef&#34;&gt;go&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;get&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;http://192.168.33.10:8087&amp;#34;&lt;/span&gt;)
+		}
+	}()
+
+	&lt;span style=&#34;color:#a6e22e&#34;&gt;time&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Sleep&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;time&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Second&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;10&lt;/span&gt;)
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;连接有重建的情况。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200724151057501.png&#34; alt=&#34;image-20200724151057501&#34;&gt;&lt;/p&gt;
+&lt;h3 id=&#34;maxidleconns-vs-maxidleconnsperhost-两个连接池&#34;&gt;MaxIdleConns vs MaxIdleConnsPerHost 两个连接池&lt;/h3&gt;
+&lt;p&gt;如下源码，先检查 PerHost 的池子有没有满，再检查总的池子有没有满。也就是说，MaxIdleConns设置不合理，会对MaxIdleConnsPerHost有影响。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;// tryPutIdleConn adds pconn to the list of idle persistent connections awaiting
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;// a new request.
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;// If pconn is no longer needed or not in a good state, tryPutIdleConn returns
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;// an error explaining why it wasn&amp;#39;t registered.
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;// tryPutIdleConn does not close pconn. Use putOrCloseIdleConn instead for that.
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;func&lt;/span&gt; (&lt;span style=&#34;color:#a6e22e&#34;&gt;t&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;Transport&lt;/span&gt;) &lt;span style=&#34;color:#a6e22e&#34;&gt;tryPutIdleConn&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;pconn&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;persistConn&lt;/span&gt;) &lt;span style=&#34;color:#66d9ef&#34;&gt;error&lt;/span&gt; {
+  &lt;span style=&#34;color:#f92672&#34;&gt;...&lt;/span&gt;
+	&lt;span style=&#34;color:#a6e22e&#34;&gt;idles&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;:=&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;t&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;idleConn&lt;/span&gt;[&lt;span style=&#34;color:#a6e22e&#34;&gt;key&lt;/span&gt;]
+	&lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; len(&lt;span style=&#34;color:#a6e22e&#34;&gt;idles&lt;/span&gt;) &lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;=&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;t&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;maxIdleConnsPerHost&lt;/span&gt;() {
+    &lt;span style=&#34;color:#75715e&#34;&gt;// 如果超过了maxIdleConnsPerHost，报连接太多，当前pconn被关掉。
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;		&lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;errTooManyIdleHost&lt;/span&gt;
+	}
+	&lt;span style=&#34;color:#66d9ef&#34;&gt;for&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;_&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;exist&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;:=&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;range&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;idles&lt;/span&gt; {
+		&lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;exist&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;pconn&lt;/span&gt; {
+			&lt;span style=&#34;color:#a6e22e&#34;&gt;log&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Fatalf&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;dup idle pconn %p in freelist&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;pconn&lt;/span&gt;)
+		}
+	}
+	&lt;span style=&#34;color:#a6e22e&#34;&gt;t&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;idleConn&lt;/span&gt;[&lt;span style=&#34;color:#a6e22e&#34;&gt;key&lt;/span&gt;] = append(&lt;span style=&#34;color:#a6e22e&#34;&gt;idles&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;pconn&lt;/span&gt;)
+	&lt;span style=&#34;color:#a6e22e&#34;&gt;t&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;idleLRU&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;add&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;pconn&lt;/span&gt;)
+	&lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;t&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;MaxIdleConns&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;!=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;t&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;idleLRU&lt;/span&gt;.len() &amp;gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;t&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;MaxIdleConns&lt;/span&gt; {
+		&lt;span style=&#34;color:#a6e22e&#34;&gt;oldest&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;:=&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;t&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;idleLRU&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;removeOldest&lt;/span&gt;()
+    &lt;span style=&#34;color:#75715e&#34;&gt;// 如果超过了MaxIdleConns，杀掉老的idle connection
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;		&lt;span style=&#34;color:#a6e22e&#34;&gt;oldest&lt;/span&gt;.close(&lt;span style=&#34;color:#a6e22e&#34;&gt;errTooManyIdle&lt;/span&gt;)
+		&lt;span style=&#34;color:#a6e22e&#34;&gt;t&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;removeIdleConnLocked&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;oldest&lt;/span&gt;)
+	}
+  &lt;span style=&#34;color:#f92672&#34;&gt;...&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;看看是否有影响，客户端同时连接两个Host。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;// 参数配置
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;var&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;_httpCli&lt;/span&gt; = &lt;span style=&#34;color:#f92672&#34;&gt;&amp;amp;&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;http&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Client&lt;/span&gt;{
+	&lt;span style=&#34;color:#a6e22e&#34;&gt;Timeout&lt;/span&gt;: &lt;span style=&#34;color:#a6e22e&#34;&gt;time&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Duration&lt;/span&gt;(&lt;span style=&#34;color:#ae81ff&#34;&gt;15&lt;/span&gt;) &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;time&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Second&lt;/span&gt;,
+	&lt;span style=&#34;color:#a6e22e&#34;&gt;Transport&lt;/span&gt;: &lt;span style=&#34;color:#f92672&#34;&gt;&amp;amp;&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;http&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Transport&lt;/span&gt;{
+		&lt;span style=&#34;color:#a6e22e&#34;&gt;MaxIdleConns&lt;/span&gt;:          &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;,
+		&lt;span style=&#34;color:#a6e22e&#34;&gt;MaxIdleConnsPerHost&lt;/span&gt;:   &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;,
+		&lt;span style=&#34;color:#a6e22e&#34;&gt;MaxConnsPerHost&lt;/span&gt;:       &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;,
+		&lt;span style=&#34;color:#a6e22e&#34;&gt;IdleConnTimeout&lt;/span&gt;:       &lt;span style=&#34;color:#ae81ff&#34;&gt;90&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;time&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Second&lt;/span&gt;,
+		&lt;span style=&#34;color:#a6e22e&#34;&gt;TLSHandshakeTimeout&lt;/span&gt;:   &lt;span style=&#34;color:#ae81ff&#34;&gt;10&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;time&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Second&lt;/span&gt;,
+		&lt;span style=&#34;color:#a6e22e&#34;&gt;ExpectContinueTimeout&lt;/span&gt;: &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;time&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Second&lt;/span&gt;,
+	},
+}
+
+&lt;span style=&#34;color:#75715e&#34;&gt;// 测试
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;TestLongLong&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;t&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;testing&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;T&lt;/span&gt;) {
+	&lt;span style=&#34;color:#66d9ef&#34;&gt;go&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;func&lt;/span&gt;() {
+		&lt;span style=&#34;color:#66d9ef&#34;&gt;for&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;i&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;:=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;; &lt;span style=&#34;color:#a6e22e&#34;&gt;i&lt;/span&gt; &amp;lt; &lt;span style=&#34;color:#ae81ff&#34;&gt;100&lt;/span&gt;; &lt;span style=&#34;color:#a6e22e&#34;&gt;i&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;++&lt;/span&gt; {
+			&lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;i&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;%&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;10&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt; {
+				&lt;span style=&#34;color:#a6e22e&#34;&gt;time&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Sleep&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;time&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Second&lt;/span&gt;)
+			}
+			&lt;span style=&#34;color:#66d9ef&#34;&gt;go&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;get&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;http://192.168.33.10:8087&amp;#34;&lt;/span&gt;)
+		}
+	}()
+
+	&lt;span style=&#34;color:#66d9ef&#34;&gt;go&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;func&lt;/span&gt;() {
+		&lt;span style=&#34;color:#66d9ef&#34;&gt;for&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;i&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;:=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;; &lt;span style=&#34;color:#a6e22e&#34;&gt;i&lt;/span&gt; &amp;lt; &lt;span style=&#34;color:#ae81ff&#34;&gt;100&lt;/span&gt;; &lt;span style=&#34;color:#a6e22e&#34;&gt;i&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;++&lt;/span&gt; {
+			&lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;i&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;%&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;10&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt; {
+				&lt;span style=&#34;color:#a6e22e&#34;&gt;time&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Sleep&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;time&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Second&lt;/span&gt;)
+			}
+			&lt;span style=&#34;color:#66d9ef&#34;&gt;go&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;get&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;http://192.168.33.10:8089&amp;#34;&lt;/span&gt;)
+		}
+	}()
+
+	&lt;span style=&#34;color:#a6e22e&#34;&gt;time&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Sleep&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;time&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Second&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;10&lt;/span&gt;)
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;结果反映，连接有不断重建的现象。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200724145033252.png&#34; alt=&#34;image-20200724145033252&#34;&gt;&lt;/p&gt;
+&lt;p&gt;配置去除MaxIdleConns，不限制连接总池的大小：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;// 参数配置
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;var&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;_httpCli&lt;/span&gt; = &lt;span style=&#34;color:#f92672&#34;&gt;&amp;amp;&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;http&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Client&lt;/span&gt;{
+	&lt;span style=&#34;color:#a6e22e&#34;&gt;Timeout&lt;/span&gt;: &lt;span style=&#34;color:#a6e22e&#34;&gt;time&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Duration&lt;/span&gt;(&lt;span style=&#34;color:#ae81ff&#34;&gt;15&lt;/span&gt;) &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;time&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Second&lt;/span&gt;,
+	&lt;span style=&#34;color:#a6e22e&#34;&gt;Transport&lt;/span&gt;: &lt;span style=&#34;color:#f92672&#34;&gt;&amp;amp;&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;http&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Transport&lt;/span&gt;{
+		&lt;span style=&#34;color:#a6e22e&#34;&gt;MaxIdleConnsPerHost&lt;/span&gt;:   &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;,
+		&lt;span style=&#34;color:#a6e22e&#34;&gt;MaxConnsPerHost&lt;/span&gt;:       &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;,
+		&lt;span style=&#34;color:#a6e22e&#34;&gt;IdleConnTimeout&lt;/span&gt;:       &lt;span style=&#34;color:#ae81ff&#34;&gt;90&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;time&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Second&lt;/span&gt;,
+		&lt;span style=&#34;color:#a6e22e&#34;&gt;TLSHandshakeTimeout&lt;/span&gt;:   &lt;span style=&#34;color:#ae81ff&#34;&gt;10&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;time&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Second&lt;/span&gt;,
+		&lt;span style=&#34;color:#a6e22e&#34;&gt;ExpectContinueTimeout&lt;/span&gt;: &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;time&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Second&lt;/span&gt;,
+	},
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;结果反映，对每个Host各自维持一个连接。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200724145240071.png&#34; alt=&#34;image-20200724145240071&#34;&gt;&lt;/p&gt;
+&lt;h3 id=&#34;连接复用客户端服务端需同时支持&#34;&gt;连接复用，客户端、服务端需同时支持&lt;/h3&gt;
+&lt;p&gt;任何一方主动关闭连接，连接就无法复用。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;// 参数配置
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;var&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;_httpCli&lt;/span&gt; = &lt;span style=&#34;color:#f92672&#34;&gt;&amp;amp;&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;http&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Client&lt;/span&gt;{
+	&lt;span style=&#34;color:#a6e22e&#34;&gt;Timeout&lt;/span&gt;: &lt;span style=&#34;color:#a6e22e&#34;&gt;time&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Duration&lt;/span&gt;(&lt;span style=&#34;color:#ae81ff&#34;&gt;15&lt;/span&gt;) &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;time&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Second&lt;/span&gt;,
+	&lt;span style=&#34;color:#a6e22e&#34;&gt;Transport&lt;/span&gt;: &lt;span style=&#34;color:#f92672&#34;&gt;&amp;amp;&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;http&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Transport&lt;/span&gt;{
+		&lt;span style=&#34;color:#a6e22e&#34;&gt;MaxIdleConnsPerHost&lt;/span&gt;:   &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;,
+		&lt;span style=&#34;color:#a6e22e&#34;&gt;MaxConnsPerHost&lt;/span&gt;:       &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;,
+		&lt;span style=&#34;color:#a6e22e&#34;&gt;IdleConnTimeout&lt;/span&gt;:       &lt;span style=&#34;color:#ae81ff&#34;&gt;90&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;time&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Second&lt;/span&gt;,
+		&lt;span style=&#34;color:#a6e22e&#34;&gt;TLSHandshakeTimeout&lt;/span&gt;:   &lt;span style=&#34;color:#ae81ff&#34;&gt;10&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;time&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Second&lt;/span&gt;,
+		&lt;span style=&#34;color:#a6e22e&#34;&gt;ExpectContinueTimeout&lt;/span&gt;: &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;time&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Second&lt;/span&gt;,
+	},
+}
+
+&lt;span style=&#34;color:#75715e&#34;&gt;// 测试
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;TestLongShort&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;t&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;testing&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;T&lt;/span&gt;) {
+	&lt;span style=&#34;color:#66d9ef&#34;&gt;go&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;func&lt;/span&gt;() {
+		&lt;span style=&#34;color:#66d9ef&#34;&gt;for&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;i&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;:=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;; &lt;span style=&#34;color:#a6e22e&#34;&gt;i&lt;/span&gt; &amp;lt; &lt;span style=&#34;color:#ae81ff&#34;&gt;1000&lt;/span&gt;; &lt;span style=&#34;color:#a6e22e&#34;&gt;i&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;++&lt;/span&gt; {
+			&lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;i&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;%&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;10&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt; {
+				&lt;span style=&#34;color:#a6e22e&#34;&gt;time&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Sleep&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;time&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Second&lt;/span&gt;)
+			}
+			&lt;span style=&#34;color:#66d9ef&#34;&gt;go&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;get&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;http://192.168.33.10:8087&amp;#34;&lt;/span&gt;)
+		}
+	}()
+
+	&lt;span style=&#34;color:#66d9ef&#34;&gt;go&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;func&lt;/span&gt;() {
+		&lt;span style=&#34;color:#66d9ef&#34;&gt;for&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;i&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;:=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;; &lt;span style=&#34;color:#a6e22e&#34;&gt;i&lt;/span&gt; &amp;lt; &lt;span style=&#34;color:#ae81ff&#34;&gt;1000&lt;/span&gt;; &lt;span style=&#34;color:#a6e22e&#34;&gt;i&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;++&lt;/span&gt; {
+			&lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;i&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;%&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;10&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt; {
+				&lt;span style=&#34;color:#a6e22e&#34;&gt;time&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Sleep&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;time&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Second&lt;/span&gt;)
+			}
+			&lt;span style=&#34;color:#66d9ef&#34;&gt;go&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;get&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;http://192.168.33.10:8088&amp;#34;&lt;/span&gt;)
+		}
+	}()
+
+	&lt;span style=&#34;color:#a6e22e&#34;&gt;time&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Sleep&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;time&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Second&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;10&lt;/span&gt;)
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;python server （&lt;code&gt;python3 -m http.server 8088&lt;/code&gt;）会主动关闭连接，池化参数不生效，创建连接不止1个。作为对比，对于长连接服务，池化参数生效。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200724145917753.png&#34; alt=&#34;image-20200724145917753&#34;&gt;&lt;/p&gt;
+&lt;h2 id=&#34;总结&#34;&gt;总结&lt;/h2&gt;
+&lt;p&gt;服务间接口调用，维持稳定数量的长连接，对性能非常有帮助。&lt;/p&gt;
+&lt;p&gt;几个参数：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;MaxIdleConnsPerHost：优先设置这个，决定了对于单个Host需要维持的连接池大小。该值的合理确定，应该根据性能测试的结果调整。&lt;/li&gt;
+&lt;li&gt;MaxIdleConns：客户端连接单个Host，不少于MaxIdleConnsPerHost大小，不然影响MaxIdleConnsPerHost控制的连接池；客户端连接 n 个Host，少于 n X MaxIdleConnsPerHost 会影响MaxIdleConnsPerHost控制的连接池（导致连接重建）。嫌麻烦，建议设置为0，不限制。&lt;/li&gt;
+&lt;li&gt;MaxConnsPerHost：对于单个Host允许的最大连接数，包含IdleConns，所以一般大于等于MaxIdleConnsPerHost。设置为等于MaxIdleConnsPerHost，也就是尽可能复用连接池中的连接。另外设置过小，可能会导致并发下降，超过这个值会 block 请求，直到有空闲连接。（所以默认值是不限制的）&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;参考：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Tuning the Go HTTP Client Settings for Load Testing &lt;a href=&#34;http://tleyden.github.io/blog/2016/11/21/tuning-the-go-http-client-library-for-load-testing/&#34;&gt;http://tleyden.github.io/blog/2016/11/21/tuning-the-go-http-client-library-for-load-testing/&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+- https://xujiahua.github.io/posts/20200723-golang-http-reuse/ - </description>
+        </item>
     
     
     
@@ -736,244 +1086,6 @@ expect1
 &lt;p&gt;以上为近2月项目的浓缩总结。人力有限，每个环节都做得比较粗放。&lt;/p&gt;
 &lt;p&gt;但总体有条不紊，幸亏洪敏和我前期的积累。&lt;/p&gt;
 - https://xujiahua.github.io/posts/20200529-bi_project/ - </description>
-        </item>
-    
-    
-    
-        <item>
-        <title>Metabase Impala Driver 0528更新日志</title>
-        <link>https://xujiahua.github.io/posts/20200528-metabase-impala-type/</link>
-        <pubDate>Thu, 28 May 2020 09:30:09 +0800</pubDate>
-        
-        <guid>https://xujiahua.github.io/posts/20200528-metabase-impala-type/</guid>
-        <description>许嘉华的博客 https://xujiahua.github.io/posts/20200528-metabase-impala-type/ -&lt;p&gt;体验过程中还是碰到不少问题。&lt;/p&gt;
-&lt;h2 id=&#34;1-timestamp-类型没有过滤器样式&#34;&gt;1. TIMESTAMP 类型没有过滤器样式&lt;/h2&gt;
-&lt;h3 id=&#34;现象&#34;&gt;现象&lt;/h3&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image-20200528173609294.png&#34; alt=&#34;image-20200528173609294&#34;&gt;&lt;/p&gt;
-&lt;p&gt;连 SparkSQL 没这个问题。同样是TIMESTAMP类型，表现不同。&lt;/p&gt;
-&lt;h3 id=&#34;初步分析&#34;&gt;初步分析&lt;/h3&gt;
-&lt;p&gt;在数据库中查看存储的字段信息，Impala/SparkSQL对比看，发现 Impala 数据库下的字段 base_type 都是 &lt;code&gt;type/*&lt;/code&gt;。而 database_type，Impala 都是大写的，比如TIMESTAMP，而不是timestamp。所以，并不仅仅是TIMESTAMP类型没有过滤器样式。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image-20200528173915594.png&#34; alt=&#34;image-20200528173915594&#34;&gt;&lt;/p&gt;
-&lt;p&gt;Metabase 数据库类型会映射为 Clojure类型，数据库类型的名称是大小写敏感的。所以不能复用hive-like中的实现（都是小写的），而且Hive与Impala的类型还是有些不同的。&lt;/p&gt;
-&lt;h3 id=&#34;hive-impala的数据类型异同&#34;&gt;Hive Impala的数据类型异同&lt;/h3&gt;
-&lt;p&gt;以 Hive Data Types 为基准。&lt;/p&gt;
-&lt;table&gt;
-&lt;thead&gt;
-&lt;tr&gt;
-&lt;th&gt;Type Name&lt;/th&gt;
-&lt;th&gt;Type Catgory&lt;/th&gt;
-&lt;th&gt;Comment&lt;/th&gt;
-&lt;th&gt;Impala Support?&lt;/th&gt;
-&lt;/tr&gt;
-&lt;/thead&gt;
-&lt;tbody&gt;
-&lt;tr&gt;
-&lt;td&gt;TINYINT&lt;/td&gt;
-&lt;td&gt;Numeric Types&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;td&gt;Yes&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;SMALLINT&lt;/td&gt;
-&lt;td&gt;Numeric Types&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;td&gt;Yes&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;INT&lt;/td&gt;
-&lt;td&gt;Numeric Types&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;td&gt;Yes&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;BIGINT&lt;/td&gt;
-&lt;td&gt;Numeric Types&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;td&gt;Yes&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;FLOAT&lt;/td&gt;
-&lt;td&gt;Numeric Types&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;td&gt;Yes&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;DOUBLE&lt;/td&gt;
-&lt;td&gt;Numeric Types&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;td&gt;Yes&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;DOUBLE PRECISION&lt;/td&gt;
-&lt;td&gt;Numeric Types&lt;/td&gt;
-&lt;td&gt;alias for DOUBLE, only available starting with Hive 2.2.0&lt;/td&gt;
-&lt;td&gt;No&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;DECIMAL&lt;/td&gt;
-&lt;td&gt;Numeric Types&lt;/td&gt;
-&lt;td&gt;Introduced in Hive 0.11.0 with a precision of 38 digits&lt;!-- raw HTML omitted --&gt;Hive 0.13.0 introduced user-definable precision and scale&lt;/td&gt;
-&lt;td&gt;Yes&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;NUMERIC&lt;/td&gt;
-&lt;td&gt;Numeric Types&lt;/td&gt;
-&lt;td&gt;same as DECIMAL, starting with Hive 3.0.0&lt;/td&gt;
-&lt;td&gt;No&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;TIMESTAMP&lt;/td&gt;
-&lt;td&gt;Date/Time Types&lt;/td&gt;
-&lt;td&gt;available starting with Hive 0.8.0&lt;/td&gt;
-&lt;td&gt;Yes&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;DATE&lt;/td&gt;
-&lt;td&gt;Date/Time Types&lt;/td&gt;
-&lt;td&gt;available starting with Hive 0.12.0&lt;/td&gt;
-&lt;td&gt;No&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;INTERVAL&lt;/td&gt;
-&lt;td&gt;Date/Time Types&lt;/td&gt;
-&lt;td&gt;available starting with Hive 1.2.0&lt;/td&gt;
-&lt;td&gt;No&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;STRING&lt;/td&gt;
-&lt;td&gt;String Types&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;td&gt;Yes&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;VARCHAR&lt;/td&gt;
-&lt;td&gt;String Types&lt;/td&gt;
-&lt;td&gt;available starting with Hive 0.12.0&lt;/td&gt;
-&lt;td&gt;Yes&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;CHAR&lt;/td&gt;
-&lt;td&gt;String Types&lt;/td&gt;
-&lt;td&gt;available starting with Hive 0.13.0&lt;/td&gt;
-&lt;td&gt;Yes&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;BOOLEAN&lt;/td&gt;
-&lt;td&gt;Misc Types&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;td&gt;Yes&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;BINARY&lt;/td&gt;
-&lt;td&gt;Misc Types&lt;/td&gt;
-&lt;td&gt;available starting with Hive 0.8.0&lt;/td&gt;
-&lt;td&gt;No&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;arrays: ARRAY&amp;lt;data_type&amp;gt;&lt;/td&gt;
-&lt;td&gt;Complex Types&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;td&gt;Yes&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;maps: MAP&amp;lt;primitive_type, data_type&amp;gt;&lt;/td&gt;
-&lt;td&gt;Complex Types&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;td&gt;Yes&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;structs: STRUCT&amp;lt;col_name : data_type [COMMENT col_comment], &amp;hellip;&amp;gt;&lt;/td&gt;
-&lt;td&gt;Complex Types&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;td&gt;Yes&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;union: UNIONTYPE&amp;lt;data_type, data_type, &amp;hellip;&amp;gt;&lt;/td&gt;
-&lt;td&gt;Complex Types&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;td&gt;No&lt;/td&gt;
-&lt;/tr&gt;
-&lt;/tbody&gt;
-&lt;/table&gt;
-&lt;p&gt;参考：&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;Hive Data Types &lt;a href=&#34;https://cwiki.apache.org/confluence/display/Hive/LanguageManual+Types&#34;&gt;https://cwiki.apache.org/confluence/display/Hive/LanguageManual+Types&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;Impala Data Types &lt;a href=&#34;https://docs.cloudera.com/documentation/enterprise/latest/topics/impala_datatypes.html&#34;&gt;https://docs.cloudera.com/documentation/enterprise/latest/topics/impala_datatypes.html&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;SQL Differences Between Impala and Hive &lt;a href=&#34;https://docs.cloudera.com/documentation/enterprise/6/6.3/topics/impala_langref_unsupported.html&#34;&gt;https://docs.cloudera.com/documentation/enterprise/6/6.3/topics/impala_langref_unsupported.html&lt;/a&gt;&lt;/li&gt;
-&lt;/ol&gt;
-&lt;h3 id=&#34;fix&#34;&gt;fix&lt;/h3&gt;
-&lt;p&gt;根据与Hive数据类型对比，重写方法 &lt;code&gt;sql-jdbc.sync/database-type-&amp;gt;base-type&lt;/code&gt;。&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-clojure&#34; data-lang=&#34;clojure&#34;&gt;(&lt;span style=&#34;color:#66d9ef&#34;&gt;defmethod &lt;/span&gt;sql-jdbc.sync/database-type-&amp;gt;base-type &lt;span style=&#34;color:#e6db74&#34;&gt;:impala&lt;/span&gt;
-  [_ database-type]
-  (&lt;span style=&#34;color:#a6e22e&#34;&gt;condp&lt;/span&gt; re-matches (name database-type)
-    &lt;span style=&#34;color:#f92672&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;TINYINT&amp;#34;&lt;/span&gt;          &lt;span style=&#34;color:#e6db74&#34;&gt;:type/Integer&lt;/span&gt;
-    &lt;span style=&#34;color:#f92672&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;SMALLINT&amp;#34;&lt;/span&gt;         &lt;span style=&#34;color:#e6db74&#34;&gt;:type/Integer&lt;/span&gt;
-    &lt;span style=&#34;color:#f92672&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;INT&amp;#34;&lt;/span&gt;              &lt;span style=&#34;color:#e6db74&#34;&gt;:type/Integer&lt;/span&gt;
-    &lt;span style=&#34;color:#f92672&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;BIGINT&amp;#34;&lt;/span&gt;           &lt;span style=&#34;color:#e6db74&#34;&gt;:type/BigInteger&lt;/span&gt;
-    &lt;span style=&#34;color:#f92672&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;FLOAT&amp;#34;&lt;/span&gt;            &lt;span style=&#34;color:#e6db74&#34;&gt;:type/Float&lt;/span&gt;
-    &lt;span style=&#34;color:#f92672&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;DOUBLE&amp;#34;&lt;/span&gt;           &lt;span style=&#34;color:#e6db74&#34;&gt;:type/Float&lt;/span&gt;
-    &lt;span style=&#34;color:#f92672&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;DECIMAL.*&amp;#34;&lt;/span&gt;        &lt;span style=&#34;color:#e6db74&#34;&gt;:type/Decimal&lt;/span&gt;
-    &lt;span style=&#34;color:#f92672&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;TIMESTAMP&amp;#34;&lt;/span&gt;        &lt;span style=&#34;color:#e6db74&#34;&gt;:type/DateTime&lt;/span&gt;
-    &lt;span style=&#34;color:#f92672&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;STRING.*&amp;#34;&lt;/span&gt;         &lt;span style=&#34;color:#e6db74&#34;&gt;:type/Text&lt;/span&gt;
-    &lt;span style=&#34;color:#f92672&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;VARCHAR.*&amp;#34;&lt;/span&gt;        &lt;span style=&#34;color:#e6db74&#34;&gt;:type/Text&lt;/span&gt;
-    &lt;span style=&#34;color:#f92672&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;CHAR.*&amp;#34;&lt;/span&gt;           &lt;span style=&#34;color:#e6db74&#34;&gt;:type/Text&lt;/span&gt;
-    &lt;span style=&#34;color:#f92672&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;BOOLEAN&amp;#34;&lt;/span&gt;          &lt;span style=&#34;color:#e6db74&#34;&gt;:type/Boolean&lt;/span&gt;
-    &lt;span style=&#34;color:#f92672&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;ARRAY.*&amp;#34;&lt;/span&gt;          &lt;span style=&#34;color:#e6db74&#34;&gt;:type/Array&lt;/span&gt;
-    &lt;span style=&#34;color:#f92672&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;MAP.*&amp;#34;&lt;/span&gt;            &lt;span style=&#34;color:#e6db74&#34;&gt;:type/Dictionary&lt;/span&gt;
-    &lt;span style=&#34;color:#f92672&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;.*&amp;#34;&lt;/span&gt;               &lt;span style=&#34;color:#e6db74&#34;&gt;:type/*&lt;/span&gt;))
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;a href=&#34;https://github.com/XUJiahua/metabase/pull/2/commits/e156683989844eb2405e5240e888249a2defe78c&#34;&gt;https://github.com/XUJiahua/metabase/pull/2/commits/e156683989844eb2405e5240e888249a2defe78c&lt;/a&gt;&lt;/p&gt;
-&lt;p&gt;效果：&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image-20200528120341696.png&#34; alt=&#34;image-20200528120341696&#34;&gt;&lt;/p&gt;
-&lt;p&gt;这样，TIMESTAMP 类型就有过滤器样式了。&lt;/p&gt;
-&lt;h2 id=&#34;2-timestamp-xxx-报错信息&#34;&gt;2. timestamp xxx 报错信息&lt;/h2&gt;
-&lt;h3 id=&#34;现象-1&#34;&gt;现象&lt;/h3&gt;
-&lt;blockquote&gt;
-&lt;p&gt;&amp;ldquo;ParseException: Syntax error in line 4:\nAND date_timestamp &amp;lt; timestamp &amp;lsquo;2019-01-03 00:00:00.000&amp;rsquo;\n ^\nEncountered: TIMESTAMP\nExpected: CASE, CAST, DEFAULT, EXISTS, FALSE, IF, INTERVAL, LEFT, NOT, NULL, REPLACE, RIGHT, TRUNCATE, TRUE, IDENTIFIER\n\nCAUSED BY: Exception: Syntax error\n&amp;rdquo;,&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;p&gt;SQL过滤器测试用例：&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sql&#34; data-lang=&#34;sql&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;select&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;from&lt;/span&gt; product.dwd_dim_date_with_timestamp
-&lt;span style=&#34;color:#66d9ef&#34;&gt;where&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;
-[[&lt;span style=&#34;color:#66d9ef&#34;&gt;AND&lt;/span&gt; date_timestamp &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&lt;/span&gt; &lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;{{&lt;/span&gt;date_timestamp&lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;}}&lt;/span&gt; ]]
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;洪敏眼尖，发现是 Impala 不支持这个语法。&lt;/p&gt;
-&lt;h3 id=&#34;分析&#34;&gt;分析&lt;/h3&gt;
-&lt;p&gt;hive-like 并没有重写处理 LocalDateTime 的方法。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image-20200528165940717.png&#34; alt=&#34;image-20200528165940717&#34;&gt;&lt;/p&gt;
-&lt;p&gt;而 Impala TIMESTAMP是没有时区的，大概率会用这个方法。&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;In Impala, the TIMESTAMP data type holds a value of date and time. It can be decomposed into year, month, day, hour, minute and seconds fields, but with no time zone information available, it does not correspond to any specific point in time. &lt;a href=&#34;https://docs.cloudera.com/documentation/enterprise/6/6.3/topics/impala_timestamp.html&#34;&gt;https://docs.cloudera.com/documentation/enterprise/6/6.3/topics/impala_timestamp.html&lt;/a&gt;&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;p&gt;默认实现是 timestamp 语法，报错信息就在这。&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-clojure&#34; data-lang=&#34;clojure&#34;&gt;(&lt;span style=&#34;color:#66d9ef&#34;&gt;defmethod &lt;/span&gt;unprepare-value [&lt;span style=&#34;color:#e6db74&#34;&gt;:sql&lt;/span&gt; LocalDateTime]
-  [_ t]
-  (&lt;span style=&#34;color:#a6e22e&#34;&gt;format&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;timestamp &amp;#39;%s&amp;#39;&amp;#34;&lt;/span&gt; (&lt;span style=&#34;color:#a6e22e&#34;&gt;t/format&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;yyyy-MM-dd HH:mm:ss.SSS&amp;#34;&lt;/span&gt; t)))
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;fix-1&#34;&gt;fix&lt;/h3&gt;
-&lt;p&gt;找到 Impala 对应的 SQL 函数。&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-clojure&#34; data-lang=&#34;clojure&#34;&gt;(&lt;span style=&#34;color:#66d9ef&#34;&gt;defmethod &lt;/span&gt;unprepare/unprepare-value [&lt;span style=&#34;color:#e6db74&#34;&gt;:impala&lt;/span&gt; LocalDateTime]
-  [_ t]
-  (&lt;span style=&#34;color:#a6e22e&#34;&gt;format&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;to_timestamp(&amp;#39;%s&amp;#39;, &amp;#39;yyyy-MM-dd HH:mm:ss&amp;#39;)&amp;#34;&lt;/span&gt; (&lt;span style=&#34;color:#a6e22e&#34;&gt;t/format&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;yyyy-MM-dd HH:mm:ss&amp;#34;&lt;/span&gt; t)))
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;a href=&#34;https://github.com/XUJiahua/metabase/pull/2/commits/005b878caf2fbbbd8c00a7ed016c899187f59d3c&#34;&gt;https://github.com/XUJiahua/metabase/pull/2/commits/005b878caf2fbbbd8c00a7ed016c899187f59d3c&lt;/a&gt;&lt;/p&gt;
-&lt;h2 id=&#34;3-date_format-unknown&#34;&gt;3. date_format() unknown&lt;/h2&gt;
-&lt;h3 id=&#34;现象-2&#34;&gt;现象&lt;/h3&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image-20200528210146896.png&#34; alt=&#34;image-20200528210146896&#34;&gt;&lt;/p&gt;
-&lt;h3 id=&#34;分析-1&#34;&gt;分析&lt;/h3&gt;
-&lt;p&gt;大概率又是 Impala 不支持 date_format 这个函数。代码中搜索关键字。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image-20200528212547249.png&#34; alt=&#34;image-20200528212547249&#34;&gt;&lt;/p&gt;
-&lt;p&gt;这里简单说明下，&lt;code&gt;(hsql/call :date_format xx xx)&lt;/code&gt; 这个方法最终会生成 SQL语句 &lt;code&gt;date_format(xx, xx)&lt;/code&gt;。又一次，我们得找到 Impala 中的SQL函数来替代它。&lt;/p&gt;
-&lt;p&gt;参考：&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;Hive/SparkSQL Built-in Functions &lt;a href=&#34;https://spark.apache.org/docs/2.4.5/api/sql/index.html#date_format&#34;&gt;https://spark.apache.org/docs/2.4.5/api/sql/index.html#date_format&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;Impala Built-In Functions &lt;a href=&#34;https://docs.cloudera.com/documentation/enterprise/6/6.3/topics/impala_functions.html&#34;&gt;https://docs.cloudera.com/documentation/enterprise/6/6.3/topics/impala_functions.html&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;Impala Date and Time Functions &lt;a href=&#34;https://docs.cloudera.com/documentation/enterprise/6/6.3/topics/impala_datetime_functions.html&#34;&gt;https://docs.cloudera.com/documentation/enterprise/6/6.3/topics/impala_datetime_functions.html&lt;/a&gt;&lt;/li&gt;
-&lt;/ol&gt;
-&lt;h3 id=&#34;fix-2&#34;&gt;fix&lt;/h3&gt;
-&lt;p&gt;因为 &lt;code&gt;date-format&lt;/code&gt; 被应用中很多 &lt;code&gt;defmethod sql.qp/date&lt;/code&gt; 方法里，所以在 Impala 重新实现这些方法，尽可能用 Impala 内置的函数。&lt;/p&gt;
-&lt;p&gt;&lt;a href=&#34;https://github.com/XUJiahua/metabase/pull/2/commits/01046a664dc8bc9d815184fd6ec419b7a4c1aa10&#34;&gt;https://github.com/XUJiahua/metabase/pull/2/commits/01046a664dc8bc9d815184fd6ec419b7a4c1aa10&lt;/a&gt;&lt;/p&gt;
-&lt;h2 id=&#34;总结&#34;&gt;总结&lt;/h2&gt;
-&lt;p&gt;这些问题主要还是 Impala 和 Hive 的 SQL 规范不一样。令人头秃。不过对 Metabase 越来越熟悉了。&lt;/p&gt;
-&lt;h3 id=&#34;未完待续&#34;&gt;未完待续&lt;/h3&gt;
-&lt;p&gt;这2个选项还在报错，应该是不支持对应的方法。还好暂时用不到。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image-20200528213420179.png&#34; alt=&#34;image-20200528213420179&#34;&gt;&lt;/p&gt;
-- https://xujiahua.github.io/posts/20200528-metabase-impala-type/ - </description>
         </item>
     
     

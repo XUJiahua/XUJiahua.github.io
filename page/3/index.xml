@@ -5,9 +5,148 @@
     <description>Recent content on 许嘉华的博客</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Tue, 14 Jul 2020 10:14:14 +0800</lastBuildDate>
+    <lastBuildDate>Thu, 23 Jul 2020 16:12:51 +0800</lastBuildDate>
     
         <atom:link href="https://xujiahua.github.io/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    
+        <item>
+        <title>Metabase &#43; Spark SQL</title>
+        <link>https://xujiahua.github.io/posts/20200410-metabase-spark-sql/</link>
+        <pubDate>Fri, 10 Apr 2020 16:41:53 +0800</pubDate>
+        
+        <guid>https://xujiahua.github.io/posts/20200410-metabase-spark-sql/</guid>
+        <description>许嘉华的博客 https://xujiahua.github.io/posts/20200410-metabase-spark-sql/ -&lt;p&gt;这是大数据 BI 平台的第二步，BI 工具的搭建。假设已经配置好 Spark SQL JDBC Server，并启用了Kerberos。参考  &lt;a href=&#34;https://xujiahua.github.io/posts/20200410-spark-thrift-server-cdh/&#34;&gt;https://xujiahua.github.io/posts/20200410-spark-thrift-server-cdh/&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;这里，我们选择了开源产品 Metabase。&lt;/p&gt;
+&lt;p&gt;最终，大数据 BI 平台，是由 1) 以Metabase作为BI可视化，2) 由HDFS（分布式文件存储） + parquet（列式数据存储格式）+ Hive metastore（SQL表结构信息维护） + Spark SQL（批处理引擎）组合的OLAP数据库组成。&lt;/p&gt;
+&lt;h2 id=&#34;metabase-简介&#34;&gt;Metabase 简介&lt;/h2&gt;
+&lt;p&gt;Metabase is the easy, open source way for everyone in your company to ask questions and learn from data.&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://www.metabase.com/&#34;&gt;https://www.metabase.com/&lt;/a&gt;&lt;/p&gt;
+&lt;h3 id=&#34;数据库支持&#34;&gt;数据库支持&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;BigQuery&lt;/li&gt;
+&lt;li&gt;Druid&lt;/li&gt;
+&lt;li&gt;Google Analytics&lt;/li&gt;
+&lt;li&gt;H2&lt;/li&gt;
+&lt;li&gt;MongoDB&lt;/li&gt;
+&lt;li&gt;MySQL/MariaDB&lt;/li&gt;
+&lt;li&gt;PostgreSQL&lt;/li&gt;
+&lt;li&gt;Presto&lt;/li&gt;
+&lt;li&gt;Amazon Redshift&lt;/li&gt;
+&lt;li&gt;Snowflake&lt;/li&gt;
+&lt;li&gt;Spark SQL&lt;/li&gt;
+&lt;li&gt;SQLite&lt;/li&gt;
+&lt;li&gt;SQL Server&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;a href=&#34;https://www.metabase.com/docs/latest/faq/setup/which-databases-does-metabase-support.html&#34;&gt;https://www.metabase.com/docs/latest/faq/setup/which-databases-does-metabase-support.html&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;这里有我们需要的Spark SQL，我们的大数据集群可以支持。比较遗憾的是没有Impala。&lt;/p&gt;
+&lt;h2 id=&#34;metabase-安装&#34;&gt;Metabase 安装&lt;/h2&gt;
+&lt;h3 id=&#34;mysql&#34;&gt;MySQL&lt;/h3&gt;
+&lt;p&gt;使用MySQL作为元数据存储。复用之前CDH的MySQL实例。&lt;/p&gt;
+&lt;p&gt;创建数据库、用户。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-SQL&#34; data-lang=&#34;SQL&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;-- 适合MySQL5.7及以上版本，支持更大的max key length。一个字符使用四个字节。
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;CREATE&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;DATABASE&lt;/span&gt; metabase CHARACTER &lt;span style=&#34;color:#66d9ef&#34;&gt;SET&lt;/span&gt; utf8mb4 &lt;span style=&#34;color:#66d9ef&#34;&gt;COLLATE&lt;/span&gt; utf8mb4_unicode_ci;
+&lt;span style=&#34;color:#75715e&#34;&gt;-- 适合MySQL5.6及以下版本。一个字符使用3个字节。
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;CREATE&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;DATABASE&lt;/span&gt; metabase CHARACTER &lt;span style=&#34;color:#66d9ef&#34;&gt;SET&lt;/span&gt; utf8 &lt;span style=&#34;color:#66d9ef&#34;&gt;COLLATE&lt;/span&gt; utf8_unicode_ci;
+
+&lt;span style=&#34;color:#75715e&#34;&gt;-- % 表示不限制host
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;CREATE&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;USER&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;metabase&amp;#39;&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;@&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;%&amp;#39;&lt;/span&gt; IDENTIFIED &lt;span style=&#34;color:#66d9ef&#34;&gt;BY&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;metabase&amp;#39;&lt;/span&gt;;
+&lt;span style=&#34;color:#66d9ef&#34;&gt;GRANT&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;ALL&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;ON&lt;/span&gt; metabase.&lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;TO&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;metabase&amp;#39;&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;@&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;%&amp;#39;&lt;/span&gt;;
+
+FLUSH &lt;span style=&#34;color:#66d9ef&#34;&gt;PRIVILEGES&lt;/span&gt;;
+&lt;span style=&#34;color:#75715e&#34;&gt;-- https://dev.mysql.com/doc/refman/5.7/en/grant.html
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h4 id=&#34;常见问题&#34;&gt;常见问题&lt;/h4&gt;
+&lt;p&gt;mysql 5.7与5.6的区别。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;767 bytes is the &lt;a href=&#34;http://dev.mysql.com/doc/refman/5.1/en/create-index.html&#34;&gt;stated prefix limitation&lt;/a&gt; for InnoDB tables in MySQL version 5.6 (and prior versions). It&amp;rsquo;s 1,000 bytes long for MyISAM tables. In MySQL version 5.7 and upwards this limit has been increased to 3072 bytes.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;Caused by: java.sql.SQLException: Specified key was too long; max key length is 767 bytes&lt;/p&gt;
+&lt;p&gt;Caused by: liquibase.exception.DatabaseException: (conn=175553) Specified key was too long; max key length is 767 bytes [Failed SQL: CREATE TABLE &lt;code&gt;metabase&lt;/code&gt;.&lt;code&gt;core_organization&lt;/code&gt; (&lt;code&gt;id&lt;/code&gt; INT AUTO_INCREMENT NOT NULL, &lt;code&gt;slug&lt;/code&gt; VARCHAR(254) NOT NULL, &lt;code&gt;name&lt;/code&gt; VARCHAR(254) NOT NULL, &lt;code&gt;description&lt;/code&gt; TEXT NULL, &lt;code&gt;logo_url&lt;/code&gt; VARCHAR(254) NULL, &lt;code&gt;inherits&lt;/code&gt; BIT(1) NOT NULL, CONSTRAINT &lt;code&gt;PK_CORE_ORGANIZATION&lt;/code&gt; PRIMARY KEY (&lt;code&gt;id&lt;/code&gt;), UNIQUE (&lt;code&gt;slug&lt;/code&gt;))]&lt;/p&gt;
+&lt;h3 id=&#34;metabase&#34;&gt;Metabase&lt;/h3&gt;
+&lt;p&gt;下载metabase。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# 以 /opt/metabase 为工作目录&lt;/span&gt;
+mkdir /opt/metabase &lt;span style=&#34;color:#f92672&#34;&gt;&amp;amp;&amp;amp;&lt;/span&gt; cd /opt/metabase
+&lt;span style=&#34;color:#75715e&#34;&gt;# 下载最新版本的metabase，参考 https://www.metabase.com/start/jar.html&lt;/span&gt;
+wget https://downloads.metabase.com/v0.35.1/metabase.jar
+&lt;span style=&#34;color:#75715e&#34;&gt;# 创建插件目录&lt;/span&gt; 
+mkdir plugins
+&lt;span style=&#34;color:#75715e&#34;&gt;# Spark SQL的驱动，jar包内置的有问题&lt;/span&gt;
+wget https://s3.amazonaws.com/sparksql-deps/metabase-sparksql-deps-1.2.1.spark2-standalone.jar -O plugins/metabase-sparksql-deps-1.2.1.spark2-standalone.jar
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;启动脚本 start.sh。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;#!/usr/bin/bash
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;
+export MB_DB_TYPE&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;mysql
+export MB_DB_DBNAME&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;metabase
+export MB_DB_PORT&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;3306&lt;/span&gt;
+export MB_DB_USER&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;metabase
+export MB_DB_PASS&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;metabase
+export MB_DB_HOST&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;172.31.0.100
+
+kinit -kt hive.xh-hd2-peggy-dost000003.keytab hive/xh-hd2-peggy-dost000003@PEGGY.LING
+
+mkdir -p logs
+
+nohup java -Djavax.security.auth.useSubjectCredsOnly&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;false -jar metabase.jar  &amp;gt;&amp;gt; logs/metabase.log 2&amp;gt;&amp;amp;&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt; &amp;amp;
+
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;停止脚本 stop.sh。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;#!/usr/bin/bash
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;
+ps -ef | grep &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;metabase.jar&amp;#39;&lt;/span&gt; | grep -v &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;grep&amp;#39;&lt;/span&gt; | awk &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;{print $2}&amp;#39;&lt;/span&gt; | xargs kill -9
+
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;文件夹结构如下。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;webapp@xh-hd2-peggy-dost000003 metabase&lt;span style=&#34;color:#f92672&#34;&gt;]&lt;/span&gt;$ tree
+├── hive.xh-hd2-peggy-dost000003.keytab
+├── logs
+│   └── metabase.log
+├── metabase.jar
+├── plugins
+│   ├── metabase-sparksql-deps-1.2.1.spark2-standalone.jar
+│   ├── sparksql.metabase-driver.jar
+│   ├── ...
+├── start.sh
+└── stop.sh
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;参考：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Metabase搭建手册：使用SparkSQL连接Hive &lt;a href=&#34;https://webcache.googleusercontent.com/search?q=cache:DcmHXWOc9woJ:https://immm.in/archives/24.html+&amp;amp;cd=5&amp;amp;hl=zh-CN&amp;amp;ct=clnk&amp;amp;gl=hk&#34;&gt;https://webcache.googleusercontent.com/search?q=cache:DcmHXWOc9woJ:https://immm.in/archives/24.html+&amp;amp;cd=5&amp;amp;hl=zh-CN&amp;amp;ct=clnk&amp;amp;gl=hk&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h4 id=&#34;配置-spark-sql-连接&#34;&gt;配置 Spark SQL 连接&lt;/h4&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200410180255501.png&#34; alt=&#34;image-20200410180255501&#34;&gt;&lt;/p&gt;
+&lt;p&gt;保存没有报错，就是成功了。&lt;/p&gt;
+&lt;h4 id=&#34;常见问题-1&#34;&gt;常见问题&lt;/h4&gt;
+&lt;ol&gt;
+&lt;li&gt;使用内置的驱动报错：Unrecognized Hadoop major version number: 3.1.1&lt;/li&gt;
+&lt;li&gt;使用metabase-sparksql-deps-1.2.1.spark2-standalone.jar这个驱动报错，然而beeline连接是没问题的： transport.TSaslTransport :: SASL negotiation failure
+javax.security.sasl.SaslException: GSS initiate failed [Caused by GSSException: No valid credentials provided (Mechanism level: Failed to find any Kerberos tgt)]&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;第一个问题，暂时忽略，使用其他驱动。&lt;/p&gt;
+&lt;p&gt;按理说，https://github.com/metabase/sparksql-deps 已经合并到 &lt;a href=&#34;https://github.com/metabase/metabase/tree/v0.35.1/modules/drivers/sparksql&#34;&gt;https://github.com/metabase/metabase/tree/v0.35.1/modules/drivers/sparksql&lt;/a&gt; 了。内置驱动就能用才对。&lt;/p&gt;
+&lt;p&gt;能看到依赖hadoop-common包的版本差异。TODO: 还得细看。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200411071918161.png&#34; alt=&#34;image-20200411071918161&#34;&gt;&lt;/p&gt;
+&lt;p&gt;依赖的hadoop版本是3.1.0。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200411072135265.png&#34; alt=&#34;image-20200411072135265&#34;&gt;&lt;/p&gt;
+&lt;p&gt;内置Driver依赖3.1.1。报错信息也是包含3.1.1，是否切到3.1.0，重新打包就可以了？&lt;/p&gt;
+&lt;p&gt;第二个问题需要设置Java参数 &lt;code&gt;-Djavax.security.auth.useSubjectCredsOnly=false&lt;/code&gt;。&lt;/p&gt;
+&lt;p&gt;通过底层机制获取凭证信息，而不是通过应用执行认证操作。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200410173734177.png&#34; alt=&#34;image-20200410173734177&#34;&gt;&lt;/p&gt;
+&lt;p&gt;参考：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;How to connnect sparksql in Kerberos enviroment &lt;a href=&#34;https://discourse.metabase.com/t/how-to-connnect-sparksql-in-kerberos-enviroment/8290/2&#34;&gt;https://discourse.metabase.com/t/how-to-connnect-sparksql-in-kerberos-enviroment/8290/2&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;javax.security.sasl.SaslException: GSS initiate failed [Caused by GSSException: No valid credentials provided https://stackoverflow.com/questions/32205087/javax-security-sasl-saslexception-gss-initiate-failed-caused-by-gssexception&lt;/li&gt;
+&lt;li&gt;Below are listed some problems that may occur when attempting a login, and suggestions for solving them. &lt;a href=&#34;https://docs.oracle.com/javase/7/docs/technotes/guides/security/jgss/tutorials/Troubleshooting.html&#34;&gt;https://docs.oracle.com/javase/7/docs/technotes/guides/security/jgss/tutorials/Troubleshooting.html&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2 id=&#34;与-superset-比较&#34;&gt;与 Superset 比较&lt;/h2&gt;
+&lt;p&gt;Superset是另外一个开源的BI工具。但是使用过程中体验不佳：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;不支持多表JOIN。这个不能忍。&lt;/li&gt;
+&lt;li&gt;直接写SQL，数据没法可视化。效率有点低下。&lt;/li&gt;
+&lt;li&gt;外观丑陋。FlaskAppbuilder生成的前后端架子。&lt;/li&gt;
+&lt;li&gt;Table源如果改了，建议删掉再添加，不然会有各种意外。&lt;/li&gt;
+&lt;li&gt;交互体验差。自定义SELECT COUNT(cookie) as pv，死活搞不定。正确的使用方式是设置label，体验不直观。&lt;/li&gt;
+&lt;li&gt;小bug多。用起来太容易烦躁了。对身心健康不好。&lt;/li&gt;
+&lt;/ol&gt;
+- https://xujiahua.github.io/posts/20200410-metabase-spark-sql/ - </description>
+        </item>
     
     
     
@@ -1335,109 +1474,6 @@ func main() {
 &lt;p&gt;这个时间点叫做：授权公告日。&lt;/p&gt;
 &lt;p&gt;说明正式审查完了。这时候才算是真正拥有专利。&lt;/p&gt;
 - https://xujiahua.github.io/posts/20200311-patent/ - </description>
-        </item>
-    
-    
-    
-        <item>
-        <title>Github pages重新开始：使用Hugo、Typora</title>
-        <link>https://xujiahua.github.io/posts/20200310-github-pages-restart/</link>
-        <pubDate>Tue, 10 Mar 2020 11:24:49 +0800</pubDate>
-        
-        <guid>https://xujiahua.github.io/posts/20200310-github-pages-restart/</guid>
-        <description>许嘉华的博客 https://xujiahua.github.io/posts/20200310-github-pages-restart/ -&lt;h2 id=&#34;重新开始github-pages&#34;&gt;重新开始GitHub pages&lt;/h2&gt;
-&lt;p&gt;曾使用&lt;code&gt;GitHub pages&lt;/code&gt; + &lt;code&gt; jekyll&lt;/code&gt; 写过一段时间博客，没啥营养。&lt;/p&gt;
-&lt;p&gt;打算重新开始：&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;把我记录在Evernote和Typora中的资料迁移到&lt;code&gt;GitHub pages&lt;/code&gt;上。&lt;/li&gt;
-&lt;li&gt;另外做一些Web形式的小工具，挂载在一个子目录里，方便平时使用。&lt;/li&gt;
-&lt;/ol&gt;
-&lt;h2 id=&#34;hugo--typora&#34;&gt;Hugo + Typora&lt;/h2&gt;
-&lt;p&gt;打算如下：&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;Markdown文件还是使用Typora写。用过MWeb、Typora，Typora使用感受更好些（这么好用还不要钱）。&lt;/li&gt;
-&lt;li&gt;Hugo作为静态网站生成，创建一个博客模板。&lt;/li&gt;
-&lt;/ol&gt;
-&lt;h3 id=&#34;hugo-quickstart&#34;&gt;Hugo quickstart&lt;/h3&gt;
-&lt;pre&gt;&lt;code&gt;# 安装hugo（其实是Go编译的二进制文件）
-brew install hugo
-
-# 创建site
-hugo new site quickstart
-
-# 通过git submodule的方式下载主题
-git init
-git submodule -b master add https://github.com/dillonzq/LoveIt themes/LoveIt
-
-# 更新config.toml，配置主题参数，见loveit配置
-
-# 创建博客，创建的posts在content目录下。文件格式为：content/&amp;lt;CATEGORY&amp;gt;/&amp;lt;FILE&amp;gt;.&amp;lt;FORMAT&amp;gt;
-# hugo new 会采用 archetypes/default.md作为模板，把一些共性配置放在这个模板里吧。
-hugo new posts/my-first-post.md
-
-# 本地看blog效果，-D表示草稿状态的博客也显示
-hugo server -D
-
-# 生成静态网站到./public/，也可以指定目录
-hugo -D
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;挑选了一个比较实用的主题 &lt;a href=&#34;https://hugoloveit.com/&#34;&gt;https://hugoloveit.com/&lt;/a&gt;&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;比较基本的posts, tags, categories&lt;/li&gt;
-&lt;li&gt;文章页面右边可显示文章的目录表&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;参考：&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;&lt;a href=&#34;https://gohugo.io/getting-started/quick-start/&#34;&gt;https://gohugo.io/getting-started/quick-start/&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;https://hugoloveit.com/theme-documentation-basics/&#34;&gt;https://hugoloveit.com/theme-documentation-basics/&lt;/a&gt;&lt;/li&gt;
-&lt;/ol&gt;
-&lt;h3 id=&#34;图片文件夹的配置&#34;&gt;图片文件夹的配置&lt;/h3&gt;
-&lt;p&gt;Typora的贴图功能很方便：配置好图片文件夹，从剪贴板粘贴图像会自动将图片保存到图片文件夹，并自动命名。&lt;/p&gt;
-&lt;p&gt;&lt;code&gt;hugo&lt;/code&gt;管理静态资源的方式跟Typora默认是不适配的，需要做些调整。&lt;/p&gt;
-&lt;h5 id=&#34;长话短说&#34;&gt;长话短说&lt;/h5&gt;
-&lt;ol&gt;
-&lt;li&gt;&lt;code&gt;hugo&lt;/code&gt;项目中，创建&lt;code&gt;static/images&lt;/code&gt;文件夹，并且软链接到项目根目录下：&lt;/li&gt;
-&lt;/ol&gt;
-&lt;pre&gt;&lt;code&gt;mkdir -p static/images &amp;amp;&amp;amp; ln -s `pwd`/static/images images
-&lt;/code&gt;&lt;/pre&gt;&lt;ol start=&#34;2&#34;&gt;
-&lt;li&gt;Typora打开content目录，并做配置如下。之后，像平常那样用Typora写文字吧。&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image-20200310184153667.png&#34; alt=&#34;image-20200310184153667&#34;&gt;&lt;/p&gt;
-&lt;h5 id=&#34;在根目录建images软链接的理由&#34;&gt;在根目录建&lt;code&gt;images&lt;/code&gt;软链接的理由&lt;/h5&gt;
-&lt;p&gt;一些信息和思路：&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;&lt;code&gt;hugo&lt;/code&gt;的静态资源放在static目录下。&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;hugo&lt;/code&gt;生成静态文件，static目录会将其下的文件、文件夹平移到目标网站目录的根目录，比如&lt;code&gt;static/images/1.png&lt;/code&gt;，平移后为&lt;code&gt;images/1.png&lt;/code&gt;。html里使用&lt;code&gt;/images/*&lt;/code&gt;的方式引用。（可查看public文件夹的目录结构）&lt;/li&gt;
-&lt;li&gt;hugo static目录下的资源目录不能是软链接，WTF。Unsupported symlink found &lt;a href=&#34;https://github.com/gohugoio/hugo/issues/6225&#34;&gt;https://github.com/gohugoio/hugo/issues/6225&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;万幸Typora可以用软链接。&lt;/li&gt;
-&lt;li&gt;一篇post，在浏览器和文件系统上的目录结构是不同的。以最末层的文件夹为&lt;code&gt;./&lt;/code&gt;。浏览器下目录结构如下：&lt;/li&gt;
-&lt;/ol&gt;
-&lt;pre&gt;&lt;code&gt;/ =&amp;gt; ../.. 举例来说，以图片文件夹名称为`image`为例，`../../images/*` = `/images/*`
-	/posts/ =&amp;gt; ../
-		/posts/post_name/ =&amp;gt; ./
-&lt;/code&gt;&lt;/pre&gt;&lt;ol start=&#34;6&#34;&gt;
-&lt;li&gt;文件系统下的目录结构：&lt;/li&gt;
-&lt;/ol&gt;
-&lt;pre&gt;&lt;code&gt;hugo-blogger =&amp;gt; ../../
-	content =&amp;gt; ../
-		posts =&amp;gt; ./
-			post_name
-&lt;/code&gt;&lt;/pre&gt;&lt;ol start=&#34;7&#34;&gt;
-&lt;li&gt;所以为了能让文件系统和浏览器上都显示图像，&lt;code&gt;images&lt;/code&gt;软链接放在项目根目录下比较合适。&lt;/li&gt;
-&lt;/ol&gt;
-&lt;h3 id=&#34;github-pages&#34;&gt;GitHub pages&lt;/h3&gt;
-&lt;p&gt;静态文件输出到xujiahua.github.io上去。&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;git submodule add -b master https://github.com/XUJiahua/XUJiahua.github.io.git public
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;复用这里的deploy脚本。https://gohugo.io/hosting-and-deployment/hosting-on-github/#put-it-into-a-script&lt;/p&gt;
-&lt;h4 id=&#34;图片资源404的问题&#34;&gt;图片资源404的问题&lt;/h4&gt;
-&lt;p&gt;_images文件夹下的资源404了。太奇怪了，路径OK，也没大小问题。过了很久还是不见效。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image-20200312190900210.png&#34; alt=&#34;image-20200312190900210&#34;&gt;&lt;/p&gt;
-&lt;p&gt;尝试在images文件夹下放了个1.txt，理论上链接应该是 &lt;a href=&#34;https://xujiahua.github.io/images/1.txt&#34;&gt;https://xujiahua.github.io/images/1.txt&lt;/a&gt;，一开始也是404。过了半小时OK了。&lt;/p&gt;
-&lt;p&gt;结论是，_images文件夹取名可能有问题。那就改用images。&lt;/p&gt;
-&lt;p&gt;参考：&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;&lt;a href=&#34;https://gohugo.io/hosting-and-deployment/hosting-on-github/&#34;&gt;https://gohugo.io/hosting-and-deployment/hosting-on-github/&lt;/a&gt;&lt;/li&gt;
-&lt;/ol&gt;
-- https://xujiahua.github.io/posts/20200310-github-pages-restart/ - </description>
         </item>
     
     

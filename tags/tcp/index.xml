@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>TCP on 许嘉华的博客</title>
+    <link>https://xujiahua.github.io/tags/tcp/</link>
+    <description>Recent content in TCP on 许嘉华的博客</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Thu, 23 Jul 2020 16:12:51 +0800</lastBuildDate>
+    
+	<atom:link href="https://xujiahua.github.io/tags/tcp/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>实验说明 Golang HTTP 连接池参数</title>
+      <link>https://xujiahua.github.io/posts/20200723-golang-http-reuse/</link>
+      <pubDate>Thu, 23 Jul 2020 16:12:51 +0800</pubDate>
+      
+      <guid>https://xujiahua.github.io/posts/20200723-golang-http-reuse/</guid>
+      <description>连接相对于其他对象，创建成本较高，资源也有限。如果没有连接池，在高并发场景下，连接关闭又新建，很快就会因为过多的TIME_WAIT（连接主动关闭方）导致无法创建更多连接了，程序被压死。
+net/http 连接池参数 Go （测试版本 go 1.14）的net/http包是有连接池功能的，具体地，是 Transport 用于连接池化。https://golang.org/pkg/net/http/#Transport
+ Transport is an implementation of RoundTripper that supports HTTP, HTTPS, and HTTP proxies (for either HTTP or HTTPS with CONNECT).
+By default, Transport caches connections for future re-use.
+ // MaxIdleConns controls the maximum number of idle (keep-alive) 	// connections across all hosts. Zero means no limit. 	MaxIdleConns int // MaxIdleConnsPerHost, if non-zero, controls the maximum idle 	// (keep-alive) connections to keep per-host.</description>
+    </item>
+    
+  </channel>
+</rss>

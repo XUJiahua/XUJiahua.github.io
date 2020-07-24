@@ -1,0 +1,1254 @@
+<!DOCTYPE html>
+<html><head>
+<title>实验说明 Golang HTTP 连接池参数</title>
+
+<meta charset="utf-8">
+<meta name="X-UA-Compatible" content="IE=edge">
+<meta name="google-site-verification" content="">
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport">
+<meta content="telephone=no" name="format-detection">
+<meta name="description" content="">
+<meta name="renderer" content="webkit">
+<meta name="theme-color" content="#ffffff">
+
+
+
+
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+	ga('create', 'UA-162706610-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+
+
+
+<script src="/vendor/js/jquery.min.js" ></script>
+<script src="/vendor/js/popper.min.js" ></script>
+<script src="/vendor/js/bootstrap.min.js" ></script>
+<script src="/vendor/js/smooth-scroll.polyfills.min.js" ></script>
+<link type="text/css" rel="stylesheet" href="/vendor/css/bootstrap.min.css">
+<script src="/vendor/js/vue.min.js" ></script>
+
+
+
+
+<link rel="stylesheet" href="https://xujiahua.github.io/scss/journal.min.5c667e74038e21ddbb9024b67930f8544e02af62491281cf73fdb817eec2947e.css" integrity="sha256-XGZ&#43;dAOOId27kCS2eTD4VE4Cr2JJEoHPc/24F&#43;7ClH4=" media="screen">
+
+<script src="https://xujiahua.github.io//js/loadCSS.js"></script>
+<script src="https://xujiahua.github.io//js/table.js"></script>
+
+
+<script src="https://xujiahua.github.io//js/toc.js"></script>
+
+
+<script>
+    loadCSS("https://fonts.googleapis.com/css?family=Lora|Montserrat|Fira+Mono|Noto+Serif+SC|Material+Icons");
+</script>
+
+
+
+
+
+
+</head><body>
+    	<div id="app"><div ref="sideContainer" class="side-container">
+    
+    <a class="a-block nav-head false" href="https://xujiahua.github.io/">
+    
+        <div class="nav-title">
+            许嘉华的博客
+        </div>
+        
+    </a>
+
+    <div class="nav-link-list">
+        
+        
+            
+            
+            
+                
+            
+            
+            
+            <a class="a-block nav-link-item active" href="/posts">
+                Archive
+            </a>
+            
+        
+            
+            
+            
+            
+            
+            <a class="a-block nav-link-item false" href="/categories">
+                Categories
+            </a>
+            
+        
+            
+            
+            
+            
+            
+            <a class="a-block nav-link-item false" href="/tags">
+                Tags
+            </a>
+            
+        
+            
+            
+            
+            
+            
+            <a class="a-block nav-link-item false" href="/index.xml">
+                RSS Feed
+            </a>
+            
+        
+    </div>
+
+    
+
+    <div class="nav-footer">
+        
+Hugo Theme <a href="https://github.com/amazingrise/hugo-theme-diary">Diary</a> by <a href="https://amazingrise.net">Rise</a>
+<br>
+Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopener">Makito</a>'s <a href="https://github.com/SumiMakito/hexo-theme-journal/" target="_blank" rel="noreferrer noopener">Journal.</a> <br>
+<br>
+
+&copy;
+	
+	2020 许嘉华的博客
+	
+    </div>
+    
+</div><div ref="extraContainer" class="extra-container">
+    
+    <div class="toc animated-visibility" :class="{ invisible: scrollY <= 140 }">
+
+
+	<div class="toc-content">
+	
+		
+		
+		
+		<center>- CATALOG -</center>
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#nethttp-%e8%bf%9e%e6%8e%a5%e6%b1%a0%e5%8f%82%e6%95%b0" v-on:click="closeDrawer" id="nethttp-连接池参数-nav">
+										 net/http 连接池参数
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e9%bb%98%e8%ae%a4%e5%80%bc" v-on:click="closeDrawer" id="默认值-nav">
+										 默认值
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#perhost-%e7%9a%84-host-%e6%98%af-addrport" v-on:click="closeDrawer" id="perhost-的-host-是-addrport-nav">
+										 PerHost 的 Host 是 addr&#43;port
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e5%8f%82%e6%95%b0%e8%af%95%e9%aa%8c" v-on:click="closeDrawer" id="参数试验-nav">
+										 参数试验
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e6%9c%8d%e5%8a%a1%e7%ab%af%e5%87%86%e5%a4%87%e5%b7%a5%e4%bd%9c" v-on:click="closeDrawer" id="服务端准备工作-nav">
+										 服务端准备工作
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#maxidleconnsperhost-%e6%8e%a7%e5%88%b6%e5%8d%95%e4%b8%aahost%e7%9a%84%e8%bf%9e%e6%8e%a5%e6%b1%a0%e5%a4%a7%e5%b0%8f" v-on:click="closeDrawer" id="maxidleconnsperhost-控制单个host的连接池大小-nav">
+										 MaxIdleConnsPerHost 控制单个Host的连接池大小
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e8%bf%9e%e6%8e%a5%e5%a4%8d%e7%94%a8%e7%9a%84%e6%95%88%e6%9e%9c" v-on:click="closeDrawer" id="连接复用的效果-nav">
+										 连接复用的效果
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#maxconnsperhost-%e6%8e%a7%e5%88%b6%e5%8d%95%e4%b8%aahost%e7%9a%84%e6%9c%80%e5%a4%a7%e8%bf%9e%e6%8e%a5%e6%80%bb%e6%95%b0" v-on:click="closeDrawer" id="maxconnsperhost-控制单个host的最大连接总数-nav">
+										 MaxConnsPerHost 控制单个Host的最大连接总数
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#maxidleconns-vs-maxidleconnsperhost-%e4%b8%a4%e4%b8%aa%e8%bf%9e%e6%8e%a5%e6%b1%a0" v-on:click="closeDrawer" id="maxidleconns-vs-maxidleconnsperhost-两个连接池-nav">
+										 MaxIdleConns vs MaxIdleConnsPerHost 两个连接池
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e8%bf%9e%e6%8e%a5%e5%a4%8d%e7%94%a8%e5%ae%a2%e6%88%b7%e7%ab%af%e6%9c%8d%e5%8a%a1%e7%ab%af%e9%9c%80%e5%90%8c%e6%97%b6%e6%94%af%e6%8c%81" v-on:click="closeDrawer" id="连接复用客户端服务端需同时支持-nav">
+										 连接复用，客户端、服务端需同时支持
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e6%80%bb%e7%bb%93" v-on:click="closeDrawer" id="总结-nav">
+										 总结
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+	</div>
+
+</div>
+    
+    <div class="pagination">
+        <a id="globalBackToTop" class="pagination-action animated-visibility" href="#top" :class="{ invisible: scrollY == 0 }">
+            <i class="material-icons pagination-action-icon">
+                keyboard_arrow_up
+            </i>
+        </a>
+        
+    </div>
+</div><div class="single-column-drawer-container" ref="drawer"
+     v-bind:class="{ 'single-column-drawer-container-active': isDrawerOpen }">
+    <div class="drawer-content">
+        <div class="drawer-menu">
+            
+            
+                
+                
+                
+                    
+                
+                
+                
+                <a class="a-block drawer-menu-item active" href="/posts">
+                    Archive
+                </a>
+                
+            
+                
+                
+                
+                
+                
+                <a class="a-block drawer-menu-item false" href="/categories">
+                    Categories
+                </a>
+                
+            
+                
+                
+                
+                
+                
+                <a class="a-block drawer-menu-item false" href="/tags">
+                    Tags
+                </a>
+                
+            
+                
+                
+                
+                
+                
+                <a class="a-block drawer-menu-item false" href="/index.xml">
+                    RSS Feed
+                </a>
+                
+            
+            
+            <div class="toc">
+
+
+	<div class="toc-content">
+	
+		
+		
+		
+		<center>- CATALOG -</center>
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#nethttp-%e8%bf%9e%e6%8e%a5%e6%b1%a0%e5%8f%82%e6%95%b0" v-on:click="closeDrawer" id="nethttp-连接池参数-nav">
+										 net/http 连接池参数
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e9%bb%98%e8%ae%a4%e5%80%bc" v-on:click="closeDrawer" id="默认值-nav">
+										 默认值
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#perhost-%e7%9a%84-host-%e6%98%af-addrport" v-on:click="closeDrawer" id="perhost-的-host-是-addrport-nav">
+										 PerHost 的 Host 是 addr&#43;port
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e5%8f%82%e6%95%b0%e8%af%95%e9%aa%8c" v-on:click="closeDrawer" id="参数试验-nav">
+										 参数试验
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e6%9c%8d%e5%8a%a1%e7%ab%af%e5%87%86%e5%a4%87%e5%b7%a5%e4%bd%9c" v-on:click="closeDrawer" id="服务端准备工作-nav">
+										 服务端准备工作
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#maxidleconnsperhost-%e6%8e%a7%e5%88%b6%e5%8d%95%e4%b8%aahost%e7%9a%84%e8%bf%9e%e6%8e%a5%e6%b1%a0%e5%a4%a7%e5%b0%8f" v-on:click="closeDrawer" id="maxidleconnsperhost-控制单个host的连接池大小-nav">
+										 MaxIdleConnsPerHost 控制单个Host的连接池大小
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e8%bf%9e%e6%8e%a5%e5%a4%8d%e7%94%a8%e7%9a%84%e6%95%88%e6%9e%9c" v-on:click="closeDrawer" id="连接复用的效果-nav">
+										 连接复用的效果
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#maxconnsperhost-%e6%8e%a7%e5%88%b6%e5%8d%95%e4%b8%aahost%e7%9a%84%e6%9c%80%e5%a4%a7%e8%bf%9e%e6%8e%a5%e6%80%bb%e6%95%b0" v-on:click="closeDrawer" id="maxconnsperhost-控制单个host的最大连接总数-nav">
+										 MaxConnsPerHost 控制单个Host的最大连接总数
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#maxidleconns-vs-maxidleconnsperhost-%e4%b8%a4%e4%b8%aa%e8%bf%9e%e6%8e%a5%e6%b1%a0" v-on:click="closeDrawer" id="maxidleconns-vs-maxidleconnsperhost-两个连接池-nav">
+										 MaxIdleConns vs MaxIdleConnsPerHost 两个连接池
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e8%bf%9e%e6%8e%a5%e5%a4%8d%e7%94%a8%e5%ae%a2%e6%88%b7%e7%ab%af%e6%9c%8d%e5%8a%a1%e7%ab%af%e9%9c%80%e5%90%8c%e6%97%b6%e6%94%af%e6%8c%81" v-on:click="closeDrawer" id="连接复用客户端服务端需同时支持-nav">
+										 连接复用，客户端、服务端需同时支持
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e6%80%bb%e7%bb%93" v-on:click="closeDrawer" id="总结-nav">
+										 总结
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+	</div>
+
+</div>
+            
+        </div>
+    </div>
+</div>
+<transition name="fade">
+    <div v-bind:class="{ 'single-column-drawer-mask': mounted }" v-if="isDrawerOpen" v-on:click="toggleDrawer"></div>
+</transition>
+<nav ref="navBar" class="navbar sticky-top navbar-light single-column-nav-container">
+    <div ref="navBackground" class="nav-background"></div>
+    <div class="container container-narrow nav-content">
+        <button id="nav_dropdown_btn" class="nav-dropdown-toggle" type="button" v-on:click="toggleDrawer">
+            <i class="material-icons">
+                menu
+            </i>
+        </button>
+        <a ref="navTitle" class="navbar-brand" href="https://xujiahua.github.io/">
+            许嘉华的博客
+        </a>
+    </div>
+</nav>
+<div class="single-column-header-container" ref="pageHead"
+     v-bind:style="{ transform: 'translateZ(0px) translateY('+.3*scrollY+'px)', opacity: 1-navOpacity }">
+    <a href="https://xujiahua.github.io/">
+        <div class="single-column-header-title">许嘉华的博客</div>
+        
+
+    </a>
+</div>
+            <div id="content">
+<div ref="streamContainer" class="stream-container">
+    <div class="post-list-container post-list-container-shadow">
+        <div class="post">
+            
+            
+            
+
+            <div class="post-head-wrapper-text-only"
+                 style="background-image: url('/')">
+                <div class="post-title">
+                    实验说明 Golang HTTP 连接池参数
+                    
+                    <div class="post-meta">
+                        
+                        <time itemprop="datePublished">
+                            2020-07-23 16:12
+                        </time>
+                        
+
+                        
+
+                        
+                            <i class="material-icons" style="">label</i>
+                            
+                                <a href="/tags/wireshark">WireShark</a>
+                                &nbsp;
+                            
+                                <a href="/tags/go">Go</a>
+                                &nbsp;
+                            
+                                <a href="/tags/tcp">TCP</a>
+                                &nbsp;
+                            
+                        
+                    </div>
+                </div>
+            </div>
+            
+            <div class="post-body-wrapper">
+                <div class="post-body">
+                    <p>连接相对于其他对象，创建成本较高，资源也有限。如果没有连接池，在高并发场景下，连接关闭又新建，很快就会因为过多的TIME_WAIT（连接主动关闭方）导致无法创建更多连接了，程序被压死。</p>
+<h2 id="nethttp-连接池参数">net/http 连接池参数</h2>
+<p>Go （测试版本 go 1.14）的net/http包是有连接池功能的，具体地，是 Transport 用于连接池化。https://golang.org/pkg/net/http/#Transport</p>
+<blockquote>
+<p>Transport is an implementation of RoundTripper that supports HTTP, HTTPS, and HTTP proxies (for either HTTP or HTTPS with CONNECT).</p>
+<p>By default, Transport caches connections for future re-use.</p>
+</blockquote>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">	<span style="color:#75715e">// MaxIdleConns controls the maximum number of idle (keep-alive)
+</span><span style="color:#75715e"></span>	<span style="color:#75715e">// connections across all hosts. Zero means no limit.
+</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">MaxIdleConns</span> <span style="color:#66d9ef">int</span>
+
+	<span style="color:#75715e">// MaxIdleConnsPerHost, if non-zero, controls the maximum idle
+</span><span style="color:#75715e"></span>	<span style="color:#75715e">// (keep-alive) connections to keep per-host. If zero,
+</span><span style="color:#75715e"></span>	<span style="color:#75715e">// DefaultMaxIdleConnsPerHost is used.
+</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">MaxIdleConnsPerHost</span> <span style="color:#66d9ef">int</span>
+
+	<span style="color:#75715e">// MaxConnsPerHost optionally limits the total number of
+</span><span style="color:#75715e"></span>	<span style="color:#75715e">// connections per host, including connections in the dialing,
+</span><span style="color:#75715e"></span>	<span style="color:#75715e">// active, and idle states. On limit violation, dials will block.
+</span><span style="color:#75715e"></span>	<span style="color:#75715e">//
+</span><span style="color:#75715e"></span>	<span style="color:#75715e">// Zero means no limit.
+</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">MaxConnsPerHost</span> <span style="color:#66d9ef">int</span>
+
+	<span style="color:#75715e">// IdleConnTimeout is the maximum amount of time an idle
+</span><span style="color:#75715e"></span>	<span style="color:#75715e">// (keep-alive) connection will remain idle before closing
+</span><span style="color:#75715e"></span>	<span style="color:#75715e">// itself.
+</span><span style="color:#75715e"></span>	<span style="color:#75715e">// Zero means no limit.
+</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">IdleConnTimeout</span> <span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Duration</span>
+</code></pre></div><h3 id="默认值">默认值</h3>
+<p>MaxIdleConns=100，MaxIdleConnsPerHost=2（=DefaultMaxIdleConnsPerHost），MaxConnsPerHost=0（不限制）。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#75715e">// DefaultTransport is the default implementation of Transport and is
+</span><span style="color:#75715e">// used by DefaultClient. It establishes network connections as needed
+</span><span style="color:#75715e">// and caches them for reuse by subsequent calls. It uses HTTP proxies
+</span><span style="color:#75715e">// as directed by the $HTTP_PROXY and $NO_PROXY (or $http_proxy and
+</span><span style="color:#75715e">// $no_proxy) environment variables.
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">var</span> <span style="color:#a6e22e">DefaultTransport</span> <span style="color:#a6e22e">RoundTripper</span> = <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">Transport</span>{
+	<span style="color:#a6e22e">Proxy</span>: <span style="color:#a6e22e">ProxyFromEnvironment</span>,
+	<span style="color:#a6e22e">DialContext</span>: (<span style="color:#f92672">&amp;</span><span style="color:#a6e22e">net</span>.<span style="color:#a6e22e">Dialer</span>{
+		<span style="color:#a6e22e">Timeout</span>:   <span style="color:#ae81ff">30</span> <span style="color:#f92672">*</span> <span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Second</span>,
+		<span style="color:#a6e22e">KeepAlive</span>: <span style="color:#ae81ff">30</span> <span style="color:#f92672">*</span> <span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Second</span>,
+		<span style="color:#a6e22e">DualStack</span>: <span style="color:#66d9ef">true</span>,
+	}).<span style="color:#a6e22e">DialContext</span>,
+	<span style="color:#a6e22e">ForceAttemptHTTP2</span>:     <span style="color:#66d9ef">true</span>,
+	<span style="color:#a6e22e">MaxIdleConns</span>:          <span style="color:#ae81ff">100</span>,
+	<span style="color:#a6e22e">IdleConnTimeout</span>:       <span style="color:#ae81ff">90</span> <span style="color:#f92672">*</span> <span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Second</span>,
+	<span style="color:#a6e22e">TLSHandshakeTimeout</span>:   <span style="color:#ae81ff">10</span> <span style="color:#f92672">*</span> <span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Second</span>,
+	<span style="color:#a6e22e">ExpectContinueTimeout</span>: <span style="color:#ae81ff">1</span> <span style="color:#f92672">*</span> <span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Second</span>,
+}
+</code></pre></div><h3 id="perhost-的-host-是-addrport">PerHost 的 Host 是 addr+port</h3>
+<p>单台服务器，多个端口的服务是不同的 Host。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#75715e">// canonicalAddr returns url.Host but always with a &#34;:port&#34; suffix
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">canonicalAddr</span>(<span style="color:#a6e22e">url</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">url</span>.<span style="color:#a6e22e">URL</span>) <span style="color:#66d9ef">string</span> {
+	<span style="color:#a6e22e">addr</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">url</span>.<span style="color:#a6e22e">Hostname</span>()
+	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">v</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">idnaASCII</span>(<span style="color:#a6e22e">addr</span>); <span style="color:#a6e22e">err</span> <span style="color:#f92672">==</span> <span style="color:#66d9ef">nil</span> {
+		<span style="color:#a6e22e">addr</span> = <span style="color:#a6e22e">v</span>
+	}
+	<span style="color:#a6e22e">port</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">url</span>.<span style="color:#a6e22e">Port</span>()
+	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">port</span> <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;&#34;</span> {
+		<span style="color:#a6e22e">port</span> = <span style="color:#a6e22e">portMap</span>[<span style="color:#a6e22e">url</span>.<span style="color:#a6e22e">Scheme</span>]
+	}
+	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">net</span>.<span style="color:#a6e22e">JoinHostPort</span>(<span style="color:#a6e22e">addr</span>, <span style="color:#a6e22e">port</span>)
+}
+</code></pre></div><h2 id="参数试验">参数试验</h2>
+<h3 id="服务端准备工作">服务端准备工作</h3>
+<p><a href="https://github.com/XUJiahua/go-http-conn-pool-test">https://github.com/XUJiahua/go-http-conn-pool-test</a></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e"># 长连接服务器 192.168.33.10:8087</span>
+go run main.go -port <span style="color:#ae81ff">8087</span>
+<span style="color:#75715e"># 长连接服务器 192.168.33.10:8089</span>
+go run main.go -port <span style="color:#ae81ff">8089</span>
+<span style="color:#75715e"># 短连接服务器 192.168.33.10:8088</span>
+python3 -m http.server <span style="color:#ae81ff">8088</span>
+</code></pre></div><h3 id="maxidleconnsperhost-控制单个host的连接池大小">MaxIdleConnsPerHost 控制单个Host的连接池大小</h3>
+<p>单个连接池数设置为1。设置 MaxConnsPerHost=MaxIdleConnsPerHost，保证连接都是长连接。方便抓包工具查看连接池的数量。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#75715e">// 参数配置
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">var</span> <span style="color:#a6e22e">_httpCli</span> = <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">Client</span>{
+	<span style="color:#a6e22e">Timeout</span>: <span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Duration</span>(<span style="color:#ae81ff">15</span>) <span style="color:#f92672">*</span> <span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Second</span>,
+	<span style="color:#a6e22e">Transport</span>: <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">Transport</span>{
+		<span style="color:#a6e22e">MaxIdleConnsPerHost</span>:   <span style="color:#ae81ff">1</span>,
+		<span style="color:#a6e22e">MaxConnsPerHost</span>:       <span style="color:#ae81ff">1</span>,
+		<span style="color:#a6e22e">IdleConnTimeout</span>:       <span style="color:#ae81ff">90</span> <span style="color:#f92672">*</span> <span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Second</span>,
+		<span style="color:#a6e22e">TLSHandshakeTimeout</span>:   <span style="color:#ae81ff">10</span> <span style="color:#f92672">*</span> <span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Second</span>,
+		<span style="color:#a6e22e">ExpectContinueTimeout</span>: <span style="color:#ae81ff">1</span> <span style="color:#f92672">*</span> <span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Second</span>,
+	},
+}
+
+<span style="color:#75715e">// 测试
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">TestLong</span>(<span style="color:#a6e22e">t</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">testing</span>.<span style="color:#a6e22e">T</span>) {
+	<span style="color:#66d9ef">go</span> <span style="color:#66d9ef">func</span>() {
+		<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">i</span> <span style="color:#f92672">:=</span> <span style="color:#ae81ff">0</span>; <span style="color:#a6e22e">i</span> &lt; <span style="color:#ae81ff">1000</span>; <span style="color:#a6e22e">i</span><span style="color:#f92672">++</span> {
+			<span style="color:#66d9ef">go</span> <span style="color:#a6e22e">get</span>(<span style="color:#e6db74">&#34;http://192.168.33.10:8087&#34;</span>)
+		}
+	}()
+
+	<span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Sleep</span>(<span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Second</span> <span style="color:#f92672">*</span> <span style="color:#ae81ff">10</span>)
+}
+</code></pre></div><p><img src="../../images/image-20200724143455526.png" alt="image-20200724143455526"></p>
+<h4 id="连接复用的效果">连接复用的效果</h4>
+<p>一个连接顺序处理多个HTTP请求。Wireshark 展示。</p>
+<p><img src="../../images/image-20200724143722353.png" alt="image-20200724143722353"></p>
+<h3 id="maxconnsperhost-控制单个host的最大连接总数">MaxConnsPerHost 控制单个Host的最大连接总数</h3>
+<p>net/http包里没有全局性的连接总数限制参数。该值默认是0，也就是不限制，连接池里的连接能用就用，不能用创建新连接。无法进入连接池回收的短连接，被主动关闭。</p>
+<p>如果不限制，直接 dialConn。如果限制，未达到限制，直接dialConn，计数+1；达到限制，进入等待队列中。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#75715e">// queueForDial queues w to wait for permission to begin dialing.
+</span><span style="color:#75715e">// Once w receives permission to dial, it will do so in a separate goroutine.
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">t</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">Transport</span>) <span style="color:#a6e22e">queueForDial</span>(<span style="color:#a6e22e">w</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">wantConn</span>) {
+	<span style="color:#a6e22e">w</span>.<span style="color:#a6e22e">beforeDial</span>()
+	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">t</span>.<span style="color:#a6e22e">MaxConnsPerHost</span> <span style="color:#f92672">&lt;=</span> <span style="color:#ae81ff">0</span> {
+		<span style="color:#66d9ef">go</span> <span style="color:#a6e22e">t</span>.<span style="color:#a6e22e">dialConnFor</span>(<span style="color:#a6e22e">w</span>)
+		<span style="color:#66d9ef">return</span>
+	}
+
+	<span style="color:#a6e22e">t</span>.<span style="color:#a6e22e">connsPerHostMu</span>.<span style="color:#a6e22e">Lock</span>()
+	<span style="color:#66d9ef">defer</span> <span style="color:#a6e22e">t</span>.<span style="color:#a6e22e">connsPerHostMu</span>.<span style="color:#a6e22e">Unlock</span>()
+
+	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">n</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">t</span>.<span style="color:#a6e22e">connsPerHost</span>[<span style="color:#a6e22e">w</span>.<span style="color:#a6e22e">key</span>]; <span style="color:#a6e22e">n</span> &lt; <span style="color:#a6e22e">t</span>.<span style="color:#a6e22e">MaxConnsPerHost</span> {
+		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">t</span>.<span style="color:#a6e22e">connsPerHost</span> <span style="color:#f92672">==</span> <span style="color:#66d9ef">nil</span> {
+			<span style="color:#a6e22e">t</span>.<span style="color:#a6e22e">connsPerHost</span> = make(<span style="color:#66d9ef">map</span>[<span style="color:#a6e22e">connectMethodKey</span>]<span style="color:#66d9ef">int</span>)
+		}
+		<span style="color:#a6e22e">t</span>.<span style="color:#a6e22e">connsPerHost</span>[<span style="color:#a6e22e">w</span>.<span style="color:#a6e22e">key</span>] = <span style="color:#a6e22e">n</span> <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>
+		<span style="color:#66d9ef">go</span> <span style="color:#a6e22e">t</span>.<span style="color:#a6e22e">dialConnFor</span>(<span style="color:#a6e22e">w</span>)
+		<span style="color:#66d9ef">return</span>
+	}
+
+	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">t</span>.<span style="color:#a6e22e">connsPerHostWait</span> <span style="color:#f92672">==</span> <span style="color:#66d9ef">nil</span> {
+		<span style="color:#a6e22e">t</span>.<span style="color:#a6e22e">connsPerHostWait</span> = make(<span style="color:#66d9ef">map</span>[<span style="color:#a6e22e">connectMethodKey</span>]<span style="color:#a6e22e">wantConnQueue</span>)
+	}
+	<span style="color:#a6e22e">q</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">t</span>.<span style="color:#a6e22e">connsPerHostWait</span>[<span style="color:#a6e22e">w</span>.<span style="color:#a6e22e">key</span>]
+	<span style="color:#a6e22e">q</span>.<span style="color:#a6e22e">cleanFront</span>()
+	<span style="color:#a6e22e">q</span>.<span style="color:#a6e22e">pushBack</span>(<span style="color:#a6e22e">w</span>)
+	<span style="color:#a6e22e">t</span>.<span style="color:#a6e22e">connsPerHostWait</span>[<span style="color:#a6e22e">w</span>.<span style="color:#a6e22e">key</span>] = <span style="color:#a6e22e">q</span>
+}
+</code></pre></div><p>如果计数-1，从等待队列中释放一个进行 dialConn。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#75715e">// decConnsPerHost decrements the per-host connection count for key,
+</span><span style="color:#75715e">// which may in turn give a different waiting goroutine permission to dial.
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">t</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">Transport</span>) <span style="color:#a6e22e">decConnsPerHost</span>(<span style="color:#a6e22e">key</span> <span style="color:#a6e22e">connectMethodKey</span>) {
+	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">t</span>.<span style="color:#a6e22e">MaxConnsPerHost</span> <span style="color:#f92672">&lt;=</span> <span style="color:#ae81ff">0</span> {
+		<span style="color:#66d9ef">return</span>
+	}
+
+	<span style="color:#a6e22e">t</span>.<span style="color:#a6e22e">connsPerHostMu</span>.<span style="color:#a6e22e">Lock</span>()
+	<span style="color:#66d9ef">defer</span> <span style="color:#a6e22e">t</span>.<span style="color:#a6e22e">connsPerHostMu</span>.<span style="color:#a6e22e">Unlock</span>()
+	<span style="color:#a6e22e">n</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">t</span>.<span style="color:#a6e22e">connsPerHost</span>[<span style="color:#a6e22e">key</span>]
+	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">n</span> <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span> {
+		<span style="color:#75715e">// Shouldn&#39;t happen, but if it does, the counting is buggy and could
+</span><span style="color:#75715e"></span>		<span style="color:#75715e">// easily lead to a silent deadlock, so report the problem loudly.
+</span><span style="color:#75715e"></span>		panic(<span style="color:#e6db74">&#34;net/http: internal error: connCount underflow&#34;</span>)
+	}
+
+	<span style="color:#75715e">// Can we hand this count to a goroutine still waiting to dial?
+</span><span style="color:#75715e"></span>	<span style="color:#75715e">// (Some goroutines on the wait list may have timed out or
+</span><span style="color:#75715e"></span>	<span style="color:#75715e">// gotten a connection another way. If they&#39;re all gone,
+</span><span style="color:#75715e"></span>	<span style="color:#75715e">// we don&#39;t want to kick off any spurious dial operations.)
+</span><span style="color:#75715e"></span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">q</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">t</span>.<span style="color:#a6e22e">connsPerHostWait</span>[<span style="color:#a6e22e">key</span>]; <span style="color:#a6e22e">q</span>.len() &gt; <span style="color:#ae81ff">0</span> {
+		<span style="color:#a6e22e">done</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">false</span>
+		<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">q</span>.len() &gt; <span style="color:#ae81ff">0</span> {
+			<span style="color:#a6e22e">w</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">q</span>.<span style="color:#a6e22e">popFront</span>()
+			<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">w</span>.<span style="color:#a6e22e">waiting</span>() {
+				<span style="color:#66d9ef">go</span> <span style="color:#a6e22e">t</span>.<span style="color:#a6e22e">dialConnFor</span>(<span style="color:#a6e22e">w</span>)
+				<span style="color:#a6e22e">done</span> = <span style="color:#66d9ef">true</span>
+				<span style="color:#66d9ef">break</span>
+			}
+		}
+		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">q</span>.len() <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span> {
+			delete(<span style="color:#a6e22e">t</span>.<span style="color:#a6e22e">connsPerHostWait</span>, <span style="color:#a6e22e">key</span>)
+		} <span style="color:#66d9ef">else</span> {
+			<span style="color:#75715e">// q is a value (like a slice), so we have to store
+</span><span style="color:#75715e"></span>			<span style="color:#75715e">// the updated q back into the map.
+</span><span style="color:#75715e"></span>			<span style="color:#a6e22e">t</span>.<span style="color:#a6e22e">connsPerHostWait</span>[<span style="color:#a6e22e">key</span>] = <span style="color:#a6e22e">q</span>
+		}
+		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">done</span> {
+			<span style="color:#66d9ef">return</span>
+		}
+	}
+
+	<span style="color:#75715e">// Otherwise, decrement the recorded count.
+</span><span style="color:#75715e"></span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">n</span><span style="color:#f92672">--</span>; <span style="color:#a6e22e">n</span> <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span> {
+		delete(<span style="color:#a6e22e">t</span>.<span style="color:#a6e22e">connsPerHost</span>, <span style="color:#a6e22e">key</span>)
+	} <span style="color:#66d9ef">else</span> {
+		<span style="color:#a6e22e">t</span>.<span style="color:#a6e22e">connsPerHost</span>[<span style="color:#a6e22e">key</span>] = <span style="color:#a6e22e">n</span>
+	}
+}
+</code></pre></div><p>试验：尝试连接池1，最大连接数2。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#75715e">// 参数配置
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">var</span> <span style="color:#a6e22e">_httpCli</span> = <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">Client</span>{
+	<span style="color:#a6e22e">Timeout</span>: <span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Duration</span>(<span style="color:#ae81ff">15</span>) <span style="color:#f92672">*</span> <span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Second</span>,
+	<span style="color:#a6e22e">Transport</span>: <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">Transport</span>{
+		<span style="color:#a6e22e">MaxIdleConnsPerHost</span>:   <span style="color:#ae81ff">1</span>,
+		<span style="color:#a6e22e">MaxConnsPerHost</span>:       <span style="color:#ae81ff">2</span>,
+		<span style="color:#a6e22e">IdleConnTimeout</span>:       <span style="color:#ae81ff">90</span> <span style="color:#f92672">*</span> <span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Second</span>,
+		<span style="color:#a6e22e">TLSHandshakeTimeout</span>:   <span style="color:#ae81ff">10</span> <span style="color:#f92672">*</span> <span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Second</span>,
+		<span style="color:#a6e22e">ExpectContinueTimeout</span>: <span style="color:#ae81ff">1</span> <span style="color:#f92672">*</span> <span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Second</span>,
+	},
+}
+
+<span style="color:#75715e">// 测试
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">TestLong</span>(<span style="color:#a6e22e">t</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">testing</span>.<span style="color:#a6e22e">T</span>) {
+	<span style="color:#66d9ef">go</span> <span style="color:#66d9ef">func</span>() {
+		<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">i</span> <span style="color:#f92672">:=</span> <span style="color:#ae81ff">0</span>; <span style="color:#a6e22e">i</span> &lt; <span style="color:#ae81ff">100</span>; <span style="color:#a6e22e">i</span><span style="color:#f92672">++</span> {
+			<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">i</span><span style="color:#f92672">%</span><span style="color:#ae81ff">10</span> <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span> {
+				<span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Sleep</span>(<span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Second</span>)
+			}
+			<span style="color:#66d9ef">go</span> <span style="color:#a6e22e">get</span>(<span style="color:#e6db74">&#34;http://192.168.33.10:8087&#34;</span>)
+		}
+	}()
+
+	<span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Sleep</span>(<span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Second</span> <span style="color:#f92672">*</span> <span style="color:#ae81ff">10</span>)
+}
+</code></pre></div><p>连接有重建的情况。</p>
+<p><img src="../../images/image-20200724151057501.png" alt="image-20200724151057501"></p>
+<h3 id="maxidleconns-vs-maxidleconnsperhost-两个连接池">MaxIdleConns vs MaxIdleConnsPerHost 两个连接池</h3>
+<p>如下源码，先检查 PerHost 的池子有没有满，再检查总的池子有没有满。也就是说，MaxIdleConns设置不合理，会对MaxIdleConnsPerHost有影响。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#75715e">// tryPutIdleConn adds pconn to the list of idle persistent connections awaiting
+</span><span style="color:#75715e">// a new request.
+</span><span style="color:#75715e">// If pconn is no longer needed or not in a good state, tryPutIdleConn returns
+</span><span style="color:#75715e">// an error explaining why it wasn&#39;t registered.
+</span><span style="color:#75715e">// tryPutIdleConn does not close pconn. Use putOrCloseIdleConn instead for that.
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">t</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">Transport</span>) <span style="color:#a6e22e">tryPutIdleConn</span>(<span style="color:#a6e22e">pconn</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">persistConn</span>) <span style="color:#66d9ef">error</span> {
+  <span style="color:#f92672">...</span>
+	<span style="color:#a6e22e">idles</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">t</span>.<span style="color:#a6e22e">idleConn</span>[<span style="color:#a6e22e">key</span>]
+	<span style="color:#66d9ef">if</span> len(<span style="color:#a6e22e">idles</span>) <span style="color:#f92672">&gt;=</span> <span style="color:#a6e22e">t</span>.<span style="color:#a6e22e">maxIdleConnsPerHost</span>() {
+    <span style="color:#75715e">// 如果超过了maxIdleConnsPerHost，报连接太多，当前pconn被关掉。
+</span><span style="color:#75715e"></span>		<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">errTooManyIdleHost</span>
+	}
+	<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">exist</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">range</span> <span style="color:#a6e22e">idles</span> {
+		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">exist</span> <span style="color:#f92672">==</span> <span style="color:#a6e22e">pconn</span> {
+			<span style="color:#a6e22e">log</span>.<span style="color:#a6e22e">Fatalf</span>(<span style="color:#e6db74">&#34;dup idle pconn %p in freelist&#34;</span>, <span style="color:#a6e22e">pconn</span>)
+		}
+	}
+	<span style="color:#a6e22e">t</span>.<span style="color:#a6e22e">idleConn</span>[<span style="color:#a6e22e">key</span>] = append(<span style="color:#a6e22e">idles</span>, <span style="color:#a6e22e">pconn</span>)
+	<span style="color:#a6e22e">t</span>.<span style="color:#a6e22e">idleLRU</span>.<span style="color:#a6e22e">add</span>(<span style="color:#a6e22e">pconn</span>)
+	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">t</span>.<span style="color:#a6e22e">MaxIdleConns</span> <span style="color:#f92672">!=</span> <span style="color:#ae81ff">0</span> <span style="color:#f92672">&amp;&amp;</span> <span style="color:#a6e22e">t</span>.<span style="color:#a6e22e">idleLRU</span>.len() &gt; <span style="color:#a6e22e">t</span>.<span style="color:#a6e22e">MaxIdleConns</span> {
+		<span style="color:#a6e22e">oldest</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">t</span>.<span style="color:#a6e22e">idleLRU</span>.<span style="color:#a6e22e">removeOldest</span>()
+    <span style="color:#75715e">// 如果超过了MaxIdleConns，杀掉老的idle connection
+</span><span style="color:#75715e"></span>		<span style="color:#a6e22e">oldest</span>.close(<span style="color:#a6e22e">errTooManyIdle</span>)
+		<span style="color:#a6e22e">t</span>.<span style="color:#a6e22e">removeIdleConnLocked</span>(<span style="color:#a6e22e">oldest</span>)
+	}
+  <span style="color:#f92672">...</span>
+</code></pre></div><p>看看是否有影响，客户端同时连接两个Host。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#75715e">// 参数配置
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">var</span> <span style="color:#a6e22e">_httpCli</span> = <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">Client</span>{
+	<span style="color:#a6e22e">Timeout</span>: <span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Duration</span>(<span style="color:#ae81ff">15</span>) <span style="color:#f92672">*</span> <span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Second</span>,
+	<span style="color:#a6e22e">Transport</span>: <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">Transport</span>{
+		<span style="color:#a6e22e">MaxIdleConns</span>:          <span style="color:#ae81ff">1</span>,
+		<span style="color:#a6e22e">MaxIdleConnsPerHost</span>:   <span style="color:#ae81ff">1</span>,
+		<span style="color:#a6e22e">MaxConnsPerHost</span>:       <span style="color:#ae81ff">1</span>,
+		<span style="color:#a6e22e">IdleConnTimeout</span>:       <span style="color:#ae81ff">90</span> <span style="color:#f92672">*</span> <span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Second</span>,
+		<span style="color:#a6e22e">TLSHandshakeTimeout</span>:   <span style="color:#ae81ff">10</span> <span style="color:#f92672">*</span> <span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Second</span>,
+		<span style="color:#a6e22e">ExpectContinueTimeout</span>: <span style="color:#ae81ff">1</span> <span style="color:#f92672">*</span> <span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Second</span>,
+	},
+}
+
+<span style="color:#75715e">// 测试
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">TestLongLong</span>(<span style="color:#a6e22e">t</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">testing</span>.<span style="color:#a6e22e">T</span>) {
+	<span style="color:#66d9ef">go</span> <span style="color:#66d9ef">func</span>() {
+		<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">i</span> <span style="color:#f92672">:=</span> <span style="color:#ae81ff">0</span>; <span style="color:#a6e22e">i</span> &lt; <span style="color:#ae81ff">100</span>; <span style="color:#a6e22e">i</span><span style="color:#f92672">++</span> {
+			<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">i</span><span style="color:#f92672">%</span><span style="color:#ae81ff">10</span> <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span> {
+				<span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Sleep</span>(<span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Second</span>)
+			}
+			<span style="color:#66d9ef">go</span> <span style="color:#a6e22e">get</span>(<span style="color:#e6db74">&#34;http://192.168.33.10:8087&#34;</span>)
+		}
+	}()
+
+	<span style="color:#66d9ef">go</span> <span style="color:#66d9ef">func</span>() {
+		<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">i</span> <span style="color:#f92672">:=</span> <span style="color:#ae81ff">0</span>; <span style="color:#a6e22e">i</span> &lt; <span style="color:#ae81ff">100</span>; <span style="color:#a6e22e">i</span><span style="color:#f92672">++</span> {
+			<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">i</span><span style="color:#f92672">%</span><span style="color:#ae81ff">10</span> <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span> {
+				<span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Sleep</span>(<span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Second</span>)
+			}
+			<span style="color:#66d9ef">go</span> <span style="color:#a6e22e">get</span>(<span style="color:#e6db74">&#34;http://192.168.33.10:8089&#34;</span>)
+		}
+	}()
+
+	<span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Sleep</span>(<span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Second</span> <span style="color:#f92672">*</span> <span style="color:#ae81ff">10</span>)
+}
+</code></pre></div><p>结果反映，连接有不断重建的现象。</p>
+<p><img src="../../images/image-20200724145033252.png" alt="image-20200724145033252"></p>
+<p>配置去除MaxIdleConns，不限制连接总池的大小：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#75715e">// 参数配置
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">var</span> <span style="color:#a6e22e">_httpCli</span> = <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">Client</span>{
+	<span style="color:#a6e22e">Timeout</span>: <span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Duration</span>(<span style="color:#ae81ff">15</span>) <span style="color:#f92672">*</span> <span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Second</span>,
+	<span style="color:#a6e22e">Transport</span>: <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">Transport</span>{
+		<span style="color:#a6e22e">MaxIdleConnsPerHost</span>:   <span style="color:#ae81ff">1</span>,
+		<span style="color:#a6e22e">MaxConnsPerHost</span>:       <span style="color:#ae81ff">1</span>,
+		<span style="color:#a6e22e">IdleConnTimeout</span>:       <span style="color:#ae81ff">90</span> <span style="color:#f92672">*</span> <span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Second</span>,
+		<span style="color:#a6e22e">TLSHandshakeTimeout</span>:   <span style="color:#ae81ff">10</span> <span style="color:#f92672">*</span> <span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Second</span>,
+		<span style="color:#a6e22e">ExpectContinueTimeout</span>: <span style="color:#ae81ff">1</span> <span style="color:#f92672">*</span> <span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Second</span>,
+	},
+}
+</code></pre></div><p>结果反映，对每个Host各自维持一个连接。</p>
+<p><img src="../../images/image-20200724145240071.png" alt="image-20200724145240071"></p>
+<h3 id="连接复用客户端服务端需同时支持">连接复用，客户端、服务端需同时支持</h3>
+<p>任何一方主动关闭连接，连接就无法复用。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#75715e">// 参数配置
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">var</span> <span style="color:#a6e22e">_httpCli</span> = <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">Client</span>{
+	<span style="color:#a6e22e">Timeout</span>: <span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Duration</span>(<span style="color:#ae81ff">15</span>) <span style="color:#f92672">*</span> <span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Second</span>,
+	<span style="color:#a6e22e">Transport</span>: <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">Transport</span>{
+		<span style="color:#a6e22e">MaxIdleConnsPerHost</span>:   <span style="color:#ae81ff">1</span>,
+		<span style="color:#a6e22e">MaxConnsPerHost</span>:       <span style="color:#ae81ff">1</span>,
+		<span style="color:#a6e22e">IdleConnTimeout</span>:       <span style="color:#ae81ff">90</span> <span style="color:#f92672">*</span> <span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Second</span>,
+		<span style="color:#a6e22e">TLSHandshakeTimeout</span>:   <span style="color:#ae81ff">10</span> <span style="color:#f92672">*</span> <span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Second</span>,
+		<span style="color:#a6e22e">ExpectContinueTimeout</span>: <span style="color:#ae81ff">1</span> <span style="color:#f92672">*</span> <span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Second</span>,
+	},
+}
+
+<span style="color:#75715e">// 测试
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">TestLongShort</span>(<span style="color:#a6e22e">t</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">testing</span>.<span style="color:#a6e22e">T</span>) {
+	<span style="color:#66d9ef">go</span> <span style="color:#66d9ef">func</span>() {
+		<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">i</span> <span style="color:#f92672">:=</span> <span style="color:#ae81ff">0</span>; <span style="color:#a6e22e">i</span> &lt; <span style="color:#ae81ff">1000</span>; <span style="color:#a6e22e">i</span><span style="color:#f92672">++</span> {
+			<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">i</span><span style="color:#f92672">%</span><span style="color:#ae81ff">10</span> <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span> {
+				<span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Sleep</span>(<span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Second</span>)
+			}
+			<span style="color:#66d9ef">go</span> <span style="color:#a6e22e">get</span>(<span style="color:#e6db74">&#34;http://192.168.33.10:8087&#34;</span>)
+		}
+	}()
+
+	<span style="color:#66d9ef">go</span> <span style="color:#66d9ef">func</span>() {
+		<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">i</span> <span style="color:#f92672">:=</span> <span style="color:#ae81ff">0</span>; <span style="color:#a6e22e">i</span> &lt; <span style="color:#ae81ff">1000</span>; <span style="color:#a6e22e">i</span><span style="color:#f92672">++</span> {
+			<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">i</span><span style="color:#f92672">%</span><span style="color:#ae81ff">10</span> <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span> {
+				<span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Sleep</span>(<span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Second</span>)
+			}
+			<span style="color:#66d9ef">go</span> <span style="color:#a6e22e">get</span>(<span style="color:#e6db74">&#34;http://192.168.33.10:8088&#34;</span>)
+		}
+	}()
+
+	<span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Sleep</span>(<span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Second</span> <span style="color:#f92672">*</span> <span style="color:#ae81ff">10</span>)
+}
+</code></pre></div><p>python server （<code>python3 -m http.server 8088</code>）会主动关闭连接，池化参数不生效，创建连接不止1个。作为对比，对于长连接服务，池化参数生效。</p>
+<p><img src="../../images/image-20200724145917753.png" alt="image-20200724145917753"></p>
+<h2 id="总结">总结</h2>
+<p>服务间接口调用，维持稳定数量的长连接，对性能非常有帮助。</p>
+<p>几个参数：</p>
+<ol>
+<li>MaxIdleConnsPerHost：优先设置这个，决定了对于单个Host需要维持的连接池大小。该值的合理确定，应该根据性能测试的结果调整。</li>
+<li>MaxIdleConns：客户端连接单个Host，不少于MaxIdleConnsPerHost大小，不然影响MaxIdleConnsPerHost控制的连接池；客户端连接 n 个Host，少于 n X MaxIdleConnsPerHost 会影响MaxIdleConnsPerHost控制的连接池（导致连接重建）。嫌麻烦，建议设置为0，不限制。</li>
+<li>MaxConnsPerHost：对于单个Host允许的最大连接数，包含IdleConns，所以一般大于等于MaxIdleConnsPerHost。设置为等于MaxIdleConnsPerHost，也就是尽可能复用连接池中的连接。另外设置过小，可能会导致并发下降，超过这个值会 block 请求，直到有空闲连接。（所以默认值是不限制的）</li>
+</ol>
+<p>参考：</p>
+<ol>
+<li>Tuning the Go HTTP Client Settings for Load Testing <a href="http://tleyden.github.io/blog/2016/11/21/tuning-the-go-http-client-library-for-load-testing/">http://tleyden.github.io/blog/2016/11/21/tuning-the-go-http-client-library-for-load-testing/</a></li>
+</ol>
+
+                    
+                    <HR width="100%" id="EOF">
+                    <p style="color:#777;">Last modified on 2020-07-23</p>
+                    
+                </div>
+            </div>
+            
+            
+            <nav class="post-pagination">
+
+                
+                <a class="newer-posts">
+                    Next<br>No newer posts.
+                </a>
+                
+                
+                
+                <a class="older-posts" href="https://xujiahua.github.io/posts/20200714-metabase-timezone/">
+                    Previous<br>Metabase Impala Driver 时区问题
+                </a>
+                
+            </nav>
+            <div class="post-comment-wrapper">
+                
+
+
+
+
+
+
+            </div>
+        </div>
+    </div>
+</div>
+
+            </div><div id="single-column-footer">
+Hugo Theme <a href="https://github.com/amazingrise/hugo-theme-diary">Diary</a> by <a href="https://amazingrise.net">Rise</a>
+<br>
+Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopener">Makito</a>'s <a href="https://github.com/SumiMakito/hexo-theme-journal/" target="_blank" rel="noreferrer noopener">Journal.</a> <br>
+<br>
+
+&copy;
+	
+	2020 许嘉华的博客
+	</div>
+    	</div>
+    <script src="https://xujiahua.github.io//js/journal.js"></script>
+    </body>
+</html>
