@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html><head>
+<title>20190323黑客松总结</title>
+
+<meta charset="utf-8">
+<meta name="X-UA-Compatible" content="IE=edge">
+<meta name="google-site-verification" content="">
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport">
+<meta content="telephone=no" name="format-detection">
+<meta name="description" content="">
+<meta name="renderer" content="webkit">
+<meta name="theme-color" content="#ffffff">
+
+
+
+
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+	ga('create', 'UA-162706610-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+
+
+
+<script src="/vendor/js/jquery.min.js" ></script>
+<script src="/vendor/js/popper.min.js" ></script>
+<script src="/vendor/js/bootstrap.min.js" ></script>
+<script src="/vendor/js/smooth-scroll.polyfills.min.js" ></script>
+<link type="text/css" rel="stylesheet" href="/vendor/css/bootstrap.min.css">
+<script src="/vendor/js/vue.min.js" ></script>
+
+
+
+
+<link rel="stylesheet" href="https://xujiahua.github.io/scss/journal.min.5c667e74038e21ddbb9024b67930f8544e02af62491281cf73fdb817eec2947e.css" integrity="sha256-XGZ&#43;dAOOId27kCS2eTD4VE4Cr2JJEoHPc/24F&#43;7ClH4=" media="screen">
+
+<script src="https://xujiahua.github.io//js/loadCSS.js"></script>
+<script src="https://xujiahua.github.io//js/table.js"></script>
+
+
+<script src="https://xujiahua.github.io//js/toc.js"></script>
+
+
+<script>
+    loadCSS("https://fonts.googleapis.com/css?family=Lora|Montserrat|Fira+Mono|Noto+Serif+SC|Material+Icons");
+</script>
+
+
+
+
+
+
+</head><body>
+    	<div id="app"><div ref="sideContainer" class="side-container">
+    
+    <a class="a-block nav-head false" href="https://xujiahua.github.io/">
+    
+        <div class="nav-title">
+            许嘉华的博客
+        </div>
+        
+    </a>
+
+    <div class="nav-link-list">
+        
+        
+            
+            
+            
+                
+            
+            
+            
+            <a class="a-block nav-link-item active" href="/posts">
+                Archive
+            </a>
+            
+        
+            
+            
+            
+            
+            
+            <a class="a-block nav-link-item false" href="/categories">
+                Categories
+            </a>
+            
+        
+            
+            
+            
+            
+            
+            <a class="a-block nav-link-item false" href="/tags">
+                Tags
+            </a>
+            
+        
+            
+            
+            
+            
+            
+            <a class="a-block nav-link-item false" href="/index.xml">
+                RSS Feed
+            </a>
+            
+        
+    </div>
+
+    
+
+    <div class="nav-footer">
+        
+Hugo Theme <a href="https://github.com/amazingrise/hugo-theme-diary">Diary</a> by <a href="https://amazingrise.net">Rise</a>
+<br>
+Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopener">Makito</a>'s <a href="https://github.com/SumiMakito/hexo-theme-journal/" target="_blank" rel="noreferrer noopener">Journal.</a> <br>
+<br>
+
+&copy;
+	
+	2020 许嘉华的博客
+	
+    </div>
+    
+</div><div ref="extraContainer" class="extra-container">
+    
+    <div class="toc animated-visibility" :class="{ invisible: scrollY <= 140 }">
+
+
+	<div class="toc-content">
+	
+		
+		
+		
+		<center>- CATALOG -</center>
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e8%bf%87%e7%a8%8b" v-on:click="closeDrawer" id="过程-nav">
+										 过程
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e5%85%b3%e4%ba%8e%e5%9b%a2%e9%98%9f" v-on:click="closeDrawer" id="关于团队-nav">
+										 关于团队
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e4%ba%a7%e5%93%81%e8%ae%be%e8%ae%a1" v-on:click="closeDrawer" id="产品设计-nav">
+										 产品设计
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e6%8a%80%e6%9c%af%e5%ae%9e%e7%8e%b0" v-on:click="closeDrawer" id="技术实现-nav">
+										 技术实现
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e5%b1%95%e7%a4%ba" v-on:click="closeDrawer" id="展示-nav">
+										 展示
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e6%80%bb%e7%bb%93" v-on:click="closeDrawer" id="总结-nav">
+										 总结
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+	</div>
+
+</div>
+    
+    <div class="pagination">
+        <a id="globalBackToTop" class="pagination-action animated-visibility" href="#top" :class="{ invisible: scrollY == 0 }">
+            <i class="material-icons pagination-action-icon">
+                keyboard_arrow_up
+            </i>
+        </a>
+        
+    </div>
+</div><div class="single-column-drawer-container" ref="drawer"
+     v-bind:class="{ 'single-column-drawer-container-active': isDrawerOpen }">
+    <div class="drawer-content">
+        <div class="drawer-menu">
+            
+            
+                
+                
+                
+                    
+                
+                
+                
+                <a class="a-block drawer-menu-item active" href="/posts">
+                    Archive
+                </a>
+                
+            
+                
+                
+                
+                
+                
+                <a class="a-block drawer-menu-item false" href="/categories">
+                    Categories
+                </a>
+                
+            
+                
+                
+                
+                
+                
+                <a class="a-block drawer-menu-item false" href="/tags">
+                    Tags
+                </a>
+                
+            
+                
+                
+                
+                
+                
+                <a class="a-block drawer-menu-item false" href="/index.xml">
+                    RSS Feed
+                </a>
+                
+            
+            
+            <div class="toc">
+
+
+	<div class="toc-content">
+	
+		
+		
+		
+		<center>- CATALOG -</center>
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e8%bf%87%e7%a8%8b" v-on:click="closeDrawer" id="过程-nav">
+										 过程
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e5%85%b3%e4%ba%8e%e5%9b%a2%e9%98%9f" v-on:click="closeDrawer" id="关于团队-nav">
+										 关于团队
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e4%ba%a7%e5%93%81%e8%ae%be%e8%ae%a1" v-on:click="closeDrawer" id="产品设计-nav">
+										 产品设计
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e6%8a%80%e6%9c%af%e5%ae%9e%e7%8e%b0" v-on:click="closeDrawer" id="技术实现-nav">
+										 技术实现
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e5%b1%95%e7%a4%ba" v-on:click="closeDrawer" id="展示-nav">
+										 展示
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e6%80%bb%e7%bb%93" v-on:click="closeDrawer" id="总结-nav">
+										 总结
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+	</div>
+
+</div>
+            
+        </div>
+    </div>
+</div>
+<transition name="fade">
+    <div v-bind:class="{ 'single-column-drawer-mask': mounted }" v-if="isDrawerOpen" v-on:click="toggleDrawer"></div>
+</transition>
+<nav ref="navBar" class="navbar sticky-top navbar-light single-column-nav-container">
+    <div ref="navBackground" class="nav-background"></div>
+    <div class="container container-narrow nav-content">
+        <button id="nav_dropdown_btn" class="nav-dropdown-toggle" type="button" v-on:click="toggleDrawer">
+            <i class="material-icons">
+                menu
+            </i>
+        </button>
+        <a ref="navTitle" class="navbar-brand" href="https://xujiahua.github.io/">
+            许嘉华的博客
+        </a>
+    </div>
+</nav>
+<div class="single-column-header-container" ref="pageHead"
+     v-bind:style="{ transform: 'translateZ(0px) translateY('+.3*scrollY+'px)', opacity: 1-navOpacity }">
+    <a href="https://xujiahua.github.io/">
+        <div class="single-column-header-title">许嘉华的博客</div>
+        
+
+    </a>
+</div>
+            <div id="content">
+<div ref="streamContainer" class="stream-container">
+    <div class="post-list-container post-list-container-shadow">
+        <div class="post">
+            
+            
+            
+
+            <div class="post-head-wrapper-text-only"
+                 style="background-image: url('/')">
+                <div class="post-title">
+                    20190323黑客松总结
+                    
+                    <div class="post-meta">
+                        
+                        <time itemprop="datePublished">
+                            2019-03-25 10:45
+                        </time>
+                        
+
+                        
+
+                        
+                            <i class="material-icons" style="">label</i>
+                            
+                                <a href="/tags/blockchain">blockchain</a>
+                                &nbsp;
+                            
+                        
+                    </div>
+                </div>
+            </div>
+            
+            <div class="post-body-wrapper">
+                <div class="post-body">
+                    <h2 id="过程">过程</h2>
+<p>比赛背景见 <a href="https://www.tuoniaox.com/news/p-327352.html">https://www.tuoniaox.com/news/p-327352.html</a> 。
+打算从几个角度来讲下这个比赛过程。</p>
+<h3 id="关于团队">关于团队</h3>
+<p>我们公司3人（我、洪敏、天宇）参加比赛，都是开发背景。
+主办方根据协调，一位来自台湾的社交方向创业者参加进来，英语演讲不错，技术会一点，有过hackathon经验。
+比赛当天晚些时候，又有一位金融领域的伙伴加入进来，报名晚了，当时还没分配到队伍。
+<em>本来还有一位以太坊开发背景的参加，但是比赛当天还在加班。</em>
+最终是一支5人小组。</p>
+<h3 id="产品设计">产品设计</h3>
+<p>团队主体是我们公司三人，花了比较多的时间在选题和创意设计。有想过比如聊天工具、抽奖工具，感觉都一般。我们的眼界还是比较狭窄。</p>
+<p>主办方提供了多个topic，我们选了这个方向——了解客户（KYC）规则 Know-your-customer。因为这块涉及到用户身份，感觉能套在很多场景。</p>
+<ol>
+<li>比赛前一天（周五）定了一个政府中心化KYC数据库的方案，区块链用于授权与审计用。</li>
+<li>比赛当天清晨，改为去中心化的KYC方案，只有企业和用户，IPFS作为去中心化的存储，数据安全由公钥加密保证。区块链同样是用于授权、审计，和存储文件HASH。</li>
+<li>主办方宣讲完毕，与其他组员REVIEW，一致用去中心化的方案，更贴比赛。这个作为我们的基础模型。</li>
+<li>从B2C扩展到B2B，比如银行怎么Know一家向他借钱的酒店或是房屋租赁公司。引入IoT、智能设备采集真实入住率。通过合约，智能设备与C端用户交互，保证真实性。这里，区块链用于一份难以篡改的数据库，可以看出酒店的经营事件。</li>
+<li>分工：我们公司3人开发，他们2人准备演示材料。</li>
+</ol>
+<h3 id="技术实现">技术实现</h3>
+<p>我们没有实际的以太坊开发经验。所以，趟了很多坑，绕了很多弯路。低估了技术复杂度。按时间线：</p>
+<ol>
+<li>当天下午，分析技术提供方提供的SDK（Go），是scryinfo的两个合约封装，一个是数据交换，一个是token交换。没法涵盖我们的设计场景，必须写自己的智能合约。</li>
+<li>智能合约开发很顺利，使用remix+metaMask这个组合。</li>
+<li>开始翻车之旅。</li>
+<li>前端使用web3无法调用合约，还有web3js的版本问题、下载问题。</li>
+<li>使用infura.io提供的免费的以太坊节点服务，发现有些方法没有开放。</li>
+<li>连入主办方提供的以太坊节点，面对跨域（可解决）、还有一些新问题。</li>
+<li>尝试同步一个以太坊测试节点，一个节点需要100G空间，时间和空间都没法满足。</li>
+<li>翻阅SDK源码，尝试套用SDK中使用Go来包装智能合约调用的方式来调用我们的合约。执行合约方法进入无限等待。找SDK提供者一起review代码，也是无解。本以为翻车到此为止，能360度翻回正常轨道。</li>
+<li>最后又想起创建一个私有链。但时间上不允许了。</li>
+<li>紧急魔改代码，用于作品演示。</li>
+<li>UI设计因为时间问题，比较粗暴。</li>
+<li>第二天下午2点前，提交了代码。</li>
+</ol>
+<p>技术上最大的问题，是应用无法调用合约。很多东西都是现学。
+为此，我们几位就睡了几个小时。少壮不努力，老大徒伤悲。留下没有技术的泪水。</p>
+<h3 id="展示">展示</h3>
+<p>因为评委主要是日本人，演讲全程需要英文。
+台湾小伙上，讲了一个故事：</p>
+<ol>
+<li>以自己是一个开酒店的入题。</li>
+<li>基于区块链的KYC解决了C端和B端重复繁琐的资料登记过程。</li>
+<li>酒店初创，需要银行贷款，利用IoT+区块链和扩展的KYC应用，公开经营状况。解决银行对初创酒店的数据信任问题。</li>
+<li>演讲中，意思表达还是有点折扣。不过，已经非常自然了。</li>
+</ol>
+<p><img src="../../images/WechatIMG2.jpeg" alt="WechatIMG2">
+<em>主办方整理的信息图</em></p>
+<p>为了能增加亮点，金融小伙，拿来了之前准备好的树莓派和门锁，放入了演示环节。但是演示过程中，台上调试设备花了些时间，尴尬了几分钟。主持人马上与观众进入互动，避免令人窒息的安静。然后这个智能设备的演示也失败了，我们是唯一这么尴尬的小组。</p>
+<p>这个过程，技术并不重要，合约没调通这个事情显得没那么严重了。重要的是演讲能力、演示效果。重要的是，打动用户，让自己的作品被理解。</p>
+<h2 id="总结">总结</h2>
+<p>在最后的环节，我们也看到了其他队伍的演讲演示。准备得非常充分，都是有备而来，有非常酷的PPT、还有成型的app供下载、非常流畅自然的英文演讲、更贴合主办方业务的产品设计。没有得奖，心服口服。</p>
+<p>功在平时，厚积才能薄发。如果要赢，一定做好充足准备。需要做好这些准备：</p>
+<ol>
+<li>痛点的定位。不能为技术而技术。</li>
+<li>技术储备。</li>
+<li>sales的能力。</li>
+<li>英语。</li>
+<li>最最重要的，还是teamwork，我们需要培育一个更强大的团队。</li>
+</ol>
+
+                    
+                    <HR width="100%" id="EOF">
+                    <p style="color:#777;">Last modified on 2019-03-25</p>
+                    
+                </div>
+            </div>
+            
+            
+            <nav class="post-pagination">
+
+                
+                <a class="newer-posts" href="https://xujiahua.github.io/posts/20191030-dcep-libra/">
+                    Next<br>数字货币资料整理：FB Libra，央行 DCEP
+                </a>
+                
+                
+                
+                <a class="older-posts" href="https://xujiahua.github.io/posts/20190304-go-plugin/">
+                    Previous<br>Go Plugin
+                </a>
+                
+            </nav>
+            <div class="post-comment-wrapper">
+                
+
+
+
+
+
+
+            </div>
+        </div>
+    </div>
+</div>
+
+            </div><div id="single-column-footer">
+Hugo Theme <a href="https://github.com/amazingrise/hugo-theme-diary">Diary</a> by <a href="https://amazingrise.net">Rise</a>
+<br>
+Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopener">Makito</a>'s <a href="https://github.com/SumiMakito/hexo-theme-journal/" target="_blank" rel="noreferrer noopener">Journal.</a> <br>
+<br>
+
+&copy;
+	
+	2020 许嘉华的博客
+	</div>
+    	</div>
+    <script src="https://xujiahua.github.io//js/journal.js"></script>
+    </body>
+</html>
