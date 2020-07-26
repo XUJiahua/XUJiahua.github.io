@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Docker on 许嘉华的博客</title>
+    <title>docker on 许嘉华的笔记</title>
     <link>https://xujiahua.github.io/tags/docker/</link>
-    <description>Recent content in Docker on 许嘉华的博客</description>
+    <description>Recent content in docker on 许嘉华的笔记</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
     <lastBuildDate>Tue, 14 Apr 2020 09:53:35 +0800</lastBuildDate>
@@ -75,6 +75,17 @@ Docker安装完后，默认有三个（三种）网络。分别是默认的bridg
 # docker network ls NETWORK ID NAME DRIVER SCOPE 51cbe7a9bb19 bridge bridge local 7182ef9fa8c4 host host local bd80d0dedaa8 none null local 参考：https://docs.docker.com/network/
 none模式 &amp;ndash;net=none 无网络。
 # docker run --net=none --rm -it alpine ip addr show 1: lo: &amp;lt;LOOPBACK,UP,LOWER_UP&amp;gt; mtu 65536 qdisc noqueue state UNKNOWN qlen 1000 link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00 inet 127.0.0.1/8 scope host lo valid_lft forever preferred_lft forever host模式 &amp;ndash;net=host  容器共用宿主机的网络。但是，容器的其他方面，如文件系统、进程列表等还是和宿主机隔离的。 容器不会申请独立的IP。 容器申请的端口占用宿主机的端口资源。 -p等端口映射命令不起作用：WARNING: Published ports are discarded when using host network mode 性能上比较好，因为没有地址转换。Host mode networking can be useful to optimize performance, and in situations where a container needs to handle a large range of ports, as it does not require network address translation (NAT), and no “userland-proxy” is created for each port.</description>
+    </item>
+    
+    <item>
+      <title>rm docker image interactively</title>
+      <link>https://xujiahua.github.io/posts/20190429-docker-rmi/</link>
+      <pubDate>Mon, 29 Apr 2019 12:25:54 +0800</pubDate>
+      
+      <guid>https://xujiahua.github.io/posts/20190429-docker-rmi/</guid>
+      <description>写了个工具交互式删除 docker image。
+实在无法忍受先docker images，然后docker rmi的重复操作。 还比较原始，刚好够自己目前所需。
+想到交互式，是受ncdu的启发。ncdu命令是du命令的交互式版本。</description>
     </item>
     
   </channel>

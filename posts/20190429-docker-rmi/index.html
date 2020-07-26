@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html><head>
-<title>Impala</title>
+<title>rm docker image interactively</title>
 
 <meta charset="utf-8">
 <meta name="X-UA-Compatible" content="IE=edge">
@@ -45,11 +45,7 @@ if (!doNotTrack) {
 <script src="https://xujiahua.github.io//js/table.js"></script>
 
 
-<style>
-  .toc{
-    display: none !important;
-  }
-</style>
+<script src="https://xujiahua.github.io//js/toc.js"></script>
 
 
 <script>
@@ -78,9 +74,11 @@ if (!doNotTrack) {
             
             
             
+                
             
             
-            <a class="a-block nav-link-item false" href="/posts">
+            
+            <a class="a-block nav-link-item active" href="/posts">
                 Archive
             </a>
             
@@ -98,11 +96,9 @@ if (!doNotTrack) {
             
             
             
-                
             
             
-            
-            <a class="a-block nav-link-item active" href="/tags">
+            <a class="a-block nav-link-item false" href="/tags">
                 Tags
             </a>
             
@@ -136,14 +132,17 @@ Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopene
     
 </div><div ref="extraContainer" class="extra-container">
     
+    <div class="toc animated-visibility" :class="{ invisible: scrollY <= 140 }">
+
+
+</div>
+    
     <div class="pagination">
         <a id="globalBackToTop" class="pagination-action animated-visibility" href="#top" :class="{ invisible: scrollY == 0 }">
             <i class="material-icons pagination-action-icon">
                 keyboard_arrow_up
             </i>
         </a>
-        
-        
         
     </div>
 </div><div class="single-column-drawer-container" ref="drawer"
@@ -155,9 +154,11 @@ Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopene
                 
                 
                 
+                    
                 
                 
-                <a class="a-block drawer-menu-item false" href="/posts">
+                
+                <a class="a-block drawer-menu-item active" href="/posts">
                     Archive
                 </a>
                 
@@ -175,11 +176,9 @@ Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopene
                 
                 
                 
-                    
                 
                 
-                
-                <a class="a-block drawer-menu-item active" href="/tags">
+                <a class="a-block drawer-menu-item false" href="/tags">
                     Tags
                 </a>
                 
@@ -194,6 +193,11 @@ Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopene
                 </a>
                 
             
+            
+            <div class="toc">
+
+
+</div>
             
         </div>
     </div>
@@ -225,111 +229,80 @@ Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopene
             <div id="content">
 <div ref="streamContainer" class="stream-container">
     <div class="post-list-container post-list-container-shadow">
-        <div class="post-item-wrapper post-item-wrapper-no-hover">
-            <div class="post-item post-item-no-gaps">
-                <div class="post-item-info-wrapper">
-                    <div class="post-item-title  post-item-title-small">
-                        <a href="https://xujiahua.github.io/">许嘉华的笔记</a> / Impala
-                    </div>
-                </div>
-            </div>
-        </div><a href="/posts/20200714-metabase-timezone/" class="a-block">
-            <div class="post-item-wrapper">
-                <div class="post-item post-item-no-gaps">
-                    <div class="post-item-info-wrapper">
-                        <div class="post-item-title">
-                            Metabase Impala Driver 时区问题
-                        </div>
-                        <div class="post-item-meta">
-                            Jul 14, 2020
+        <div class="post">
+            
+            
+            
 
-                            
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </a><a href="/posts/20200713-impala-timezone/" class="a-block">
-            <div class="post-item-wrapper">
-                <div class="post-item post-item-no-gaps">
-                    <div class="post-item-info-wrapper">
-                        <div class="post-item-title">
-                            Impala TIMESTAMP 时区处理
-                        </div>
-                        <div class="post-item-meta">
-                            Jul 13, 2020
+            <div class="post-head-wrapper-text-only"
+                 style="background-image: url('/')">
+                <div class="post-title">
+                    rm docker image interactively
+                    
+                    <div class="post-meta">
+                        
+                        <time itemprop="datePublished">
+                            2019-04-29 12:25
+                        </time>
+                        
 
-                            
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </a><a href="/posts/20200710-metabase-impala-driver/" class="a-block">
-            <div class="post-item-wrapper">
-                <div class="post-item post-item-no-gaps">
-                    <div class="post-item-info-wrapper">
-                        <div class="post-item-title">
-                            Metabase Impala Driver 0710更新日志
-                        </div>
-                        <div class="post-item-meta">
-                            Jul 10, 2020
+                        
 
+                        
+                            <i class="material-icons" style="">label</i>
                             
-                        </div>
+                                <a href="/tags/docker">docker</a>
+                                &nbsp;
+                            
+                        
                     </div>
                 </div>
             </div>
-        </a><a href="/posts/20200605-metabase-field-filter/" class="a-block">
-            <div class="post-item-wrapper">
-                <div class="post-item post-item-no-gaps">
-                    <div class="post-item-info-wrapper">
-                        <div class="post-item-title">
-                            Metabase 日期筛选控件实践
-                        </div>
-                        <div class="post-item-meta">
-                            Jun 5, 2020
+            
+            <div class="post-body-wrapper">
+                <div class="post-body">
+                    <p><a href="https://github.com/XUJiahua/dockerrmi">写了个工具</a>交互式删除 docker image。</p>
+<p><img src="../../images/show.gif" alt="demo"></p>
+<p>实在无法忍受先<code>docker images</code>，然后<code>docker rmi</code>的重复操作。
+还比较原始，刚好够自己目前所需。</p>
+<p>想到交互式，是受<code>ncdu</code>的启发。<code>ncdu</code>命令是<code>du</code>命令的交互式版本。</p>
 
-                            
-                        </div>
-                    </div>
+                    
+                    <HR width="100%" id="EOF">
+                    <p style="color:#777;">Last modified on 2019-04-29</p>
+                    
                 </div>
             </div>
-        </a><a href="/posts/20200528-metabase-impala-type/" class="a-block">
-            <div class="post-item-wrapper">
-                <div class="post-item post-item-no-gaps">
-                    <div class="post-item-info-wrapper">
-                        <div class="post-item-title">
-                            Metabase Impala Driver 0528更新日志
-                        </div>
-                        <div class="post-item-meta">
-                            May 28, 2020
+            
+            
+            <nav class="post-pagination">
 
-                            
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </a><a href="/posts/20200527-metabase-impala-driver/" class="a-block">
-            <div class="post-item-wrapper">
-                <div class="post-item post-item-no-gaps">
-                    <div class="post-item-info-wrapper">
-                        <div class="post-item-title">
-                            Metabase Impala Driver
-                        </div>
-                        <div class="post-item-meta">
-                            May 27, 2020
+                
+                <a class="newer-posts" href="https://xujiahua.github.io/posts/20191030-dcep-libra/">
+                    Next<br>数字货币资料整理：FB Libra，央行 DCEP
+                </a>
+                
+                
+                
+                <a class="older-posts" href="https://xujiahua.github.io/posts/20190325-blockchain-hackathon/">
+                    Previous<br>20190323黑客松总结
+                </a>
+                
+            </nav>
+            <div class="post-comment-wrapper">
+                
 
-                            
-                        </div>
-                    </div>
-                </div>
+
+
+
+
+
             </div>
-        </a></div>
+        </div>
+    </div>
 </div>
 
-            </div>
-
-
-<div id="single-column-footer">
+            </div><div id="single-column-footer">
 Hugo Theme <a href="https://github.com/amazingrise/hugo-theme-diary">Diary</a> by <a href="https://amazingrise.net">Rise</a>
 <br>
 Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopener">Makito</a>'s <a href="https://github.com/SumiMakito/hexo-theme-journal/" target="_blank" rel="noreferrer noopener">Journal.</a> <br>

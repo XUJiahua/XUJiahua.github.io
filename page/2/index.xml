@@ -1,8 +1,8 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>许嘉华的博客</title>
+    <title>许嘉华的笔记</title>
     <link>https://xujiahua.github.io/</link>
-    <description>Recent content on 许嘉华的博客</description>
+    <description>Recent content on 许嘉华的笔记</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
     <lastBuildDate>Fri, 24 Jul 2020 16:36:01 +0800</lastBuildDate>
@@ -17,7 +17,7 @@
         <pubDate>Fri, 29 May 2020 11:00:23 +0800</pubDate>
         
         <guid>https://xujiahua.github.io/posts/20200529-bi_project/</guid>
-        <description>许嘉华的博客 https://xujiahua.github.io/posts/20200529-bi_project/ -&lt;p&gt;分享下 4月、5月（特别是5月，5/1假期后基本上全身心投入）在忙的这个数据项目经历，工作面覆盖陪同拜访客户、开会、需求分析、提供方案、数据清洗、数据分析、数据基础设施的搭建开发、帮甲方IT调试代码等环节，累到头秃。&lt;/p&gt;
+        <description>许嘉华的笔记 https://xujiahua.github.io/posts/20200529-bi_project/ -&lt;p&gt;分享下 4月、5月（特别是5月，5/1假期后基本上全身心投入）在忙的这个数据项目经历，工作面覆盖陪同拜访客户、开会、需求分析、提供方案、数据清洗、数据分析、数据基础设施的搭建开发、帮甲方IT调试代码等环节，累到头秃。&lt;/p&gt;
 &lt;p&gt;（本文刻意隐去客户信息。）&lt;/p&gt;
 &lt;h2 id=&#34;需求背景&#34;&gt;需求背景&lt;/h2&gt;
 &lt;p&gt;客户需求是做一个聚合小程序（此处脑补下麦当劳的微信小程序「i麦当劳」），用于广告投放，比如微信系APP的弹屏广告。应用本身不复杂，只是罗列客户其他小程序、H5应用和一些广告链接，让用户选择。&lt;/p&gt;
@@ -137,7 +137,7 @@
         <pubDate>Thu, 28 May 2020 09:30:09 +0800</pubDate>
         
         <guid>https://xujiahua.github.io/posts/20200528-metabase-impala-type/</guid>
-        <description>许嘉华的博客 https://xujiahua.github.io/posts/20200528-metabase-impala-type/ -&lt;p&gt;体验过程中还是碰到不少问题。&lt;/p&gt;
+        <description>许嘉华的笔记 https://xujiahua.github.io/posts/20200528-metabase-impala-type/ -&lt;p&gt;体验过程中还是碰到不少问题。&lt;/p&gt;
 &lt;h2 id=&#34;1-timestamp-类型没有过滤器样式&#34;&gt;1. TIMESTAMP 类型没有过滤器样式&lt;/h2&gt;
 &lt;h3 id=&#34;现象&#34;&gt;现象&lt;/h3&gt;
 &lt;p&gt;&lt;img src=&#34;../../images/image-20200528173609294.png&#34; alt=&#34;image-20200528173609294&#34;&gt;&lt;/p&gt;
@@ -375,7 +375,7 @@
         <pubDate>Wed, 27 May 2020 12:16:36 +0800</pubDate>
         
         <guid>https://xujiahua.github.io/posts/20200527-metabase-impala-driver/</guid>
-        <description>许嘉华的博客 https://xujiahua.github.io/posts/20200527-metabase-impala-driver/ -&lt;p&gt;更新日志&lt;/p&gt;
+        <description>许嘉华的笔记 https://xujiahua.github.io/posts/20200527-metabase-impala-driver/ -&lt;p&gt;更新日志&lt;/p&gt;
 &lt;ol&gt;
 &lt;li&gt;&lt;a href=&#34;https://xujiahua.github.io/posts/20200528-metabase-impala-type/&#34;&gt;Metabase Impala Driver 0528更新日志&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;&lt;a href=&#34;https://xujiahua.github.io/posts/20200710-metabase-impala-driver/&#34;&gt;Metabase Impala Driver 0710更新日志&lt;/a&gt;&lt;/li&gt;
@@ -572,7 +572,7 @@ org.apache.hive/hive-jdbc &amp;quot;1.2.1&amp;quot;
         <pubDate>Thu, 14 May 2020 13:38:12 +0800</pubDate>
         
         <guid>https://xujiahua.github.io/posts/20200514-wx-avatar/</guid>
-        <description>许嘉华的博客 https://xujiahua.github.io/posts/20200514-wx-avatar/ -&lt;p&gt;项目需要基于头像、昵称对不同实体账号下的微信用户进行匹配。基于这个思路，打算先下载微信头像的图像，后计算其MD5，“单元测试”了下这个简单方法，结果惊人。&lt;/p&gt;
+        <description>许嘉华的笔记 https://xujiahua.github.io/posts/20200514-wx-avatar/ -&lt;p&gt;项目需要基于头像、昵称对不同实体账号下的微信用户进行匹配。基于这个思路，打算先下载微信头像的图像，后计算其MD5，“单元测试”了下这个简单方法，结果惊人。&lt;/p&gt;
 &lt;p&gt;同一个人的同一个头像链接返回的图像内容都不一样。内容不一样，MD5值也就不一样。&lt;/p&gt;
 &lt;p&gt;看来微信对我们这些拙劣的手段早有防备。&lt;/p&gt;
 &lt;h2 id=&#34;微信头像内容分析&#34;&gt;微信头像内容分析&lt;/h2&gt;
@@ -683,7 +683,7 @@ size_options &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; [
         <pubDate>Mon, 04 May 2020 13:11:09 +0800</pubDate>
         
         <guid>https://xujiahua.github.io/posts/20200504-hackintosh/</guid>
-        <description>许嘉华的博客 https://xujiahua.github.io/posts/20200504-hackintosh/ -&lt;p&gt;买了个 NUC8i5BEH 当玩具，不怎么折腾的方式体验下黑苹果。&lt;/p&gt;
+        <description>许嘉华的笔记 https://xujiahua.github.io/posts/20200504-hackintosh/ -&lt;p&gt;买了个 NUC8i5BEH 当玩具，不怎么折腾的方式体验下黑苹果。&lt;/p&gt;
 &lt;p&gt;&lt;img src=&#34;../../images/image-20200504145011481.png&#34; alt=&#34;image-20200504145011481&#34;&gt;&lt;/p&gt;
 &lt;h2 id=&#34;效果&#34;&gt;效果&lt;/h2&gt;
 &lt;p&gt;&lt;img src=&#34;../../images/image-20200504132303349.png&#34; alt=&#34;image-20200504132303349&#34;&gt;&lt;/p&gt;
@@ -778,7 +778,7 @@ size_options &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; [
         <pubDate>Tue, 21 Apr 2020 09:01:38 +0800</pubDate>
         
         <guid>https://xujiahua.github.io/posts/20200421-use-consul/</guid>
-        <description>许嘉华的博客 https://xujiahua.github.io/posts/20200421-use-consul/ -&lt;h2 id=&#34;简单介绍&#34;&gt;简单介绍&lt;/h2&gt;
+        <description>许嘉华的笔记 https://xujiahua.github.io/posts/20200421-use-consul/ -&lt;h2 id=&#34;简单介绍&#34;&gt;简单介绍&lt;/h2&gt;
 &lt;p&gt;hashicorp 对 Consul 的定位是服务间网络方案。&lt;/p&gt;
 &lt;blockquote&gt;
 &lt;p&gt;Consul is a service networking solution to connect and secure services across any runtime platform and public or private cloud. &lt;a href=&#34;https://www.consul.io/&#34;&gt;https://www.consul.io/&lt;/a&gt;&lt;/p&gt;
@@ -968,7 +968,7 @@ size_options &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; [
         <pubDate>Mon, 20 Apr 2020 14:12:38 +0800</pubDate>
         
         <guid>https://xujiahua.github.io/posts/20200420-use_etcd/</guid>
-        <description>许嘉华的博客 https://xujiahua.github.io/posts/20200420-use_etcd/ -&lt;h2 id=&#34;简介&#34;&gt;简介&lt;/h2&gt;
+        <description>许嘉华的笔记 https://xujiahua.github.io/posts/20200420-use_etcd/ -&lt;h2 id=&#34;简介&#34;&gt;简介&lt;/h2&gt;
 &lt;p&gt;取名有意思。Linux下的/etc目录放的是配置文件。etcd，etc代表配置，d代表distributed，代表分布式配置。&lt;/p&gt;
 &lt;p&gt;特点：&lt;/p&gt;
 &lt;ol&gt;
@@ -1047,7 +1047,7 @@ size_options &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; [
         <pubDate>Fri, 17 Apr 2020 16:09:28 +0800</pubDate>
         
         <guid>https://xujiahua.github.io/posts/20200417-kubernetes-configmap/</guid>
-        <description>许嘉华的博客 https://xujiahua.github.io/posts/20200417-kubernetes-configmap/ -&lt;h2 id=&#34;configmap-简介&#34;&gt;configmap 简介&lt;/h2&gt;
+        <description>许嘉华的笔记 https://xujiahua.github.io/posts/20200417-kubernetes-configmap/ -&lt;h2 id=&#34;configmap-简介&#34;&gt;configmap 简介&lt;/h2&gt;
 &lt;p&gt;官方介绍：使用 ConfigMap 配置 Pod  &lt;a href=&#34;https://kubernetes.io/zh/docs/tasks/configure-pod-container/configure-pod-configmap/&#34;&gt;https://kubernetes.io/zh/docs/tasks/configure-pod-container/configure-pod-configmap/&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt;他人总结：ConfigMap &lt;a href=&#34;https://jimmysong.io/kubernetes-handbook/concepts/configmap.html&#34;&gt;https://jimmysong.io/kubernetes-handbook/concepts/configmap.html&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt;稍微总结下：&lt;/p&gt;
@@ -1080,7 +1080,7 @@ size_options &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; [
         <pubDate>Fri, 17 Apr 2020 15:05:51 +0800</pubDate>
         
         <guid>https://xujiahua.github.io/posts/20200417-etcd_client/</guid>
-        <description>许嘉华的博客 https://xujiahua.github.io/posts/20200417-etcd_client/ -&lt;p&gt;使用 Consul 作为配置中心，按照官方的说法，没必要创建 &lt;code&gt;consul client&lt;/code&gt; 节点。那么直接连 &lt;code&gt;consul server&lt;/code&gt; 就好了。&lt;/p&gt;
+        <description>许嘉华的笔记 https://xujiahua.github.io/posts/20200417-etcd_client/ -&lt;p&gt;使用 Consul 作为配置中心，按照官方的说法，没必要创建 &lt;code&gt;consul client&lt;/code&gt; 节点。那么直接连 &lt;code&gt;consul server&lt;/code&gt; 就好了。&lt;/p&gt;
 &lt;blockquote&gt;
 &lt;p&gt;Running an agent is not required for discovering other services or getting/setting key/value data. The agent is responsible for health checking the services on the node as well as the node itself.&lt;/p&gt;
 &lt;p&gt;&lt;a href=&#34;https://www.consul.io/intro/index.html#basic-architecture-of-consul&#34;&gt;https://www.consul.io/intro/index.html#basic-architecture-of-consul&lt;/a&gt;&lt;/p&gt;
@@ -1110,7 +1110,7 @@ size_options &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; [
         <pubDate>Thu, 16 Apr 2020 11:33:18 +0800</pubDate>
         
         <guid>https://xujiahua.github.io/posts/20200416-cortex/</guid>
-        <description>许嘉华的博客 https://xujiahua.github.io/posts/20200416-cortex/ -&lt;h2 id=&#34;cortex-介绍&#34;&gt;Cortex 介绍&lt;/h2&gt;
+        <description>许嘉华的笔记 https://xujiahua.github.io/posts/20200416-cortex/ -&lt;h2 id=&#34;cortex-介绍&#34;&gt;Cortex 介绍&lt;/h2&gt;
 &lt;p&gt;官方网站：Deploy machine learning models in production &lt;a href=&#34;https://www.cortex.dev/&#34;&gt;https://www.cortex.dev/&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt;GitHub &lt;a href=&#34;https://github.com/cortexlabs/cortex&#34;&gt;https://github.com/cortexlabs/cortex&lt;/a&gt;&lt;/p&gt;
 &lt;blockquote&gt;

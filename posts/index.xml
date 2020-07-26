@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Posts on 许嘉华的博客</title>
+    <title>Posts on 许嘉华的笔记</title>
     <link>https://xujiahua.github.io/posts/</link>
-    <description>Recent content in Posts on 许嘉华的博客</description>
+    <description>Recent content in Posts on 许嘉华的笔记</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
     <lastBuildDate>Fri, 24 Jul 2020 16:36:01 +0800</lastBuildDate>
@@ -643,6 +643,17 @@ Linux上的ALS效果：
  DCEP：中国自己的数字货币 https://mp.weixin.qq.com/s?__biz=MzA5MDAxMjcwOQ==&amp;amp;mid=2447616917&amp;amp;idx=1&amp;amp;sn=73207944a32667c50ea12d65e209c4c8&amp;amp;chksm=840526dfb372afc947bf188f9154a37b773320a1ab3a2bb8de87fbe5b7a89b8c05934a100b2d&amp;amp;scene=0&amp;amp;xtrack=1  区块链的弱点（没法支持零售级别的交易）：
  并发性能低（可扩展性差），共识机制导致的天然劣势，所有节点一起竞争记账权，相当于堵死在一件事上了 存储的可扩展性差，这个只能定期archive历史数据来解决了。 安全性只保证了数据不会被篡改，至于匿名，通过大数据是可以破解的 没有原生的加密机制：公有链匿名性，通过大数据可以挖掘出真实身份 等待确认太慢，不适合日常使用 51%算力攻击  怎么思考区块链：
  去中心化？比中心化还要中心化。更集权。节点自己没法改。无法解决所有者作弊的问题，但对所有者（统治者）是利好的工具（赏味不足的说法，有道理） （IT上能）提升效率：一份数据在各个系统流转，那么这份数据就存在区块链数据库上就可以了。  </description>
+    </item>
+    
+    <item>
+      <title>rm docker image interactively</title>
+      <link>https://xujiahua.github.io/posts/20190429-docker-rmi/</link>
+      <pubDate>Mon, 29 Apr 2019 12:25:54 +0800</pubDate>
+      
+      <guid>https://xujiahua.github.io/posts/20190429-docker-rmi/</guid>
+      <description>写了个工具交互式删除 docker image。
+实在无法忍受先docker images，然后docker rmi的重复操作。 还比较原始，刚好够自己目前所需。
+想到交互式，是受ncdu的启发。ncdu命令是du命令的交互式版本。</description>
     </item>
     
     <item>

@@ -1,8 +1,8 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>许嘉华的博客</title>
+    <title>许嘉华的笔记</title>
     <link>https://xujiahua.github.io/</link>
-    <description>Recent content on 许嘉华的博客</description>
+    <description>Recent content on 许嘉华的笔记</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
     <lastBuildDate>Fri, 24 Jul 2020 16:36:01 +0800</lastBuildDate>
@@ -17,7 +17,7 @@
         <pubDate>Tue, 14 Apr 2020 09:53:35 +0800</pubDate>
         
         <guid>https://xujiahua.github.io/posts/20200414-k8s-logging/</guid>
-        <description>许嘉华的博客 https://xujiahua.github.io/posts/20200414-k8s-logging/ -&lt;h2 id=&#34;k8s-日志收集架构&#34;&gt;k8s 日志收集架构&lt;/h2&gt;
+        <description>许嘉华的笔记 https://xujiahua.github.io/posts/20200414-k8s-logging/ -&lt;h2 id=&#34;k8s-日志收集架构&#34;&gt;k8s 日志收集架构&lt;/h2&gt;
 &lt;p&gt;以下是比较一般、普适的架构。更多参考：Kubernetes 日志架构 &lt;a href=&#34;https://kubernetes.io/zh/docs/concepts/cluster-administration/logging/&#34;&gt;https://kubernetes.io/zh/docs/concepts/cluster-administration/logging/&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt;&lt;img src=&#34;../../images/logging-with-node-agent.png&#34; alt=&#34;使用节点日志记录代理&#34;&gt;&lt;/p&gt;
 &lt;ol&gt;
@@ -58,7 +58,7 @@
         <pubDate>Fri, 10 Apr 2020 16:41:53 +0800</pubDate>
         
         <guid>https://xujiahua.github.io/posts/20200410-metabase-spark-sql/</guid>
-        <description>许嘉华的博客 https://xujiahua.github.io/posts/20200410-metabase-spark-sql/ -&lt;p&gt;这是大数据 BI 平台的第二步，BI 工具的搭建。假设已经配置好 Spark SQL JDBC Server，并启用了Kerberos。参考  &lt;a href=&#34;https://xujiahua.github.io/posts/20200410-spark-thrift-server-cdh/&#34;&gt;https://xujiahua.github.io/posts/20200410-spark-thrift-server-cdh/&lt;/a&gt;&lt;/p&gt;
+        <description>许嘉华的笔记 https://xujiahua.github.io/posts/20200410-metabase-spark-sql/ -&lt;p&gt;这是大数据 BI 平台的第二步，BI 工具的搭建。假设已经配置好 Spark SQL JDBC Server，并启用了Kerberos。参考  &lt;a href=&#34;https://xujiahua.github.io/posts/20200410-spark-thrift-server-cdh/&#34;&gt;https://xujiahua.github.io/posts/20200410-spark-thrift-server-cdh/&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt;这里，我们选择了开源产品 Metabase。&lt;/p&gt;
 &lt;p&gt;最终，大数据 BI 平台，是由 1) 以Metabase作为BI可视化，2) 由HDFS（分布式文件存储） + parquet（列式数据存储格式）+ Hive metastore（SQL表结构信息维护） + Spark SQL（批处理引擎）组合的OLAP数据库组成。&lt;/p&gt;
 &lt;h2 id=&#34;metabase-简介&#34;&gt;Metabase 简介&lt;/h2&gt;
@@ -197,7 +197,7 @@ javax.security.sasl.SaslException: GSS initiate failed [Caused by GSSException: 
         <pubDate>Fri, 10 Apr 2020 10:07:16 +0800</pubDate>
         
         <guid>https://xujiahua.github.io/posts/20200410-spark-thrift-server-cdh/</guid>
-        <description>许嘉华的博客 https://xujiahua.github.io/posts/20200410-spark-thrift-server-cdh/ -&lt;p&gt;很遗憾，CDH版本的Spark阉割了Thrift Server。（可能与自家产品Impala有竞争关系的原因。）&lt;/p&gt;
+        <description>许嘉华的笔记 https://xujiahua.github.io/posts/20200410-spark-thrift-server-cdh/ -&lt;p&gt;很遗憾，CDH版本的Spark阉割了Thrift Server。（可能与自家产品Impala有竞争关系的原因。）&lt;/p&gt;
 &lt;p&gt;参考 &lt;a href=&#34;https://docs.cloudera.com/documentation/enterprise/6/6.3/topics/spark.html#spark__d99299e107&#34;&gt;https://docs.cloudera.com/documentation/enterprise/6/6.3/topics/spark.html#spark__d99299e107&lt;/a&gt;&lt;/p&gt;
 &lt;pre&gt;&lt;code&gt;# ll /opt/cloudera/parcels/CDH/lib/spark/sbin/
 total 84
@@ -450,7 +450,7 @@ kinit: Password incorrect while getting initial credentials
         <pubDate>Fri, 03 Apr 2020 15:43:07 +0800</pubDate>
         
         <guid>https://xujiahua.github.io/posts/20200403-docker-logging/</guid>
-        <description>许嘉华的博客 https://xujiahua.github.io/posts/20200403-docker-logging/ -&lt;p&gt;&lt;code&gt;docker logs&lt;/code&gt;， &lt;code&gt;kubectl logs&lt;/code&gt;能看到Docker容器的标准输出、标准错误，方便定位问题。而 &lt;code&gt;xxx logs&lt;/code&gt;之所以能看到，是因为标准输出、标准错误存储在每个容器独有的日志文件中。&lt;/p&gt;
+        <description>许嘉华的笔记 https://xujiahua.github.io/posts/20200403-docker-logging/ -&lt;p&gt;&lt;code&gt;docker logs&lt;/code&gt;， &lt;code&gt;kubectl logs&lt;/code&gt;能看到Docker容器的标准输出、标准错误，方便定位问题。而 &lt;code&gt;xxx logs&lt;/code&gt;之所以能看到，是因为标准输出、标准错误存储在每个容器独有的日志文件中。&lt;/p&gt;
 &lt;p&gt;另外日志量大了，用&lt;code&gt;docker logs&lt;/code&gt;看历史数据不大合适。我们就需要考虑将日志存储到日志中心去。&lt;/p&gt;
 &lt;p&gt;Docker默认支持如下日志驱动。有直接写文件的，有使用云服务的。下面简单介绍下。&lt;/p&gt;
 &lt;p&gt;&lt;img src=&#34;../../images/Screen-Shot-2017-09-11-at-3.08.50-PM.png&#34; alt=&#34;img&#34;&gt;&lt;/p&gt;
@@ -575,7 +575,7 @@ root@ubuntu-parallel:~# docker logs journald_logging_driver
         <pubDate>Thu, 02 Apr 2020 16:58:23 +0800</pubDate>
         
         <guid>https://xujiahua.github.io/posts/20200402-use-fluentd/</guid>
-        <description>许嘉华的博客 https://xujiahua.github.io/posts/20200402-use-fluentd/ -&lt;p&gt;以收集Docker容器日志的例子，介绍下Fluentd的用法。不考虑logstash，太占服务器资源了。&lt;/p&gt;
+        <description>许嘉华的笔记 https://xujiahua.github.io/posts/20200402-use-fluentd/ -&lt;p&gt;以收集Docker容器日志的例子，介绍下Fluentd的用法。不考虑logstash，太占服务器资源了。&lt;/p&gt;
 &lt;h2 id=&#34;安装-fluentd&#34;&gt;安装 Fluentd&lt;/h2&gt;
 &lt;p&gt;Ubuntu 18.04上的安装命令（https://docs.fluentd.org/installation/install-by-deb）：&lt;/p&gt;
 &lt;pre&gt;&lt;code&gt;root@ubuntu-parallel:~# curl -L https://toolbelt.treasuredata.com/sh/install-ubuntu-bionic-td-agent3.sh | sh
@@ -743,7 +743,7 @@ td-agent 30602 30596  9 17:10 ?        00:00:00 /opt/td-agent/embedded/bin/ruby 
         <pubDate>Wed, 01 Apr 2020 14:20:51 +0800</pubDate>
         
         <guid>https://xujiahua.github.io/posts/20200401-google-vision-api/</guid>
-        <description>许嘉华的博客 https://xujiahua.github.io/posts/20200401-google-vision-api/ -&lt;h2 id=&#34;目标&#34;&gt;目标&lt;/h2&gt;
+        <description>许嘉华的笔记 https://xujiahua.github.io/posts/20200401-google-vision-api/ -&lt;h2 id=&#34;目标&#34;&gt;目标&lt;/h2&gt;
 &lt;p&gt;业务上需要识别出文本、图像敏感内容，降低业务风险。&lt;/p&gt;
 &lt;p&gt;调用下云服务的产品。&lt;/p&gt;
 &lt;h2 id=&#34;google-cloud-platform&#34;&gt;Google Cloud Platform&lt;/h2&gt;
@@ -830,7 +830,7 @@ BenchmarkDetectSafeSearchForFile-8            &lt;span style=&#34;color:#ae81ff&
         <pubDate>Tue, 31 Mar 2020 09:53:05 +0800</pubDate>
         
         <guid>https://xujiahua.github.io/posts/20200331-use-docker-machine/</guid>
-        <description>许嘉华的博客 https://xujiahua.github.io/posts/20200331-use-docker-machine/ -&lt;h2 id=&#34;简介&#34;&gt;简介&lt;/h2&gt;
+        <description>许嘉华的笔记 https://xujiahua.github.io/posts/20200331-use-docker-machine/ -&lt;h2 id=&#34;简介&#34;&gt;简介&lt;/h2&gt;
 &lt;p&gt;Docker Machine lets you create Docker hosts on your computer, on cloud providers, and inside your own data center. It creates servers, installs Docker on them, then configures the Docker client to talk to them.&lt;/p&gt;
 &lt;p&gt;参考：&lt;/p&gt;
 &lt;ol&gt;
@@ -867,7 +867,7 @@ BenchmarkDetectSafeSearchForFile-8            &lt;span style=&#34;color:#ae81ff&
         <pubDate>Sat, 21 Mar 2020 14:10:40 +0800</pubDate>
         
         <guid>https://xujiahua.github.io/posts/20200321-docker-network/</guid>
-        <description>许嘉华的博客 https://xujiahua.github.io/posts/20200321-docker-network/ -&lt;p&gt;Docker网络非常值得学习。对Docker不熟的同学，建议先看一些入门资料。&lt;/p&gt;
+        <description>许嘉华的笔记 https://xujiahua.github.io/posts/20200321-docker-network/ -&lt;p&gt;Docker网络非常值得学习。对Docker不熟的同学，建议先看一些入门资料。&lt;/p&gt;
 &lt;h2 id=&#34;docker-学习资料&#34;&gt;Docker 学习资料&lt;/h2&gt;
 &lt;ol&gt;
 &lt;li&gt;Docker — 从入门到实践  &lt;a href=&#34;https://www.yuque.com/grasilife/docker&#34;&gt;https://www.yuque.com/grasilife/docker&lt;/a&gt;&lt;/li&gt;
@@ -1221,7 +1221,7 @@ root@node02:~# docker run -it busybox
         <pubDate>Fri, 20 Mar 2020 15:24:22 +0800</pubDate>
         
         <guid>https://xujiahua.github.io/posts/20200320-go-web-project/</guid>
-        <description>许嘉华的博客 https://xujiahua.github.io/posts/20200320-go-web-project/ -&lt;h2 id=&#34;常用开源库&#34;&gt;常用开源库&lt;/h2&gt;
+        <description>许嘉华的笔记 https://xujiahua.github.io/posts/20200320-go-web-project/ -&lt;h2 id=&#34;常用开源库&#34;&gt;常用开源库&lt;/h2&gt;
 &lt;h3 id=&#34;依赖包管理-go-modules&#34;&gt;依赖包管理 Go Modules&lt;/h3&gt;
 &lt;p&gt;Go Modules。Go 从1.11版本开始支持，Go 1.14被认为是生产可用了。个人用过最方便的Go依赖包管理工具了。&lt;/p&gt;
 &lt;p&gt;版本管理中维护 &lt;code&gt;go.mod&lt;/code&gt;/&lt;code&gt;go.sum&lt;/code&gt; 两个文件。&lt;/p&gt;
@@ -1415,7 +1415,7 @@ ENTRYPOINT [&amp;quot;./app&amp;quot;, &amp;quot;serve&amp;quot;]
         <pubDate>Thu, 12 Mar 2020 15:17:36 +0800</pubDate>
         
         <guid>https://xujiahua.github.io/posts/20200312-slash-in-url-path/</guid>
-        <description>许嘉华的博客 https://xujiahua.github.io/posts/20200312-slash-in-url-path/ -&lt;h2 id=&#34;问题描述&#34;&gt;问题描述&lt;/h2&gt;
+        <description>许嘉华的笔记 https://xujiahua.github.io/posts/20200312-slash-in-url-path/ -&lt;h2 id=&#34;问题描述&#34;&gt;问题描述&lt;/h2&gt;
 &lt;ol&gt;
 &lt;li&gt;有同事反馈Go项目的接口404了。看了下nginx日志，只有部分请求404了，404请求的显著特征是URL里有&lt;code&gt;%2F&lt;/code&gt;，也就是&lt;code&gt;/&lt;/code&gt;的转义。&lt;/li&gt;
 &lt;li&gt;接口定义是这样的：&lt;code&gt;/api/xxx/{mid}/{uid}&lt;/code&gt;。mid、uid是URL path的一部分。从现象来看，程序没处理好转义字符，因为多了一个path部分，路由不匹配了，404。&lt;/li&gt;

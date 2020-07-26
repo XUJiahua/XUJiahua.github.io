@@ -1,8 +1,8 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>许嘉华的博客</title>
+    <title>许嘉华的笔记</title>
     <link>https://xujiahua.github.io/</link>
-    <description>Recent content on 许嘉华的博客</description>
+    <description>Recent content on 许嘉华的笔记</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
     <lastBuildDate>Fri, 24 Jul 2020 16:36:01 +0800</lastBuildDate>
@@ -17,7 +17,7 @@
         <pubDate>Wed, 11 Mar 2020 11:25:09 +0800</pubDate>
         
         <guid>https://xujiahua.github.io/posts/20200311-patent/</guid>
-        <description>许嘉华的博客 https://xujiahua.github.io/posts/20200311-patent/ -&lt;p&gt;去年憋的一篇专利，到申请公布阶段了，算是去年研究区块链的副成果。https://patents.google.com/patent/CN110807211。整理下专利申请流程。&lt;/p&gt;
+        <description>许嘉华的笔记 https://xujiahua.github.io/posts/20200311-patent/ -&lt;p&gt;去年憋的一篇专利，到申请公布阶段了，算是去年研究区块链的副成果。https://patents.google.com/patent/CN110807211。整理下专利申请流程。&lt;/p&gt;
 &lt;p&gt;&lt;img src=&#34;../../images/01C8BAF0-B9C7-4F08-9575-38AF85AC4F14.png&#34; alt=&#34;01C8BAF0-B9C7-4F08-9575-38AF85AC4F14&#34;&gt;&lt;/p&gt;
 &lt;h2 id=&#34;专利申请流程&#34;&gt;专利申请流程&lt;/h2&gt;
 &lt;p&gt;主要流程如下图，来自网络。&lt;/p&gt;
@@ -46,7 +46,7 @@
         <pubDate>Tue, 10 Mar 2020 11:24:49 +0800</pubDate>
         
         <guid>https://xujiahua.github.io/posts/20200310-github-pages-restart/</guid>
-        <description>许嘉华的博客 https://xujiahua.github.io/posts/20200310-github-pages-restart/ -&lt;h2 id=&#34;重新开始github-pages&#34;&gt;重新开始GitHub pages&lt;/h2&gt;
+        <description>许嘉华的笔记 https://xujiahua.github.io/posts/20200310-github-pages-restart/ -&lt;h2 id=&#34;重新开始github-pages&#34;&gt;重新开始GitHub pages&lt;/h2&gt;
 &lt;p&gt;曾使用&lt;code&gt;GitHub pages&lt;/code&gt; + &lt;code&gt; jekyll&lt;/code&gt; 写过一段时间博客，没啥营养。&lt;/p&gt;
 &lt;p&gt;打算重新开始：&lt;/p&gt;
 &lt;ol&gt;
@@ -149,7 +149,7 @@ hugo -D
         <pubDate>Tue, 03 Mar 2020 22:13:23 +0800</pubDate>
         
         <guid>https://xujiahua.github.io/posts/20200323-use-hyper-v/</guid>
-        <description>许嘉华的博客 https://xujiahua.github.io/posts/20200323-use-hyper-v/ -&lt;h2 id=&#34;hyper-v-使用体验&#34;&gt;Hyper-V 使用体验&lt;/h2&gt;
+        <description>许嘉华的笔记 https://xujiahua.github.io/posts/20200323-use-hyper-v/ -&lt;h2 id=&#34;hyper-v-使用体验&#34;&gt;Hyper-V 使用体验&lt;/h2&gt;
 &lt;p&gt;Hyper-V是 Windows10 内置的虚拟机软件，没想到我会用到它。&lt;/p&gt;
 &lt;h3 id=&#34;为什么要用hyper-v&#34;&gt;为什么要用Hyper-V&lt;/h3&gt;
 &lt;ol&gt;
@@ -251,7 +251,7 @@ hugo -D
         <pubDate>Fri, 28 Feb 2020 15:05:18 +0800</pubDate>
         
         <guid>https://xujiahua.github.io/posts/20200228-go-modules/</guid>
-        <description>许嘉华的博客 https://xujiahua.github.io/posts/20200228-go-modules/ -&lt;p&gt;Go Modules使用着感觉不错，Go终于有正常点的依赖管理工具了。记录一二。&lt;/p&gt;
+        <description>许嘉华的笔记 https://xujiahua.github.io/posts/20200228-go-modules/ -&lt;p&gt;Go Modules使用着感觉不错，Go终于有正常点的依赖管理工具了。记录一二。&lt;/p&gt;
 &lt;h2 id=&#34;使用小结&#34;&gt;使用小结&lt;/h2&gt;
 &lt;ol&gt;
 &lt;li&gt;go.mod, go.sum加入版本管理 Both go.mod and go.sum should be checked into version control.&lt;/li&gt;
@@ -282,7 +282,7 @@ export GOPROXY=https://goproxy.io
         <pubDate>Sat, 22 Feb 2020 23:32:14 +0800</pubDate>
         
         <guid>https://xujiahua.github.io/posts/20200222-5g/</guid>
-        <description>许嘉华的博客 https://xujiahua.github.io/posts/20200222-5g/ -&lt;p&gt;去年11月尝鲜，买了个三星5G手机。找基站测5G速度成了刚买时候的乐趣。用了几个月，深感5G功能很鸡肋，5G基站太少。&lt;/p&gt;
+        <description>许嘉华的笔记 https://xujiahua.github.io/posts/20200222-5g/ -&lt;p&gt;去年11月尝鲜，买了个三星5G手机。找基站测5G速度成了刚买时候的乐趣。用了几个月，深感5G功能很鸡肋，5G基站太少。&lt;/p&gt;
 &lt;p&gt;这两天翻了好多知乎上关于5G的评论，对5G的概念、应用场景有了些厘清。&lt;/p&gt;
 &lt;h2 id=&#34;基本概念&#34;&gt;基本概念&lt;/h2&gt;
 &lt;ol&gt;
@@ -343,7 +343,7 @@ export GOPROXY=https://goproxy.io
         <pubDate>Tue, 11 Feb 2020 14:34:27 +0800</pubDate>
         
         <guid>https://xujiahua.github.io/posts/20200211-recsys-implicit/</guid>
-        <description>许嘉华的博客 https://xujiahua.github.io/posts/20200211-recsys-implicit/ -&lt;h2 id=&#34;简介&#34;&gt;简介&lt;/h2&gt;
+        <description>许嘉华的笔记 https://xujiahua.github.io/posts/20200211-recsys-implicit/ -&lt;h2 id=&#34;简介&#34;&gt;简介&lt;/h2&gt;
 &lt;p&gt;Implicit是一个推荐系统协同过滤库。所谓协同过滤，只用到了user、item的ID和user、item交互后的评分（或是某个度量）。&lt;/p&gt;
 &lt;p&gt;GitHub：https://github.com/benfred/implicit&lt;/p&gt;
 &lt;h2 id=&#34;安装&#34;&gt;安装&lt;/h2&gt;
@@ -403,7 +403,7 @@ export GOPROXY=https://goproxy.io
         <pubDate>Sat, 23 Nov 2019 16:13:01 +0800</pubDate>
         
         <guid>https://xujiahua.github.io/posts/20191123-ebay-bigdata-techday/</guid>
-        <description>许嘉华的博客 https://xujiahua.github.io/posts/20191123-ebay-bigdata-techday/ -&lt;p&gt;（笔记迁移 @ 2020年）&lt;/p&gt;
+        <description>许嘉华的笔记 https://xujiahua.github.io/posts/20191123-ebay-bigdata-techday/ -&lt;p&gt;（笔记迁移 @ 2020年）&lt;/p&gt;
 &lt;p&gt;现场听了下eBay大数据的分享。视频/PPT &lt;a href=&#34;https://www.slidestalk.com/ebay&#34;&gt;https://www.slidestalk.com/ebay&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt;总体感觉，很棒。&lt;/p&gt;
 &lt;ol&gt;
@@ -466,7 +466,7 @@ export GOPROXY=https://goproxy.io
         <pubDate>Thu, 31 Oct 2019 15:22:33 +0800</pubDate>
         
         <guid>https://xujiahua.github.io/posts/20191031-quantum-computer/</guid>
-        <description>许嘉华的博客 https://xujiahua.github.io/posts/20191031-quantum-computer/ -&lt;p&gt;（笔记迁移 @ 2020年）&lt;/p&gt;
+        <description>许嘉华的笔记 https://xujiahua.github.io/posts/20191031-quantum-computer/ -&lt;p&gt;（笔记迁移 @ 2020年）&lt;/p&gt;
 &lt;p&gt;主要讲了密码学怎么来应对量子计算。量子计算的并行性（N个量子位，能&lt;strong&gt;同时&lt;/strong&gt;表示2^N个数字，而同样的比特位，同时只能表示一个2^N以内的数字。太神奇了），将以前指数级别的破解难度降低为了线性级别。RSA、ECC等现代密码学技术都会被轻易攻破。&lt;/p&gt;
 &lt;p&gt;量子计算机的历史：&lt;/p&gt;
 &lt;ol&gt;
@@ -507,7 +507,7 @@ export GOPROXY=https://goproxy.io
         <pubDate>Wed, 30 Oct 2019 15:31:21 +0800</pubDate>
         
         <guid>https://xujiahua.github.io/posts/20191030-dcep-libra/</guid>
-        <description>许嘉华的博客 https://xujiahua.github.io/posts/20191030-dcep-libra/ -&lt;p&gt;（笔记迁移 @ 2020年）&lt;/p&gt;
+        <description>许嘉华的笔记 https://xujiahua.github.io/posts/20191030-dcep-libra/ -&lt;p&gt;（笔记迁移 @ 2020年）&lt;/p&gt;
 &lt;p&gt;资料：&lt;/p&gt;
 &lt;ol&gt;
 &lt;li&gt;「区块链到底能干嘛」，赏味不足，梁杰ggtalk博客&lt;/li&gt;
@@ -555,72 +555,17 @@ export GOPROXY=https://goproxy.io
     
     
         <item>
-        <title>20190323黑客松总结</title>
-        <link>https://xujiahua.github.io/posts/20190325-blockchain-hackathon/</link>
-        <pubDate>Mon, 25 Mar 2019 10:45:59 +0800</pubDate>
+        <title>rm docker image interactively</title>
+        <link>https://xujiahua.github.io/posts/20190429-docker-rmi/</link>
+        <pubDate>Mon, 29 Apr 2019 12:25:54 +0800</pubDate>
         
-        <guid>https://xujiahua.github.io/posts/20190325-blockchain-hackathon/</guid>
-        <description>许嘉华的博客 https://xujiahua.github.io/posts/20190325-blockchain-hackathon/ -&lt;h2 id=&#34;过程&#34;&gt;过程&lt;/h2&gt;
-&lt;p&gt;比赛背景见 &lt;a href=&#34;https://www.tuoniaox.com/news/p-327352.html&#34;&gt;https://www.tuoniaox.com/news/p-327352.html&lt;/a&gt; 。
-打算从几个角度来讲下这个比赛过程。&lt;/p&gt;
-&lt;h3 id=&#34;关于团队&#34;&gt;关于团队&lt;/h3&gt;
-&lt;p&gt;我们公司3人（我、洪敏、天宇）参加比赛，都是开发背景。
-主办方根据协调，一位来自台湾的社交方向创业者参加进来，英语演讲不错，技术会一点，有过hackathon经验。
-比赛当天晚些时候，又有一位金融领域的伙伴加入进来，报名晚了，当时还没分配到队伍。
-&lt;em&gt;本来还有一位以太坊开发背景的参加，但是比赛当天还在加班。&lt;/em&gt;
-最终是一支5人小组。&lt;/p&gt;
-&lt;h3 id=&#34;产品设计&#34;&gt;产品设计&lt;/h3&gt;
-&lt;p&gt;团队主体是我们公司三人，花了比较多的时间在选题和创意设计。有想过比如聊天工具、抽奖工具，感觉都一般。我们的眼界还是比较狭窄。&lt;/p&gt;
-&lt;p&gt;主办方提供了多个topic，我们选了这个方向——了解客户（KYC）规则 Know-your-customer。因为这块涉及到用户身份，感觉能套在很多场景。&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;比赛前一天（周五）定了一个政府中心化KYC数据库的方案，区块链用于授权与审计用。&lt;/li&gt;
-&lt;li&gt;比赛当天清晨，改为去中心化的KYC方案，只有企业和用户，IPFS作为去中心化的存储，数据安全由公钥加密保证。区块链同样是用于授权、审计，和存储文件HASH。&lt;/li&gt;
-&lt;li&gt;主办方宣讲完毕，与其他组员REVIEW，一致用去中心化的方案，更贴比赛。这个作为我们的基础模型。&lt;/li&gt;
-&lt;li&gt;从B2C扩展到B2B，比如银行怎么Know一家向他借钱的酒店或是房屋租赁公司。引入IoT、智能设备采集真实入住率。通过合约，智能设备与C端用户交互，保证真实性。这里，区块链用于一份难以篡改的数据库，可以看出酒店的经营事件。&lt;/li&gt;
-&lt;li&gt;分工：我们公司3人开发，他们2人准备演示材料。&lt;/li&gt;
-&lt;/ol&gt;
-&lt;h3 id=&#34;技术实现&#34;&gt;技术实现&lt;/h3&gt;
-&lt;p&gt;我们没有实际的以太坊开发经验。所以，趟了很多坑，绕了很多弯路。低估了技术复杂度。按时间线：&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;当天下午，分析技术提供方提供的SDK（Go），是scryinfo的两个合约封装，一个是数据交换，一个是token交换。没法涵盖我们的设计场景，必须写自己的智能合约。&lt;/li&gt;
-&lt;li&gt;智能合约开发很顺利，使用remix+metaMask这个组合。&lt;/li&gt;
-&lt;li&gt;开始翻车之旅。&lt;/li&gt;
-&lt;li&gt;前端使用web3无法调用合约，还有web3js的版本问题、下载问题。&lt;/li&gt;
-&lt;li&gt;使用infura.io提供的免费的以太坊节点服务，发现有些方法没有开放。&lt;/li&gt;
-&lt;li&gt;连入主办方提供的以太坊节点，面对跨域（可解决）、还有一些新问题。&lt;/li&gt;
-&lt;li&gt;尝试同步一个以太坊测试节点，一个节点需要100G空间，时间和空间都没法满足。&lt;/li&gt;
-&lt;li&gt;翻阅SDK源码，尝试套用SDK中使用Go来包装智能合约调用的方式来调用我们的合约。执行合约方法进入无限等待。找SDK提供者一起review代码，也是无解。本以为翻车到此为止，能360度翻回正常轨道。&lt;/li&gt;
-&lt;li&gt;最后又想起创建一个私有链。但时间上不允许了。&lt;/li&gt;
-&lt;li&gt;紧急魔改代码，用于作品演示。&lt;/li&gt;
-&lt;li&gt;UI设计因为时间问题，比较粗暴。&lt;/li&gt;
-&lt;li&gt;第二天下午2点前，提交了代码。&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;技术上最大的问题，是应用无法调用合约。很多东西都是现学。
-为此，我们几位就睡了几个小时。少壮不努力，老大徒伤悲。留下没有技术的泪水。&lt;/p&gt;
-&lt;h3 id=&#34;展示&#34;&gt;展示&lt;/h3&gt;
-&lt;p&gt;因为评委主要是日本人，演讲全程需要英文。
-台湾小伙上，讲了一个故事：&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;以自己是一个开酒店的入题。&lt;/li&gt;
-&lt;li&gt;基于区块链的KYC解决了C端和B端重复繁琐的资料登记过程。&lt;/li&gt;
-&lt;li&gt;酒店初创，需要银行贷款，利用IoT+区块链和扩展的KYC应用，公开经营状况。解决银行对初创酒店的数据信任问题。&lt;/li&gt;
-&lt;li&gt;演讲中，意思表达还是有点折扣。不过，已经非常自然了。&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/WechatIMG2.jpeg&#34; alt=&#34;WechatIMG2&#34;&gt;
-&lt;em&gt;主办方整理的信息图&lt;/em&gt;&lt;/p&gt;
-&lt;p&gt;为了能增加亮点，金融小伙，拿来了之前准备好的树莓派和门锁，放入了演示环节。但是演示过程中，台上调试设备花了些时间，尴尬了几分钟。主持人马上与观众进入互动，避免令人窒息的安静。然后这个智能设备的演示也失败了，我们是唯一这么尴尬的小组。&lt;/p&gt;
-&lt;p&gt;这个过程，技术并不重要，合约没调通这个事情显得没那么严重了。重要的是演讲能力、演示效果。重要的是，打动用户，让自己的作品被理解。&lt;/p&gt;
-&lt;h2 id=&#34;总结&#34;&gt;总结&lt;/h2&gt;
-&lt;p&gt;在最后的环节，我们也看到了其他队伍的演讲演示。准备得非常充分，都是有备而来，有非常酷的PPT、还有成型的app供下载、非常流畅自然的英文演讲、更贴合主办方业务的产品设计。没有得奖，心服口服。&lt;/p&gt;
-&lt;p&gt;功在平时，厚积才能薄发。如果要赢，一定做好充足准备。需要做好这些准备：&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;痛点的定位。不能为技术而技术。&lt;/li&gt;
-&lt;li&gt;技术储备。&lt;/li&gt;
-&lt;li&gt;sales的能力。&lt;/li&gt;
-&lt;li&gt;英语。&lt;/li&gt;
-&lt;li&gt;最最重要的，还是teamwork，我们需要培育一个更强大的团队。&lt;/li&gt;
-&lt;/ol&gt;
-- https://xujiahua.github.io/posts/20190325-blockchain-hackathon/ - </description>
+        <guid>https://xujiahua.github.io/posts/20190429-docker-rmi/</guid>
+        <description>许嘉华的笔记 https://xujiahua.github.io/posts/20190429-docker-rmi/ -&lt;p&gt;&lt;a href=&#34;https://github.com/XUJiahua/dockerrmi&#34;&gt;写了个工具&lt;/a&gt;交互式删除 docker image。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/show.gif&#34; alt=&#34;demo&#34;&gt;&lt;/p&gt;
+&lt;p&gt;实在无法忍受先&lt;code&gt;docker images&lt;/code&gt;，然后&lt;code&gt;docker rmi&lt;/code&gt;的重复操作。
+还比较原始，刚好够自己目前所需。&lt;/p&gt;
+&lt;p&gt;想到交互式，是受&lt;code&gt;ncdu&lt;/code&gt;的启发。&lt;code&gt;ncdu&lt;/code&gt;命令是&lt;code&gt;du&lt;/code&gt;命令的交互式版本。&lt;/p&gt;
+- https://xujiahua.github.io/posts/20190429-docker-rmi/ - </description>
         </item>
     
     
