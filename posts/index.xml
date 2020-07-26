@@ -737,5 +737,24 @@ wrk -t2 -c100 -d30s -R2000 http://127.</description>
  服务器的配置（包括软件安装）可以做到脚本化、版本控制 —— 服务器的配置应该像源代码一样控制起来，而不是一个黑盒、或是随意性太多，比如redis的安装路径都不一样、测试环境与生产环境的nginx配置不一样。服务器部署文档并没有脚本那么精确，只能算是一份人工操作指南，程序员重复劳动太多 适合一套架构需要部署几个环境的场景 —— 比如支付宝国际项目需要一套独立后端系统的需求 服务器需要水平扩展，无需人工一台台处理 —— 构建一些应用服务器，将应用服务器加入到nginx load balancer里，都是可以脚本化的（包含在滚动部署里了） 应用部署、滚动部署 —— 云收银的部署，感觉有点奇怪，发布的时候需要重新编译一遍程序，两台生产服务器就需要编译两次。虽然部署有脚本，但还是有手工处理的场景。部署没问题的前提是程序员没有checkout错git分支。觉得这个没必要。测试通过，生产环境就直接用测试环境的包，除了配置。这个可以结合jenkins做到的，发布测试环境的同时构建一个生产的包。测试人员验收通过测试包，发布时就用对应的生产包 快速构建一套测试环境 —— 如何构建一套mongo集群？测试有这样的需求，刚入职的同事都有这样的需求 进程监控是否存在 —— 写好进程检查脚本，通过ansible脚本定时执行就能看到结果了  滚动部署，就是个循环 for i in webservers: for j in nginxservers: remove i from load balancer // wait for a while until webserver i finish processing requests sleep(1 * minute) deploy(i) for j in nginxservers: add i from load balancer Jenkins 真正考虑要搭个Jenkins，是因为Android打包太慢了、测试催着开发要最新的测试包。</description>
     </item>
     
+    <item>
+      <title>Android热更新框架的使用</title>
+      <link>https://xujiahua.github.io/posts/20170408-android-hot-update/</link>
+      <pubDate>Sat, 08 Apr 2017 11:45:49 +0800</pubDate>
+      
+      <guid>https://xujiahua.github.io/posts/20170408-android-hot-update/</guid>
+      <description>一个伪需求 Android热更新框架听的多了，真正开始用是因为组织突发奇想，说能否在智能POS上做个应用／插件，让开发者不改一行代码就能支持做扫码交易了。
+智能POS其实就是带刷卡槽，芯片插卡槽，NFC读卡器的Android系统。
+看完需求后，感觉意义不大啊，都是Android系统了，加个扫码模块很难么，对一个Android程序员，分分钟集成一个这是基本素养了。有点伪需求的味道。
+好奇心 不管是不是伪需求，还是激发了我的好奇心，有趣，如果做，该怎么做。有想过让硬件供应商协助下，能否在SDK上开个口，但想想还是算了，成本有点高。
+交代下，后端提供了套规范，终端将条码信息转成卡号和二磁道信息，后端就能转回条码，发往微信、支付宝。所以无论是刷卡交易还是条码交易，对终端来说，请求报文可以做到是一套规范。
+自然就想到了方法劫持的思路，打开刷卡器方法变成打开摄像头，读磁道信息方法变成读取扫描到的条码，这样用户真不用改什么代码了。说到方法劫持，就要指望Android的热更新框架了。
+Android热更新框架 Android的热更新框架一般都是阿里系、腾讯系的作品。可能是他们的apk包实在很大吧。相比我们的应用只有几M。 收集了些资料，简单对比了下。个人没有每个都实践过。
+回到需求上来，我们需要的是一个能够即时生效的框架。目前用了下Dexposed，因为编程方式比较方便。 Dexposed的感受，Android 4.x Dalvik虚拟机上基本算是完美了，但是ART虚拟机就不适配了。也是Dexposed被弃用的原因。AndFix延续了Dexposed。
+因为使用Dexposed，第一版，只能用在Android 4.x上，这周演示效果良好。有机会再做下Android 5.x的兼容。
+最后产品还是要让开发者动代码，加一行代码。因为这些热更新框架没有哪个是能劫持其他APP方法的。
+小想法，Dexposed/AndFix这个套路修复问题，以后估计会越来越难做，Android 7.x都已经支持JIT了，将Java代码编译到了本地代码，还怎么劫持Java方法呢，跑的都是本地代码了。</description>
+    </item>
+    
   </channel>
 </rss>
