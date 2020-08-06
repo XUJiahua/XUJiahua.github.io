@@ -75,6 +75,15 @@
 &lt;li&gt;The data science team at an E-commerce site is using Ray Serve to gain full control of the models from development to deployment. Ray Serve helps them gain visibility into the serving process as well as reducing costs by batching on GPUs. Additionally, machine learning models are typically not deployed individuality. Ray Serve enables them to easily &lt;a href=&#34;https://docs.ray.io/en/master/serve/advanced.html#composing-multiple-models&#34;&gt;compose models&lt;/a&gt; together.&lt;/li&gt;
 &lt;/ul&gt;
 &lt;/blockquote&gt;
+&lt;p&gt;&lt;a href=&#34;https://medium.com/distributed-computing-with-ray/the-simplest-way-to-serve-your-nlp-model-in-production-with-pure-python-d42b6a97ad55&#34;&gt;The Simplest Way to Serve your NLP Model in Production with Pure Python&lt;/a&gt; 提到的 general-purpose ML serving infrastructure 的关键特质。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;We’ve concluded that there are several key properties for general-purpose ML serving infrastructure:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;Framework Agnostic&lt;/strong&gt; — Model serving frameworks must be able to serve &lt;a href=&#34;https://www.tensorflow.org/&#34;&gt;TensorFlow&lt;/a&gt;, &lt;a href=&#34;https://pytorch.org/&#34;&gt;PyTorch&lt;/a&gt;, &lt;a href=&#34;https://scikit-learn.org/stable/&#34;&gt;scikit-learn&lt;/a&gt;, or even arbitrary Python functions. Why? People use many different machine learning frameworks, and machine learning models are typically surrounded by lots of application logic. Limiting serving to a simple forward pass through a TensorFlow model is too restrictive. 支持各种框架，对框架没要求。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Pure Python&lt;/strong&gt; — Model serving should be intuitive for developers and dead simple to run. That means pure Python and no verbose configurations or yaml files. Developers use Python to develop their machine learning models, so they should also be able to use Python to deploy their machine learning applications. This is growing more critical as online learning applications combine training and serving in the same applications. 纯 Python 一把梭。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Simple &amp;amp; Scalable&lt;/strong&gt; — Model serving must be simple to scale out of the box across many machines along with simple ways of upgrading models over time. Achieving production uptime and performance requirements are essential for success. 非常容易可伸缩。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/blockquote&gt;
 - https://xujiahua.github.io/posts/20200806-machine-learning-serving-broken/ - </description>
         </item>
     
