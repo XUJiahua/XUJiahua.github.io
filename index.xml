@@ -5,9 +5,78 @@
     <description>Recent content on 许嘉华的笔记</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Fri, 24 Jul 2020 16:36:01 +0800</lastBuildDate>
+    <lastBuildDate>Thu, 06 Aug 2020 09:49:47 +0800</lastBuildDate>
     
         <atom:link href="https://xujiahua.github.io/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    
+        <item>
+        <title>【阅读】Machine Learning Serving Broken</title>
+        <link>https://xujiahua.github.io/posts/20200806-machine-learning-serving-broken/</link>
+        <pubDate>Thu, 06 Aug 2020 09:49:47 +0800</pubDate>
+        
+        <guid>https://xujiahua.github.io/posts/20200806-machine-learning-serving-broken/</guid>
+        <description>许嘉华的笔记 https://xujiahua.github.io/posts/20200806-machine-learning-serving-broken/ -&lt;p&gt;原文 &lt;a href=&#34;https://medium.com/distributed-computing-with-ray/machine-learning-serving-is-broken-f59aff2d607f&#34;&gt;Machine Learning Serving is Broken&lt;/a&gt; 是 &lt;a href=&#34;https://medium.com/distributed-computing-with-ray?source=post_page-----f59aff2d607f----------------------&#34;&gt;Distributed Computing with Ray&lt;/a&gt; 专栏文章，聊了机器学习模型的 Serving 问题，记录一二。&lt;/p&gt;
+&lt;p&gt;设立好机器学习目标后，从模型角度，机器学习整体可分这么2个阶段：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;模型的创建。模型训练 Training。包括训练数据准备，选择最好的模型（超参数调优）。&lt;/li&gt;
+&lt;li&gt;模型的使用。模型推理 Inference。也包括输入数据的准备。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;模型被使用，才是机器学习落地的开始。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/1*P_eJtjAZjntemqvLreZ8EA.jpeg&#34; alt=&#34;Image for post&#34;&gt;&lt;/p&gt;
+&lt;h3 id=&#34;wrap-your-model-in-flask&#34;&gt;Wrap Your Model in Flask&lt;/h3&gt;
+&lt;p&gt;机器学习模型一般使用 Python 开发，所以使用 Flask 是很自然就能想到的方案。&lt;/p&gt;
+&lt;p&gt;从 coding 角度，与传统的Web应用开发区别不大。把模型、数据库当做黑盒，开发只关心输入输出。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/1*boWvKC0jg5hrVv53icMwIg.png&#34; alt=&#34;Image for post&#34;&gt;&lt;/p&gt;
+&lt;p&gt;表面上是美好的。但是，机器学习 Serving 需要大内存加载模型，并且执行计算密集型任务。响应时间秒级，QPS 100+是常见的。下图比较的是单机与传统Web Serving的不同。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/1*TOFL3owzto7bD0o5K1AopQ.png&#34; alt=&#34;Image for post&#34;&gt;&lt;/p&gt;
+&lt;p&gt;解决方法也是有的，因为Model Serving本身是无状态的，很容易进行水平扩展。&lt;/p&gt;
+&lt;p&gt;使用 Flask 进行 Serving，给了模型的开发者很大的便利，同样的 Python 技术栈，Flask 学习成本又低，从模型开发到模型API化可以一人搞定。不同的机器学习模型的格式差异（ScikitLearn与TensorFlow的模型格式就迥异）统一使用HTTP协议抹平。性能问题也能通过水平扩展来解决。目前为止，Flask 方案表现良好。&lt;/p&gt;
+&lt;p&gt;原文指出如果 Model 扩展到了数百个，那就是数百个 * N的微服务，没有专职运维团队，开发团队是处理不过来的。个人认为这个问题应该是业务发展的技术阵痛，而不是Flask的问题呀。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;In the model serving scenario, each microservice only corresponds to one single model. A typical development team can manage tens of microservices but not hundreds of them without a large dedicated ops team.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h3 id=&#34;the-rise-of-specialized-systems&#34;&gt;The Rise of Specialized Systems&lt;/h3&gt;
+&lt;p&gt;模型Serving专用系统的崛起。比如 TensorFlow Serving，不过只能用于 TensorFlow 模型。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/1*MhAjfO4Wh5T8z-ex_oacOQ.png&#34; alt=&#34;Image for post&#34;&gt;&lt;/p&gt;
+&lt;p&gt;将计算转移到专用系统后，Flask coding 的逻辑就跟 Web 开发真没两样了，瓶颈问题都转移到专用系统了。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/1*VuHnQMYC-DCaGC4nG2g8CQ.png&#34; alt=&#34;Image for post&#34;&gt;&lt;/p&gt;
+&lt;p&gt;比起 Flask 包装模型的做法，Flask 应用对接 Model Serving 专用系统，需要适配专用系统的输入输出。比如对接TensorFlow Serving，其输入是一个多维数组，需要把原始请求做转换，第一次就做对是挺难的。没法复用模型训练用的数据预处理逻辑。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/1*0kaOHR4XK5qkJIBrvqA1gA.png&#34; alt=&#34;Image for post&#34;&gt;&lt;/p&gt;
+&lt;p&gt;模型开发者现在需要维护两个server：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;model server：部署模型的专用系统。&lt;/li&gt;
+&lt;li&gt;web server：输入数据准备，调用model server（不同接口做不同的适配）。（其中输入数据准备，要到什么程度呢，是调用方把数据都准备好，还是模型开发者去调用一些特征数据服务。这些模糊地带，每个公司可能都不一样。）&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;架构中多引入一层 Model Server，模型开发者的工作内容也发生了变化。原文指出这会给模型开发者带来 cognitive load（认知压力），引入了新的工作流程，还不顺手的那种。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Additionally, by adopting model servers, data scientists now have two problems: managing the model servers, and managing a web server that handles all the business logic. Even though the model servers might be managed by an infrastructure team, the data scientists still need to think about the featurization in the web server and the model logic in the model servers. This is a lot of cognitive load for the data scientists.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;也总结了一些Model Server的不足。TensorFlow Serving 只是 TensorFlow 模型的专用系统，不够通用。转化成统一的模型格式比如ONNX，可能会带来未知bug。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;ul&gt;
+&lt;li&gt;Framework lock-in: &lt;a href=&#34;https://www.tensorflow.org/tfx/guide/serving&#34;&gt;Tensorflow Serving&lt;/a&gt; and &lt;a href=&#34;https://pytorch.org/serve/&#34;&gt;TorchServe&lt;/a&gt; are specialized systems for each framework. Modern data science teams use the best tool at hand; this can mean a mix of &lt;a href=&#34;https://xgboost.readthedocs.io/en/latest/&#34;&gt;XGBoost&lt;/a&gt;, &lt;a href=&#34;https://scikit-learn.org/stable/&#34;&gt;scikit-learn&lt;/a&gt;, and deep learning frameworks. &lt;strong&gt;We need a system that can serve arbitrary python models.&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;Vendor lock-in: AWS SageMaker and the other cloud providers offer hosted ML serving solutions that wrap your models and deploy them for you. In addition, these hosted solutions don’t have a unified API. &lt;strong&gt;We need vendor neutral solutions that avoid cloud vendor lock-in&lt;/strong&gt;.&lt;/li&gt;
+&lt;li&gt;Training &amp;amp; serving divergence: There are other solutions that take a trained model and convert it to another format for serving, like ONNX, PMML, and NVIDIA TensorRT. But &lt;strong&gt;we want to&lt;/strong&gt; &lt;strong&gt;serve their models in the same framework that was used for training to avoid unknown bugs.&lt;/strong&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/blockquote&gt;
+&lt;h3 id=&#34;ray-serve&#34;&gt;Ray Serve&lt;/h3&gt;
+&lt;p&gt;总结前文中方案的不足。&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Wrap Your Model in Flask 模型太多不好维护（指的是开发团队自己维护）。希望部署、运维能简单。&lt;/li&gt;
+&lt;li&gt;Specialized Systems 引入了新系统，不单单是原来那套顺手的Python脚本了，给模型开发者带来了额外的工作量。希望沿用老的技术栈。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;两个希望就是 &lt;a href=&#34;https://docs.ray.io/en/master/serve/&#34;&gt;Ray Serve&lt;/a&gt; 的目标，遵从模型开发者的习惯，给模型开发者顺手的工具，衔接好训练和上线两个阶段，提高生产效率。&lt;/p&gt;
+&lt;p&gt;原文中的案例，iterating quickly without an ops team 说出了其精髓。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;ul&gt;
+&lt;li&gt;A computer vision startup is using Ray Serve to serve deep learning based computer vision models. The teams of data scientists are iterating quickly without an ops team. Ray Serve helps them to quickly deploy and scale their predictions.&lt;/li&gt;
+&lt;li&gt;The data science team at an E-commerce site is using Ray Serve to gain full control of the models from development to deployment. Ray Serve helps them gain visibility into the serving process as well as reducing costs by batching on GPUs. Additionally, machine learning models are typically not deployed individuality. Ray Serve enables them to easily &lt;a href=&#34;https://docs.ray.io/en/master/serve/advanced.html#composing-multiple-models&#34;&gt;compose models&lt;/a&gt; together.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/blockquote&gt;
+- https://xujiahua.github.io/posts/20200806-machine-learning-serving-broken/ - </description>
+        </item>
     
     
     
@@ -849,192 +918,6 @@ expect1
 &lt;h2 id=&#34;总结&#34;&gt;总结&lt;/h2&gt;
 &lt;p&gt;Metabase 的设计想的很周到，文档也很齐全。因为少看了点文档，走了些弯路。&lt;/p&gt;
 - https://xujiahua.github.io/posts/20200605-metabase-field-filter/ - </description>
-        </item>
-    
-    
-    
-        <item>
-        <title>使用 REPL 调试 Clojure 项目（Metabase）</title>
-        <link>https://xujiahua.github.io/posts/20200604-clojure-repl-debug/</link>
-        <pubDate>Thu, 04 Jun 2020 16:13:27 +0800</pubDate>
-        
-        <guid>https://xujiahua.github.io/posts/20200604-clojure-repl-debug/</guid>
-        <description>许嘉华的笔记 https://xujiahua.github.io/posts/20200604-clojure-repl-debug/ -&lt;h2 id=&#34;开发工具&#34;&gt;开发工具&lt;/h2&gt;
-&lt;h3 id=&#34;intellij-idea--cursive&#34;&gt;Intellij IDEA + Cursive&lt;/h3&gt;
-&lt;p&gt;安装 IDEA 社区版即可，并安装插件 Cursive。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image-20200604161831382.png&#34; alt=&#34;image-20200604161831382&#34;&gt;&lt;/p&gt;
-&lt;h4 id=&#34;cursive-插件按键冲突&#34;&gt;Cursive 插件按键冲突&lt;/h4&gt;
-&lt;p&gt;比如我会用组合键&lt;code&gt;⌘ + [&lt;/code&gt;浏览代码，与 Cursive 插件的按键冲突。可以取消 Cursive 的这个组合键。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image-20200604162732892.png&#34; alt=&#34;image-20200604162732892&#34;&gt;&lt;/p&gt;
-&lt;h3 id=&#34;emacs&#34;&gt;Emacs&lt;/h3&gt;
-&lt;p&gt;&lt;em&gt;Added 2020-07-10&lt;/em&gt;&lt;/p&gt;
-&lt;p&gt;参考：&lt;a href=&#34;https://www.braveclojure.com/basic-emacs/&#34;&gt;How to Use Emacs, an Excellent Clojure Editor&lt;/a&gt;&lt;/p&gt;
-&lt;p&gt;&lt;em&gt;实践&lt;code&gt;Metabase&lt;/code&gt;代码库失败：在REPL中执行(-main)直接挂了，待研究。TBD&lt;/em&gt;&lt;/p&gt;
-&lt;h2 id=&#34;实践&#34;&gt;实践&lt;/h2&gt;
-&lt;h3 id=&#34;metabase&#34;&gt;Metabase&lt;/h3&gt;
-&lt;p&gt;接触 Clojure 是因为 Metabase 这个项目 &lt;a href=&#34;https://github.com/metabase/metabase&#34;&gt;https://github.com/metabase/metabase&lt;/a&gt; 。以 Metabase 为例，说明如何调试 Clojure 项目。&lt;/p&gt;
-&lt;p&gt;Metabase 由前后端两部分组成，后端是由 Clojure 写的 REST API 项目。启动前端工程，需要在前端界面上触发 API 请求。&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;yarn build-hot
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;参考&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;Metabase developers-guide &lt;a href=&#34;https://github.com/metabase/metabase/blob/master/docs/developers-guide.md&#34;&gt;https://github.com/metabase/metabase/blob/master/docs/developers-guide.md&lt;/a&gt;&lt;/li&gt;
-&lt;/ol&gt;
-&lt;h3 id=&#34;repl-调试-clojure-项目&#34;&gt;REPL 调试 Clojure 项目&lt;/h3&gt;
-&lt;p&gt;新建一个 Clojure REPL 配置。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image-20200604163122517.png&#34; alt=&#34;image-20200604163122517&#34;&gt;&lt;/p&gt;
-&lt;p&gt;展开右下角的 REPL 子窗口，Run REPL for metabase-core。（注意，此时，项目中的 clojure namespace 并没有实际加载。代码编辑区运行 Clojure 函数，会报错，&lt;code&gt;Error: :namespace-not-found&lt;/code&gt;）&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image-20200604163823092.png&#34; alt=&#34;image-20200604163823092&#34;&gt;&lt;/p&gt;
-&lt;p&gt;metabase.core.clj 是整个项目的入口文件。执行 Load File in REPL。插件自动把所有 metabase.core 的依赖加载进 REPL 中。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image-20200604164551541.png&#34; alt=&#34;image-20200604164551541&#34;&gt;&lt;/p&gt;
-&lt;p&gt;Load 成功。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image-20200604165257244.png&#34; alt=&#34;image-20200604165257244&#34;&gt;&lt;/p&gt;
-&lt;p&gt;入口函数&lt;code&gt;-main&lt;/code&gt;并不会自动运行的。调用&lt;code&gt;-main&lt;/code&gt;并发送函数到 REPL 中执行。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image-20200604165642551.png&#34; alt=&#34;image-20200604165642551&#34;&gt;&lt;/p&gt;
-&lt;p&gt;print 调试，改完代码即可生效。如下，加入打印变量函数，执行&lt;code&gt;Load File in REPL&lt;/code&gt;/&lt;code&gt;Sync Files in REPL&lt;/code&gt;/&lt;code&gt;Send xxx to REPL&lt;/code&gt;让函数生效。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image-20200604171525496.png&#34; alt=&#34;image-20200604171525496&#34;&gt;&lt;/p&gt;
-&lt;h4 id=&#34;repl-会阻塞&#34;&gt;REPL 会阻塞&lt;/h4&gt;
-&lt;p&gt;会有发送函数到 REPL 中执行，而没有反应的情况。需要注意，REPL 会阻塞。&lt;/p&gt;
-&lt;p&gt;&lt;code&gt;(.join (server/instance)))&lt;/code&gt; Jetty Server 阻塞住当前线程。所以其他函数在 REPL 中被阻塞了。&lt;/p&gt;
-&lt;p&gt;Metabase 入口代码：&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-clojure&#34; data-lang=&#34;clojure&#34;&gt;(&lt;span style=&#34;color:#66d9ef&#34;&gt;defn- &lt;/span&gt;start-normally []
-  (&lt;span style=&#34;color:#a6e22e&#34;&gt;log/info&lt;/span&gt; (&lt;span style=&#34;color:#a6e22e&#34;&gt;trs&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Starting Metabase in STANDALONE mode&amp;#34;&lt;/span&gt;))
-  (&lt;span style=&#34;color:#a6e22e&#34;&gt;try&lt;/span&gt;
-    &lt;span style=&#34;color:#75715e&#34;&gt;;; launch embedded webserver async&lt;/span&gt;
-    (&lt;span style=&#34;color:#a6e22e&#34;&gt;server/start-web-server!&lt;/span&gt; handler/app)
-    &lt;span style=&#34;color:#75715e&#34;&gt;;; run our initialization process&lt;/span&gt;
-    (&lt;span style=&#34;color:#a6e22e&#34;&gt;init!&lt;/span&gt;)
-    &lt;span style=&#34;color:#75715e&#34;&gt;;; Ok, now block forever while Jetty does its thing&lt;/span&gt;
-    (when (&lt;span style=&#34;color:#a6e22e&#34;&gt;config/config-bool&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;:mb-jetty-join&lt;/span&gt;)
-      (&lt;span style=&#34;color:#a6e22e&#34;&gt;.join&lt;/span&gt; (&lt;span style=&#34;color:#a6e22e&#34;&gt;server/instance&lt;/span&gt;)))
-    (&lt;span style=&#34;color:#a6e22e&#34;&gt;catch&lt;/span&gt; Throwable e
-      (&lt;span style=&#34;color:#a6e22e&#34;&gt;log/error&lt;/span&gt; e (&lt;span style=&#34;color:#a6e22e&#34;&gt;trs&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Metabase Initialization FAILED&amp;#34;&lt;/span&gt;))
-      (&lt;span style=&#34;color:#a6e22e&#34;&gt;System/exit&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;))))
-
-(&lt;span style=&#34;color:#66d9ef&#34;&gt;defn &lt;/span&gt;-main
-  &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Launch Metabase in standalone mode.&amp;#34;&lt;/span&gt;
-  [&lt;span style=&#34;color:#f92672&#34;&gt;&amp;amp;&lt;/span&gt; [cmd &lt;span style=&#34;color:#f92672&#34;&gt;&amp;amp;&lt;/span&gt; args]]
-  (&lt;span style=&#34;color:#a6e22e&#34;&gt;maybe-enable-tracing&lt;/span&gt;)
-  (&lt;span style=&#34;color:#66d9ef&#34;&gt;if &lt;/span&gt;cmd
-    (&lt;span style=&#34;color:#a6e22e&#34;&gt;run-cmd&lt;/span&gt; cmd args) &lt;span style=&#34;color:#75715e&#34;&gt;; run a command like `java -jar metabase.jar migrate release-locks` or `lein run migrate release-locks`&lt;/span&gt;
-    (&lt;span style=&#34;color:#a6e22e&#34;&gt;start-normally&lt;/span&gt;))) &lt;span style=&#34;color:#75715e&#34;&gt;; with no command line args just start Metabase normally&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;解决办法，就是不要让代码阻塞住当前线程、REPL。&lt;/p&gt;
-&lt;p&gt;参考：&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;The Cursive REPL &lt;a href=&#34;https://cursive-ide.com/userguide/repl.html&#34;&gt;https://cursive-ide.com/userguide/repl.html&lt;/a&gt;&lt;/li&gt;
-&lt;/ol&gt;
-&lt;h4 id=&#34;metabase-run-with-repl&#34;&gt;metabase run-with-repl&lt;/h4&gt;
-&lt;p&gt;&lt;em&gt;Added 2020-07-10&lt;/em&gt;&lt;/p&gt;
-&lt;p&gt;Cursive中也支持指定Profiles。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image-20200710155103818.png&#34; alt=&#34;image-20200710155103818&#34;&gt;&lt;/p&gt;
-&lt;p&gt;这个profile的作用是设置&lt;code&gt;:mb-jetty-join&lt;/code&gt;为&lt;code&gt;false&lt;/code&gt;，不阻塞REPL主线程。另外启动&lt;code&gt;metabase.core/-main&lt;/code&gt;。&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-clojure&#34; data-lang=&#34;clojure&#34;&gt;project.clj
-
-...
-&lt;span style=&#34;color:#e6db74&#34;&gt;:run-with-repl&lt;/span&gt;
-   [&lt;span style=&#34;color:#e6db74&#34;&gt;:exclude-tests&lt;/span&gt;
-    &lt;span style=&#34;color:#e6db74&#34;&gt;:include-all-drivers&lt;/span&gt;
-
-    {&lt;span style=&#34;color:#e6db74&#34;&gt;:env&lt;/span&gt;
-     {&lt;span style=&#34;color:#e6db74&#34;&gt;:mb-jetty-join&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;false&amp;#34;&lt;/span&gt;}
-
-     &lt;span style=&#34;color:#e6db74&#34;&gt;:repl-options&lt;/span&gt;
-     {&lt;span style=&#34;color:#e6db74&#34;&gt;:init&lt;/span&gt;    (&lt;span style=&#34;color:#66d9ef&#34;&gt;do &lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;require&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;metabase.core&lt;/span&gt;)
-                   (&lt;span style=&#34;color:#a6e22e&#34;&gt;metabase.core/-main&lt;/span&gt;))
-      &lt;span style=&#34;color:#e6db74&#34;&gt;:timeout&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;60000&lt;/span&gt;}}]
-...
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;这种方式有一个缺点，&lt;code&gt;modules/drivers&lt;/code&gt;下的（源码）驱动并不会成功加载，调试&lt;code&gt;src/&lt;/code&gt;目录下的源码是没问题的。具体报错如下：（其中impala是driver名字）&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;Could not locate metabase/driver/impala__init.class, metabase/driver/impala.clj or metabase/driver/impala.cljc on classpath.&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;p&gt;试验了下，&lt;code&gt;plugins&lt;/code&gt;目录下的driver是可以成功加载的。&lt;/p&gt;
-&lt;p&gt;开发模式下，按照加载机制，如果&lt;code&gt;plugins&lt;/code&gt;下的driver与&lt;code&gt;modules/drivers&lt;/code&gt;下的driver重名，会被后者覆盖掉。其实这是个bug，值没取对，导致两个目录下的同一个driver，重复加载并覆盖。（之前还好奇为何要加载两遍driver）&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image-20200710160645843.png&#34; alt=&#34;image-20200710160645843&#34;&gt;&lt;/p&gt;
-&lt;p&gt;总结，目前使用这种配置，调试&lt;code&gt;Metabase&lt;/code&gt;核心包是没问题的，plugin driver建议放到&lt;code&gt;plugins&lt;/code&gt;目录。Root Cause？&lt;/p&gt;
-&lt;p&gt;不用&lt;code&gt;Cursive&lt;/code&gt;，直接运行&lt;code&gt;lein run-with-repl&lt;/code&gt;可以自然加载&lt;code&gt;modules/drivers&lt;/code&gt;下的driver源码。&lt;/p&gt;
-&lt;h4 id=&#34;metabase-remote-repl&#34;&gt;Metabase Remote REPL&lt;/h4&gt;
-&lt;p&gt;&lt;em&gt;Added 2020-07-10&lt;/em&gt;&lt;/p&gt;
-&lt;p&gt;命令行中，&lt;code&gt;lein run-with-repl&lt;/code&gt; Lein REPL会在本地生成一个&lt;code&gt;.nrepl-port&lt;/code&gt;的文件，内含repl server的端口。&lt;/p&gt;
-&lt;p&gt;创建一个Remote REPL配置，让其引用&lt;code&gt;.nrepl-port&lt;/code&gt;文件。上节如何调试plugin driver源码的问题就是解决了。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image-20200710163401330.png&#34; alt=&#34;image-20200710163401330&#34;&gt;&lt;/p&gt;
-&lt;h4 id=&#34;clojure-动态性&#34;&gt;Clojure 动态性：#&amp;rsquo;&lt;/h4&gt;
-&lt;p&gt;&lt;code&gt;#&#39;&lt;/code&gt;是 Clojure 里的一个reader macro，可以理解为一个语法糖。 &lt;a href=&#34;https://en.wikibooks.org/wiki/Learning_Clojure/Reader_Macros&#34;&gt;https://en.wikibooks.org/wiki/Learning_Clojure/Reader_Macros&lt;/a&gt;&lt;/p&gt;
-&lt;p&gt;实际展开为&lt;code&gt;var&lt;/code&gt;方法。&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;#&#39;foo                 ; (var foo)
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;比如一个内置方法&lt;code&gt;inc&lt;/code&gt;，以下两种写法都能用。&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-clojure&#34; data-lang=&#34;clojure&#34;&gt;(inc &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;)
-=&amp;gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;
-&lt;span style=&#34;color:#75715e&#34;&gt;;; = ((var inc) 1)&lt;/span&gt;
-(&lt;span style=&#34;color:#f92672&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;inc&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;)
-=&amp;gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;两种写法的区别，打开一个REPL试试。&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-clojure&#34; data-lang=&#34;clojure&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;;; twice version 1&lt;/span&gt;
-(&lt;span style=&#34;color:#66d9ef&#34;&gt;defn &lt;/span&gt;twice [n] (* n &lt;span style=&#34;color:#ae81ff&#34;&gt;2.0&lt;/span&gt;))
-=&amp;gt; &lt;span style=&#34;color:#f92672&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;user/twice&lt;/span&gt;
-
-&lt;span style=&#34;color:#75715e&#34;&gt;;; #&amp;#39;twice = (var twice) 定义simple-calc时编译器不会指向twice的内容内存地址，只是twice var的地址。&lt;/span&gt;
-(&lt;span style=&#34;color:#66d9ef&#34;&gt;def &lt;/span&gt;simple-calc &lt;span style=&#34;color:#f92672&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;twice&lt;/span&gt;)
-=&amp;gt; &lt;span style=&#34;color:#f92672&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;user/simple-calc&lt;/span&gt;
-(&lt;span style=&#34;color:#a6e22e&#34;&gt;simple-calc&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;3&lt;/span&gt;)
-=&amp;gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;6.0&lt;/span&gt;
-
-&lt;span style=&#34;color:#75715e&#34;&gt;;; 定义simple-calc2时编译器指向twice的内容内存地址。&lt;/span&gt;
-(&lt;span style=&#34;color:#66d9ef&#34;&gt;def &lt;/span&gt;simple-calc2 twice)
-=&amp;gt; &lt;span style=&#34;color:#f92672&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;user/simple-calc2&lt;/span&gt;
-(&lt;span style=&#34;color:#a6e22e&#34;&gt;simple-calc2&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;3&lt;/span&gt;)
-=&amp;gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;6.0&lt;/span&gt;
-
-&lt;span style=&#34;color:#75715e&#34;&gt;;; 更新了 twice 的内容，两个 simple-calc 的表现就不一样了&lt;/span&gt;
-&lt;span style=&#34;color:#75715e&#34;&gt;;; twice version 2&lt;/span&gt;
-(&lt;span style=&#34;color:#66d9ef&#34;&gt;defn &lt;/span&gt;twice [n] (* n &lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;))
-=&amp;gt; &lt;span style=&#34;color:#f92672&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;user/twice&lt;/span&gt;
-
-&lt;span style=&#34;color:#75715e&#34;&gt;;; 结果随着twice的变动更新了&lt;/span&gt;
-&lt;span style=&#34;color:#75715e&#34;&gt;;; 每次运行 simple-calc，都会执行 (var twice)，保证取twice最新的内容内存地址。&lt;/span&gt;
-(&lt;span style=&#34;color:#a6e22e&#34;&gt;simple-calc&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;3&lt;/span&gt;)
-=&amp;gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;6&lt;/span&gt;
-
-&lt;span style=&#34;color:#75715e&#34;&gt;;; 结果没变。因为内部使用的还是编译前的twice的内容内存地址。&lt;/span&gt;
-(&lt;span style=&#34;color:#a6e22e&#34;&gt;simple-calc2&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;3&lt;/span&gt;)
-=&amp;gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;6.0&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;这个回答是很好的解释：&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;Dynamic handler update in Clojure Ring/Compojure REPL &lt;a href=&#34;https://stackoverflow.com/questions/28904260/dynamic-handler-update-in-clojure-ring-compojure-repl&#34;&gt;https://stackoverflow.com/questions/28904260/dynamic-handler-update-in-clojure-ring-compojure-repl&lt;/a&gt;&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;其实 Clojure 中最常用到的就是Var类型了，使用defn/def定义方法、变量都是定义Var类型，Var类型可以理解为一个容器，指向Function、Value。Clojure之所以如此动态，就是因为Var类型指向的内容可以随时更新。参考以下：&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/clojure-functional-concurrency-for-the-jvm-presented-at-oscon-47-728.jpg&#34; alt=&#34;Everything&amp;rsquo;s a Var! Function Namespace&#34;&gt;&lt;/p&gt;
-&lt;p&gt;&lt;a href=&#34;https://www.slideshare.net/hlship/clojure-functional-concurrency-for-the-jvm-presented-at-oscon/47-Everythings_a_Var_Function_Namespace&#34;&gt;https://www.slideshare.net/hlship/clojure-functional-concurrency-for-the-jvm-presented-at-oscon/47-Everythings_a_Var_Function_Namespace&lt;/a&gt;&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;Vars (instances of &lt;a href=&#34;https://github.com/clojure/clojure/blob/master/src/jvm/clojure/lang/Var.java&#34;&gt;&lt;code&gt;clojure.lang.Var&lt;/code&gt;&lt;/a&gt;) are one of four constructs the Clojure language gives us to maintain a persistent reference to a changing value.&lt;a href=&#34;https://8thlight.com/blog/aaron-lahey/2016/07/20/relationship-between-clojure-functions-symbols-vars-namespaces.html#footnote-3&#34;&gt;3&lt;/a&gt; In fact, of the four constructs (&lt;a href=&#34;http://clojure.org/reference/vars&#34;&gt;vars&lt;/a&gt;, &lt;a href=&#34;http://clojure.org/reference/atoms&#34;&gt;atoms&lt;/a&gt;, &lt;a href=&#34;http://clojure.org/reference/refs&#34;&gt;refs&lt;/a&gt;, and &lt;a href=&#34;http://clojure.org/reference/agents&#34;&gt;agents&lt;/a&gt;), they&amp;rsquo;re probably the one you use the most without even realizing it! Every time something is defined using the special form &lt;code&gt;def&lt;/code&gt; (or the &lt;code&gt;defn&lt;/code&gt; macro which uses &lt;code&gt;def&lt;/code&gt; internally), Clojure creates a new var and places the value or function inside&amp;hellip;&lt;/p&gt;
-&lt;p&gt;Having this mutable container act as a layer of indirection between a caller and the function being called is what allows Clojure to be so dynamic at runtime. If all invocations of a particular function are routed through this container, we&amp;rsquo;re given the opportunity to dynamically update the behavior of our program by changing or altering what is inside&amp;hellip;&lt;/p&gt;
-&lt;p&gt;&lt;a href=&#34;https://8thlight.com/blog/aaron-lahey/2016/07/20/relationship-between-clojure-functions-symbols-vars-namespaces.html&#34;&gt;https://8thlight.com/blog/aaron-lahey/2016/07/20/relationship-between-clojure-functions-symbols-vars-namespaces.html&lt;/a&gt;&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;p&gt;Metabase 代码里就有很多&lt;code&gt;#&#39;&lt;/code&gt;的使用，比如这里定义的HTTP请求的middleware，保证开发时随时更改随时生效，提高开发效率。&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-clojure&#34; data-lang=&#34;clojure&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;;; default-middleware是一个Vector（数组），每个元素都是一个含相同方法签名的方法。&lt;/span&gt;
-(&lt;span style=&#34;color:#66d9ef&#34;&gt;def &lt;/span&gt;default-middleware
-  &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;The default set of middleware applied to queries ran via `process-query`.&amp;#34;&lt;/span&gt;
-  [&lt;span style=&#34;color:#f92672&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;mbql-to-native/mbql-&amp;gt;native&lt;/span&gt;
-   &lt;span style=&#34;color:#f92672&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;check-features/check-features&lt;/span&gt;
-   &lt;span style=&#34;color:#f92672&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;optimize-datetime-filters/optimize-datetime-filters&lt;/span&gt;
-   ...])
-
-(&lt;span style=&#34;color:#66d9ef&#34;&gt;def &lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;^&lt;/span&gt;{&lt;span style=&#34;color:#e6db74&#34;&gt;:arglists&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;&amp;#39;&lt;/span&gt;([query] [query context])} process-query-async
-  &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Process a query asynchronously, returning a `core.async` channel that is called with the final result (or Throwable).&amp;#34;&lt;/span&gt;
-  (&lt;span style=&#34;color:#a6e22e&#34;&gt;base-qp&lt;/span&gt; default-middleware))
-
-&lt;span style=&#34;color:#75715e&#34;&gt;;; In REPL-based dev rebuild the QP every time it is called; this way we don&amp;#39;t need to reload this namespace when&lt;/span&gt;
-&lt;span style=&#34;color:#75715e&#34;&gt;;; middleware is changed. Outside of dev only build the QP once for performance/locality （build once? HOW?）&lt;/span&gt;
-(&lt;span style=&#34;color:#66d9ef&#34;&gt;defn- &lt;/span&gt;base-qp [middleware]
-  &lt;span style=&#34;color:#75715e&#34;&gt;;; letfn与let类似，定义一个本地变量，letfn定义的是一个方法（变量）。&lt;/span&gt;
-  (&lt;span style=&#34;color:#a6e22e&#34;&gt;letfn&lt;/span&gt; [(&lt;span style=&#34;color:#a6e22e&#34;&gt;qp&lt;/span&gt; [] &lt;span style=&#34;color:#75715e&#34;&gt;;; qp 方法名 [] 入参&lt;/span&gt;
-              &lt;span style=&#34;color:#75715e&#34;&gt;;; 将middleware数组合并成一个middleware，可以合并是因为方法签名是一致的&lt;/span&gt;
-            (&lt;span style=&#34;color:#a6e22e&#34;&gt;qp.reducible/async-qp&lt;/span&gt; (&lt;span style=&#34;color:#a6e22e&#34;&gt;qp.reducible/combine-middleware&lt;/span&gt; middleware)))]
-    (&lt;span style=&#34;color:#66d9ef&#34;&gt;if &lt;/span&gt;config/is-dev?
-      (&lt;span style=&#34;color:#66d9ef&#34;&gt;fn &lt;/span&gt;[&lt;span style=&#34;color:#f92672&#34;&gt;&amp;amp;&lt;/span&gt; args]
-        (apply (&lt;span style=&#34;color:#a6e22e&#34;&gt;qp&lt;/span&gt;) args))
-      (&lt;span style=&#34;color:#a6e22e&#34;&gt;qp&lt;/span&gt;))))
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;总结&#34;&gt;总结&lt;/h2&gt;
-&lt;p&gt;REPL 的方式调试代码还是蛮新奇的，对我来说。&lt;/p&gt;
-- https://xujiahua.github.io/posts/20200604-clojure-repl-debug/ - </description>
         </item>
     
     

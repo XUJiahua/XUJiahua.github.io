@@ -5,9 +5,195 @@
     <description>Recent content on 许嘉华的笔记</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Fri, 24 Jul 2020 16:36:01 +0800</lastBuildDate>
+    <lastBuildDate>Thu, 06 Aug 2020 09:49:47 +0800</lastBuildDate>
     
         <atom:link href="https://xujiahua.github.io/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    
+        <item>
+        <title>使用 REPL 调试 Clojure 项目（Metabase）</title>
+        <link>https://xujiahua.github.io/posts/20200604-clojure-repl-debug/</link>
+        <pubDate>Thu, 04 Jun 2020 16:13:27 +0800</pubDate>
+        
+        <guid>https://xujiahua.github.io/posts/20200604-clojure-repl-debug/</guid>
+        <description>许嘉华的笔记 https://xujiahua.github.io/posts/20200604-clojure-repl-debug/ -&lt;h2 id=&#34;开发工具&#34;&gt;开发工具&lt;/h2&gt;
+&lt;h3 id=&#34;intellij-idea--cursive&#34;&gt;Intellij IDEA + Cursive&lt;/h3&gt;
+&lt;p&gt;安装 IDEA 社区版即可，并安装插件 Cursive。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200604161831382.png&#34; alt=&#34;image-20200604161831382&#34;&gt;&lt;/p&gt;
+&lt;h4 id=&#34;cursive-插件按键冲突&#34;&gt;Cursive 插件按键冲突&lt;/h4&gt;
+&lt;p&gt;比如我会用组合键&lt;code&gt;⌘ + [&lt;/code&gt;浏览代码，与 Cursive 插件的按键冲突。可以取消 Cursive 的这个组合键。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200604162732892.png&#34; alt=&#34;image-20200604162732892&#34;&gt;&lt;/p&gt;
+&lt;h3 id=&#34;emacs&#34;&gt;Emacs&lt;/h3&gt;
+&lt;p&gt;&lt;em&gt;Added 2020-07-10&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;参考：&lt;a href=&#34;https://www.braveclojure.com/basic-emacs/&#34;&gt;How to Use Emacs, an Excellent Clojure Editor&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;实践&lt;code&gt;Metabase&lt;/code&gt;代码库失败：在REPL中执行(-main)直接挂了，待研究。TBD&lt;/em&gt;&lt;/p&gt;
+&lt;h2 id=&#34;实践&#34;&gt;实践&lt;/h2&gt;
+&lt;h3 id=&#34;metabase&#34;&gt;Metabase&lt;/h3&gt;
+&lt;p&gt;接触 Clojure 是因为 Metabase 这个项目 &lt;a href=&#34;https://github.com/metabase/metabase&#34;&gt;https://github.com/metabase/metabase&lt;/a&gt; 。以 Metabase 为例，说明如何调试 Clojure 项目。&lt;/p&gt;
+&lt;p&gt;Metabase 由前后端两部分组成，后端是由 Clojure 写的 REST API 项目。启动前端工程，需要在前端界面上触发 API 请求。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;yarn build-hot
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;参考&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Metabase developers-guide &lt;a href=&#34;https://github.com/metabase/metabase/blob/master/docs/developers-guide.md&#34;&gt;https://github.com/metabase/metabase/blob/master/docs/developers-guide.md&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3 id=&#34;repl-调试-clojure-项目&#34;&gt;REPL 调试 Clojure 项目&lt;/h3&gt;
+&lt;p&gt;新建一个 Clojure REPL 配置。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200604163122517.png&#34; alt=&#34;image-20200604163122517&#34;&gt;&lt;/p&gt;
+&lt;p&gt;展开右下角的 REPL 子窗口，Run REPL for metabase-core。（注意，此时，项目中的 clojure namespace 并没有实际加载。代码编辑区运行 Clojure 函数，会报错，&lt;code&gt;Error: :namespace-not-found&lt;/code&gt;）&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200604163823092.png&#34; alt=&#34;image-20200604163823092&#34;&gt;&lt;/p&gt;
+&lt;p&gt;metabase.core.clj 是整个项目的入口文件。执行 Load File in REPL。插件自动把所有 metabase.core 的依赖加载进 REPL 中。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200604164551541.png&#34; alt=&#34;image-20200604164551541&#34;&gt;&lt;/p&gt;
+&lt;p&gt;Load 成功。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200604165257244.png&#34; alt=&#34;image-20200604165257244&#34;&gt;&lt;/p&gt;
+&lt;p&gt;入口函数&lt;code&gt;-main&lt;/code&gt;并不会自动运行的。调用&lt;code&gt;-main&lt;/code&gt;并发送函数到 REPL 中执行。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200604165642551.png&#34; alt=&#34;image-20200604165642551&#34;&gt;&lt;/p&gt;
+&lt;p&gt;print 调试，改完代码即可生效。如下，加入打印变量函数，执行&lt;code&gt;Load File in REPL&lt;/code&gt;/&lt;code&gt;Sync Files in REPL&lt;/code&gt;/&lt;code&gt;Send xxx to REPL&lt;/code&gt;让函数生效。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200604171525496.png&#34; alt=&#34;image-20200604171525496&#34;&gt;&lt;/p&gt;
+&lt;h4 id=&#34;repl-会阻塞&#34;&gt;REPL 会阻塞&lt;/h4&gt;
+&lt;p&gt;会有发送函数到 REPL 中执行，而没有反应的情况。需要注意，REPL 会阻塞。&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;(.join (server/instance)))&lt;/code&gt; Jetty Server 阻塞住当前线程。所以其他函数在 REPL 中被阻塞了。&lt;/p&gt;
+&lt;p&gt;Metabase 入口代码：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-clojure&#34; data-lang=&#34;clojure&#34;&gt;(&lt;span style=&#34;color:#66d9ef&#34;&gt;defn- &lt;/span&gt;start-normally []
+  (&lt;span style=&#34;color:#a6e22e&#34;&gt;log/info&lt;/span&gt; (&lt;span style=&#34;color:#a6e22e&#34;&gt;trs&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Starting Metabase in STANDALONE mode&amp;#34;&lt;/span&gt;))
+  (&lt;span style=&#34;color:#a6e22e&#34;&gt;try&lt;/span&gt;
+    &lt;span style=&#34;color:#75715e&#34;&gt;;; launch embedded webserver async&lt;/span&gt;
+    (&lt;span style=&#34;color:#a6e22e&#34;&gt;server/start-web-server!&lt;/span&gt; handler/app)
+    &lt;span style=&#34;color:#75715e&#34;&gt;;; run our initialization process&lt;/span&gt;
+    (&lt;span style=&#34;color:#a6e22e&#34;&gt;init!&lt;/span&gt;)
+    &lt;span style=&#34;color:#75715e&#34;&gt;;; Ok, now block forever while Jetty does its thing&lt;/span&gt;
+    (when (&lt;span style=&#34;color:#a6e22e&#34;&gt;config/config-bool&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;:mb-jetty-join&lt;/span&gt;)
+      (&lt;span style=&#34;color:#a6e22e&#34;&gt;.join&lt;/span&gt; (&lt;span style=&#34;color:#a6e22e&#34;&gt;server/instance&lt;/span&gt;)))
+    (&lt;span style=&#34;color:#a6e22e&#34;&gt;catch&lt;/span&gt; Throwable e
+      (&lt;span style=&#34;color:#a6e22e&#34;&gt;log/error&lt;/span&gt; e (&lt;span style=&#34;color:#a6e22e&#34;&gt;trs&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Metabase Initialization FAILED&amp;#34;&lt;/span&gt;))
+      (&lt;span style=&#34;color:#a6e22e&#34;&gt;System/exit&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;))))
+
+(&lt;span style=&#34;color:#66d9ef&#34;&gt;defn &lt;/span&gt;-main
+  &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Launch Metabase in standalone mode.&amp;#34;&lt;/span&gt;
+  [&lt;span style=&#34;color:#f92672&#34;&gt;&amp;amp;&lt;/span&gt; [cmd &lt;span style=&#34;color:#f92672&#34;&gt;&amp;amp;&lt;/span&gt; args]]
+  (&lt;span style=&#34;color:#a6e22e&#34;&gt;maybe-enable-tracing&lt;/span&gt;)
+  (&lt;span style=&#34;color:#66d9ef&#34;&gt;if &lt;/span&gt;cmd
+    (&lt;span style=&#34;color:#a6e22e&#34;&gt;run-cmd&lt;/span&gt; cmd args) &lt;span style=&#34;color:#75715e&#34;&gt;; run a command like `java -jar metabase.jar migrate release-locks` or `lein run migrate release-locks`&lt;/span&gt;
+    (&lt;span style=&#34;color:#a6e22e&#34;&gt;start-normally&lt;/span&gt;))) &lt;span style=&#34;color:#75715e&#34;&gt;; with no command line args just start Metabase normally&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;解决办法，就是不要让代码阻塞住当前线程、REPL。&lt;/p&gt;
+&lt;p&gt;参考：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;The Cursive REPL &lt;a href=&#34;https://cursive-ide.com/userguide/repl.html&#34;&gt;https://cursive-ide.com/userguide/repl.html&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h4 id=&#34;metabase-run-with-repl&#34;&gt;metabase run-with-repl&lt;/h4&gt;
+&lt;p&gt;&lt;em&gt;Added 2020-07-10&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;Cursive中也支持指定Profiles。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200710155103818.png&#34; alt=&#34;image-20200710155103818&#34;&gt;&lt;/p&gt;
+&lt;p&gt;这个profile的作用是设置&lt;code&gt;:mb-jetty-join&lt;/code&gt;为&lt;code&gt;false&lt;/code&gt;，不阻塞REPL主线程。另外启动&lt;code&gt;metabase.core/-main&lt;/code&gt;。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-clojure&#34; data-lang=&#34;clojure&#34;&gt;project.clj
+
+...
+&lt;span style=&#34;color:#e6db74&#34;&gt;:run-with-repl&lt;/span&gt;
+   [&lt;span style=&#34;color:#e6db74&#34;&gt;:exclude-tests&lt;/span&gt;
+    &lt;span style=&#34;color:#e6db74&#34;&gt;:include-all-drivers&lt;/span&gt;
+
+    {&lt;span style=&#34;color:#e6db74&#34;&gt;:env&lt;/span&gt;
+     {&lt;span style=&#34;color:#e6db74&#34;&gt;:mb-jetty-join&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;false&amp;#34;&lt;/span&gt;}
+
+     &lt;span style=&#34;color:#e6db74&#34;&gt;:repl-options&lt;/span&gt;
+     {&lt;span style=&#34;color:#e6db74&#34;&gt;:init&lt;/span&gt;    (&lt;span style=&#34;color:#66d9ef&#34;&gt;do &lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;require&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;metabase.core&lt;/span&gt;)
+                   (&lt;span style=&#34;color:#a6e22e&#34;&gt;metabase.core/-main&lt;/span&gt;))
+      &lt;span style=&#34;color:#e6db74&#34;&gt;:timeout&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;60000&lt;/span&gt;}}]
+...
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;这种方式有一个缺点，&lt;code&gt;modules/drivers&lt;/code&gt;下的（源码）驱动并不会成功加载，调试&lt;code&gt;src/&lt;/code&gt;目录下的源码是没问题的。具体报错如下：（其中impala是driver名字）&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Could not locate metabase/driver/impala__init.class, metabase/driver/impala.clj or metabase/driver/impala.cljc on classpath.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;试验了下，&lt;code&gt;plugins&lt;/code&gt;目录下的driver是可以成功加载的。&lt;/p&gt;
+&lt;p&gt;开发模式下，按照加载机制，如果&lt;code&gt;plugins&lt;/code&gt;下的driver与&lt;code&gt;modules/drivers&lt;/code&gt;下的driver重名，会被后者覆盖掉。其实这是个bug，值没取对，导致两个目录下的同一个driver，重复加载并覆盖。（之前还好奇为何要加载两遍driver）&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200710160645843.png&#34; alt=&#34;image-20200710160645843&#34;&gt;&lt;/p&gt;
+&lt;p&gt;总结，目前使用这种配置，调试&lt;code&gt;Metabase&lt;/code&gt;核心包是没问题的，plugin driver建议放到&lt;code&gt;plugins&lt;/code&gt;目录。Root Cause？&lt;/p&gt;
+&lt;p&gt;不用&lt;code&gt;Cursive&lt;/code&gt;，直接运行&lt;code&gt;lein run-with-repl&lt;/code&gt;可以自然加载&lt;code&gt;modules/drivers&lt;/code&gt;下的driver源码。&lt;/p&gt;
+&lt;h4 id=&#34;metabase-remote-repl&#34;&gt;Metabase Remote REPL&lt;/h4&gt;
+&lt;p&gt;&lt;em&gt;Added 2020-07-10&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;命令行中，&lt;code&gt;lein run-with-repl&lt;/code&gt; Lein REPL会在本地生成一个&lt;code&gt;.nrepl-port&lt;/code&gt;的文件，内含repl server的端口。&lt;/p&gt;
+&lt;p&gt;创建一个Remote REPL配置，让其引用&lt;code&gt;.nrepl-port&lt;/code&gt;文件。上节如何调试plugin driver源码的问题就是解决了。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200710163401330.png&#34; alt=&#34;image-20200710163401330&#34;&gt;&lt;/p&gt;
+&lt;h4 id=&#34;clojure-动态性&#34;&gt;Clojure 动态性：#&amp;rsquo;&lt;/h4&gt;
+&lt;p&gt;&lt;code&gt;#&#39;&lt;/code&gt;是 Clojure 里的一个reader macro，可以理解为一个语法糖。 &lt;a href=&#34;https://en.wikibooks.org/wiki/Learning_Clojure/Reader_Macros&#34;&gt;https://en.wikibooks.org/wiki/Learning_Clojure/Reader_Macros&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;实际展开为&lt;code&gt;var&lt;/code&gt;方法。&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;#&#39;foo                 ; (var foo)
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;比如一个内置方法&lt;code&gt;inc&lt;/code&gt;，以下两种写法都能用。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-clojure&#34; data-lang=&#34;clojure&#34;&gt;(inc &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;)
+=&amp;gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;
+&lt;span style=&#34;color:#75715e&#34;&gt;;; = ((var inc) 1)&lt;/span&gt;
+(&lt;span style=&#34;color:#f92672&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;inc&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;)
+=&amp;gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;两种写法的区别，打开一个REPL试试。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-clojure&#34; data-lang=&#34;clojure&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;;; twice version 1&lt;/span&gt;
+(&lt;span style=&#34;color:#66d9ef&#34;&gt;defn &lt;/span&gt;twice [n] (* n &lt;span style=&#34;color:#ae81ff&#34;&gt;2.0&lt;/span&gt;))
+=&amp;gt; &lt;span style=&#34;color:#f92672&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;user/twice&lt;/span&gt;
+
+&lt;span style=&#34;color:#75715e&#34;&gt;;; #&amp;#39;twice = (var twice) 定义simple-calc时编译器不会指向twice的内容内存地址，只是twice var的地址。&lt;/span&gt;
+(&lt;span style=&#34;color:#66d9ef&#34;&gt;def &lt;/span&gt;simple-calc &lt;span style=&#34;color:#f92672&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;twice&lt;/span&gt;)
+=&amp;gt; &lt;span style=&#34;color:#f92672&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;user/simple-calc&lt;/span&gt;
+(&lt;span style=&#34;color:#a6e22e&#34;&gt;simple-calc&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;3&lt;/span&gt;)
+=&amp;gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;6.0&lt;/span&gt;
+
+&lt;span style=&#34;color:#75715e&#34;&gt;;; 定义simple-calc2时编译器指向twice的内容内存地址。&lt;/span&gt;
+(&lt;span style=&#34;color:#66d9ef&#34;&gt;def &lt;/span&gt;simple-calc2 twice)
+=&amp;gt; &lt;span style=&#34;color:#f92672&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;user/simple-calc2&lt;/span&gt;
+(&lt;span style=&#34;color:#a6e22e&#34;&gt;simple-calc2&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;3&lt;/span&gt;)
+=&amp;gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;6.0&lt;/span&gt;
+
+&lt;span style=&#34;color:#75715e&#34;&gt;;; 更新了 twice 的内容，两个 simple-calc 的表现就不一样了&lt;/span&gt;
+&lt;span style=&#34;color:#75715e&#34;&gt;;; twice version 2&lt;/span&gt;
+(&lt;span style=&#34;color:#66d9ef&#34;&gt;defn &lt;/span&gt;twice [n] (* n &lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;))
+=&amp;gt; &lt;span style=&#34;color:#f92672&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;user/twice&lt;/span&gt;
+
+&lt;span style=&#34;color:#75715e&#34;&gt;;; 结果随着twice的变动更新了&lt;/span&gt;
+&lt;span style=&#34;color:#75715e&#34;&gt;;; 每次运行 simple-calc，都会执行 (var twice)，保证取twice最新的内容内存地址。&lt;/span&gt;
+(&lt;span style=&#34;color:#a6e22e&#34;&gt;simple-calc&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;3&lt;/span&gt;)
+=&amp;gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;6&lt;/span&gt;
+
+&lt;span style=&#34;color:#75715e&#34;&gt;;; 结果没变。因为内部使用的还是编译前的twice的内容内存地址。&lt;/span&gt;
+(&lt;span style=&#34;color:#a6e22e&#34;&gt;simple-calc2&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;3&lt;/span&gt;)
+=&amp;gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;6.0&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;这个回答是很好的解释：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Dynamic handler update in Clojure Ring/Compojure REPL &lt;a href=&#34;https://stackoverflow.com/questions/28904260/dynamic-handler-update-in-clojure-ring-compojure-repl&#34;&gt;https://stackoverflow.com/questions/28904260/dynamic-handler-update-in-clojure-ring-compojure-repl&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;其实 Clojure 中最常用到的就是Var类型了，使用defn/def定义方法、变量都是定义Var类型，Var类型可以理解为一个容器，指向Function、Value。Clojure之所以如此动态，就是因为Var类型指向的内容可以随时更新。参考以下：&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/clojure-functional-concurrency-for-the-jvm-presented-at-oscon-47-728.jpg&#34; alt=&#34;Everything&amp;rsquo;s a Var! Function Namespace&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://www.slideshare.net/hlship/clojure-functional-concurrency-for-the-jvm-presented-at-oscon/47-Everythings_a_Var_Function_Namespace&#34;&gt;https://www.slideshare.net/hlship/clojure-functional-concurrency-for-the-jvm-presented-at-oscon/47-Everythings_a_Var_Function_Namespace&lt;/a&gt;&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Vars (instances of &lt;a href=&#34;https://github.com/clojure/clojure/blob/master/src/jvm/clojure/lang/Var.java&#34;&gt;&lt;code&gt;clojure.lang.Var&lt;/code&gt;&lt;/a&gt;) are one of four constructs the Clojure language gives us to maintain a persistent reference to a changing value.&lt;a href=&#34;https://8thlight.com/blog/aaron-lahey/2016/07/20/relationship-between-clojure-functions-symbols-vars-namespaces.html#footnote-3&#34;&gt;3&lt;/a&gt; In fact, of the four constructs (&lt;a href=&#34;http://clojure.org/reference/vars&#34;&gt;vars&lt;/a&gt;, &lt;a href=&#34;http://clojure.org/reference/atoms&#34;&gt;atoms&lt;/a&gt;, &lt;a href=&#34;http://clojure.org/reference/refs&#34;&gt;refs&lt;/a&gt;, and &lt;a href=&#34;http://clojure.org/reference/agents&#34;&gt;agents&lt;/a&gt;), they&amp;rsquo;re probably the one you use the most without even realizing it! Every time something is defined using the special form &lt;code&gt;def&lt;/code&gt; (or the &lt;code&gt;defn&lt;/code&gt; macro which uses &lt;code&gt;def&lt;/code&gt; internally), Clojure creates a new var and places the value or function inside&amp;hellip;&lt;/p&gt;
+&lt;p&gt;Having this mutable container act as a layer of indirection between a caller and the function being called is what allows Clojure to be so dynamic at runtime. If all invocations of a particular function are routed through this container, we&amp;rsquo;re given the opportunity to dynamically update the behavior of our program by changing or altering what is inside&amp;hellip;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://8thlight.com/blog/aaron-lahey/2016/07/20/relationship-between-clojure-functions-symbols-vars-namespaces.html&#34;&gt;https://8thlight.com/blog/aaron-lahey/2016/07/20/relationship-between-clojure-functions-symbols-vars-namespaces.html&lt;/a&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;Metabase 代码里就有很多&lt;code&gt;#&#39;&lt;/code&gt;的使用，比如这里定义的HTTP请求的middleware，保证开发时随时更改随时生效，提高开发效率。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-clojure&#34; data-lang=&#34;clojure&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;;; default-middleware是一个Vector（数组），每个元素都是一个含相同方法签名的方法。&lt;/span&gt;
+(&lt;span style=&#34;color:#66d9ef&#34;&gt;def &lt;/span&gt;default-middleware
+  &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;The default set of middleware applied to queries ran via `process-query`.&amp;#34;&lt;/span&gt;
+  [&lt;span style=&#34;color:#f92672&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;mbql-to-native/mbql-&amp;gt;native&lt;/span&gt;
+   &lt;span style=&#34;color:#f92672&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;check-features/check-features&lt;/span&gt;
+   &lt;span style=&#34;color:#f92672&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;optimize-datetime-filters/optimize-datetime-filters&lt;/span&gt;
+   ...])
+
+(&lt;span style=&#34;color:#66d9ef&#34;&gt;def &lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;^&lt;/span&gt;{&lt;span style=&#34;color:#e6db74&#34;&gt;:arglists&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;&amp;#39;&lt;/span&gt;([query] [query context])} process-query-async
+  &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Process a query asynchronously, returning a `core.async` channel that is called with the final result (or Throwable).&amp;#34;&lt;/span&gt;
+  (&lt;span style=&#34;color:#a6e22e&#34;&gt;base-qp&lt;/span&gt; default-middleware))
+
+&lt;span style=&#34;color:#75715e&#34;&gt;;; In REPL-based dev rebuild the QP every time it is called; this way we don&amp;#39;t need to reload this namespace when&lt;/span&gt;
+&lt;span style=&#34;color:#75715e&#34;&gt;;; middleware is changed. Outside of dev only build the QP once for performance/locality （build once? HOW?）&lt;/span&gt;
+(&lt;span style=&#34;color:#66d9ef&#34;&gt;defn- &lt;/span&gt;base-qp [middleware]
+  &lt;span style=&#34;color:#75715e&#34;&gt;;; letfn与let类似，定义一个本地变量，letfn定义的是一个方法（变量）。&lt;/span&gt;
+  (&lt;span style=&#34;color:#a6e22e&#34;&gt;letfn&lt;/span&gt; [(&lt;span style=&#34;color:#a6e22e&#34;&gt;qp&lt;/span&gt; [] &lt;span style=&#34;color:#75715e&#34;&gt;;; qp 方法名 [] 入参&lt;/span&gt;
+              &lt;span style=&#34;color:#75715e&#34;&gt;;; 将middleware数组合并成一个middleware，可以合并是因为方法签名是一致的&lt;/span&gt;
+            (&lt;span style=&#34;color:#a6e22e&#34;&gt;qp.reducible/async-qp&lt;/span&gt; (&lt;span style=&#34;color:#a6e22e&#34;&gt;qp.reducible/combine-middleware&lt;/span&gt; middleware)))]
+    (&lt;span style=&#34;color:#66d9ef&#34;&gt;if &lt;/span&gt;config/is-dev?
+      (&lt;span style=&#34;color:#66d9ef&#34;&gt;fn &lt;/span&gt;[&lt;span style=&#34;color:#f92672&#34;&gt;&amp;amp;&lt;/span&gt; args]
+        (apply (&lt;span style=&#34;color:#a6e22e&#34;&gt;qp&lt;/span&gt;) args))
+      (&lt;span style=&#34;color:#a6e22e&#34;&gt;qp&lt;/span&gt;))))
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;总结&#34;&gt;总结&lt;/h2&gt;
+&lt;p&gt;REPL 的方式调试代码还是蛮新奇的，对我来说。&lt;/p&gt;
+- https://xujiahua.github.io/posts/20200604-clojure-repl-debug/ - </description>
+        </item>
     
     
     
@@ -1100,79 +1286,6 @@ size_options &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; [
 &lt;li&gt;可以重试的请求，重试直到成功或是循环结束。&lt;/li&gt;
 &lt;/ol&gt;
 - https://xujiahua.github.io/posts/20200417-etcd_client/ - </description>
-        </item>
-    
-    
-    
-        <item>
-        <title>机器学习在线推理部署方案：Cortex</title>
-        <link>https://xujiahua.github.io/posts/20200416-cortex/</link>
-        <pubDate>Thu, 16 Apr 2020 11:33:18 +0800</pubDate>
-        
-        <guid>https://xujiahua.github.io/posts/20200416-cortex/</guid>
-        <description>许嘉华的笔记 https://xujiahua.github.io/posts/20200416-cortex/ -&lt;h2 id=&#34;cortex-介绍&#34;&gt;Cortex 介绍&lt;/h2&gt;
-&lt;p&gt;官方网站：Deploy machine learning models in production &lt;a href=&#34;https://www.cortex.dev/&#34;&gt;https://www.cortex.dev/&lt;/a&gt;&lt;/p&gt;
-&lt;p&gt;GitHub &lt;a href=&#34;https://github.com/cortexlabs/cortex&#34;&gt;https://github.com/cortexlabs/cortex&lt;/a&gt;&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;The CLI sends configuration and code to the cluster every time you run &lt;code&gt;cortex deploy&lt;/code&gt;. Each model is loaded into a Docker container, along with any Python packages and request handling code. The model is exposed as a web service using Elastic Load Balancing (ELB), TensorFlow Serving, and ONNX Runtime. The containers are orchestrated on Elastic Kubernetes Service (EKS) while logs and metrics are streamed to CloudWatch.&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;p&gt;CLI工具将配置文件和代码推送到集群。模型连同Python依赖包和请求处理的代码被Docker容器打包。使用AWS ELB等暴露出Web服务。容器使用AWS EKS编排，日志和指标会推送到AWS CloudWatch。&lt;/p&gt;
-&lt;h3 id=&#34;key-features&#34;&gt;Key Features&lt;/h3&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;strong&gt;Multi framework:&lt;/strong&gt; Cortex supports TensorFlow, PyTorch, scikit-learn, XGBoost, and more. 支持主流的机器学习、深度学习框架&lt;/li&gt;
-&lt;li&gt;&lt;strong&gt;Autoscaling:&lt;/strong&gt; Cortex automatically scales APIs to handle production workloads.&lt;/li&gt;
-&lt;li&gt;&lt;strong&gt;CPU / GPU support:&lt;/strong&gt; Cortex can run inference on CPU or GPU infrastructure. CPU/GPU都支持。&lt;/li&gt;
-&lt;li&gt;&lt;strong&gt;Spot instances:&lt;/strong&gt; Cortex supports EC2 spot instances.&lt;/li&gt;
-&lt;li&gt;&lt;strong&gt;Rolling updates:&lt;/strong&gt; Cortex updates deployed APIs without any downtime. 依赖k8s的能力。&lt;/li&gt;
-&lt;li&gt;&lt;strong&gt;Log streaming:&lt;/strong&gt; Cortex streams logs from deployed models to your CLI. 依赖CloudWatch的能力。&lt;/li&gt;
-&lt;li&gt;&lt;strong&gt;Prediction monitoring:&lt;/strong&gt; Cortex monitors network metrics and tracks predictions.&lt;/li&gt;
-&lt;li&gt;&lt;strong&gt;Minimal configuration:&lt;/strong&gt; Cortex deployments are defined in a single &lt;code&gt;cortex.yaml&lt;/code&gt; file.&lt;/li&gt;
-&lt;/ul&gt;
-&lt;h3 id=&#34;我的体验&#34;&gt;我的体验&lt;/h3&gt;
-&lt;ol&gt;
-&lt;li&gt;与AWS深度绑定。对私有云、国内公有云不够友好了。&lt;/li&gt;
-&lt;li&gt;依赖Kubernetes服务。&lt;/li&gt;
-&lt;li&gt;依赖云存储服务，比如S3、OSS。cortex deploy的建议：cortex will zip files and upload them to the cluster; we recommend that you upload large files/directories (e.g. models) to s3 and download them in your api&amp;rsquo;s &lt;strong&gt;init&lt;/strong&gt; function,&lt;/li&gt;
-&lt;li&gt;有一套Python API服务的模板，并使用Docker封装。比如 &lt;a href=&#34;https://github.com/cortexlabs/cortex/blob/master/images/python-serve/Dockerfile&#34;&gt;https://github.com/cortexlabs/cortex/blob/master/images/python-serve/Dockerfile&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;推理Predictor类按照Cortex定义的接口规范实现，所在目录挂载到 /mnt/project 目录。&lt;/li&gt;
-&lt;li&gt;启动容器，预置脚本会安装&lt;code&gt;requirement.txt&lt;/code&gt;，并动态加载Predictor类。&lt;/li&gt;
-&lt;li&gt;使用者只需要处理模型训练和按照规范定义Predictor类。重复的API定义、部署、扩容，都已经被隐藏掉了。&lt;/li&gt;
-&lt;/ol&gt;
-&lt;h2 id=&#34;代码结构&#34;&gt;代码结构&lt;/h2&gt;
-&lt;ol&gt;
-&lt;li&gt;cli 目录：客户端。deploy操作，就是把本地的配置文件压缩成zip包上传。&lt;/li&gt;
-&lt;li&gt;pkg/operator 目录：服务端。deploy接口在此：zip包会上传到S3，编程的方式申请k8s资源（deployment, service, virtualService），直接向k8s API server发送请求。&lt;/li&gt;
-&lt;li&gt;pkg/lib 目录：比较核心的Go代码。&lt;/li&gt;
-&lt;li&gt;pkg/workloads/cortex/downloader 目录：在k8s中作为InitContainer，用于下载配置文件到Pod中。&lt;/li&gt;
-&lt;li&gt;pkg/workloads 目录：推理服务的代码，比较通用。pkg/workloads/cortex/serve/run.sh 留了个口子 &lt;code&gt;/mnt/project&lt;/code&gt;，每个服务个性化的部分留给开发者（遵从规范）。&lt;/li&gt;
-&lt;li&gt;images 目录：镜像文件。包括 operator 的镜像文件，也包括推理服务的。&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;具体看看创建推理服务容器的过程。&lt;/p&gt;
-&lt;p&gt;申请 K8s Deployment。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image-20200416151230669.png&#34; alt=&#34;image-20200416151230669&#34;&gt;&lt;/p&gt;
-&lt;p&gt;这里分为三大类。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image-20200416151318515.png&#34; alt=&#34;image-20200416151318515&#34;&gt;&lt;/p&gt;
-&lt;p&gt;关注PythonPredictorType。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image-20200416151537448.png&#34; alt=&#34;image-20200416151537448&#34;&gt;&lt;/p&gt;
-&lt;p&gt;传入 InitContainer （代码见 pkg/workloads/cortex/downloader）的参数如下，将S3上存储的配置信息和predictor文件等下载到Pod中的 &lt;code&gt;/mnt/project&lt;/code&gt;目录（&lt;code&gt;_emptyDirMountPath = &amp;quot;/mnt&amp;quot;&lt;/code&gt;）。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image-20200416152324873.png&#34; alt=&#34;image-20200416152324873&#34;&gt;&lt;/p&gt;
-&lt;p&gt;因为Pod内容器共享存储空间，这样推理服务容器就能读取到 &lt;code&gt;/mnt/project&lt;/code&gt;了。&lt;/p&gt;
-&lt;h2 id=&#34;cortex-镜像体验&#34;&gt;cortex 镜像体验&lt;/h2&gt;
-&lt;p&gt;下载地址 &lt;a href=&#34;https://hub.docker.com/r/cortexlabs/python-serve/tags&#34;&gt;https://hub.docker.com/r/cortexlabs/python-serve/tags&lt;/a&gt;&lt;/p&gt;
-&lt;p&gt;容器内代码也是依赖S3的，不修改还不能直接使用🤣。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image-20200416161622829.png&#34; alt=&#34;image-20200416161622829&#34;&gt;&lt;/p&gt;
-&lt;p&gt;到此为止吧。&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;docker run -e CORTEX_SERVING_PORT&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;5000&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;\
-&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;&lt;/span&gt;        -e CORTEX_WORKERS_PER_REPLICA&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;8&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;\
-&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;&lt;/span&gt;        -e CORTEX_MAX_WORKER_CONCURRENCY&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;8&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;\
-&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;&lt;/span&gt;        -e CORTEX_THREADS_PER_WORKER&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;\
-&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;&lt;/span&gt;        -e CORTEX_SO_MAX_CONN&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;2048&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;\
-&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;&lt;/span&gt;        -e CORTEX_CACHE_DIR&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;/mnt/spec &lt;span style=&#34;color:#ae81ff&#34;&gt;\
-&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;&lt;/span&gt;        -e CORTEX_VERSION&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;0.15.1 &lt;span style=&#34;color:#ae81ff&#34;&gt;\
-&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;&lt;/span&gt;        -v &lt;span style=&#34;color:#e6db74&#34;&gt;`&lt;/span&gt;pwd&lt;span style=&#34;color:#e6db74&#34;&gt;`&lt;/span&gt;:/mnt/project &lt;span style=&#34;color:#ae81ff&#34;&gt;\
-&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;&lt;/span&gt;        -v &lt;span style=&#34;color:#e6db74&#34;&gt;`&lt;/span&gt;pwd&lt;span style=&#34;color:#e6db74&#34;&gt;`&lt;/span&gt;:/mnt/spec &lt;span style=&#34;color:#ae81ff&#34;&gt;\
-&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;&lt;/span&gt;        -p 5000:5000 cortexlabs/python-serve:0.15.1
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;- https://xujiahua.github.io/posts/20200416-cortex/ - </description>
         </item>
     
     

@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html><head>
+<title>【阅读】Machine Learning Serving Broken</title>
+
+<meta charset="utf-8">
+<meta name="X-UA-Compatible" content="IE=edge">
+<meta name="google-site-verification" content="">
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport">
+<meta content="telephone=no" name="format-detection">
+<meta name="description" content="">
+<meta name="renderer" content="webkit">
+<meta name="theme-color" content="#ffffff">
+
+
+
+
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+	ga('create', 'UA-162706610-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+
+
+
+<script src="/vendor/js/jquery.min.js" ></script>
+<script src="/vendor/js/popper.min.js" ></script>
+<script src="/vendor/js/bootstrap.min.js" ></script>
+<script src="/vendor/js/smooth-scroll.polyfills.min.js" ></script>
+<link type="text/css" rel="stylesheet" href="/vendor/css/bootstrap.min.css">
+<script src="/vendor/js/vue.min.js" ></script>
+
+
+
+
+<link rel="stylesheet" href="https://xujiahua.github.io/scss/journal.min.5c667e74038e21ddbb9024b67930f8544e02af62491281cf73fdb817eec2947e.css" integrity="sha256-XGZ&#43;dAOOId27kCS2eTD4VE4Cr2JJEoHPc/24F&#43;7ClH4=" media="screen">
+
+<script src="https://xujiahua.github.io//js/loadCSS.js"></script>
+<script src="https://xujiahua.github.io//js/table.js"></script>
+
+
+<script src="https://xujiahua.github.io//js/toc.js"></script>
+
+
+<script>
+    loadCSS("https://fonts.googleapis.com/css?family=Lora|Montserrat|Fira+Mono|Noto+Serif+SC|Material+Icons");
+</script>
+
+
+
+
+
+
+</head><body>
+    	<div id="app"><div ref="sideContainer" class="side-container">
+    
+    <a class="a-block nav-head false" href="https://xujiahua.github.io/">
+    
+        <div class="nav-title">
+            许嘉华的笔记
+        </div>
+        
+    </a>
+
+    <div class="nav-link-list">
+        
+        
+            
+            
+            
+                
+            
+            
+            
+            <a class="a-block nav-link-item active" href="/posts">
+                Archive
+            </a>
+            
+        
+            
+            
+            
+            
+            
+            <a class="a-block nav-link-item false" href="/categories">
+                Categories
+            </a>
+            
+        
+            
+            
+            
+            
+            
+            <a class="a-block nav-link-item false" href="/tags">
+                Tags
+            </a>
+            
+        
+            
+            
+            
+            
+            
+            <a class="a-block nav-link-item false" href="/index.xml">
+                RSS Feed
+            </a>
+            
+        
+    </div>
+
+    
+
+    <div class="nav-footer">
+        
+Hugo Theme <a href="https://github.com/amazingrise/hugo-theme-diary">Diary</a> by <a href="https://amazingrise.net">Rise</a>
+<br>
+Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopener">Makito</a>'s <a href="https://github.com/SumiMakito/hexo-theme-journal/" target="_blank" rel="noreferrer noopener">Journal.</a> <br>
+<br>
+
+&copy;
+	
+	2020 许嘉华的笔记
+	
+    </div>
+    
+</div><div ref="extraContainer" class="extra-container">
+    
+    <div class="toc animated-visibility" :class="{ invisible: scrollY <= 140 }">
+
+
+	<div class="toc-content">
+	
+		
+		
+		
+		<center>- CATALOG -</center>
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#wrap-your-model-in-flask" v-on:click="closeDrawer" id="wrap-your-model-in-flask-nav">
+										 Wrap Your Model in Flask
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#the-rise-of-specialized-systems" v-on:click="closeDrawer" id="the-rise-of-specialized-systems-nav">
+										 The Rise of Specialized Systems
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#ray-serve" v-on:click="closeDrawer" id="ray-serve-nav">
+										 Ray Serve
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+	</div>
+
+</div>
+    
+    <div class="pagination">
+        <a id="globalBackToTop" class="pagination-action animated-visibility" href="#top" :class="{ invisible: scrollY == 0 }">
+            <i class="material-icons pagination-action-icon">
+                keyboard_arrow_up
+            </i>
+        </a>
+        
+    </div>
+</div><div class="single-column-drawer-container" ref="drawer"
+     v-bind:class="{ 'single-column-drawer-container-active': isDrawerOpen }">
+    <div class="drawer-content">
+        <div class="drawer-menu">
+            
+            
+                
+                
+                
+                    
+                
+                
+                
+                <a class="a-block drawer-menu-item active" href="/posts">
+                    Archive
+                </a>
+                
+            
+                
+                
+                
+                
+                
+                <a class="a-block drawer-menu-item false" href="/categories">
+                    Categories
+                </a>
+                
+            
+                
+                
+                
+                
+                
+                <a class="a-block drawer-menu-item false" href="/tags">
+                    Tags
+                </a>
+                
+            
+                
+                
+                
+                
+                
+                <a class="a-block drawer-menu-item false" href="/index.xml">
+                    RSS Feed
+                </a>
+                
+            
+            
+            <div class="toc">
+
+
+	<div class="toc-content">
+	
+		
+		
+		
+		<center>- CATALOG -</center>
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#wrap-your-model-in-flask" v-on:click="closeDrawer" id="wrap-your-model-in-flask-nav">
+										 Wrap Your Model in Flask
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#the-rise-of-specialized-systems" v-on:click="closeDrawer" id="the-rise-of-specialized-systems-nav">
+										 The Rise of Specialized Systems
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#ray-serve" v-on:click="closeDrawer" id="ray-serve-nav">
+										 Ray Serve
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+	</div>
+
+</div>
+            
+        </div>
+    </div>
+</div>
+<transition name="fade">
+    <div v-bind:class="{ 'single-column-drawer-mask': mounted }" v-if="isDrawerOpen" v-on:click="toggleDrawer"></div>
+</transition>
+<nav ref="navBar" class="navbar sticky-top navbar-light single-column-nav-container">
+    <div ref="navBackground" class="nav-background"></div>
+    <div class="container container-narrow nav-content">
+        <button id="nav_dropdown_btn" class="nav-dropdown-toggle" type="button" v-on:click="toggleDrawer">
+            <i class="material-icons">
+                menu
+            </i>
+        </button>
+        <a ref="navTitle" class="navbar-brand" href="https://xujiahua.github.io/">
+            许嘉华的笔记
+        </a>
+    </div>
+</nav>
+<div class="single-column-header-container" ref="pageHead"
+     v-bind:style="{ transform: 'translateZ(0px) translateY('+.3*scrollY+'px)', opacity: 1-navOpacity }">
+    <a href="https://xujiahua.github.io/">
+        <div class="single-column-header-title">许嘉华的笔记</div>
+        
+
+    </a>
+</div>
+            <div id="content">
+<div ref="streamContainer" class="stream-container">
+    <div class="post-list-container post-list-container-shadow">
+        <div class="post">
+            
+            
+            
+
+            <div class="post-head-wrapper-text-only"
+                 style="background-image: url('/')">
+                <div class="post-title">
+                    【阅读】Machine Learning Serving Broken
+                    
+                    <div class="post-meta">
+                        
+                        <time itemprop="datePublished">
+                            2020-08-06 09:49
+                        </time>
+                        
+
+                        
+
+                        
+                            <i class="material-icons" style="">label</i>
+                            
+                                <a href="/tags/ray">Ray</a>
+                                &nbsp;
+                            
+                        
+                    </div>
+                </div>
+            </div>
+            
+            <div class="post-body-wrapper">
+                <div class="post-body">
+                    <p>原文 <a href="https://medium.com/distributed-computing-with-ray/machine-learning-serving-is-broken-f59aff2d607f">Machine Learning Serving is Broken</a> 是 <a href="https://medium.com/distributed-computing-with-ray?source=post_page-----f59aff2d607f----------------------">Distributed Computing with Ray</a> 专栏文章，聊了机器学习模型的 Serving 问题，记录一二。</p>
+<p>设立好机器学习目标后，从模型角度，机器学习整体可分这么2个阶段：</p>
+<ol>
+<li>模型的创建。模型训练 Training。包括训练数据准备，选择最好的模型（超参数调优）。</li>
+<li>模型的使用。模型推理 Inference。也包括输入数据的准备。</li>
+</ol>
+<p>模型被使用，才是机器学习落地的开始。</p>
+<p><img src="../../images/1*P_eJtjAZjntemqvLreZ8EA.jpeg" alt="Image for post"></p>
+<h3 id="wrap-your-model-in-flask">Wrap Your Model in Flask</h3>
+<p>机器学习模型一般使用 Python 开发，所以使用 Flask 是很自然就能想到的方案。</p>
+<p>从 coding 角度，与传统的Web应用开发区别不大。把模型、数据库当做黑盒，开发只关心输入输出。</p>
+<p><img src="../../images/1*boWvKC0jg5hrVv53icMwIg.png" alt="Image for post"></p>
+<p>表面上是美好的。但是，机器学习 Serving 需要大内存加载模型，并且执行计算密集型任务。响应时间秒级，QPS 100+是常见的。下图比较的是单机与传统Web Serving的不同。</p>
+<p><img src="../../images/1*TOFL3owzto7bD0o5K1AopQ.png" alt="Image for post"></p>
+<p>解决方法也是有的，因为Model Serving本身是无状态的，很容易进行水平扩展。</p>
+<p>使用 Flask 进行 Serving，给了模型的开发者很大的便利，同样的 Python 技术栈，Flask 学习成本又低，从模型开发到模型API化可以一人搞定。不同的机器学习模型的格式差异（ScikitLearn与TensorFlow的模型格式就迥异）统一使用HTTP协议抹平。性能问题也能通过水平扩展来解决。目前为止，Flask 方案表现良好。</p>
+<p>原文指出如果 Model 扩展到了数百个，那就是数百个 * N的微服务，没有专职运维团队，开发团队是处理不过来的。个人认为这个问题应该是业务发展的技术阵痛，而不是Flask的问题呀。</p>
+<blockquote>
+<p>In the model serving scenario, each microservice only corresponds to one single model. A typical development team can manage tens of microservices but not hundreds of them without a large dedicated ops team.</p>
+</blockquote>
+<h3 id="the-rise-of-specialized-systems">The Rise of Specialized Systems</h3>
+<p>模型Serving专用系统的崛起。比如 TensorFlow Serving，不过只能用于 TensorFlow 模型。</p>
+<p><img src="../../images/1*MhAjfO4Wh5T8z-ex_oacOQ.png" alt="Image for post"></p>
+<p>将计算转移到专用系统后，Flask coding 的逻辑就跟 Web 开发真没两样了，瓶颈问题都转移到专用系统了。</p>
+<p><img src="../../images/1*VuHnQMYC-DCaGC4nG2g8CQ.png" alt="Image for post"></p>
+<p>比起 Flask 包装模型的做法，Flask 应用对接 Model Serving 专用系统，需要适配专用系统的输入输出。比如对接TensorFlow Serving，其输入是一个多维数组，需要把原始请求做转换，第一次就做对是挺难的。没法复用模型训练用的数据预处理逻辑。</p>
+<p><img src="../../images/1*0kaOHR4XK5qkJIBrvqA1gA.png" alt="Image for post"></p>
+<p>模型开发者现在需要维护两个server：</p>
+<ol>
+<li>model server：部署模型的专用系统。</li>
+<li>web server：输入数据准备，调用model server（不同接口做不同的适配）。（其中输入数据准备，要到什么程度呢，是调用方把数据都准备好，还是模型开发者去调用一些特征数据服务。这些模糊地带，每个公司可能都不一样。）</li>
+</ol>
+<p>架构中多引入一层 Model Server，模型开发者的工作内容也发生了变化。原文指出这会给模型开发者带来 cognitive load（认知压力），引入了新的工作流程，还不顺手的那种。</p>
+<blockquote>
+<p>Additionally, by adopting model servers, data scientists now have two problems: managing the model servers, and managing a web server that handles all the business logic. Even though the model servers might be managed by an infrastructure team, the data scientists still need to think about the featurization in the web server and the model logic in the model servers. This is a lot of cognitive load for the data scientists.</p>
+</blockquote>
+<p>也总结了一些Model Server的不足。TensorFlow Serving 只是 TensorFlow 模型的专用系统，不够通用。转化成统一的模型格式比如ONNX，可能会带来未知bug。</p>
+<blockquote>
+<ul>
+<li>Framework lock-in: <a href="https://www.tensorflow.org/tfx/guide/serving">Tensorflow Serving</a> and <a href="https://pytorch.org/serve/">TorchServe</a> are specialized systems for each framework. Modern data science teams use the best tool at hand; this can mean a mix of <a href="https://xgboost.readthedocs.io/en/latest/">XGBoost</a>, <a href="https://scikit-learn.org/stable/">scikit-learn</a>, and deep learning frameworks. <strong>We need a system that can serve arbitrary python models.</strong></li>
+<li>Vendor lock-in: AWS SageMaker and the other cloud providers offer hosted ML serving solutions that wrap your models and deploy them for you. In addition, these hosted solutions don’t have a unified API. <strong>We need vendor neutral solutions that avoid cloud vendor lock-in</strong>.</li>
+<li>Training &amp; serving divergence: There are other solutions that take a trained model and convert it to another format for serving, like ONNX, PMML, and NVIDIA TensorRT. But <strong>we want to</strong> <strong>serve their models in the same framework that was used for training to avoid unknown bugs.</strong></li>
+</ul>
+</blockquote>
+<h3 id="ray-serve">Ray Serve</h3>
+<p>总结前文中方案的不足。</p>
+<ol>
+<li>Wrap Your Model in Flask 模型太多不好维护（指的是开发团队自己维护）。希望部署、运维能简单。</li>
+<li>Specialized Systems 引入了新系统，不单单是原来那套顺手的Python脚本了，给模型开发者带来了额外的工作量。希望沿用老的技术栈。</li>
+</ol>
+<p>两个希望就是 <a href="https://docs.ray.io/en/master/serve/">Ray Serve</a> 的目标，遵从模型开发者的习惯，给模型开发者顺手的工具，衔接好训练和上线两个阶段，提高生产效率。</p>
+<p>原文中的案例，iterating quickly without an ops team 说出了其精髓。</p>
+<blockquote>
+<ul>
+<li>A computer vision startup is using Ray Serve to serve deep learning based computer vision models. The teams of data scientists are iterating quickly without an ops team. Ray Serve helps them to quickly deploy and scale their predictions.</li>
+<li>The data science team at an E-commerce site is using Ray Serve to gain full control of the models from development to deployment. Ray Serve helps them gain visibility into the serving process as well as reducing costs by batching on GPUs. Additionally, machine learning models are typically not deployed individuality. Ray Serve enables them to easily <a href="https://docs.ray.io/en/master/serve/advanced.html#composing-multiple-models">compose models</a> together.</li>
+</ul>
+</blockquote>
+
+                    
+                    <HR width="100%" id="EOF">
+                    <p style="color:#777;">Last modified on 2020-08-06</p>
+                    
+                </div>
+            </div>
+            
+            
+            <nav class="post-pagination">
+
+                
+                <a class="newer-posts">
+                    Next<br>No newer posts.
+                </a>
+                
+                
+                
+                <a class="older-posts" href="https://xujiahua.github.io/posts/20200724-bizapp-data/">
+                    Previous<br>关于业务系统数据化的思考
+                </a>
+                
+            </nav>
+            <div class="post-comment-wrapper">
+                
+
+
+
+
+
+
+            </div>
+        </div>
+    </div>
+</div>
+
+            </div><div id="single-column-footer">
+Hugo Theme <a href="https://github.com/amazingrise/hugo-theme-diary">Diary</a> by <a href="https://amazingrise.net">Rise</a>
+<br>
+Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopener">Makito</a>'s <a href="https://github.com/SumiMakito/hexo-theme-journal/" target="_blank" rel="noreferrer noopener">Journal.</a> <br>
+<br>
+
+&copy;
+	
+	2020 许嘉华的笔记
+	</div>
+    	</div>
+    <script src="https://xujiahua.github.io//js/journal.js"></script>
+    </body>
+</html>

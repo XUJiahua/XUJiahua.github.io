@@ -5,9 +5,25 @@
     <description>Recent content on 许嘉华的笔记</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Fri, 24 Jul 2020 16:36:01 +0800</lastBuildDate>
+    <lastBuildDate>Thu, 06 Aug 2020 09:49:47 +0800</lastBuildDate>
     
         <atom:link href="https://xujiahua.github.io/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    
+        <item>
+        <title>rm docker image interactively</title>
+        <link>https://xujiahua.github.io/posts/20190429-docker-rmi/</link>
+        <pubDate>Mon, 29 Apr 2019 12:25:54 +0800</pubDate>
+        
+        <guid>https://xujiahua.github.io/posts/20190429-docker-rmi/</guid>
+        <description>许嘉华的笔记 https://xujiahua.github.io/posts/20190429-docker-rmi/ -&lt;p&gt;&lt;a href=&#34;https://github.com/XUJiahua/dockerrmi&#34;&gt;写了个工具&lt;/a&gt;交互式删除 docker image。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/show.gif&#34; alt=&#34;demo&#34;&gt;&lt;/p&gt;
+&lt;p&gt;实在无法忍受先&lt;code&gt;docker images&lt;/code&gt;，然后&lt;code&gt;docker rmi&lt;/code&gt;的重复操作。
+还比较原始，刚好够自己目前所需。&lt;/p&gt;
+&lt;p&gt;想到交互式，是受&lt;code&gt;ncdu&lt;/code&gt;的启发。&lt;code&gt;ncdu&lt;/code&gt;命令是&lt;code&gt;du&lt;/code&gt;命令的交互式版本。&lt;/p&gt;
+- https://xujiahua.github.io/posts/20190429-docker-rmi/ - </description>
+        </item>
     
     
     
