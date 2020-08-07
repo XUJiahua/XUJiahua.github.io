@@ -5,9 +5,203 @@
     <description>Recent content on 许嘉华的笔记</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Thu, 06 Aug 2020 09:49:47 +0800</lastBuildDate>
+    <lastBuildDate>Fri, 07 Aug 2020 10:34:23 +0800</lastBuildDate>
     
         <atom:link href="https://xujiahua.github.io/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    
+        <item>
+        <title>Go Web 项目框架</title>
+        <link>https://xujiahua.github.io/posts/20200320-go-web-project/</link>
+        <pubDate>Fri, 20 Mar 2020 15:24:22 +0800</pubDate>
+        
+        <guid>https://xujiahua.github.io/posts/20200320-go-web-project/</guid>
+        <description>许嘉华的笔记 https://xujiahua.github.io/posts/20200320-go-web-project/ -&lt;h2 id=&#34;常用开源库&#34;&gt;常用开源库&lt;/h2&gt;
+&lt;h3 id=&#34;依赖包管理-go-modules&#34;&gt;依赖包管理 Go Modules&lt;/h3&gt;
+&lt;p&gt;Go Modules。Go 从1.11版本开始支持，Go 1.14被认为是生产可用了。个人用过最方便的Go依赖包管理工具了。&lt;/p&gt;
+&lt;p&gt;版本管理中维护 &lt;code&gt;go.mod&lt;/code&gt;/&lt;code&gt;go.sum&lt;/code&gt; 两个文件。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200320152954581.png&#34; alt=&#34;image-20200320152954581&#34;&gt;&lt;/p&gt;
+&lt;h4 id=&#34;参考&#34;&gt;参考&lt;/h4&gt;
+&lt;ol&gt;
+&lt;li&gt;Using Go Modules &lt;a href=&#34;https://blog.golang.org/using-go-modules&#34;&gt;https://blog.golang.org/using-go-modules&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3 id=&#34;命令行框架-corba&#34;&gt;命令行框架 Corba&lt;/h3&gt;
+&lt;p&gt;Corba。第一次看到，是在翻看 Hyperledger Fabric 的时候。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/ad566232-814f-11e5-9cd0-aa101788c117.png&#34; alt=&#34;cobra logo&#34;&gt;&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;子命令，嵌套的子命令。&lt;/li&gt;
+&lt;li&gt;增强版本的flags。&lt;/li&gt;
+&lt;li&gt;项目模板的生成工具。&lt;/li&gt;
+&lt;li&gt;生成工具也自动引入了Viper这个包。Corba与Viper由一个作者开发，两个项目配合使用非常方便。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;建议使用Cobra命令行工具生成项目模板。&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;  ▾ appName/
+    ▾ cmd/
+        add.go
+        your.go
+        commands.go
+        here.go
+      main.go
+&lt;/code&gt;&lt;/pre&gt;&lt;h4 id=&#34;参考-1&#34;&gt;参考&lt;/h4&gt;
+&lt;ol&gt;
+&lt;li&gt;A Commander for modern Go CLI interactions &lt;a href=&#34;https://github.com/spf13/cobra&#34;&gt;https://github.com/spf13/cobra&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;Cobra Generator &lt;a href=&#34;https://github.com/spf13/cobra/blob/master/cobra/README.md&#34;&gt;https://github.com/spf13/cobra/blob/master/cobra/README.md&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3 id=&#34;配置管理-viper&#34;&gt;配置管理 Viper&lt;/h3&gt;
+&lt;p&gt;Viper。常常与Corba搭配使用。抄一段官方简介：&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/998df88a-8151-11e5-9448-4736db51020d.png&#34; alt=&#34;viper logo&#34;&gt;&lt;/p&gt;
+&lt;p&gt;Viper is a complete configuration solution for Go applications including 12-Factor apps. It is designed to work within an application, and can handle all types of configuration needs and formats. It supports:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;setting defaults 设置默认值。示例：&lt;code&gt;viper.SetDefault(&amp;quot;subject&amp;quot;, &amp;quot;World&amp;quot;)&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;reading from JSON, TOML, YAML, HCL, envfile and Java properties config files 支持各种配置文件格式，TOML比较合我口味。在使用viper之前的配置文件读取方式，一般都是配置文件对应一个Go的model，通过反序列化读入程序。现在看来非常粗糙。&lt;/li&gt;
+&lt;li&gt;live watching and re-reading of config files (optional)&lt;/li&gt;
+&lt;li&gt;reading from environment variables 读取环境变量。代码和配置严格分离，配置文件算是一种不错的选择，12-Factor更推荐将应用的配置存储于环境变量中，参考：https://12factor.net/zh_cn/config&lt;/li&gt;
+&lt;li&gt;reading from remote config systems (etcd or Consul), and watching changes 读配置中心。&lt;/li&gt;
+&lt;li&gt;reading from command line flags 示例：&lt;code&gt;viper.BindPFlag(&amp;quot;subject&amp;quot;, helloCmd.Flags().Lookup(&amp;quot;subject&amp;quot;))&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;reading from buffer&lt;/li&gt;
+&lt;li&gt;setting explicit values&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Viper can be thought of as a registry for all of your applications configuration needs.&lt;/p&gt;
+&lt;h4 id=&#34;关于读环境变量&#34;&gt;关于读环境变量&lt;/h4&gt;
+&lt;p&gt;AutomaticEnv is a powerful helper especially when combined with SetEnvPrefix. When called, Viper will check for an environment variable any time a viper.Get request is made. &lt;strong&gt;It will apply the following rules. It will check for a environment variable with a name matching the key uppercased&lt;/strong&gt; and prefixed with the EnvPrefix if set.&lt;/p&gt;
+&lt;p&gt;环境变量名是有要求的，默认是大写+下划线组合。如果设置了EnvPrefix，环境变量名需要加上前缀加下划线。&lt;/p&gt;
+&lt;p&gt;vip.GetXXX(var) 这里的var倒是大小写随意的，因为viper内部统一小写处理。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200321181144230.png&#34; alt=&#34;image-20200321181144230&#34;&gt;&lt;/p&gt;
+&lt;p&gt;如果环境变量名并不满足组合怎么办呢。使用BindEnv，绑定key与环境变量名之间的关系，而不是使用默认的约定。&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;BindEnv&lt;/code&gt; takes one or two parameters. The first parameter is the key name, the second is the name of the environment variable. The name of the environment variable is case sensitive. If the ENV variable name is not provided, then Viper will automatically assume that the ENV variable matches the following format: prefix + &amp;ldquo;_&amp;rdquo; + the key name in ALL CAPS. &lt;strong&gt;When you explicitly provide the ENV variable name (the second parameter), it does not automatically add the prefix.&lt;/strong&gt; For example if the second parameter is &amp;ldquo;id&amp;rdquo;, Viper will look for the ENV variable &amp;ldquo;ID&amp;rdquo;.&lt;/p&gt;
+&lt;h4 id=&#34;参考-2&#34;&gt;参考&lt;/h4&gt;
+&lt;ol&gt;
+&lt;li&gt;Go configuration with fangs &lt;a href=&#34;https://github.com/spf13/viper&#34;&gt;https://github.com/spf13/viper&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3 id=&#34;日志-logrus&#34;&gt;日志 logrus&lt;/h3&gt;
+&lt;p&gt;Logrus提供的日志功能很丰富。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/687474703a2f2f692e696d6775722e636f6d2f68546556776d4a2e706e67.png&#34; alt=&#34;:walrus:&#34;&gt;&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;JSON、TEXT格式输出。JSON很方便解析，配合ES存储日志。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h4 id=&#34;参考-3&#34;&gt;参考&lt;/h4&gt;
+&lt;ol&gt;
+&lt;li&gt;Structured, pluggable logging for Go. &lt;a href=&#34;https://github.com/sirupsen/logrus&#34;&gt;https://github.com/sirupsen/logrus&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3 id=&#34;路由库--grollia-mux&#34;&gt;路由库  grollia mux&lt;/h3&gt;
+&lt;p&gt;摘抄官方：&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/68747470733a2f2f636c6f75642d63646e2e7175657374696f6e61626c652e73657276696365732f676f72696c6c612d69636f6e2d36342e706e67.png&#34; alt=&#34;Gorilla Logo&#34;&gt;&lt;/p&gt;
+&lt;p&gt;Package &lt;code&gt;gorilla/mux&lt;/code&gt; implements a request router and dispatcher for matching incoming requests to their respective handler.&lt;/p&gt;
+&lt;p&gt;The name mux stands for &amp;ldquo;HTTP request multiplexer&amp;rdquo;. Like the standard &lt;code&gt;http.ServeMux&lt;/code&gt;, &lt;code&gt;mux.Router&lt;/code&gt; matches incoming requests against a list of registered routes and calls a handler for the route that matches the URL or other conditions. The main features are:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;It implements the &lt;code&gt;http.Handler&lt;/code&gt; interface so it is compatible with the standard &lt;code&gt;http.ServeMux&lt;/code&gt;. Go 提供的http.Handler 接口太具有扩展性了。&lt;/li&gt;
+&lt;li&gt;Requests can be matched based on URL host, path, path prefix, schemes, header and query values, HTTP methods or using custom matchers. 丰富的路由匹配规则，host、path、header、query string都可以。&lt;/li&gt;
+&lt;li&gt;URL hosts, paths and query values can have variables with an optional regular expression.&lt;/li&gt;
+&lt;li&gt;Registered URLs can be built, or &amp;ldquo;reversed&amp;rdquo;, which helps maintaining references to resources.&lt;/li&gt;
+&lt;li&gt;Routes can be used as subrouters: nested routes are only tested if the parent route matches. This is useful to define groups of routes that share common conditions like a host, a path prefix or other repeated attributes. As a bonus, this optimizes request matching. 分组功能，RESTful接口按照实体分组，很实用。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;可以搭配同系列的middleware项目使用：https://github.com/gorilla/handlers。&lt;/p&gt;
+&lt;h4 id=&#34;参考-4&#34;&gt;参考&lt;/h4&gt;
+&lt;ol&gt;
+&lt;li&gt;A powerful HTTP router and URL matcher for building Go web servers &lt;a href=&#34;https://github.com/gorilla/mux&#34;&gt;https://github.com/gorilla/mux&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;A collection of useful middleware for Go HTTP services &amp;amp; web applications &lt;a href=&#34;https://github.com/gorilla/handlers&#34;&gt;https://github.com/gorilla/handlers&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;Web Server Graceful Shutdown &lt;a href=&#34;https://github.com/gorilla/mux#graceful-shutdown&#34;&gt;https://github.com/gorilla/mux#graceful-shutdown&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3 id=&#34;orm-gorm&#34;&gt;ORM gorm&lt;/h3&gt;
+&lt;p&gt;文档很丰富。功能很实用。摘抄官方文档：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Full-Featured ORM (almost)&lt;/li&gt;
+&lt;li&gt;Associations (Has One, Has Many, Belongs To, Many To Many, Polymorphism)&lt;/li&gt;
+&lt;li&gt;Hooks (Before/After Create/Save/Update/Delete/Find)&lt;/li&gt;
+&lt;li&gt;Preloading (eager loading)&lt;/li&gt;
+&lt;li&gt;Transactions&lt;/li&gt;
+&lt;li&gt;Composite Primary Key&lt;/li&gt;
+&lt;li&gt;SQL Builder&lt;/li&gt;
+&lt;li&gt;Auto Migrations 自动创建表结构。&lt;/li&gt;
+&lt;li&gt;Logger&lt;/li&gt;
+&lt;li&gt;Extendable, write Plugins based on GORM callbacks&lt;/li&gt;
+&lt;li&gt;Every feature comes with tests&lt;/li&gt;
+&lt;li&gt;Developer Friendly&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h4 id=&#34;参考-5&#34;&gt;参考&lt;/h4&gt;
+&lt;ol&gt;
+&lt;li&gt;GORM Guides &lt;a href=&#34;https://gorm.io/docs/&#34;&gt;https://gorm.io/docs/&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3 id=&#34;http-client-grequests&#34;&gt;HTTP client grequests&lt;/h3&gt;
+&lt;p&gt;号称 Python Requests 的Go clone。用着不错。&lt;/p&gt;
+&lt;h4 id=&#34;参考-6&#34;&gt;参考&lt;/h4&gt;
+&lt;ol&gt;
+&lt;li&gt;A Go &amp;ldquo;clone&amp;rdquo; of the great and famous Requests library &lt;a href=&#34;https://github.com/levigross/grequests&#34;&gt;https://github.com/levigross/grequests&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3 id=&#34;errors-githubcompkgerrors&#34;&gt;Errors github.com/pkg/errors&lt;/h3&gt;
+&lt;p&gt;内置的errors太弱了。返回了error，但是呢，没有返回上下文信息。这个库解决的是这个问题。&lt;/p&gt;
+&lt;h4 id=&#34;参考-7&#34;&gt;参考&lt;/h4&gt;
+&lt;ol&gt;
+&lt;li&gt;Simple error handling primitives &lt;a href=&#34;https://github.com/pkg/errors&#34;&gt;https://github.com/pkg/errors&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3 id=&#34;依赖注入框架-wire&#34;&gt;依赖注入框架 wire&lt;/h3&gt;
+&lt;p&gt;基于代码生成的依赖注入框架。小项目没必要使用。&lt;/p&gt;
+&lt;h3 id=&#34;rpc框架-grpc&#34;&gt;RPC框架 gRPC&lt;/h3&gt;
+&lt;p&gt;跨进程，跨语言通信。&lt;/p&gt;
+&lt;h2 id=&#34;常用工具&#34;&gt;常用工具&lt;/h2&gt;
+&lt;h3 id=&#34;makefile&#34;&gt;Makefile&lt;/h3&gt;
+&lt;p&gt;将常用的命令放在Makefile里管理。比如格式化代码 ，编译，打包，开发环境运行等等，并维护好依赖关系。&lt;/p&gt;
+&lt;p&gt;不要写一堆.sh脚本了。&lt;/p&gt;
+&lt;h3 id=&#34;docker&#34;&gt;Docker&lt;/h3&gt;
+&lt;p&gt;维护一份Dockerfile，项目交付物通过制作成Docker镜像分发。比如：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;# Dockerfile
+FROM alpine:latest
+WORKDIR /app
+COPY ./dist .
+ENTRYPOINT [&amp;quot;./app&amp;quot;, &amp;quot;serve&amp;quot;]
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;可以通过Docker来构建Go项目（一个两阶段的Dockerfile）。也可以像我这样，在宿主机就构建好，Dockerfile只需要COPY编译产物即可。&lt;/p&gt;
+&lt;h3 id=&#34;swagger&#34;&gt;Swagger&lt;/h3&gt;
+&lt;p&gt;目前没有方便的生成方法，得手写注释！&lt;/p&gt;
+&lt;h2 id=&#34;项目结构&#34;&gt;项目结构&lt;/h2&gt;
+&lt;p&gt;Go web项目结构没有定式，每个人的风格都不一样。参考了这个系列文章，觉得不错，特别是第二篇。&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Go Web Application Structure - Part 1 &lt;a href=&#34;https://aaf.engineering/go-web-application-structure-pt-1/&#34;&gt;https://aaf.engineering/go-web-application-structure-pt-1/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Go Web Application Structure - Part 2 - Routing/Serving&lt;/strong&gt; &lt;a href=&#34;https://aaf.engineering/go-web-application-structure-part-2/&#34;&gt;https://aaf.engineering/go-web-application-structure-part-2/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;Go Web Application Structure - Part 3 - The Database &lt;a href=&#34;https://aaf.engineering/go-web-application-structure-part-3/&#34;&gt;https://aaf.engineering/go-web-application-structure-part-3/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;Go Web Application Structure - Part 4 - Database Migrations &amp;amp; Business Logic &lt;a href=&#34;https://aaf.engineering/go-web-application-structure-part-4/&#34;&gt;https://aaf.engineering/go-web-application-structure-part-4/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;code &lt;a href=&#34;https://github.com/theaaf/todos&#34;&gt;https://github.com/theaaf/todos&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;层级调用链：cmd -&amp;gt; api -&amp;gt; app -&amp;gt; db。model/config横切，其它层共享之。&lt;/p&gt;
+&lt;h3 id=&#34;model-database-models&#34;&gt;model: database models&lt;/h3&gt;
+&lt;p&gt;模型实体，通过分析需求建模，合理的建模便于后期维护。&lt;/p&gt;
+&lt;p&gt;横切层。其他每层都会用到。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200320170405357.png&#34; alt=&#34;image-20200320170405357&#34;&gt;&lt;/p&gt;
+&lt;h3 id=&#34;config&#34;&gt;config&lt;/h3&gt;
+&lt;p&gt;横切层。&lt;/p&gt;
+&lt;p&gt;并没有自己独立的包，而是其他每层都可以根据需要，有一个自己独立的Config结构体。通过一个全局的Viper变量，取出该层关心的配置变量（或是从配置文件，或是从环境变量）。&lt;/p&gt;
+&lt;p&gt;比如数据层的config：&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200320170301550.png&#34; alt=&#34;image-20200320170301550&#34;&gt;&lt;/p&gt;
+&lt;h3 id=&#34;db-database-operations&#34;&gt;db: database operations&lt;/h3&gt;
+&lt;p&gt;数据持久化层，底层。CRUD操作的封装。通过“构造函数”做依赖注入，方便单元测试。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200320170627650.png&#34; alt=&#34;image-20200320170627650&#34;&gt;&lt;/p&gt;
+&lt;h3 id=&#34;app-business-logic&#34;&gt;app: business logic&lt;/h3&gt;
+&lt;p&gt;业务逻辑层，中层，核心层。调用数据层，及其他底层服务，比如S3云存储等。&lt;/p&gt;
+&lt;h4 id=&#34;三类错误&#34;&gt;三类错误&lt;/h4&gt;
+&lt;p&gt;该层方法返回的错误可以分三类。&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;ValidationError 输入不正确，校验不通过，比如手机号长度不对。对应的HTTP状态码：400。&lt;/li&gt;
+&lt;li&gt;UserError 认证错误，比如用户登录失败，用户没有权限。对应的HTTP状态码：401, 403。&lt;/li&gt;
+&lt;li&gt;ServerError 系统错误，比如数据库连不上，也不需要特别定义ServerError：只要error不是ValidationError，UserError，就是ServerError。对应的HTTP状态码：500。&lt;/li&gt;
+&lt;li&gt;没有错误，那么对应的HTTP状态码就是200。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3 id=&#34;api-api-controllers&#34;&gt;api: api controllers&lt;/h3&gt;
+&lt;p&gt;接口层。尽可能轻量，尽可能没有业务逻辑，只负责转译。通过调用业务逻辑层完成任务。将上述三分类错误映射到合适的状态码。&lt;/p&gt;
+&lt;h4 id=&#34;application-state-vs-request-state&#34;&gt;Application State vs. Request State&lt;/h4&gt;
+&lt;p&gt;请求入口函数需要为每个请求创建一个context（上下文）。context包含如下，摘抄原文。包含的字段需满足完成request的所需。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200320181127465.png&#34; alt=&#34;image-20200320181127465&#34;&gt;&lt;/p&gt;
+&lt;h4 id=&#34;request-context-请求上下文信息&#34;&gt;(Request) Context 请求上下文信息&lt;/h4&gt;
+&lt;ol&gt;
+&lt;li&gt;Remote IP地址，显示于access log。使用logrus.WithField()。&lt;/li&gt;
+&lt;li&gt;Request ID，显示于access log。使用logrus.WithField()。&lt;/li&gt;
+&lt;li&gt;User，用于后续鉴权。如果有认证头信息（Auth Token），从数据库取出用户。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3 id=&#34;cmd-command-line-methods&#34;&gt;cmd: command line methods&lt;/h3&gt;
+&lt;p&gt;使用Cobra生成子命令。&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;app serve &lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;启动web server，并加入web server优雅退出的功能。&lt;/p&gt;
+- https://xujiahua.github.io/posts/20200320-go-web-project/ - </description>
+        </item>
     
     
     
@@ -578,59 +772,6 @@ export GOPROXY=https://goproxy.io
 &lt;li&gt;如何用 IT 业者能听懂的话介绍量子计算的原理？ &lt;a href=&#34;https://www.zhihu.com/question/26933442/answer/34598726&#34;&gt;https://www.zhihu.com/question/26933442/answer/34598726&lt;/a&gt;&lt;/li&gt;
 &lt;/ol&gt;
 - https://xujiahua.github.io/posts/20191031-quantum-computer/ - </description>
-        </item>
-    
-    
-    
-        <item>
-        <title>数字货币资料整理：FB Libra，央行 DCEP</title>
-        <link>https://xujiahua.github.io/posts/20191030-dcep-libra/</link>
-        <pubDate>Wed, 30 Oct 2019 15:31:21 +0800</pubDate>
-        
-        <guid>https://xujiahua.github.io/posts/20191030-dcep-libra/</guid>
-        <description>许嘉华的笔记 https://xujiahua.github.io/posts/20191030-dcep-libra/ -&lt;p&gt;（笔记迁移 @ 2020年）&lt;/p&gt;
-&lt;p&gt;资料：&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;「区块链到底能干嘛」，赏味不足，梁杰ggtalk博客&lt;/li&gt;
-&lt;li&gt;「Libra与数字货币展望」，央行_穆长春，得到课程&lt;/li&gt;
-&lt;li&gt;「有关DCEP/Libra/支付/金融科技企业」，Mikko，微博：现金（央行发行）- 存款（银行）- 余额（支付机构比如支付宝）- 货币基金之间的（层级）关系。第一次这么系统地去理解金融系统&lt;/li&gt;
-&lt;li&gt;Libra白皮书，官网&lt;/li&gt;
-&lt;li&gt;「参议院就Facebook的Libra听证会」 &lt;a href=&#34;https://www.bilibili.com/video/av59535863/&#34;&gt;https://www.bilibili.com/video/av59535863/&lt;/a&gt;&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;Libra：&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;Libra是分层架构（混合架构），节点与节点之间是用区块链，节点与用户之间是中心化服务&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;央行数字货币DCEP优势：&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;DCEP是法币，价值属性等同现金，央行发行，国家信用担保&lt;/li&gt;
-&lt;li&gt;&lt;strong&gt;离线支付，应该是NFC技术，具体实现细节没有披露&lt;/strong&gt;&lt;/li&gt;
-&lt;li&gt;保护国家货币主权和法币地位&lt;/li&gt;
-&lt;li&gt;便携性：现钞发行、运输、存储、防伪等环节成本高，使用DCEP可以规避这一点&lt;/li&gt;
-&lt;li&gt;匿名性：（现金支持匿名性，而支付宝、银行都没有隐私可言），DCEP也支持匿名性（一定程度上），具体实现细节见下文&lt;/li&gt;
-&lt;li&gt;防止犯罪：反洗钱、反逃税、反恐怖融资。这一点与匿名性有点相悖。文章提到使用大数据来挖掘特征，符合风险特征的会进行身份比对。（原文这么说：所以说，出于反洗钱的考虑，我们对数字钱包也是有分级和限额安排的。比如说你就用一个手机号码注册一个钱包，那你这个钱包当然可以用，但是级别一定是最低的，只能满足日常小额支付需求；但如果你要能上传一下身份证，或者再上传一个银行卡，就可以获得更高级别的数字钱包，如果你还能到柜台去面签一下，那可能就没有限额了。）也就是说小额支持匿名，而大额不行。&lt;/li&gt;
-&lt;li&gt;与区块链没有必然联系：央行没有要求使用区块链，央行调研结论也是区块链没法满足高并发需求（Libra是一个双层架构，节点与节点之间是用区块链，节点与用户之间是中心化服务）&lt;/li&gt;
-&lt;li&gt;采取的是&lt;strong&gt;双层运营体系&lt;/strong&gt;，央行做上层，商业银行做第二层；商业机构向央行全额、100%缴纳准备金，央行的数字货币依然是中央银行负债，由中央银行信用担保，具有无限法偿性：这些是与人民币现金一个路子。&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;参考：&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;DCEP：中国自己的数字货币 &lt;a href=&#34;https://mp.weixin.qq.com/s?__biz=MzA5MDAxMjcwOQ==&amp;amp;mid=2447616917&amp;amp;idx=1&amp;amp;sn=73207944a32667c50ea12d65e209c4c8&amp;amp;chksm=840526dfb372afc947bf188f9154a37b773320a1ab3a2bb8de87fbe5b7a89b8c05934a100b2d&amp;amp;scene=0&amp;amp;xtrack=1&#34;&gt;https://mp.weixin.qq.com/s?__biz=MzA5MDAxMjcwOQ==&amp;amp;mid=2447616917&amp;amp;idx=1&amp;amp;sn=73207944a32667c50ea12d65e209c4c8&amp;amp;chksm=840526dfb372afc947bf188f9154a37b773320a1ab3a2bb8de87fbe5b7a89b8c05934a100b2d&amp;amp;scene=0&amp;amp;xtrack=1&lt;/a&gt;&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;区块链的弱点（没法支持零售级别的交易）：&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;并发性能低（可扩展性差），共识机制导致的天然劣势，所有节点一起竞争记账权，相当于堵死在一件事上了&lt;/li&gt;
-&lt;li&gt;存储的可扩展性差，这个只能定期archive历史数据来解决了。&lt;/li&gt;
-&lt;li&gt;安全性只保证了数据不会被篡改，至于匿名，通过大数据是可以破解的&lt;/li&gt;
-&lt;li&gt;没有原生的加密机制：公有链匿名性，通过大数据可以挖掘出真实身份&lt;/li&gt;
-&lt;li&gt;等待确认太慢，不适合日常使用&lt;/li&gt;
-&lt;li&gt;51%算力攻击&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;怎么思考区块链：&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;去中心化？比中心化还要中心化。更集权。节点自己没法改。无法解决所有者作弊的问题，但对所有者（统治者）是利好的工具（赏味不足的说法，有道理）&lt;/li&gt;
-&lt;li&gt;（IT上能）提升效率：一份数据在各个系统流转，那么这份数据就存在区块链数据库上就可以了。&lt;/li&gt;
-&lt;/ol&gt;
-- https://xujiahua.github.io/posts/20191030-dcep-libra/ - </description>
         </item>
     
     

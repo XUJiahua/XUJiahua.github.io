@@ -6,10 +6,22 @@
     <description>Recent content in Ray on 许嘉华的笔记</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Thu, 06 Aug 2020 09:49:47 +0800</lastBuildDate>
+    <lastBuildDate>Fri, 07 Aug 2020 10:34:23 +0800</lastBuildDate>
     
 	<atom:link href="https://xujiahua.github.io/tags/ray/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>【阅读】How Ray Uses gRPC (and Arrow) to Outperform gRPC</title>
+      <link>https://xujiahua.github.io/posts/20200807-ray-grpc-arrow/</link>
+      <pubDate>Fri, 07 Aug 2020 10:34:23 +0800</pubDate>
+      
+      <guid>https://xujiahua.github.io/posts/20200807-ray-grpc-arrow/</guid>
+      <description>原文：How Ray Uses gRPC (and Arrow) to Outperform gRPC
+对理解 Ray 的底层逻辑有帮助。文中描述的Ray版本为0.8。
+Overview of Ray Ray 的计算任务分为两类，无状态计算任务 Task，有状态计算任务 Actor。
+  Tasks (remote functions): these let you run a function remotely in a cluster. Tasks are for stateless computation. Actors (remote classes): these are instances of Python classes running remotely in worker processes in a cluster. Actors are for stateful computation, where evolving state needs to be managed.   原文讲的是Ray核心逻辑，如何使用gRPC和Arrow的。</description>
+    </item>
     
     <item>
       <title>【阅读】Machine Learning Serving Broken</title>

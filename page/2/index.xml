@@ -5,9 +5,90 @@
     <description>Recent content on 许嘉华的笔记</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Thu, 06 Aug 2020 09:49:47 +0800</lastBuildDate>
+    <lastBuildDate>Fri, 07 Aug 2020 10:34:23 +0800</lastBuildDate>
     
         <atom:link href="https://xujiahua.github.io/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    
+        <item>
+        <title>Metabase 日期筛选控件实践</title>
+        <link>https://xujiahua.github.io/posts/20200605-metabase-field-filter/</link>
+        <pubDate>Fri, 05 Jun 2020 14:41:44 +0800</pubDate>
+        
+        <guid>https://xujiahua.github.io/posts/20200605-metabase-field-filter/</guid>
+        <description>许嘉华的笔记 https://xujiahua.github.io/posts/20200605-metabase-field-filter/ -&lt;p&gt;Metabase Dashboard 可以是动态的，常用的是指定时间范围筛选，查看这个时间段的指标。&lt;/p&gt;
+&lt;h2 id=&#34;简单示范&#34;&gt;简单示范&lt;/h2&gt;
+&lt;p&gt;使用 SAMPLE DATASET 数据库。定义一个Question：在某一时间段，订单数是多少。使用以下 SQL模板。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sql&#34; data-lang=&#34;sql&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;select&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;count&lt;/span&gt;(&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;) &lt;span style=&#34;color:#66d9ef&#34;&gt;FROM&lt;/span&gt; ORDERS
+&lt;span style=&#34;color:#66d9ef&#34;&gt;WHERE&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt; 
+[[&lt;span style=&#34;color:#66d9ef&#34;&gt;AND&lt;/span&gt; &lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;{{&lt;/span&gt;CREATED_AT&lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;}}&lt;/span&gt; ]]
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;在&lt;code&gt;Variables&lt;/code&gt;侧栏选择如下：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Variable type：Field Filter。（其他选项，Text/Number/Date 都是单值，没有范围。）&lt;/li&gt;
+&lt;li&gt;Field to map to：选择对应的数据表字段，这里使用&lt;code&gt;ORDERS&lt;/code&gt;表的&lt;code&gt;CREATED_AT&lt;/code&gt;字段。&lt;/li&gt;
+&lt;li&gt;Filter widget type：Date Range。&lt;strong&gt;注意，只有日期类型（&lt;code&gt;date&lt;/code&gt;/ &lt;code&gt;timestamp&lt;/code&gt;）有这些选择。&lt;/strong&gt;（其他选项，大同小异，都会生成对应SQL语句。）&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200605151107271.png&#34; alt=&#34;image-20200605151107271&#34;&gt;&lt;/p&gt;
+&lt;p&gt;在日期控件中选择时间范围，实际执行的SQL语句如下。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sql&#34; data-lang=&#34;sql&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;select&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;count&lt;/span&gt;(&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;) &lt;span style=&#34;color:#66d9ef&#34;&gt;FROM&lt;/span&gt; ORDERS
+&lt;span style=&#34;color:#66d9ef&#34;&gt;WHERE&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt; 
+&lt;span style=&#34;color:#66d9ef&#34;&gt;AND&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;CAST&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;PUBLIC&amp;#34;&lt;/span&gt;.&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;ORDERS&amp;#34;&lt;/span&gt;.&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;CREATED_AT&amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;AS&lt;/span&gt; date) &lt;span style=&#34;color:#66d9ef&#34;&gt;BETWEEN&lt;/span&gt; date &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;2020-06-03&amp;#39;&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;AND&lt;/span&gt; date &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;2020-06-04&amp;#39;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;打开浏览器开发者工具就能看到。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200605151454671.png&#34; alt=&#34;image-20200605151454671&#34;&gt;&lt;/p&gt;
+&lt;p&gt;可以看到，生成了这个过滤条件：&lt;code&gt;CAST(&amp;quot;PUBLIC&amp;quot;.&amp;quot;ORDERS&amp;quot;.&amp;quot;CREATED_AT&amp;quot; AS date) BETWEEN date &#39;2020-06-03&#39; AND date &#39;2020-06-04&#39;&lt;/code&gt;替代了。&lt;/p&gt;
+&lt;p&gt;column &lt;code&gt;CREATED_AT&lt;/code&gt; 被转为&lt;code&gt;date&lt;/code&gt;类型。因为日期控件的日期精度只到年月日，没有时分秒，实际使用中确实也没必要时分秒。&lt;/p&gt;
+&lt;p&gt;不同的数据库，支持的数据类型是不同的，比如&lt;code&gt;Impala&lt;/code&gt;就不支持&lt;code&gt;date&lt;/code&gt;类型。Metabase 用如下语句达到相同效果（由各个数据库驱动负责实现），将&lt;code&gt;timestamp&lt;/code&gt;类型的精度截断到年月日：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sql&#34; data-lang=&#34;sql&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;CAST&lt;/span&gt;(from_unixtime(unix_timestamp(from_timestamp(&lt;span style=&#34;color:#66d9ef&#34;&gt;CAST&lt;/span&gt;(&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;table&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;.&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;column&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;AS&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;timestamp&lt;/span&gt;), &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;yyyy-MM-dd&amp;#39;&lt;/span&gt;), &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;yyyy-MM-dd&amp;#39;&lt;/span&gt;)) &lt;span style=&#34;color:#66d9ef&#34;&gt;AS&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;timestamp&lt;/span&gt;) &lt;span style=&#34;color:#66d9ef&#34;&gt;BETWEEN&lt;/span&gt; to_timestamp(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;2020-05-25 00:00:00&amp;#39;&lt;/span&gt;, &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;yyyy-MM-dd HH:mm:ss&amp;#39;&lt;/span&gt;) &lt;span style=&#34;color:#66d9ef&#34;&gt;AND&lt;/span&gt; to_timestamp(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;2020-05-31 00:00:00&amp;#39;&lt;/span&gt;, &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;yyyy-MM-dd HH:mm:ss&amp;#39;&lt;/span&gt;) 
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;参考：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;SQL Parameters &lt;a href=&#34;https://www.metabase.com/docs/latest/users-guide/13-sql-parameters.html&#34;&gt;https://www.metabase.com/docs/latest/users-guide/13-sql-parameters.html&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2 id=&#34;查询优化&#34;&gt;查询优化&lt;/h2&gt;
+&lt;p&gt;分享下 Metabase 和 Impala 搭配使用场景下查询优化经验。&lt;/p&gt;
+&lt;p&gt;查询优化的关键，主要还是SQL语句是否能够用到索引和分区键，尽量少地读数据文件。&lt;/p&gt;
+&lt;p&gt;Impala 数据库以日期分区，ETL脚本每日都会为数据表新增一个分区。Impala 不支持以&lt;code&gt;timestamp&lt;/code&gt;类型作为分区键，也不支持&lt;code&gt;date&lt;/code&gt;类型，所以日期分区键的类型是&lt;code&gt;string&lt;/code&gt;，是不得不接受的现实。&lt;/p&gt;
+&lt;p&gt;并建一个日期小表（如下），适应 Metabase 默认只有日期类型支持日期范围筛选的硬性要求。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200605160349439.png&#34; alt=&#34;image-20200605160349439&#34;&gt;&lt;/p&gt;
+&lt;p&gt;Question定义从单表查询：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sql&#34; data-lang=&#34;sql&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;SELECT&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;count&lt;/span&gt;(&lt;span style=&#34;color:#66d9ef&#34;&gt;distinct&lt;/span&gt; openid)
+&lt;span style=&#34;color:#66d9ef&#34;&gt;FROM&lt;/span&gt; dwd_fact_dks_wx_subscribe_v3
+&lt;span style=&#34;color:#66d9ef&#34;&gt;WHERE&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;
+&lt;span style=&#34;color:#66d9ef&#34;&gt;AND&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;CAST&lt;/span&gt;(from_unixtime(unix_timestamp(from_timestamp(&lt;span style=&#34;color:#66d9ef&#34;&gt;CAST&lt;/span&gt;(&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;dwd_fact_dks_wx_subscribe_v3&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;.&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;subscribetime&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;AS&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;timestamp&lt;/span&gt;), &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;yyyy-MM-dd&amp;#39;&lt;/span&gt;), &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;yyyy-MM-dd&amp;#39;&lt;/span&gt;)) &lt;span style=&#34;color:#66d9ef&#34;&gt;AS&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;timestamp&lt;/span&gt;) &lt;span style=&#34;color:#66d9ef&#34;&gt;BETWEEN&lt;/span&gt; to_timestamp(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;2020-05-01 00:00:00&amp;#39;&lt;/span&gt;, &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;yyyy-MM-dd HH:mm:ss&amp;#39;&lt;/span&gt;) &lt;span style=&#34;color:#66d9ef&#34;&gt;AND&lt;/span&gt; to_timestamp(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;2020-05-16 00:00:00&amp;#39;&lt;/span&gt;, &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;yyyy-MM-dd HH:mm:ss&amp;#39;&lt;/span&gt;)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;img src=&#34;../../images/image-20200605162741364.png&#34; alt=&#34;image-20200605162741364&#34;&gt;&lt;/p&gt;
+&lt;p&gt;换成多表关联查询：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sql&#34; data-lang=&#34;sql&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;SELECT&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;count&lt;/span&gt;(&lt;span style=&#34;color:#66d9ef&#34;&gt;distinct&lt;/span&gt; openid)
+&lt;span style=&#34;color:#66d9ef&#34;&gt;FROM&lt;/span&gt; dwd_fact_dks_wx_subscribe_v3
+&lt;span style=&#34;color:#66d9ef&#34;&gt;inner&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;join&lt;/span&gt; dwd_dim_date_with_timestamp
+&lt;span style=&#34;color:#66d9ef&#34;&gt;on&lt;/span&gt; dwd_fact_dks_wx_subscribe_v3.dt &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; dwd_dim_date_with_timestamp.dt
+&lt;span style=&#34;color:#66d9ef&#34;&gt;WHERE&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;
+&lt;span style=&#34;color:#66d9ef&#34;&gt;AND&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;CAST&lt;/span&gt;(from_unixtime(unix_timestamp(from_timestamp(&lt;span style=&#34;color:#66d9ef&#34;&gt;CAST&lt;/span&gt;(&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;dwd_dim_date_with_timestamp&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;.&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;date_timestamp&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;AS&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;timestamp&lt;/span&gt;), &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;yyyy-MM-dd&amp;#39;&lt;/span&gt;), &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;yyyy-MM-dd&amp;#39;&lt;/span&gt;)) &lt;span style=&#34;color:#66d9ef&#34;&gt;AS&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;timestamp&lt;/span&gt;) &lt;span style=&#34;color:#66d9ef&#34;&gt;BETWEEN&lt;/span&gt; to_timestamp(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;2020-05-01 00:00:00&amp;#39;&lt;/span&gt;, &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;yyyy-MM-dd HH:mm:ss&amp;#39;&lt;/span&gt;) &lt;span style=&#34;color:#66d9ef&#34;&gt;AND&lt;/span&gt; to_timestamp(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;2020-05-16 00:00:00&amp;#39;&lt;/span&gt;, &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;yyyy-MM-dd HH:mm:ss&amp;#39;&lt;/span&gt;)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;img src=&#34;../../images/image-20200605162706843.png&#34; alt=&#34;image-20200605162706843&#34;&gt;&lt;/p&gt;
+&lt;p&gt;因为用到分区键，Impala 少读不少文件，查询速度也快了很多。&lt;/p&gt;
+&lt;p&gt;所以关键是要定义一个日期小表，查询使用分区键是常识。这样一个日期小表，还能解决如下的问题：&lt;/p&gt;
+&lt;p&gt;一个&lt;code&gt;Question&lt;/code&gt;涉及多个事实表查询的，每个表都有时间戳字段。定义两个&lt;code&gt;Variable&lt;/code&gt;显得啰嗦，定义一个&lt;code&gt;Variable&lt;/code&gt;就无法处理了（每个Variable对应一个table column）。这时候共同关联到日期小表，用日期小表进行日期筛选。&lt;/p&gt;
+&lt;h3 id=&#34;string类型也使用日期筛选控件&#34;&gt;string类型也使用日期筛选控件？&lt;/h3&gt;
+&lt;p&gt;&lt;code&gt;dt&lt;/code&gt;字段是&lt;code&gt;string&lt;/code&gt;类型。以下查询与上文多表关联查询效果是一样的，但是少了定义日期小表的工作。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sql&#34; data-lang=&#34;sql&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;SELECT&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;count&lt;/span&gt;(&lt;span style=&#34;color:#66d9ef&#34;&gt;distinct&lt;/span&gt; openid)
+&lt;span style=&#34;color:#66d9ef&#34;&gt;FROM&lt;/span&gt; dwd_fact_dks_wx_subscribe_v3
+&lt;span style=&#34;color:#66d9ef&#34;&gt;WHERE&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;
+&lt;span style=&#34;color:#66d9ef&#34;&gt;AND&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;CAST&lt;/span&gt;(from_unixtime(unix_timestamp(from_timestamp(&lt;span style=&#34;color:#66d9ef&#34;&gt;CAST&lt;/span&gt;(&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;dwd_fact_dks_wx_subscribe_v3&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;.&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;dt&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;AS&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;timestamp&lt;/span&gt;), &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;yyyy-MM-dd&amp;#39;&lt;/span&gt;), &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;yyyy-MM-dd&amp;#39;&lt;/span&gt;)) &lt;span style=&#34;color:#66d9ef&#34;&gt;AS&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;timestamp&lt;/span&gt;) &lt;span style=&#34;color:#66d9ef&#34;&gt;BETWEEN&lt;/span&gt; to_timestamp(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;2020-05-01 00:00:00&amp;#39;&lt;/span&gt;, &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;yyyy-MM-dd HH:mm:ss&amp;#39;&lt;/span&gt;) &lt;span style=&#34;color:#66d9ef&#34;&gt;AND&lt;/span&gt; to_timestamp(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;2020-05-16 00:00:00&amp;#39;&lt;/span&gt;, &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;yyyy-MM-dd HH:mm:ss&amp;#39;&lt;/span&gt;)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;所以，如何让&lt;code&gt;string&lt;/code&gt;类型也使用日期筛选控件呢？翻了下文档，还真可以，Metabase 真的想的太周到了！&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;A field’s “special type” is used to determine how to display it, and can also give certain types of fields special functionality. For example, by marking fields in a table as Latitude and Longitude, you allow the table to be used to create pin and heat maps. Similarly, marking a field as a URL allows users to click on it and go to that URL. &lt;a href=&#34;https://www.metabase.com/docs/latest/administration-guide/03-metadata-editing.html&#34;&gt;https://www.metabase.com/docs/latest/administration-guide/03-metadata-editing.html&lt;/a&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;管理员模式，将原是&lt;code&gt;string&lt;/code&gt;类型的字段映射成&lt;code&gt;Creation date&lt;/code&gt;类型。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200605170922208.png&#34; alt=&#34;image-20200605170922208&#34;&gt;&lt;/p&gt;
+&lt;p&gt;Metabase 有三种数据类型：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Database type：数据库中的类型。由数据库驱动设置Database type到Data type的映射关系。&lt;/li&gt;
+&lt;li&gt;Data type：Clojure进程中的类型。&lt;/li&gt;
+&lt;li&gt;Field type：有特殊业务含义的类型。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2 id=&#34;总结&#34;&gt;总结&lt;/h2&gt;
+&lt;p&gt;Metabase 的设计想的很周到，文档也很齐全。因为少看了点文档，走了些弯路。&lt;/p&gt;
+- https://xujiahua.github.io/posts/20200605-metabase-field-filter/ - </description>
+        </item>
     
     
     
@@ -1256,36 +1337,6 @@ size_options &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; [
 &lt;p&gt;k8s最核心的功能还是自动部署、伸缩、容器管理以及资源分配。微服务架构还是得需要其他框架来辅助的。&lt;/p&gt;
 &lt;p&gt;配置热更新应用，就选择 etcd, consul 吧，有 watch 功能。&lt;/p&gt;
 - https://xujiahua.github.io/posts/20200417-kubernetes-configmap/ - </description>
-        </item>
-    
-    
-    
-        <item>
-        <title>etcd api client 请求重试逻辑</title>
-        <link>https://xujiahua.github.io/posts/20200417-etcd_client/</link>
-        <pubDate>Fri, 17 Apr 2020 15:05:51 +0800</pubDate>
-        
-        <guid>https://xujiahua.github.io/posts/20200417-etcd_client/</guid>
-        <description>许嘉华的笔记 https://xujiahua.github.io/posts/20200417-etcd_client/ -&lt;p&gt;使用 Consul 作为配置中心，按照官方的说法，没必要创建 &lt;code&gt;consul client&lt;/code&gt; 节点。那么直接连 &lt;code&gt;consul server&lt;/code&gt; 就好了。&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;Running an agent is not required for discovering other services or getting/setting key/value data. The agent is responsible for health checking the services on the node as well as the node itself.&lt;/p&gt;
-&lt;p&gt;&lt;a href=&#34;https://www.consul.io/intro/index.html#basic-architecture-of-consul&#34;&gt;https://www.consul.io/intro/index.html#basic-architecture-of-consul&lt;/a&gt;&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;p&gt;Consul api client (&lt;a href=&#34;https://github.com/hashicorp/consul/tree/master/api&#34;&gt;https://github.com/hashicorp/consul/tree/master/api&lt;/a&gt;) 目前只能接收一个server地址。那么这个server地址得保证高可用才行啊。&lt;/p&gt;
-&lt;p&gt;etcd api client (&lt;a href=&#34;https://github.com/etcd-io/etcd/tree/master/client&#34;&gt;https://github.com/etcd-io/etcd/tree/master/client&lt;/a&gt;) 倒是能接收多个server地址，看看 etcd 是怎么做的。&lt;/p&gt;
-&lt;h3 id=&#34;etcd-api-client&#34;&gt;etcd api client&lt;/h3&gt;
-&lt;p&gt;创建了 httpClusterClient。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image-20200417151856806.png&#34; alt=&#34;image-20200417151856806&#34;&gt;&lt;/p&gt;
-&lt;p&gt;多个 endpoint 的处理核心逻辑。https://github.com/etcd-io/etcd/blob/master/client/client.go#L362&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image-20200417152639174.png&#34; alt=&#34;image-20200417152639174&#34;&gt;&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;pinned 用于记录好用的连接地址的index，优先使用这个地址。&lt;/li&gt;
-&lt;li&gt;context 类错误，比如取消请求，直接退出。&lt;/li&gt;
-&lt;li&gt;遇到 5xx 类错误，服务端错误。需要考虑是否重试了。&lt;/li&gt;
-&lt;li&gt;isOneShot 标记，true 代表是 Set/Delete 操作，请求失败不再重试。应该跟请求是否幂等有关。&lt;/li&gt;
-&lt;li&gt;可以重试的请求，重试直到成功或是循环结束。&lt;/li&gt;
-&lt;/ol&gt;
-- https://xujiahua.github.io/posts/20200417-etcd_client/ - </description>
         </item>
     
     
