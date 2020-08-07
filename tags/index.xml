@@ -6,10 +6,19 @@
     <description>Recent content in Tags on 许嘉华的笔记</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Fri, 07 Aug 2020 10:34:23 +0800</lastBuildDate>
+    <lastBuildDate>Fri, 07 Aug 2020 15:06:49 +0800</lastBuildDate>
     
 	<atom:link href="https://xujiahua.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Impala</title>
+      <link>https://xujiahua.github.io/tags/impala/</link>
+      <pubDate>Fri, 07 Aug 2020 15:06:49 +0800</pubDate>
+      
+      <guid>https://xujiahua.github.io/tags/impala/</guid>
+      <description></description>
+    </item>
     
     <item>
       <title>Ray</title>
@@ -53,15 +62,6 @@
       <pubDate>Thu, 23 Jul 2020 16:12:51 +0800</pubDate>
       
       <guid>https://xujiahua.github.io/tags/wireshark/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Impala</title>
-      <link>https://xujiahua.github.io/tags/impala/</link>
-      <pubDate>Tue, 14 Jul 2020 10:14:14 +0800</pubDate>
-      
-      <guid>https://xujiahua.github.io/tags/impala/</guid>
       <description></description>
     </item>
     

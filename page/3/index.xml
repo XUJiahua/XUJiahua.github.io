@@ -5,9 +5,42 @@
     <description>Recent content on 许嘉华的笔记</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Fri, 07 Aug 2020 10:34:23 +0800</lastBuildDate>
+    <lastBuildDate>Fri, 07 Aug 2020 15:06:49 +0800</lastBuildDate>
     
         <atom:link href="https://xujiahua.github.io/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    
+        <item>
+        <title>k8s configmap 与热更新</title>
+        <link>https://xujiahua.github.io/posts/20200417-kubernetes-configmap/</link>
+        <pubDate>Fri, 17 Apr 2020 16:09:28 +0800</pubDate>
+        
+        <guid>https://xujiahua.github.io/posts/20200417-kubernetes-configmap/</guid>
+        <description>许嘉华的笔记 https://xujiahua.github.io/posts/20200417-kubernetes-configmap/ -&lt;h2 id=&#34;configmap-简介&#34;&gt;configmap 简介&lt;/h2&gt;
+&lt;p&gt;官方介绍：使用 ConfigMap 配置 Pod  &lt;a href=&#34;https://kubernetes.io/zh/docs/tasks/configure-pod-container/configure-pod-configmap/&#34;&gt;https://kubernetes.io/zh/docs/tasks/configure-pod-container/configure-pod-configmap/&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;他人总结：ConfigMap &lt;a href=&#34;https://jimmysong.io/kubernetes-handbook/concepts/configmap.html&#34;&gt;https://jimmysong.io/kubernetes-handbook/concepts/configmap.html&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;稍微总结下：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;每个configmap都有一个名字，名字全局唯一（命名空间内），重复创建会报错。&lt;/li&gt;
+&lt;li&gt;每个configmap本身是键值对。&lt;/li&gt;
+&lt;li&gt;configmap可以通过环境变量的方式让Pod内容器读取。&lt;/li&gt;
+&lt;li&gt;configmap可以通过挂载文件的方式让Pod内容器读取。k8s每隔一段时间同步configmap，如果有更新的话。当然，应用本身是不知道的。这个定时更新感觉有点鸡肋。&lt;/li&gt;
+&lt;li&gt;configmap更新，不会自动重启应用。只能人工方式，滚动重启应用。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;把配置更新也当作一次应用变更看待，心情就好很多了。&lt;/p&gt;
+&lt;p&gt;官方不支持热更新，所以有了各种技巧，提高效率。&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;create a new ConfigMap with the changes you want to make, and point your deployment at the new ConfigMap &lt;a href=&#34;https://stackoverflow.com/a/40624029/820682&#34;&gt;https://stackoverflow.com/a/40624029/820682&lt;/a&gt; 因为 deployment 文件变化了，触发滚动重启。&lt;/li&gt;
+&lt;li&gt;还有deployment 文件中配置 configmap hash值的。配置变化，hash值变化，deployment变化，滚动重启，一级级联动。 &lt;a href=&#34;https://blog.questionable.services/article/kubernetes-deployments-configmap-change/&#34;&gt;https://blog.questionable.services/article/kubernetes-deployments-configmap-change/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;还有使用sidecar的方式做热更新的，太复杂了 &lt;a href=&#34;https://zhuanlan.zhihu.com/p/57570231&#34;&gt;https://zhuanlan.zhihu.com/p/57570231&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2 id=&#34;关于热更新&#34;&gt;关于热更新&lt;/h2&gt;
+&lt;p&gt;configmap的更新，容器化应用是无感知的。configmap这种方式没有推送更新到应用内的机制，要实现热更新过于复杂。&lt;/p&gt;
+&lt;p&gt;k8s最核心的功能还是自动部署、伸缩、容器管理以及资源分配。微服务架构还是得需要其他框架来辅助的。&lt;/p&gt;
+&lt;p&gt;配置热更新应用，就选择 etcd, consul 吧，有 watch 功能。&lt;/p&gt;
+- https://xujiahua.github.io/posts/20200417-kubernetes-configmap/ - </description>
+        </item>
     
     
     
@@ -960,360 +993,6 @@ BenchmarkDetectSafeSearchForFile-8            &lt;span style=&#34;color:#ae81ff&
 &lt;li&gt;更多实用命令，参考 &lt;a href=&#34;https://docs.docker.com/machine/get-started/&#34;&gt;https://docs.docker.com/machine/get-started/&lt;/a&gt;&lt;/li&gt;
 &lt;/ol&gt;
 - https://xujiahua.github.io/posts/20200331-use-docker-machine/ - </description>
-        </item>
-    
-    
-    
-        <item>
-        <title>Docker Network小结</title>
-        <link>https://xujiahua.github.io/posts/20200321-docker-network/</link>
-        <pubDate>Sat, 21 Mar 2020 14:10:40 +0800</pubDate>
-        
-        <guid>https://xujiahua.github.io/posts/20200321-docker-network/</guid>
-        <description>许嘉华的笔记 https://xujiahua.github.io/posts/20200321-docker-network/ -&lt;p&gt;Docker网络非常值得学习。对Docker不熟的同学，建议先看一些入门资料。&lt;/p&gt;
-&lt;h2 id=&#34;docker-学习资料&#34;&gt;Docker 学习资料&lt;/h2&gt;
-&lt;ol&gt;
-&lt;li&gt;Docker — 从入门到实践  &lt;a href=&#34;https://www.yuque.com/grasilife/docker&#34;&gt;https://www.yuque.com/grasilife/docker&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;Docker Kubernetes Lab Handbook &lt;a href=&#34;https://docker-k8s-lab.readthedocs.io/en/latest/index.html&#34;&gt;https://docker-k8s-lab.readthedocs.io/en/latest/index.html&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;「Docker进阶与实战」华为Docker实践小组&lt;/li&gt;
-&lt;/ol&gt;
-&lt;h2 id=&#34;单机网络&#34;&gt;单机网络&lt;/h2&gt;
-&lt;p&gt;（建议在Linux系统上实验。）&lt;/p&gt;
-&lt;p&gt;Docker安装完后，默认有三个（三种）网络。分别是默认的bridge模式，host模式，none模式。&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;# docker network ls
-NETWORK ID          NAME                DRIVER              SCOPE
-51cbe7a9bb19        bridge              bridge              local
-7182ef9fa8c4        host                host                local
-bd80d0dedaa8        none                null                local
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;参考：https://docs.docker.com/network/&lt;/p&gt;
-&lt;h3 id=&#34;none模式---netnone&#34;&gt;none模式 &amp;ndash;net=none&lt;/h3&gt;
-&lt;p&gt;无网络。&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;# docker run --net=none --rm -it alpine ip addr show
-1: lo: &amp;lt;LOOPBACK,UP,LOWER_UP&amp;gt; mtu 65536 qdisc noqueue state UNKNOWN qlen 1000
-    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
-    inet 127.0.0.1/8 scope host lo
-       valid_lft forever preferred_lft forever
-&lt;/code&gt;&lt;/pre&gt;&lt;h3 id=&#34;host模式---nethost&#34;&gt;host模式 &amp;ndash;net=host&lt;/h3&gt;
-&lt;ol&gt;
-&lt;li&gt;容器共用宿主机的网络。但是，容器的其他方面，如文件系统、进程列表等还是和宿主机隔离的。&lt;/li&gt;
-&lt;li&gt;容器不会申请独立的IP。&lt;/li&gt;
-&lt;li&gt;容器申请的端口占用宿主机的端口资源。&lt;/li&gt;
-&lt;li&gt;-p等端口映射命令不起作用：WARNING: Published ports are discarded when using host network mode&lt;/li&gt;
-&lt;li&gt;性能上比较好，因为没有地址转换。Host mode networking can be useful to optimize performance, and in situations where a container needs to handle a large range of ports, as it does not require network address translation (NAT), and no “userland-proxy” is created for each port.&lt;/li&gt;
-&lt;li&gt;Linux ONLY。The host networking driver only works on Linux hosts, and is not supported on Docker Desktop for Mac, Docker Desktop for Windows, or Docker EE for Windows Server.&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/907596-20170517105727775-430532496.jpg&#34; alt=&#34;img&#34;&gt;&lt;/p&gt;
-&lt;h4 id=&#34;参考&#34;&gt;参考&lt;/h4&gt;
-&lt;ol&gt;
-&lt;li&gt;&lt;a href=&#34;https://docs.docker.com/network/host/&#34;&gt;https://docs.docker.com/network/host/&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;Networking using the host network &lt;a href=&#34;https://docs.docker.com/network/network-tutorial-host/&#34;&gt;https://docs.docker.com/network/network-tutorial-host/&lt;/a&gt;&lt;/li&gt;
-&lt;/ol&gt;
-&lt;h4 id=&#34;实验&#34;&gt;实验&lt;/h4&gt;
-&lt;pre&gt;&lt;code&gt;# docker run --net=host --rm -it alpine ip addr show
-1: lo: &amp;lt;LOOPBACK,UP,LOWER_UP&amp;gt; mtu 65536 qdisc noqueue state UNKNOWN qlen 1000
-    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
-    inet 127.0.0.1/8 scope host lo
-       valid_lft forever preferred_lft forever
-    inet6 ::1/128 scope host
-       valid_lft forever preferred_lft forever
-2: eno1: &amp;lt;BROADCAST,MULTICAST,UP,LOWER_UP&amp;gt; mtu 1500 qdisc fq_codel state UP qlen 1000
-    link/ether 10:7b:44:b0:b1:37 brd ff:ff:ff:ff:ff:ff
-    inet 192.168.0.106/24 brd 192.168.0.255 scope global dynamic eno1
-       valid_lft 6663sec preferred_lft 6663sec
-    inet6 fe80::e0c5:55dc:fba0:549b/64 scope link
-       valid_lft forever preferred_lft forever
-5: docker0: &amp;lt;NO-CARRIER,BROADCAST,MULTICAST,UP&amp;gt; mtu 1500 qdisc noqueue state DOWN
-    link/ether 02:42:8c:6e:08:4d brd ff:ff:ff:ff:ff:ff
-    inet 172.17.0.1/16 brd 172.17.255.255 scope global docker0
-       valid_lft forever preferred_lft forever
-    inet6 fe80::42:8cff:fe6e:84d/64 scope link
-       valid_lft forever preferred_lft forever
-
-# ip addr show
-1: lo: &amp;lt;LOOPBACK,UP,LOWER_UP&amp;gt; mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
-    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
-    inet 127.0.0.1/8 scope host lo
-       valid_lft forever preferred_lft forever
-    inet6 ::1/128 scope host
-       valid_lft forever preferred_lft forever
-2: eno1: &amp;lt;BROADCAST,MULTICAST,UP,LOWER_UP&amp;gt; mtu 1500 qdisc fq_codel state UP group default qlen 1000
-    link/ether 10:7b:44:b0:b1:37 brd ff:ff:ff:ff:ff:ff
-    inet 192.168.0.106/24 brd 192.168.0.255 scope global dynamic noprefixroute eno1
-       valid_lft 6619sec preferred_lft 6619sec
-    inet6 fe80::e0c5:55dc:fba0:549b/64 scope link noprefixroute
-       valid_lft forever preferred_lft forever
-5: docker0: &amp;lt;NO-CARRIER,BROADCAST,MULTICAST,UP&amp;gt; mtu 1500 qdisc noqueue state DOWN group default
-    link/ether 02:42:8c:6e:08:4d brd ff:ff:ff:ff:ff:ff
-    inet 172.17.0.1/16 brd 172.17.255.255 scope global docker0
-       valid_lft forever preferred_lft forever
-    inet6 fe80::42:8cff:fe6e:84d/64 scope link
-       valid_lft forever preferred_lft forever
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;容器只是隔离除了网络之外的资源。因为使用了宿主机的网络，所以容器进程可以与其他主机进程互相通信。需要注意的是端口冲突的问题，以及安全的问题（共用了宿主机的资源）。&lt;/p&gt;
-&lt;h3 id=&#34;bridge模式---netname_it_youself&#34;&gt;bridge模式 &amp;ndash;net={name_it_youself}&lt;/h3&gt;
-&lt;ol&gt;
-&lt;li&gt;Docker默认的网络模式。不加&amp;ndash;net参数，就默认采用这种网络模式。&lt;/li&gt;
-&lt;li&gt;一个独立的虚拟网络。&lt;/li&gt;
-&lt;li&gt;宿主机网络对容器网络是无感知的，需要让容器的进程端口映射到宿主机的端口上，同样，映射需要注意端口冲突的问题。&lt;/li&gt;
-&lt;li&gt;每个Container都有一个独立的IP。&lt;code&gt;docker network inspect bridge&lt;/code&gt; 可查看。&lt;/li&gt;
-&lt;li&gt;同一个虚拟网络下的容器可以互相通信。&lt;/li&gt;
-&lt;li&gt;容器可与宿主机通信。&lt;/li&gt;
-&lt;li&gt;容器可通过宿主机与其他网络通信。只要宿主机能到，容器就能到。有点像是VMWare中的NAT模式。同样叫bridge，VMWare的bridge模式跟Docker bridge完全不同。&lt;/li&gt;
-&lt;li&gt;创建一个新的bridge，就是创建了一个新的子网。&lt;code&gt;docker network create -d bridge my_bridge&lt;/code&gt;&lt;/li&gt;
-&lt;li&gt;桥接网络只对一个Docker daemon host上的容器管用，多机就不行了，docker-compose也只能在单机上跑，生产没法用。Bridge networks apply to containers running on the &lt;strong&gt;same Docker daemon host&lt;/strong&gt;. For communication among containers running on different Docker daemon hosts, you can either manage routing at the OS level, or you can use an overlay network.&lt;/li&gt;
-&lt;li&gt;建议使用自定义的bridge网络。&lt;/li&gt;
-&lt;li&gt;最实用的，自定义网络可以通过容器名称而不是IP与其他容器通信，而默认网络只能通过IP。User-defined bridges provide automatic DNS resolution between containers.&lt;/li&gt;
-&lt;li&gt;User-defined bridges provide better isolation.&lt;/li&gt;
-&lt;li&gt;Containers can be attached and detached from user-defined networks on the fly.&lt;/li&gt;
-&lt;li&gt;网络拓扑如下。&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/bridge_network.jpg&#34; alt=&#34;“docker bridge network”的图片搜索结果&#34;&gt;&lt;/p&gt;
-&lt;h4 id=&#34;参考-1&#34;&gt;参考&lt;/h4&gt;
-&lt;ol&gt;
-&lt;li&gt;&lt;a href=&#34;https://docs.docker.com/network/bridge/&#34;&gt;https://docs.docker.com/network/bridge/&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;Networking with standalone containers &lt;a href=&#34;https://docs.docker.com/network/network-tutorial-standalone/&#34;&gt;https://docs.docker.com/network/network-tutorial-standalone/&lt;/a&gt;&lt;/li&gt;
-&lt;/ol&gt;
-&lt;h4 id=&#34;实验-1&#34;&gt;实验&lt;/h4&gt;
-&lt;p&gt;TODO&lt;/p&gt;
-&lt;h3 id=&#34;容器模式---netcontainerbase_container&#34;&gt;容器模式 &amp;ndash;net=container:base_container&lt;/h3&gt;
-&lt;p&gt;共用其他容器的网络栈，其他资源容器隔离。这个在Service Mesh的场景下非常有用。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/907596-20170517110100869-2022531474.jpg&#34; alt=&#34;img&#34;&gt;&lt;/p&gt;
-&lt;h4 id=&#34;实验-2&#34;&gt;实验&lt;/h4&gt;
-&lt;pre&gt;&lt;code&gt;# docker run -it --name=base_container alpine /bin/ash
-/ # ip addr show
-1: lo: &amp;lt;LOOPBACK,UP,LOWER_UP&amp;gt; mtu 65536 qdisc noqueue state UNKNOWN qlen 1000
-    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
-    inet 127.0.0.1/8 scope host lo
-       valid_lft forever preferred_lft forever
-8: eth0@if9: &amp;lt;BROADCAST,MULTICAST,UP,LOWER_UP,M-DOWN&amp;gt; mtu 1500 qdisc noqueue state UP
-    link/ether 02:42:ac:11:00:02 brd ff:ff:ff:ff:ff:ff
-    inet 172.17.0.2/16 brd 172.17.255.255 scope global eth0
-       valid_lft forever preferred_lft forever
-       
-
-# docker run --net=container:base_container --rm -it alpine ip addr show
-1: lo: &amp;lt;LOOPBACK,UP,LOWER_UP&amp;gt; mtu 65536 qdisc noqueue state UNKNOWN qlen 1000
-    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
-    inet 127.0.0.1/8 scope host lo
-       valid_lft forever preferred_lft forever
-8: eth0@if9: &amp;lt;BROADCAST,MULTICAST,UP,LOWER_UP,M-DOWN&amp;gt; mtu 1500 qdisc noqueue state UP
-    link/ether 02:42:ac:11:00:02 brd ff:ff:ff:ff:ff:ff
-    inet 172.17.0.2/16 brd 172.17.255.255 scope global eth0
-       valid_lft forever preferred_lft forever
-
-&lt;/code&gt;&lt;/pre&gt;&lt;h2 id=&#34;跨主机网络&#34;&gt;跨主机网络&lt;/h2&gt;
-&lt;p&gt;github上搜索有关Container networking的项目。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image-20200330115410819.png&#34; alt=&#34;image-20200330115410819&#34;&gt;&lt;/p&gt;
-&lt;h3 id=&#34;docker-overlay&#34;&gt;Docker Overlay&lt;/h3&gt;
-&lt;p&gt;官方提供的方案。之前是需要etcd辅助的。Docker Engine 1.12 integrated the control plane state into Docker Engine so that an external store is no longer required.&lt;/p&gt;
-&lt;h3 id=&#34;weave&#34;&gt;Weave&lt;/h3&gt;
-&lt;p&gt;Weave Net creates a virtual network that connects Docker containers across multiple hosts and enables their automatic discovery.  参考：https://www.weave.works/docs/net/latest/overview/&lt;/p&gt;
-&lt;p&gt;原理是所有容器都连入一个虚拟网络 weave network，所有加入这个网络的容器都有一块weave网卡。要求每台宿主机启动weave。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/weave1.png&#34; alt=&#34;使用Weave 实现Docker 多宿主机互联- 运维之美&#34;&gt;&lt;/p&gt;
-&lt;h4 id=&#34;实验-3&#34;&gt;实验&lt;/h4&gt;
-&lt;p&gt;实验参考：https://www.weave.works/docs/net/latest/install/using-weave/&lt;/p&gt;
-&lt;p&gt;Docker可以通过插件形式来集成其他网络驱动。看说明weave说明，这种只适合Swarm模式。所以我们实验不采用这种方式。Before using the plugin, please keep in mind the plugin works only in Swarm mode and requires Docker version 1.13 or later. &lt;a href=&#34;https://www.weave.works/docs/net/latest/install/plugin/plugin-v2/&#34;&gt;https://www.weave.works/docs/net/latest/install/plugin/plugin-v2/&lt;/a&gt;&lt;/p&gt;
-&lt;p&gt;虚拟机环境搭建，创建两台虚拟机。注意在同一个网络下。参考：https://www.vagrantup.com/docs/networking/private_network.html&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;vagrant init centos/7
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;（快速）安装Docker。参考：https://www.yuque.com/grasilife/docker/install-centos#ccbf609c&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;# curl -fsSL get.docker.com -o get-docker.sh
-# sh get-docker.sh --mirror Aliyun
-# systemctl enable docker
-# systemctl start docker
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;安装weave。参考：https://www.weave.works/docs/net/latest/install/installing-weave/&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;# curl -L git.io/weave -o /usr/bin/weave
-# chmod a+x /usr/bin/weave
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;weave网络启动，网络的分配将有weave来处理。&lt;code&gt;eval $(weave env)&lt;/code&gt; 覆盖了 DOCKER_HOST 为 unix:///var/run/weave/weave.sock。相当于劫持了docker客户端与docker daemon的通信。参考：https://www.youtube.com/watch?v=kihQCCT1ykE&amp;amp;feature=youtu.be&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;[root@host2 vagrant]# weave launch
-[root@host2 vagrant]# eval $(weave env)
-
-# join host2
-[root@host1 vagrant]# weave launch $host2
-[root@host1 vagrant]# eval $(weave env)
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;连通测试。&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;# start tcp server on container in host2
-[root@host2 vagrant]# docker run --name hello busybox nc -lp 8888
-
-# ping from container in host1 to container in host2
-[root@host1 vagrant]# docker run --rm -it busybox ping hello
-PING hello (10.32.0.1): 56 data bytes
-64 bytes from 10.32.0.1: seq=0 ttl=64 time=3.936 ms
-64 bytes from 10.32.0.1: seq=1 ttl=64 time=0.616 ms
-
-# tcp test from container in host1 to container in host2
-[root@host1 vagrant]# docker run --rm -it busybox sh
-/ # echo &amp;quot;hello world!&amp;quot; | nc hello 8888
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;查看容器网卡，能看到ethwe网卡，与weave有关。&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;[root@host2 vagrant]# docker run --rm busybox ip addr
-1: lo: &amp;lt;LOOPBACK,UP,LOWER_UP&amp;gt; mtu 65536 qdisc noqueue qlen 1000
-    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
-    inet 127.0.0.1/8 scope host lo
-       valid_lft forever preferred_lft forever
-41: eth0@if42: &amp;lt;BROADCAST,MULTICAST,UP,LOWER_UP,M-DOWN&amp;gt; mtu 1500 qdisc noqueue
-    link/ether 02:42:ac:11:00:02 brd ff:ff:ff:ff:ff:ff
-    inet 172.17.0.2/16 brd 172.17.255.255 scope global eth0
-       valid_lft forever preferred_lft forever
-43: ethwe@if44: &amp;lt;BROADCAST,MULTICAST,UP,LOWER_UP,M-DOWN&amp;gt; mtu 1376 qdisc noqueue
-    link/ether ca:97:90:14:18:5e brd ff:ff:ff:ff:ff:ff
-    inet 10.32.0.2/12 brd 10.47.255.255 scope global ethwe
-       valid_lft forever preferred_lft forever
-
-[root@host1 vagrant]# docker run --rm busybox ip addr
-1: lo: &amp;lt;LOOPBACK,UP,LOWER_UP&amp;gt; mtu 65536 qdisc noqueue qlen 1000
-    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
-    inet 127.0.0.1/8 scope host lo
-       valid_lft forever preferred_lft forever
-29: eth0@if30: &amp;lt;BROADCAST,MULTICAST,UP,LOWER_UP,M-DOWN&amp;gt; mtu 1500 qdisc noqueue
-    link/ether 02:42:ac:11:00:02 brd ff:ff:ff:ff:ff:ff
-    inet 172.17.0.2/16 brd 172.17.255.255 scope global eth0
-       valid_lft forever preferred_lft forever
-31: ethwe@if32: &amp;lt;BROADCAST,MULTICAST,UP,LOWER_UP,M-DOWN&amp;gt; mtu 1376 qdisc noqueue
-    link/ether da:f2:40:0a:1e:d7 brd ff:ff:ff:ff:ff:ff
-    inet 10.44.0.0/12 brd 10.47.255.255 scope global ethwe
-       valid_lft forever preferred_lft forever
-&lt;/code&gt;&lt;/pre&gt;&lt;h4 id=&#34;总结下weave特点&#34;&gt;总结下Weave特点&lt;/h4&gt;
-&lt;ol&gt;
-&lt;li&gt;通过劫持Docker client与daemon的方式工作。&lt;/li&gt;
-&lt;li&gt;创建容器的请求被劫持，weave为容器注入了weave网络。&lt;/li&gt;
-&lt;li&gt;不依赖etcd或是consul等kv数据库。&lt;/li&gt;
-&lt;li&gt;集群扩容，增加宿主机，需要将宿主机配置为weave节点。&lt;/li&gt;
-&lt;li&gt;容器部署，根据资源利用率，部署到哪个宿主机节点。没有容器编排工具，比如Kubernetes，还是挺不方便的。&lt;/li&gt;
-&lt;/ol&gt;
-&lt;h3 id=&#34;flannel&#34;&gt;Flannel&lt;/h3&gt;
-&lt;p&gt;Flannel为每个host分配一个subnet，容器从subnet中分配IP，这些IP可以在host间路由，容器间无需使用nat和端口映射即可实现跨主机通信。每个subnet都是从一个更大的IP池中划分的，flannel会在每个主机上运flanneld的agent，负责从池子中分配subnet。&lt;/p&gt;
-&lt;p&gt;Flannel使用etcd存放网络配置、已分配的subnet、host的IP等信息，Flannel数据包在主机间转发是由backend实现的，目前已经支持UDP、VxLAN、host-gw、AWS VPC和GCE路由等多种backend。https://www.cnblogs.com/itzgr/p/10172004.html&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/docker-flannel.png&#34; alt=&#34;../_images/docker-flannel.png&#34;&gt;&lt;/p&gt;
-&lt;h4 id=&#34;实验-4&#34;&gt;实验&lt;/h4&gt;
-&lt;p&gt;使用docker-machine创建了三台虚拟机。&lt;/p&gt;
-&lt;table&gt;
-&lt;thead&gt;
-&lt;tr&gt;
-&lt;th&gt;节点&lt;/th&gt;
-&lt;th&gt;IP&lt;/th&gt;
-&lt;th&gt;说明&lt;/th&gt;
-&lt;/tr&gt;
-&lt;/thead&gt;
-&lt;tbody&gt;
-&lt;tr&gt;
-&lt;td&gt;etcd&lt;/td&gt;
-&lt;td&gt;192.168.99.105&lt;/td&gt;
-&lt;td&gt;安装etcd&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;node01&lt;/td&gt;
-&lt;td&gt;192.168.99.108&lt;/td&gt;
-&lt;td&gt;安装docker, flannel&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;node02&lt;/td&gt;
-&lt;td&gt;192.168.99.109&lt;/td&gt;
-&lt;td&gt;安装docker, flannel&lt;/td&gt;
-&lt;/tr&gt;
-&lt;/tbody&gt;
-&lt;/table&gt;
-&lt;p&gt;参考：&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;Multi-Host Networking Overlay with Flannel &lt;a href=&#34;https://docker-k8s-lab.readthedocs.io/en/latest/docker/docker-flannel.html&#34;&gt;https://docker-k8s-lab.readthedocs.io/en/latest/docker/docker-flannel.html&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;Running flannel &lt;a href=&#34;https://github.com/coreos/flannel/blob/master/Documentation/running.md&#34;&gt;https://github.com/coreos/flannel/blob/master/Documentation/running.md&lt;/a&gt;&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;etcd集群搭建，需要兼容etcd2，因为flannel依赖etcd2。https://github.com/coreos/flannel/issues/1191&lt;/p&gt;
-&lt;p&gt;配置一个网段，写入etcd。&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;docker@etcd01:~$ etcd -listen-client-urls=&amp;quot;http://0.0.0.0:2379&amp;quot; --advertise-client-urls=&amp;quot;http://192.168.99.105:2379&amp;quot; --enable-v2
-
-docker@etcd01:~$ ETCDCTL_API=2 etcdctl set /coreos.com/network/config &#39;{ &amp;quot;Network&amp;quot;: &amp;quot;10.5.0.0/16&amp;quot;, &amp;quot;Backend&amp;quot;: {&amp;quot;Type&amp;quot;: &amp;quot;vxlan&amp;quot;}}&#39;
-
-docker@etcd01:~$ ETCDCTL_API=2 etcdctl get /coreos.com/network/config
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;flanneld会读取etcd配置，并为该主机分配子网段。&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;root@node01:~# ./flanneld-amd64 -etcd-endpoints=&amp;quot;http://192.168.99.105:2379&amp;quot; -iface=192.168.99.108
-&lt;/code&gt;&lt;/pre&gt;&lt;pre&gt;&lt;code&gt;root@node02:~# ./flanneld-amd64 -etcd-endpoints=&amp;quot;http://192.168.99.105:2379&amp;quot; -iface=192.168.99.109
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;可以看到，主机上有了新网卡，子网段也会写入etcd。&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;docker@etcd01:~$ ETCDCTL_API=2 etcdctl ls /coreos.com/network/subnets
-/coreos.com/network/subnets/10.5.94.0-24
-/coreos.com/network/subnets/10.5.90.0-24
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;配置docker daemon参数，boot2docker linux配置如下：参考 &lt;a href=&#34;https://github.com/boot2docker/boot2docker/issues/508&#34;&gt;https://github.com/boot2docker/boot2docker/issues/508&lt;/a&gt;。&lt;/p&gt;
-&lt;p&gt;node01重新配置docker daemon：&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;root@node01:~# /etc/init.d/docker stop
-Stopping dockerd (5350)
-
-root@node01:~# source /run/flannel/subnet.env
-
-root@node01:~# echo EXTRA_ARGS=\&amp;quot;--bip=${FLANNEL_SUBNET} --mtu=${FLANNEL_MTU}\&amp;quot; &amp;gt;&amp;gt; /var/lib/boot2docker/profile
-root@node01:~# cat /var/lib/boot2docker/profile
-
-EXTRA_ARGS=&#39;
---label provider=virtualbox
-
-&#39;
-CACERT=/var/lib/boot2docker/ca.pem
-DOCKER_HOST=&#39;-H tcp://0.0.0.0:2376&#39;
-DOCKER_STORAGE=overlay2
-DOCKER_TLS=auto
-SERVERKEY=/var/lib/boot2docker/server-key.pem
-SERVERCERT=/var/lib/boot2docker/server.pem
-
-EXTRA_ARGS=&amp;quot;--bip=10.5.94.1/24 --mtu=1450&amp;quot;
-
-root@node01:~# /etc/init.d/docker start
-Starting dockerd
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;node02重新配置docker daemon：&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;root@node02:~# /etc/init.d/docker stop
-Stopping dockerd (2624)
-
-root@node02:~# source /run/flannel/subnet.env
-
-root@node02:~# echo EXTRA_ARGS=\&amp;quot;--bip=${FLANNEL_SUBNET} --mtu=${FLANNEL_MTU}\&amp;quot; &amp;gt;&amp;gt; /var/lib/boot2docker/profile
-root@node02:~# cat /var/lib/boot2docker/profile
-
-EXTRA_ARGS=&#39;
---label provider=virtualbox
-
-&#39;
-CACERT=/var/lib/boot2docker/ca.pem
-DOCKER_HOST=&#39;-H tcp://0.0.0.0:2376&#39;
-DOCKER_STORAGE=overlay2
-DOCKER_TLS=auto
-SERVERKEY=/var/lib/boot2docker/server-key.pem
-SERVERCERT=/var/lib/boot2docker/server.pem
-
-
-EXTRA_ARGS=&amp;quot;--bip=10.5.90.1/24 --mtu=1450&amp;quot;
-
-root@node02:~# /etc/init.d/docker start
-Starting dockerd
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;连通测试：&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;root@node01:~# docker run -it busybox
-/ # ip a
-1: lo: &amp;lt;LOOPBACK,UP,LOWER_UP&amp;gt; mtu 65536 qdisc noqueue qlen 1000
-    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
-    inet 127.0.0.1/8 scope host lo
-       valid_lft forever preferred_lft forever
-2: sit0@NONE: &amp;lt;NOARP&amp;gt; mtu 1480 qdisc noop qlen 1000
-    link/sit 0.0.0.0 brd 0.0.0.0
-10: eth0@if11: &amp;lt;BROADCAST,MULTICAST,UP,LOWER_UP,M-DOWN&amp;gt; mtu 1450 qdisc noqueue
-    link/ether 02:42:0a:05:5e:02 brd ff:ff:ff:ff:ff:ff
-    inet 10.5.94.2/24 brd 10.5.94.255 scope global eth0
-       valid_lft forever preferred_lft forever
-/ # nc -lp 8888
-
-root@node02:~# docker run -it busybox
-/ # ip a
-1: lo: &amp;lt;LOOPBACK,UP,LOWER_UP&amp;gt; mtu 65536 qdisc noqueue qlen 1000
-    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
-    inet 127.0.0.1/8 scope host lo
-       valid_lft forever preferred_lft forever
-2: sit0@NONE: &amp;lt;NOARP&amp;gt; mtu 1480 qdisc noop qlen 1000
-    link/sit 0.0.0.0 brd 0.0.0.0
-10: eth0@if11: &amp;lt;BROADCAST,MULTICAST,UP,LOWER_UP,M-DOWN&amp;gt; mtu 1450 qdisc noqueue
-    link/ether 02:42:0a:05:5a:02 brd ff:ff:ff:ff:ff:ff
-    inet 10.5.90.2/24 brd 10.5.90.255 scope global eth0
-       valid_lft forever preferred_lft forever
-/ # echo &amp;quot;hello world!&amp;quot; | nc 10.5.94.2 8888
-&lt;/code&gt;&lt;/pre&gt;&lt;h4 id=&#34;总结flannel特点&#34;&gt;总结Flannel特点&lt;/h4&gt;
-&lt;ol&gt;
-&lt;li&gt;依赖etcd2，在Kubernetes环境里依赖Kubernetes API（封装etcd）。存储网段与路由表？&lt;/li&gt;
-&lt;li&gt;不侵入docker容器。这是比weave优雅的地方。&lt;/li&gt;
-&lt;li&gt;整体思路，先划分一个大的网段，为每台加入的主机从大的网段里分配小的网段，为docker容器从小网段里分配IP。&lt;/li&gt;
-&lt;/ol&gt;
-- https://xujiahua.github.io/posts/20200321-docker-network/ - </description>
         </item>
     
     
