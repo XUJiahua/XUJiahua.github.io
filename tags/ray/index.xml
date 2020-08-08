@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Ray on 许嘉华的笔记</title>
+    <link>https://xujiahua.github.io/tags/ray/</link>
+    <description>Recent content in Ray on 许嘉华的笔记</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Fri, 07 Aug 2020 10:34:23 +0800</lastBuildDate>
+    
+	<atom:link href="https://xujiahua.github.io/tags/ray/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>【阅读】How Ray Uses gRPC (and Arrow) to Outperform gRPC</title>
+      <link>https://xujiahua.github.io/posts/20200807-ray-grpc-arrow/</link>
+      <pubDate>Fri, 07 Aug 2020 10:34:23 +0800</pubDate>
+      
+      <guid>https://xujiahua.github.io/posts/20200807-ray-grpc-arrow/</guid>
+      <description>原文：How Ray Uses gRPC (and Arrow) to Outperform gRPC
+对理解 Ray 的底层逻辑有帮助。文中描述的Ray版本为0.8。
+Overview of Ray Ray 的计算任务分为两类，无状态计算任务 Task，有状态计算任务 Actor。
+  Tasks (remote functions): these let you run a function remotely in a cluster. Tasks are for stateless computation. Actors (remote classes): these are instances of Python classes running remotely in worker processes in a cluster. Actors are for stateful computation, where evolving state needs to be managed.   原文讲的是Ray核心逻辑，如何使用gRPC和Arrow的。</description>
+    </item>
+    
+    <item>
+      <title>【阅读】Machine Learning Serving Broken</title>
+      <link>https://xujiahua.github.io/posts/20200806-machine-learning-serving-broken/</link>
+      <pubDate>Thu, 06 Aug 2020 09:49:47 +0800</pubDate>
+      
+      <guid>https://xujiahua.github.io/posts/20200806-machine-learning-serving-broken/</guid>
+      <description>原文 Machine Learning Serving is Broken 是 Distributed Computing with Ray 专栏文章，聊了机器学习模型的 Serving 问题，记录一二。
+设立好机器学习目标后，从模型角度，机器学习整体可分这么2个阶段：
+ 模型的创建。模型训练 Training。包括训练数据准备，选择最好的模型（超参数调优）。 模型的使用。模型推理 Inference。也包括输入数据的准备。  模型被使用，才是机器学习落地的开始。
+Wrap Your Model in Flask 机器学习模型一般使用 Python 开发，所以使用 Flask 是很自然就能想到的方案。
+从 coding 角度，与传统的Web应用开发区别不大。把模型、数据库当做黑盒，开发只关心输入输出。
+使用 Flask 进行 Serving，给了模型的开发者很大的便利，同样的 Python 技术栈，Flask 学习成本又低，从模型开发到模型API化可以一人搞定。不同的机器学习模型的格式差异（ScikitLearn与TensorFlow的模型格式就迥异）统一使用HTTP协议抹平。这是优点。
+表面上是美好的。但是，机器学习 Serving 需要大内存加载模型，并且执行计算密集型任务。响应时间秒级，QPS 100+是常见的。下图比较的是单机与传统Web Serving的不同。
+解决方法也是有的，因为Model Serving本身是无状态的，很容易进行水平扩展。
+性能问题也能通过水平扩展来解决。目前为止，Flask 方案表现良好。
+Flask的问题：因为 Model Serving 是计算密集型任务，提高 Flask 服务并发的手段只有多进程（规避 Python GIL 问题） ，使用 gunicorn。也就意味着，启动N个worker进程，Model 会加载N次，内存浪费问题很严重。参考：Ray Serve: A new scalable machine learning model serving library on Ray。</description>
+    </item>
+    
+  </channel>
+</rss>

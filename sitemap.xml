@@ -3,13 +3,53 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
+    <loc>https://xujiahua.github.io/tags/impala/</loc>
+    <lastmod>2020-08-07T15:06:49+08:00</lastmod>
+  </url>
+  
+  <url>
     <loc>https://xujiahua.github.io/posts/</loc>
-    <lastmod>2020-07-24T16:36:01+08:00</lastmod>
+    <lastmod>2020-08-07T15:06:49+08:00</lastmod>
   </url>
   
   <url>
     <loc>https://xujiahua.github.io/tags/</loc>
-    <lastmod>2020-07-24T16:36:01+08:00</lastmod>
+    <lastmod>2020-08-07T15:06:49+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://xujiahua.github.io/posts/20200807-impala/</loc>
+    <lastmod>2020-08-07T15:06:49+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://xujiahua.github.io/</loc>
+    <lastmod>2020-08-07T15:06:49+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://xujiahua.github.io/categories/</loc>
+    <lastmod>2020-08-07T10:34:23+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://xujiahua.github.io/tags/ray/</loc>
+    <lastmod>2020-08-07T10:34:23+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://xujiahua.github.io/categories/ray/</loc>
+    <lastmod>2020-08-07T10:34:23+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://xujiahua.github.io/posts/20200807-ray-grpc-arrow/</loc>
+    <lastmod>2020-08-07T10:34:23+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://xujiahua.github.io/posts/20200806-machine-learning-serving-broken/</loc>
+    <lastmod>2020-08-06T09:49:47+08:00</lastmod>
   </url>
   
   <url>
@@ -19,11 +59,6 @@
   
   <url>
     <loc>https://xujiahua.github.io/tags/%E6%95%B0%E6%8D%AE/</loc>
-    <lastmod>2020-07-24T16:36:01+08:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://xujiahua.github.io/</loc>
     <lastmod>2020-07-24T16:36:01+08:00</lastmod>
   </url>
   
@@ -45,16 +80,6 @@
   <url>
     <loc>https://xujiahua.github.io/posts/20200723-golang-http-reuse/</loc>
     <lastmod>2020-07-23T16:12:51+08:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://xujiahua.github.io/categories/</loc>
-    <lastmod>2020-07-14T10:14:14+08:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://xujiahua.github.io/tags/impala/</loc>
-    <lastmod>2020-07-14T10:14:14+08:00</lastmod>
   </url>
   
   <url>

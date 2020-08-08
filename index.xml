@@ -5,9 +5,292 @@
     <description>Recent content on 许嘉华的笔记</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Fri, 24 Jul 2020 16:36:01 +0800</lastBuildDate>
+    <lastBuildDate>Fri, 07 Aug 2020 15:06:49 +0800</lastBuildDate>
     
         <atom:link href="https://xujiahua.github.io/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    
+        <item>
+        <title>记录一个 Impala JDBC 驱动问题</title>
+        <link>https://xujiahua.github.io/posts/20200807-impala/</link>
+        <pubDate>Fri, 07 Aug 2020 15:06:49 +0800</pubDate>
+        
+        <guid>https://xujiahua.github.io/posts/20200807-impala/</guid>
+        <description>许嘉华的笔记 https://xujiahua.github.io/posts/20200807-impala/ -&lt;h3 id=&#34;现象&#34;&gt;现象&lt;/h3&gt;
+&lt;p&gt;洪敏在用 Metabase 写报表过程中，使用 Metabase 的日期变量，发现的诡异问题。两条语句仅有部分差异，返回的结果却差了一天。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200807173209949.png&#34; alt=&#34;image-20200807173209949&#34;&gt;&lt;/p&gt;
+&lt;p&gt;期望结果。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200807173143617.png&#34; alt=&#34;image-20200807173143617&#34;&gt;&lt;/p&gt;
+&lt;p&gt;与期望结果差了一天。&lt;/p&gt;
+&lt;p&gt;在 CDH 中查看 impala 服务器接收到的请求。&lt;/p&gt;
+&lt;p&gt;得到期望结果的SQL：&lt;/p&gt;
+&lt;p&gt;dt 是字符串，内容是日期，参数是TIMESTAMP，SQL引擎会自动转为两个 TIMESTAMP比较。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sql&#34; data-lang=&#34;sql&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;SELECT&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;a&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;.&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;dt&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;, (&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;a&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;.&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;x&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;-&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;b&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;.&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;x&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;) &lt;span style=&#34;color:#66d9ef&#34;&gt;as&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;&lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;净增人数&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;FROM&lt;/span&gt; (&lt;span style=&#34;color:#66d9ef&#34;&gt;SELECT&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;f_ods_wx_subscribe_di&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;.&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;dt&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;, &lt;span style=&#34;color:#66d9ef&#34;&gt;COUNT&lt;/span&gt;(&lt;span style=&#34;color:#66d9ef&#34;&gt;DISTINCT&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;f_ods_wx_subscribe_di&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;.&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;userinfo_openid&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;) &lt;span style=&#34;color:#66d9ef&#34;&gt;as&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;x&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;FROM&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;product&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;.&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;f_ods_wx_subscribe_di&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;WHERE&lt;/span&gt; ((&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;f_ods_wx_subscribe_di&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;.&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;dt&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;CAST&lt;/span&gt;( &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;2020-08-05 00:00:00.0&amp;#39;&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;AS&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;TIMESTAMP&lt;/span&gt;)) &lt;span style=&#34;color:#66d9ef&#34;&gt;AND&lt;/span&gt; ((&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;f_ods_wx_subscribe_di&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;.&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;mid&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;jt20191017175015910985&amp;#39;&lt;/span&gt;) &lt;span style=&#34;color:#66d9ef&#34;&gt;AND&lt;/span&gt; (&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;f_ods_wx_subscribe_di&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;.&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;dt&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;=&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;CAST&lt;/span&gt;( &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;2020-08-01 00:00:00.0&amp;#39;&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;AS&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;TIMESTAMP&lt;/span&gt;)))) &lt;span style=&#34;color:#66d9ef&#34;&gt;GROUP&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;BY&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;f_ods_wx_subscribe_di&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;.&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;dt&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;) &lt;span style=&#34;color:#66d9ef&#34;&gt;AS&lt;/span&gt; a &lt;span style=&#34;color:#66d9ef&#34;&gt;LEFT&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;JOIN&lt;/span&gt; (&lt;span style=&#34;color:#66d9ef&#34;&gt;SELECT&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;f_ods_wx_unsubscribe_di&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;.&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;dt&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;, &lt;span style=&#34;color:#66d9ef&#34;&gt;COUNT&lt;/span&gt;(&lt;span style=&#34;color:#66d9ef&#34;&gt;DISTINCT&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;f_ods_wx_unsubscribe_di&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;.&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;userinfo_openid&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;) &lt;span style=&#34;color:#66d9ef&#34;&gt;as&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;x&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;FROM&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;product&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;.&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;f_ods_wx_unsubscribe_di&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;WHERE&lt;/span&gt; ((&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;f_ods_wx_unsubscribe_di&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;.&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;dt&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;CAST&lt;/span&gt;( &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;2020-08-05 00:00:00.0&amp;#39;&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;AS&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;TIMESTAMP&lt;/span&gt;)) &lt;span style=&#34;color:#66d9ef&#34;&gt;AND&lt;/span&gt; ((&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;f_ods_wx_unsubscribe_di&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;.&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;mid&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;jt20191017175015910985&amp;#39;&lt;/span&gt;) &lt;span style=&#34;color:#66d9ef&#34;&gt;AND&lt;/span&gt; (&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;f_ods_wx_unsubscribe_di&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;.&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;dt&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;=&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;CAST&lt;/span&gt;( &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;2020-08-01 00:00:00.0&amp;#39;&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;AS&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;TIMESTAMP&lt;/span&gt;)))) &lt;span style=&#34;color:#66d9ef&#34;&gt;GROUP&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;BY&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;f_ods_wx_unsubscribe_di&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;.&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;dt&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;) &lt;span style=&#34;color:#66d9ef&#34;&gt;AS&lt;/span&gt; b &lt;span style=&#34;color:#66d9ef&#34;&gt;ON&lt;/span&gt; (&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;a&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;.&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;dt&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;b&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;.&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;dt&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;得到错误结果的SQL：&lt;/p&gt;
+&lt;p&gt;dt 本身是字符串，参数也是字符串。变成两个字符串比较，结果确实差一天。只是在select里使用了一个函数，就造成SQL巨大差异，很神奇。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sql&#34; data-lang=&#34;sql&#34;&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;select&lt;/span&gt; a.dt ,(a.x &lt;span style=&#34;color:#f92672&#34;&gt;-&lt;/span&gt; nvl(b.x,&lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;)) &lt;span style=&#34;color:#66d9ef&#34;&gt;as&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;&lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;净增人数&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;from&lt;/span&gt; ( &lt;span style=&#34;color:#66d9ef&#34;&gt;SELECT&lt;/span&gt; dt, &lt;span style=&#34;color:#66d9ef&#34;&gt;count&lt;/span&gt;(&lt;span style=&#34;color:#66d9ef&#34;&gt;distinct&lt;/span&gt; userinfo_openid) &lt;span style=&#34;color:#66d9ef&#34;&gt;as&lt;/span&gt; x &lt;span style=&#34;color:#66d9ef&#34;&gt;FROM&lt;/span&gt; f_ods_wx_subscribe_di &lt;span style=&#34;color:#66d9ef&#34;&gt;WHERE&lt;/span&gt; mid &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;jt20191017175015910985&amp;#39;&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;AND&lt;/span&gt; dt &lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;2020-08-01 00:00:00.0&amp;#39;&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;and&lt;/span&gt; dt &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;2020-08-05 00:00:00.0&amp;#39;&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;group&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;by&lt;/span&gt; dt ) a &lt;span style=&#34;color:#66d9ef&#34;&gt;left&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;join&lt;/span&gt; ( &lt;span style=&#34;color:#66d9ef&#34;&gt;SELECT&lt;/span&gt; dt, &lt;span style=&#34;color:#66d9ef&#34;&gt;count&lt;/span&gt;(&lt;span style=&#34;color:#66d9ef&#34;&gt;distinct&lt;/span&gt; userinfo_openid) &lt;span style=&#34;color:#66d9ef&#34;&gt;as&lt;/span&gt; x &lt;span style=&#34;color:#66d9ef&#34;&gt;FROM&lt;/span&gt; f_ods_wx_unsubscribe_di &lt;span style=&#34;color:#66d9ef&#34;&gt;WHERE&lt;/span&gt; mid &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;jt20191017175015910985&amp;#39;&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;AND&lt;/span&gt; dt &lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;2020-08-01 00:00:00.0&amp;#39;&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;and&lt;/span&gt; dt &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;2020-08-05 00:00:00.0&amp;#39;&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;group&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;by&lt;/span&gt; dt ) b &lt;span style=&#34;color:#66d9ef&#34;&gt;on&lt;/span&gt; a.dt &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; b.dt
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;metabase，metabase impala driver，impala JDBC driver都会有问题。&lt;/p&gt;
+&lt;h3 id=&#34;metabase-打印日志-query-param&#34;&gt;Metabase 打印日志 query, param&lt;/h3&gt;
+&lt;p&gt;native_form/query 构造完成后，会执行 executef，底层是driver/execute-reducible-query，就是JDBC prepareStatement构造与执行。&lt;/p&gt;
+&lt;p&gt;在executef方法记录日志。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200807174516355.png&#34; alt=&#34;image-20200807174516355&#34;&gt;&lt;/p&gt;
+&lt;p&gt;query的区别如之前、params是完全一致的。所以，不是Metabase的问题。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200807175049064.png&#34; alt=&#34;image-20200807175049064&#34;&gt;&lt;/p&gt;
+&lt;p&gt;而 metabase impala driver 也没有重载 driver/execute-reducible-query 方法。也基本排除了嫌疑。&lt;/p&gt;
+&lt;h3 id=&#34;复现问题&#34;&gt;复现问题&lt;/h3&gt;
+&lt;p&gt;目标锁定在 impala JDBC driver。写一个Java程序复现。&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;使用相同的 Impala JDBC 驱动。&lt;/li&gt;
+&lt;li&gt;同样是参数化提交 SQL。&lt;/li&gt;
+&lt;li&gt;准备类似的SQL Statement。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200807172918590.png&#34; alt=&#34;image-20200807172918590&#34;&gt;&lt;/p&gt;
+&lt;p&gt;核心逻辑。&lt;a href=&#34;https://github.com/XUJiahua/impala-jdbc-sql-rewrite&#34;&gt;代码在此&lt;/a&gt;。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-java&#34; data-lang=&#34;java&#34;&gt;                    connection &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; DriverManager&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;getConnection&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;CONNECTION_URL&lt;span style=&#34;color:#f92672&#34;&gt;);&lt;/span&gt;
+                    ps &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; connection&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;prepareStatement&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;sql&lt;span style=&#34;color:#f92672&#34;&gt;);&lt;/span&gt;
+                    ps&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;setString&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;1&lt;span style=&#34;color:#f92672&#34;&gt;,&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;jt20191017175015910985&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;);&lt;/span&gt;
+                    ps&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;setTimestamp&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;2&lt;span style=&#34;color:#f92672&#34;&gt;,&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;new&lt;/span&gt; Timestamp&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;2020 &lt;span style=&#34;color:#f92672&#34;&gt;-&lt;/span&gt; 1900&lt;span style=&#34;color:#f92672&#34;&gt;,&lt;/span&gt; 8 &lt;span style=&#34;color:#f92672&#34;&gt;-&lt;/span&gt; 1&lt;span style=&#34;color:#f92672&#34;&gt;,&lt;/span&gt; 1&lt;span style=&#34;color:#f92672&#34;&gt;,&lt;/span&gt; 0&lt;span style=&#34;color:#f92672&#34;&gt;,&lt;/span&gt; 0&lt;span style=&#34;color:#f92672&#34;&gt;,&lt;/span&gt; 0&lt;span style=&#34;color:#f92672&#34;&gt;,&lt;/span&gt; 0&lt;span style=&#34;color:#f92672&#34;&gt;));&lt;/span&gt;
+                    ps&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;setTimestamp&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;3&lt;span style=&#34;color:#f92672&#34;&gt;,&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;new&lt;/span&gt; Timestamp&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;2020 &lt;span style=&#34;color:#f92672&#34;&gt;-&lt;/span&gt; 1900&lt;span style=&#34;color:#f92672&#34;&gt;,&lt;/span&gt; 8 &lt;span style=&#34;color:#f92672&#34;&gt;-&lt;/span&gt; 1&lt;span style=&#34;color:#f92672&#34;&gt;,&lt;/span&gt; 5&lt;span style=&#34;color:#f92672&#34;&gt;,&lt;/span&gt; 0&lt;span style=&#34;color:#f92672&#34;&gt;,&lt;/span&gt; 0&lt;span style=&#34;color:#f92672&#34;&gt;,&lt;/span&gt; 0&lt;span style=&#34;color:#f92672&#34;&gt;,&lt;/span&gt; 0&lt;span style=&#34;color:#f92672&#34;&gt;));&lt;/span&gt;
+                    ps&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;setString&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;4&lt;span style=&#34;color:#f92672&#34;&gt;,&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;jt20191017175015910985&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;);&lt;/span&gt;
+                    ps&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;setTimestamp&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;5&lt;span style=&#34;color:#f92672&#34;&gt;,&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;new&lt;/span&gt; Timestamp&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;2020 &lt;span style=&#34;color:#f92672&#34;&gt;-&lt;/span&gt; 1900&lt;span style=&#34;color:#f92672&#34;&gt;,&lt;/span&gt; 8 &lt;span style=&#34;color:#f92672&#34;&gt;-&lt;/span&gt; 1&lt;span style=&#34;color:#f92672&#34;&gt;,&lt;/span&gt; 1&lt;span style=&#34;color:#f92672&#34;&gt;,&lt;/span&gt; 0&lt;span style=&#34;color:#f92672&#34;&gt;,&lt;/span&gt; 0&lt;span style=&#34;color:#f92672&#34;&gt;,&lt;/span&gt; 0&lt;span style=&#34;color:#f92672&#34;&gt;,&lt;/span&gt; 0&lt;span style=&#34;color:#f92672&#34;&gt;));&lt;/span&gt;
+                    ps&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;setTimestamp&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;6&lt;span style=&#34;color:#f92672&#34;&gt;,&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;new&lt;/span&gt; Timestamp&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;2020 &lt;span style=&#34;color:#f92672&#34;&gt;-&lt;/span&gt; 1900&lt;span style=&#34;color:#f92672&#34;&gt;,&lt;/span&gt; 8 &lt;span style=&#34;color:#f92672&#34;&gt;-&lt;/span&gt; 1&lt;span style=&#34;color:#f92672&#34;&gt;,&lt;/span&gt; 5&lt;span style=&#34;color:#f92672&#34;&gt;,&lt;/span&gt; 0&lt;span style=&#34;color:#f92672&#34;&gt;,&lt;/span&gt; 0&lt;span style=&#34;color:#f92672&#34;&gt;,&lt;/span&gt; 0&lt;span style=&#34;color:#f92672&#34;&gt;,&lt;/span&gt; 0&lt;span style=&#34;color:#f92672&#34;&gt;));&lt;/span&gt;
+                    resultSet &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; ps&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;executeQuery&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;();&lt;/span&gt;
+                    ResultSetMetaData rsmd &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; resultSet&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;getMetaData&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;();&lt;/span&gt;
+                    &lt;span style=&#34;color:#66d9ef&#34;&gt;int&lt;/span&gt; columnsNumber &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; rsmd&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;getColumnCount&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;();&lt;/span&gt;
+                    &lt;span style=&#34;color:#66d9ef&#34;&gt;while&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;resultSet&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;next&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;())&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;{&lt;/span&gt;
+                        &lt;span style=&#34;color:#66d9ef&#34;&gt;for&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;int&lt;/span&gt; i &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; 1&lt;span style=&#34;color:#f92672&#34;&gt;;&lt;/span&gt; i &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;=&lt;/span&gt; columnsNumber&lt;span style=&#34;color:#f92672&#34;&gt;;&lt;/span&gt; i&lt;span style=&#34;color:#f92672&#34;&gt;++)&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;{&lt;/span&gt;
+                            &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;i &lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt; 1&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt; System&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;out&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;print&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;,  &amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;);&lt;/span&gt;
+                            String columnValue &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; resultSet&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;getString&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;i&lt;span style=&#34;color:#f92672&#34;&gt;);&lt;/span&gt;
+                            System&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;out&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;print&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;columnValue &lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34; &amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt; rsmd&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;getColumnName&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;i&lt;span style=&#34;color:#f92672&#34;&gt;));&lt;/span&gt;
+                        &lt;span style=&#34;color:#f92672&#34;&gt;}&lt;/span&gt;
+                        System&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;out&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;println&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;);&lt;/span&gt;
+                    &lt;span style=&#34;color:#f92672&#34;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;服务器上执行，结果复现。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;$ java -jar impala-jdbc-sql-rewrite-1.0-SNAPSHOT.jar 1.sql
+2020-08-05 dt,  &lt;span style=&#34;color:#ae81ff&#34;&gt;29257&lt;/span&gt; 净增人数
+2020-08-02 dt,  &lt;span style=&#34;color:#ae81ff&#34;&gt;37285&lt;/span&gt; 净增人数
+2020-08-04 dt,  &lt;span style=&#34;color:#ae81ff&#34;&gt;24640&lt;/span&gt; 净增人数
+2020-08-03 dt,  &lt;span style=&#34;color:#ae81ff&#34;&gt;29253&lt;/span&gt; 净增人数
+
+$ java -jar impala-jdbc-sql-rewrite-1.0-SNAPSHOT.jar 2.sql
+2020-08-02 dt,  &lt;span style=&#34;color:#ae81ff&#34;&gt;37285&lt;/span&gt; 净增人数
+2020-08-04 dt,  &lt;span style=&#34;color:#ae81ff&#34;&gt;24640&lt;/span&gt; 净增人数
+2020-08-03 dt,  &lt;span style=&#34;color:#ae81ff&#34;&gt;29253&lt;/span&gt; 净增人数
+2020-08-01 dt,  &lt;span style=&#34;color:#ae81ff&#34;&gt;37235&lt;/span&gt; 净增人数
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;排查过程中的误区&#34;&gt;排查过程中的误区&lt;/h3&gt;
+&lt;p&gt;一直以为Metabase服务返回的native_form/query是实际提交给JDBC驱动的sql。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200807171929947.png&#34; alt=&#34;image-20200807171929947&#34;&gt;&lt;/p&gt;
+&lt;p&gt;其实并不然。native_form/query是拼接好的SQL，参数已经填充进了SQL语句中。而实际执行SQL，使用的是参数化提交。源码表示返回的native_form/query是query实际执行后的产物。所以对排查问题有误导作用。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200807172259322.png&#34; alt=&#34;image-20200807172259322&#34;&gt;&lt;/p&gt;
+&lt;h3 id=&#34;临时解决方案&#34;&gt;临时解决方案&lt;/h3&gt;
+&lt;p&gt;驱动的问题暂时无法解决，Workaround是有的。只要保证日期比较的时候，条件表达式左右之一至少是TIMESTAMP类型。&lt;/p&gt;
+- https://xujiahua.github.io/posts/20200807-impala/ - </description>
+        </item>
+    
+    
+    
+        <item>
+        <title>【阅读】How Ray Uses gRPC (and Arrow) to Outperform gRPC</title>
+        <link>https://xujiahua.github.io/posts/20200807-ray-grpc-arrow/</link>
+        <pubDate>Fri, 07 Aug 2020 10:34:23 +0800</pubDate>
+        
+        <guid>https://xujiahua.github.io/posts/20200807-ray-grpc-arrow/</guid>
+        <description>许嘉华的笔记 https://xujiahua.github.io/posts/20200807-ray-grpc-arrow/ -&lt;p&gt;原文：&lt;a href=&#34;https://medium.com/distributed-computing-with-ray/how-ray-uses-grpc-and-arrow-to-outperform-grpc-43ec368cb385&#34;&gt;How Ray Uses gRPC (and Arrow) to Outperform gRPC&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;对理解 Ray 的底层逻辑有帮助。文中描述的Ray版本为0.8。&lt;/p&gt;
+&lt;h2 id=&#34;overview-of-ray&#34;&gt;Overview of Ray&lt;/h2&gt;
+&lt;p&gt;Ray 的计算任务分为两类，无状态计算任务 Task，有状态计算任务 Actor。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://ray.readthedocs.io/en/latest/walkthrough.html#remote-functions-tasks&#34;&gt;&lt;strong&gt;Tasks&lt;/strong&gt;&lt;/a&gt; (remote functions): these let you run a function remotely in a cluster. Tasks are for &lt;em&gt;stateless&lt;/em&gt; computation.&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://ray.readthedocs.io/en/latest/walkthrough.html#remote-classes-actors&#34;&gt;&lt;strong&gt;Actors&lt;/strong&gt;&lt;/a&gt; (remote classes): these are instances of Python classes running remotely in worker processes in a cluster. Actors are for &lt;em&gt;stateful&lt;/em&gt; computation, where evolving state needs to be managed.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;原文讲的是Ray核心逻辑，如何使用gRPC和Arrow的。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/0*HMxWNgryNrCZXM8d.png&#34; alt=&#34;Image for post&#34;&gt;&lt;/p&gt;
+&lt;h2 id=&#34;how-ray-calls-translate-into-grpc-operations&#34;&gt;How Ray calls translate into gRPC operations&lt;/h2&gt;
+&lt;p&gt;从几个例子可以了解到：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Ray 如何调度 task（python function）/actor（python class）。&lt;/li&gt;
+&lt;li&gt;Ray 如何对调度工作进行优化的。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3 id=&#34;basic-ray-task-call&#34;&gt;Basic Ray Task Call&lt;/h3&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;@ray.remote&lt;/span&gt;
+&lt;span style=&#34;color:#66d9ef&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;double&lt;/span&gt;(x):
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; x &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;
+fut1 &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; double&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;remote(&lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;)
+&lt;span style=&#34;color:#66d9ef&#34;&gt;assert&lt;/span&gt; ray&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;get(fut1) &lt;span style=&#34;color:#f92672&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;4&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;工作进程调用 double.remote，触发如下两次 gRPC请求：&lt;/p&gt;
+&lt;p&gt;第一次 gRPC 请求：GetWorkerLease RPC&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Raylet：Ray 调度后台进程，每个节点一个。&lt;/li&gt;
+&lt;li&gt;向 Raylet 申请需要运行 double 的资源，ask for a lease on a worker to execute double(2)。&lt;/li&gt;
+&lt;li&gt;Raylet 的调度器检查 task（也就是double方法）需要的资源（@ray.remote里可以指定需要的资源）或是依赖，根据上述信息，找到一个合适的worker。&lt;/li&gt;
+&lt;li&gt;这次 gPRC 请求申请资源成功，相当于在 worker 上加了一把排他锁。其他任务无法使用worker。While it holds the lease, no other worker process can schedule tasks on the leased worker.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;第二次 gRPC 请求：ExecuteTask RPC&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;向申请到的worker发送任务，并获取结果。&lt;/li&gt;
+&lt;li&gt;因为参数和返回结果足够小，都是包含在gPRC请求里。&lt;/li&gt;
+&lt;li&gt;传输大数据，后面会讲。&lt;/li&gt;
+&lt;li&gt;上述gRPC请求中间出现意外，都会进行重试，直到重试上限。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/0*xvg9YttgxX17HbVT.png&#34; alt=&#34;Image for post&#34;&gt;&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;上图是在单机上运行的Ray逻辑结构。Ray 使用 gPRC 作为统一的通信层。&lt;/li&gt;
+&lt;li&gt;绿框中的是Python代码。&lt;/li&gt;
+&lt;li&gt;白框中的是C++代码，Ray common runtime。&lt;/li&gt;
+&lt;li&gt;Python Driver进程包括Python Driver + Ray Core Worker，Python Worker进程包括Python Worker + Ray Core Worker。可以理解Python是胶水层。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3 id=&#34;caching-scheduling-decisions&#34;&gt;Caching Scheduling Decisions&lt;/h3&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;futures &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; [double&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;remote(i) &lt;span style=&#34;color:#66d9ef&#34;&gt;for&lt;/span&gt; i &lt;span style=&#34;color:#f92672&#34;&gt;in&lt;/span&gt; range(&lt;span style=&#34;color:#ae81ff&#34;&gt;1000&lt;/span&gt;)]
+ray&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;get(futures) &lt;span style=&#34;color:#75715e&#34;&gt;# [0, 2, 4, 6, …]&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;以上代码触发了1000次double.remote，因为是同一块代码，它们使用相同的worker配置，这就是优化点所在。&lt;/p&gt;
+&lt;p&gt;上文得知，执行任务两步走，一是申请资源，二是实际执行任务。因为task要求的资源配置相同，可以缓存并复用资源，&lt;em&gt;caches&lt;/em&gt; scheduling decisions，大量减少 GetWorkerLease RPC的请求次数。有限次（任务的并行数）的 GetWorkerLease RPC 均摊到大量的Task上，损耗可忽略不计，可以理解为执行多少个Task，只需要执行同等数量的 ExecuteTask RPC。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/0*HdroniGtqcZVVWv8.png&#34; alt=&#34;Image for post&#34;&gt;&lt;/p&gt;
+&lt;h3 id=&#34;scaling-to-multiple-nodes&#34;&gt;Scaling to Multiple Nodes&lt;/h3&gt;
+&lt;p&gt;double.remote(2)的例子扩展到多节点的场景，假设本地机器没有空闲的worker了。&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;driver程序向raylet1，也就是本地raylet申请资源，GetWorkerLease RPC&lt;/li&gt;
+&lt;li&gt;raylet1知道本节点没有资源了，但是知道raylet2（其他节点的raylet）有worker资源，将请求转发到raylet2&lt;/li&gt;
+&lt;li&gt;资源就这样申请成功。暂时还没解释raylet1怎么知道raylet2有资源的。&lt;/li&gt;
+&lt;li&gt;driver程序向node2上的worker发起 ExecuteTask RPC，执行任务。&lt;/li&gt;
+&lt;li&gt;多节点上&lt;em&gt;caches&lt;/em&gt; scheduling decisions的策略同样有效。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/0*VTYUxv2HQpudSvSd.png&#34; alt=&#34;Image for post&#34;&gt;&lt;/p&gt;
+&lt;h3 id=&#34;creating-and-using-actors&#34;&gt;Creating and Using Actors&lt;/h3&gt;
+&lt;p&gt;Actor 是有状态的 Task。调度逻辑大体相同。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;@ray.remote&lt;/span&gt;
+&lt;span style=&#34;color:#66d9ef&#34;&gt;class&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;Counter&lt;/span&gt;:
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;def&lt;/span&gt; __init__(self):
+        self&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;value &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;increment&lt;/span&gt;(self):
+        self&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;value &lt;span style=&#34;color:#f92672&#34;&gt;+=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;
+        &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; self&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;value
+c &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; Counter&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;remote()
+&lt;span style=&#34;color:#66d9ef&#34;&gt;assert&lt;/span&gt; ray&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;get(c&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;increment&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;remote()) &lt;span style=&#34;color:#f92672&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;
+
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;ol&gt;
+&lt;li&gt;调用 Counter.remote()，触发资源申请，GetWorkerLease RPC，申请Worker&lt;/li&gt;
+&lt;li&gt;对于Actor，构造函数&lt;code&gt;__init__&lt;/code&gt;作为Task发送到 Worker 去。触发任务执行，ExecuteTask RPC。&lt;/li&gt;
+&lt;li&gt;Actor是有状态的，Actor 实例与 申请的Worker 会绑定，直到Actor实例消亡。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/0*pAecaetsZKkxW80Q.png&#34; alt=&#34;Image for post&#34;&gt;&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;因为有了绑定关系，Actor实例方法的执行，直接与Worker直接通信。ExecuteTask RPC。&lt;/li&gt;
+&lt;li&gt;不需要再次任务调度。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/0*v9I-UWS61qK2UrkZ.png&#34; alt=&#34;Image for post&#34;&gt;&lt;/p&gt;
+&lt;h2 id=&#34;sending-and-sharing-large-objects-with-arrow&#34;&gt;Sending and Sharing Large Objects with Arrow&lt;/h2&gt;
+&lt;p&gt;大对象（一般指的是超过100KB）通过gRPC传输不够高效。Ray 使用  shared memory object store provided by Apache Arrow 来存储大对象。&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;相同节点上，两个Task之间大对象的传输，实际使用的是共享内存。减少了使用gRPC带来的大对象copy。&lt;/li&gt;
+&lt;li&gt;针对不同节点上的两个Task之间的大对象传输，就会涉及到两块共享内存的数据传输了，这块还是用的gRPC。&lt;/li&gt;
+&lt;li&gt;driver程序执行double.remote(array)，因为array太大，首先会存储到共享内存，然后触发ExecuteTask RPC。&lt;/li&gt;
+&lt;li&gt;worker上，array需要从本机的共享内存取，而共享内存按需从其他节点共享内存取。&lt;/li&gt;
+&lt;li&gt;worker 的工作结果，因为也比较大，存储到共享内存。&lt;/li&gt;
+&lt;li&gt;driver通过ray.get获取结果，结果才从node2的共享内存同步到node1的共享内存。懒加载。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/0*dw1oBwtWnESKmQUR.png&#34; alt=&#34;Image for post&#34;&gt;&lt;/p&gt;
+&lt;h2 id=&#34;ray-08-performance&#34;&gt;Ray 0.8 Performance&lt;/h2&gt;
+&lt;p&gt;通过上述优化，0.8版本比老版本在请求延迟和对象传输吞吐量方面有了提高。但不是文中吸引我的地方。&lt;/p&gt;
+&lt;p&gt;请求延迟，C++ gRPC 比 Python gRPC有更低的响应时间。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/0*XVY-HbhmlIkt34_N.png&#34; alt=&#34;Image for post&#34;&gt;&lt;/p&gt;
+&lt;p&gt;对象传输吞吐量，因为采用了多条 C++ gRPC 轮询线程，对象传输快了很多。使用Python gRPC就差很多。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/0*5RPiO3Cimua5iIX1.png&#34; alt=&#34;Image for post&#34;&gt;&lt;/p&gt;
+&lt;p&gt;总结起来，用C++榨干机器性能，Python有太多overhead。Ray 公司也计划着C++/Rust的语言接口。也是为了性能考虑吧。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;At &lt;a href=&#34;http://anyscale.io/&#34;&gt;Anyscale&lt;/a&gt;, we’re working on a number of enhancements for Ray 1.0, including:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Support for tasks/actors written in C++ and Rust (in addition to Python and Java today).&lt;/li&gt;
+&lt;li&gt;Distributed reference counting for shared memory objects.&lt;/li&gt;
+&lt;li&gt;Accelerated point-to-point GPU transfers.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/blockquote&gt;
+- https://xujiahua.github.io/posts/20200807-ray-grpc-arrow/ - </description>
+        </item>
+    
+    
+    
+        <item>
+        <title>【阅读】Machine Learning Serving Broken</title>
+        <link>https://xujiahua.github.io/posts/20200806-machine-learning-serving-broken/</link>
+        <pubDate>Thu, 06 Aug 2020 09:49:47 +0800</pubDate>
+        
+        <guid>https://xujiahua.github.io/posts/20200806-machine-learning-serving-broken/</guid>
+        <description>许嘉华的笔记 https://xujiahua.github.io/posts/20200806-machine-learning-serving-broken/ -&lt;p&gt;原文 &lt;a href=&#34;https://medium.com/distributed-computing-with-ray/machine-learning-serving-is-broken-f59aff2d607f&#34;&gt;Machine Learning Serving is Broken&lt;/a&gt; 是 &lt;a href=&#34;https://medium.com/distributed-computing-with-ray?source=post_page-----f59aff2d607f----------------------&#34;&gt;Distributed Computing with Ray&lt;/a&gt; 专栏文章，聊了机器学习模型的 Serving 问题，记录一二。&lt;/p&gt;
+&lt;p&gt;设立好机器学习目标后，从模型角度，机器学习整体可分这么2个阶段：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;模型的创建。模型训练 Training。包括训练数据准备，选择最好的模型（超参数调优）。&lt;/li&gt;
+&lt;li&gt;模型的使用。模型推理 Inference。也包括输入数据的准备。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;模型被使用，才是机器学习落地的开始。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/1*P_eJtjAZjntemqvLreZ8EA.jpeg&#34; alt=&#34;Image for post&#34;&gt;&lt;/p&gt;
+&lt;h3 id=&#34;wrap-your-model-in-flask&#34;&gt;Wrap Your Model in Flask&lt;/h3&gt;
+&lt;p&gt;机器学习模型一般使用 Python 开发，所以使用 Flask 是很自然就能想到的方案。&lt;/p&gt;
+&lt;p&gt;从 coding 角度，与传统的Web应用开发区别不大。把模型、数据库当做黑盒，开发只关心输入输出。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/1*boWvKC0jg5hrVv53icMwIg.png&#34; alt=&#34;Image for post&#34;&gt;&lt;/p&gt;
+&lt;p&gt;使用 Flask 进行 Serving，给了模型的开发者很大的便利，同样的 Python 技术栈，Flask 学习成本又低，从模型开发到模型API化可以一人搞定。不同的机器学习模型的格式差异（ScikitLearn与TensorFlow的模型格式就迥异）统一使用HTTP协议抹平。这是优点。&lt;/p&gt;
+&lt;p&gt;表面上是美好的。但是，机器学习 Serving 需要大内存加载模型，并且执行计算密集型任务。响应时间秒级，QPS 100+是常见的。下图比较的是单机与传统Web Serving的不同。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/1*TOFL3owzto7bD0o5K1AopQ.png&#34; alt=&#34;Image for post&#34;&gt;&lt;/p&gt;
+&lt;p&gt;解决方法也是有的，因为Model Serving本身是无状态的，很容易进行水平扩展。&lt;/p&gt;
+&lt;p&gt;&lt;del&gt;性能问题也能通过水平扩展来解决。目前为止，Flask 方案表现良好。&lt;/del&gt;&lt;/p&gt;
+&lt;p&gt;Flask的问题：因为 Model Serving 是计算密集型任务，提高 Flask 服务并发的手段只有多进程（规避 Python GIL 问题） ，使用 &lt;a href=&#34;https://flask.palletsprojects.com/en/1.1.x/deploying/wsgi-standalone/#gunicorn&#34;&gt;gunicorn&lt;/a&gt;。也就意味着，启动N个worker进程，Model 会加载N次，内存浪费问题很严重。参考：&lt;a href=&#34;https://www.slideshare.net/SimonMo7/ray-serve-a-new-scalable-machine-learning-model-serving-library-on-ray&#34;&gt;Ray Serve: A new scalable machine learning model serving library on Ray&lt;/a&gt;。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200808162654801.png&#34; alt=&#34;image-20200808162654801&#34;&gt;&lt;/p&gt;
+&lt;p&gt;原文指出如果 Model 扩展到了数百个，那就是数百个 * N的微服务，没有专职运维团队，开发团队是处理不过来的。&lt;del&gt;个人认为这个问题应该是业务发展的技术阵痛，而不是Flask的问题呀。&lt;/del&gt;&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;In the model serving scenario, each microservice only corresponds to one single model. A typical development team can manage tens of microservices but not hundreds of them without a large dedicated ops team.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h3 id=&#34;the-rise-of-specialized-systems&#34;&gt;The Rise of Specialized Systems&lt;/h3&gt;
+&lt;p&gt;模型Serving专用系统的崛起。比如 TensorFlow Serving，不过只能用于 TensorFlow 模型。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/1*MhAjfO4Wh5T8z-ex_oacOQ.png&#34; alt=&#34;Image for post&#34;&gt;&lt;/p&gt;
+&lt;p&gt;将计算转移到专用系统后，Flask coding 的逻辑就跟 Web 开发真没两样了，瓶颈问题都转移到专用系统了。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/1*VuHnQMYC-DCaGC4nG2g8CQ.png&#34; alt=&#34;Image for post&#34;&gt;&lt;/p&gt;
+&lt;p&gt;比起 Flask 包装模型的做法，Flask 应用对接 Model Serving 专用系统，需要适配专用系统的输入输出。比如对接TensorFlow Serving，其输入是一个多维数组，需要把原始请求做转换，第一次就做对是挺难的。没法复用模型训练用的数据预处理逻辑。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/1*0kaOHR4XK5qkJIBrvqA1gA.png&#34; alt=&#34;Image for post&#34;&gt;&lt;/p&gt;
+&lt;p&gt;模型开发者现在需要维护两个server：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;model server：部署模型的专用系统。&lt;/li&gt;
+&lt;li&gt;web server：输入数据准备，调用model server（不同接口做不同的适配）。（其中输入数据准备，要到什么程度呢，是调用方把数据都准备好，还是模型开发者去调用一些特征数据服务。这些模糊地带，每个公司可能都不一样。）&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;架构中多引入一层 Model Server，模型开发者的工作内容也发生了变化。原文指出这会给模型开发者带来 cognitive load（认知压力），引入了新的工作流程，还不顺手的那种。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Additionally, by adopting model servers, data scientists now have two problems: managing the model servers, and managing a web server that handles all the business logic. Even though the model servers might be managed by an infrastructure team, the data scientists still need to think about the featurization in the web server and the model logic in the model servers. This is a lot of cognitive load for the data scientists.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;也总结了一些Model Server的不足。TensorFlow Serving 只是 TensorFlow 模型的专用系统，不够通用。转化成统一的模型格式比如ONNX，可能会带来未知bug。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;ul&gt;
+&lt;li&gt;Framework lock-in: &lt;a href=&#34;https://www.tensorflow.org/tfx/guide/serving&#34;&gt;Tensorflow Serving&lt;/a&gt; and &lt;a href=&#34;https://pytorch.org/serve/&#34;&gt;TorchServe&lt;/a&gt; are specialized systems for each framework. Modern data science teams use the best tool at hand; this can mean a mix of &lt;a href=&#34;https://xgboost.readthedocs.io/en/latest/&#34;&gt;XGBoost&lt;/a&gt;, &lt;a href=&#34;https://scikit-learn.org/stable/&#34;&gt;scikit-learn&lt;/a&gt;, and deep learning frameworks. &lt;strong&gt;We need a system that can serve arbitrary python models.&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;Vendor lock-in: AWS SageMaker and the other cloud providers offer hosted ML serving solutions that wrap your models and deploy them for you. In addition, these hosted solutions don’t have a unified API. &lt;strong&gt;We need vendor neutral solutions that avoid cloud vendor lock-in&lt;/strong&gt;.&lt;/li&gt;
+&lt;li&gt;Training &amp;amp; serving divergence: There are other solutions that take a trained model and convert it to another format for serving, like ONNX, PMML, and NVIDIA TensorRT. But &lt;strong&gt;we want to&lt;/strong&gt; &lt;strong&gt;serve their models in the same framework that was used for training to avoid unknown bugs.&lt;/strong&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/blockquote&gt;
+&lt;h3 id=&#34;ray-serve&#34;&gt;Ray Serve&lt;/h3&gt;
+&lt;p&gt;总结前文中方案的不足。&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Wrap Your Model in Flask 模型太多不好维护（指的是开发团队自己维护）。希望部署、运维能简单。&lt;/li&gt;
+&lt;li&gt;Specialized Systems 引入了新系统，不单单是原来那套顺手的Python脚本了，给模型开发者带来了额外的工作量。希望沿用老的技术栈。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;两个希望就是 &lt;a href=&#34;https://docs.ray.io/en/master/serve/&#34;&gt;Ray Serve&lt;/a&gt; 的目标，遵从模型开发者的习惯，给模型开发者顺手的工具，衔接好训练和上线两个阶段，提高生产效率。&lt;/p&gt;
+&lt;p&gt;原文中的案例，iterating quickly without an ops team 说出了其精髓。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;ul&gt;
+&lt;li&gt;A computer vision startup is using Ray Serve to serve deep learning based computer vision models. The teams of data scientists are iterating quickly without an ops team. Ray Serve helps them to quickly deploy and scale their predictions.&lt;/li&gt;
+&lt;li&gt;The data science team at an E-commerce site is using Ray Serve to gain full control of the models from development to deployment. Ray Serve helps them gain visibility into the serving process as well as reducing costs by batching on GPUs. Additionally, machine learning models are typically not deployed individuality. Ray Serve enables them to easily &lt;a href=&#34;https://docs.ray.io/en/master/serve/advanced.html#composing-multiple-models&#34;&gt;compose models&lt;/a&gt; together.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;&lt;a href=&#34;https://medium.com/distributed-computing-with-ray/the-simplest-way-to-serve-your-nlp-model-in-production-with-pure-python-d42b6a97ad55&#34;&gt;The Simplest Way to Serve your NLP Model in Production with Pure Python&lt;/a&gt; 提到的 general-purpose ML serving infrastructure 的关键特质。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;We’ve concluded that there are several key properties for general-purpose ML serving infrastructure:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;Framework Agnostic&lt;/strong&gt; — Model serving frameworks must be able to serve &lt;a href=&#34;https://www.tensorflow.org/&#34;&gt;TensorFlow&lt;/a&gt;, &lt;a href=&#34;https://pytorch.org/&#34;&gt;PyTorch&lt;/a&gt;, &lt;a href=&#34;https://scikit-learn.org/stable/&#34;&gt;scikit-learn&lt;/a&gt;, or even arbitrary Python functions. Why? People use many different machine learning frameworks, and machine learning models are typically surrounded by lots of application logic. Limiting serving to a simple forward pass through a TensorFlow model is too restrictive. 支持各种框架，对框架没要求。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Pure Python&lt;/strong&gt; — Model serving should be intuitive for developers and dead simple to run. That means pure Python and no verbose configurations or yaml files. Developers use Python to develop their machine learning models, so they should also be able to use Python to deploy their machine learning applications. This is growing more critical as online learning applications combine training and serving in the same applications. 纯 Python 一把梭。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Simple &amp;amp; Scalable&lt;/strong&gt; — Model serving must be simple to scale out of the box across many machines along with simple ways of upgrading models over time. Achieving production uptime and performance requirements are essential for success. 非常容易可伸缩。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;关于 Ray Serve 的介绍，可以参考这个 Silde，与本文观点类似：&lt;a href=&#34;https://www.slideshare.net/SimonMo7/ray-serve-a-new-scalable-machine-learning-model-serving-library-on-ray&#34;&gt;Ray Serve: A new scalable machine learning model serving library on Ray&lt;/a&gt;。&lt;/p&gt;
+- https://xujiahua.github.io/posts/20200806-machine-learning-serving-broken/ - </description>
+        </item>
     
     
     
@@ -630,411 +913,6 @@ expect1
 &lt;h2 id=&#34;总结&#34;&gt;总结&lt;/h2&gt;
 &lt;p&gt;虽然对 phash 算法还是有点陌生，但是其效果基本满足了业务需求。至少比自己分析出的规则好很多。&lt;/p&gt;
 - https://xujiahua.github.io/posts/20200611-phash/ - </description>
-        </item>
-    
-    
-    
-        <item>
-        <title>Metabase SSO 登录</title>
-        <link>https://xujiahua.github.io/posts/20200609-metabase-sso-login/</link>
-        <pubDate>Tue, 09 Jun 2020 10:37:09 +0800</pubDate>
-        
-        <guid>https://xujiahua.github.io/posts/20200609-metabase-sso-login/</guid>
-        <description>许嘉华的笔记 https://xujiahua.github.io/posts/20200609-metabase-sso-login/ -&lt;p&gt;探讨如何将 Metabase 融入业务系统（SaaS 服务）。&lt;/p&gt;
-&lt;p&gt;为何需要集成 Metabase 到业务系统中呢？一般，通用的数据需求都做到SaaS服务中了。而现实情况是，客户是有很多定制化数据需求的。使用 Metabase 制作报表，直接跳过前后端开发，快速满足客户需求。&lt;/p&gt;
-&lt;p&gt;（最终极地，进一步提高生产效率，把 Metabase 的组件化能力内化到 SaaS 服务中才是正道。）&lt;/p&gt;
-&lt;p&gt;试分析下 Metabase 提供的方案，以及适配我们的场景，分析该怎么改。&lt;/p&gt;
-&lt;h2 id=&#34;分析现存方案&#34;&gt;分析现存方案&lt;/h2&gt;
-&lt;p&gt;开源版本的 Metabase 支持两种第三方登录：&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;LDAP: Allows users within your LDAP directory to log in to Metabase with their LDAP credentials, and allows automatic mapping of LDAP groups to Metabase groups.&lt;/li&gt;
-&lt;li&gt;Sign in with Google: Allows users with &lt;strong&gt;existing Metabase accounts&lt;/strong&gt; to login with a Google account that &lt;strong&gt;matches their email address&lt;/strong&gt; in addition to their Metabase username and password.&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;企业版本：&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;SAML&lt;/li&gt;
-&lt;li&gt;JWT&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;参考：&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;Authenticating with Google Sign-In or LDAP &lt;a href=&#34;https://www.metabase.com/docs/latest/administration-guide/10-single-sign-on.html&#34;&gt;https://www.metabase.com/docs/latest/administration-guide/10-single-sign-on.html&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;Authenticating with SAML &lt;a href=&#34;https://www.metabase.com/docs/latest/enterprise-guide/authenticating-with-saml.html&#34;&gt;https://www.metabase.com/docs/latest/enterprise-guide/authenticating-with-saml.html&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;JWT-based Authentication &lt;a href=&#34;https://www.metabase.com/docs/latest/enterprise-guide/authenticating-with-jwt.html&#34;&gt;https://www.metabase.com/docs/latest/enterprise-guide/authenticating-with-jwt.html&lt;/a&gt;&lt;/li&gt;
-&lt;/ol&gt;
-&lt;h3 id=&#34;sign-in-with-google&#34;&gt;Sign in with Google&lt;/h3&gt;
-&lt;p&gt;其底层对接的是Google的Sign-In for Website &lt;a href=&#34;https://developers.google.com/identity/sign-in/web&#34;&gt;https://developers.google.com/identity/sign-in/web&lt;/a&gt; 。并假设 Google 返回的数据是完全可信的。&lt;/p&gt;
-&lt;p&gt;根据文档配置获取 clientID。本地测试，Authorized JavaScript origins 设置成本地路径。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image-20200609164603642.png&#34; alt=&#34;image-20200609164603642&#34;&gt;&lt;/p&gt;
-&lt;p&gt;管理员角色下 Metabase 配置 clientID。第二项，满足条件：email是@gmail.com结尾的，自动创建账户。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image-20200609170932819.png&#34; alt=&#34;image-20200609170932819&#34;&gt;&lt;/p&gt;
-&lt;p&gt;不然，需先创建Metabase账户，其email等于Google登录返回的邮箱地址。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image-20200609171443922.png&#34; alt=&#34;image-20200609171443922&#34;&gt;&lt;/p&gt;
-&lt;p&gt;Google登录的client-id由后端提供给前端。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image-20200609160327997.png&#34; alt=&#34;image-20200609160327997&#34;&gt;&lt;/p&gt;
-&lt;p&gt;用户登录界面有了Google登录按钮。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image-20200609104044953.png&#34; alt=&#34;image-20200609104044953&#34;&gt;&lt;/p&gt;
-&lt;p&gt;点击Google登录按钮，会唤起Google登录页面。登录成功，获取到Google返回结果。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image-20200609163652367.png&#34; alt=&#34;image-20200609163652367&#34;&gt;&lt;/p&gt;
-&lt;p&gt;将Google返回里的token提交给Metabase服务器。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image-20200609155729926.png&#34; alt=&#34;image-20200609155729926&#34;&gt;&lt;/p&gt;
-&lt;p&gt;&lt;code&gt;google_auth&lt;/code&gt;这个接口。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image-20200609155759738.png&#34; alt=&#34;image-20200609155759738&#34;&gt;&lt;/p&gt;
-&lt;p&gt;通过token请求用户信息。参考：Calling the tokeninfo endpoint &lt;a href=&#34;https://developers.google.com/identity/sign-in/web/backend-auth#calling-the-tokeninfo-endpoint&#34;&gt;https://developers.google.com/identity/sign-in/web/backend-auth#calling-the-tokeninfo-endpoint&lt;/a&gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image-20200609171805849.png&#34; alt=&#34;image-20200609171805849&#34;&gt;&lt;/p&gt;
-&lt;p&gt;整体流程如图：&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image-20200609180555022.png&#34; alt=&#34;image-20200609180555022&#34;&gt;&lt;/p&gt;
-&lt;h3 id=&#34;ldap&#34;&gt;LDAP&lt;/h3&gt;
-&lt;p&gt;LDAP 可以理解为一个用户数据库、服务，常见用途就是单点登录，用户只需要记住一个密码就可以登录多个服务。了解更多参考：&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;轻型目录访问协议 &lt;a href=&#34;https://zh.wikipedia.org/wiki/%E8%BD%BB%E5%9E%8B%E7%9B%AE%E5%BD%95%E8%AE%BF%E9%97%AE%E5%8D%8F%E8%AE%AE&#34;&gt;https://zh.wikipedia.org/wiki/%E8%BD%BB%E5%9E%8B%E7%9B%AE%E5%BD%95%E8%AE%BF%E9%97%AE%E5%8D%8F%E8%AE%AE&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;What are CN, OU, DC in an LDAP search? &lt;a href=&#34;https://stackoverflow.com/questions/18756688/what-are-cn-ou-dc-in-an-ldap-search&#34;&gt;https://stackoverflow.com/questions/18756688/what-are-cn-ou-dc-in-an-ldap-search&lt;/a&gt;&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;参考文档搭建一个LDAP环境。&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;How to install OpenLDAP on Ubuntu 18.04 &lt;a href=&#34;https://www.techrepublic.com/article/how-to-install-openldap-on-ubuntu-18-04/&#34;&gt;https://www.techrepublic.com/article/how-to-install-openldap-on-ubuntu-18-04/&lt;/a&gt;&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;其中：&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;DNS domain name 使用 metabase.com，我们会使用metabase的测试配置。&lt;/li&gt;
-&lt;li&gt;测试配置使用 &lt;a href=&#34;https://github.com/metabase/metabase/blob/master/test_resources/ldap.ldif&#34;&gt;https://github.com/metabase/metabase/blob/master/test_resources/ldap.ldif&lt;/a&gt;&lt;/li&gt;
-&lt;/ol&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;ldapadd -x -D cn&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;admin,dc&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;metabase,dc&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;com -W -f test_resources/ldap.ldif
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;用一个LDAP可视化管理工具（用的 Apache Directory Studio）可以看到这样的树状结构。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image-20200609105314696.png&#34; alt=&#34;image-20200609105314696&#34;&gt;&lt;/p&gt;
-&lt;p&gt;Metabase 管理界面配置如下：&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image-20200609104528576.png&#34; alt=&#34;image-20200609104528576&#34;&gt;&lt;/p&gt;
-&lt;p&gt;LDAP用户还是使用邮箱密码登录。优先使用LDAP登录。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image-20200609110920538.png&#34; alt=&#34;image-20200609110920538&#34;&gt;&lt;/p&gt;
-&lt;p&gt;LDAP用户、密码验证。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image-20200609111803290.png&#34; alt=&#34;image-20200609111803290&#34;&gt;&lt;/p&gt;
-&lt;p&gt;验证通过，LDAP用户会映射为本地用户，但是不存密码。并同步group信息（LDAP group 与 metabase group 之间映射可配置）。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image-20200609112238354.png&#34; alt=&#34;image-20200609112238354&#34;&gt;&lt;/p&gt;
-&lt;p&gt;LDAP 用户信息的字段映射到本地用户的email/first_name/last_name，可以配置。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image-20200609114531757.png&#34; alt=&#34;image-20200609114531757&#34;&gt;&lt;/p&gt;
-&lt;h3 id=&#34;saml&#34;&gt;SAML&lt;/h3&gt;
-&lt;p&gt;SAML是实现单点登录（SSO）的一种开放标准。仍然是服务方引导用户到认证中心认证，认证成功后，服务方从认证中心获取用户信息的逻辑。整体逻辑与Google Signin没两样。&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;There three main roles in this communication:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;End User&lt;/li&gt;
-&lt;li&gt;Identity Provider (IdP)&lt;/li&gt;
-&lt;li&gt;Service Provider (SP)&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;The end-user initiates the login process at the SP. The SP will redirect the user to the IdP with a SAML Request (AuthnRequest). The SAML Request will contain the necessary information for the IdP to authenticate the end-user and reply to the SP with the correct SAML Assertion (SAMLResponse).&lt;/p&gt;
-&lt;p&gt;&lt;a href=&#34;https://www.secureauth.com/blog/introduction-to-saml&#34;&gt;https://www.secureauth.com/blog/introduction-to-saml&lt;/a&gt;&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/1127182513244158.Xyqs8g4zWlwULTRe33zB_height640.png&#34; alt=&#34;SAML SP Initiated SSO Flow&#34;&gt;&lt;/p&gt;
-&lt;p&gt;GitHub找了个例子，了解下SAML的流程，可以有一个更具象的认识。 &lt;a href=&#34;https://github.com/crewjam/saml&#34;&gt;https://github.com/crewjam/saml&lt;/a&gt;&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;SP 需要知道 IDP 的认证地址。需要知道 SAML Request 往哪发。&lt;/li&gt;
-&lt;li&gt;IDP 需要知道 SP 的接收地址，需要知道 SAML Response 往哪发。&lt;/li&gt;
-&lt;li&gt;IDP 与 SP之间是通过公私钥认证的。&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;参考：&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;Security Assertion Markup Language &lt;a href=&#34;https://en.wikipedia.org/wiki/Security_Assertion_Markup_Language&#34;&gt;https://en.wikipedia.org/wiki/Security_Assertion_Markup_Language&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;An Introduction to SAML (Security Assertion Markup Language) &lt;a href=&#34;https://www.secureauth.com/blog/introduction-to-saml&#34;&gt;https://www.secureauth.com/blog/introduction-to-saml&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;SAML library for go &lt;a href=&#34;https://github.com/crewjam/saml&#34;&gt;https://github.com/crewjam/saml&lt;/a&gt;&lt;/li&gt;
-&lt;/ol&gt;
-&lt;h2 id=&#34;适配-saas-服务&#34;&gt;适配 SaaS 服务&lt;/h2&gt;
-&lt;p&gt;企业内部使用，使用LDAP挺方便的。而 SaaS 服务怎么利用上Metabase呢？而且Metabase本身没有多租户（企业）的概念。&lt;/p&gt;
-&lt;p&gt;大概分析如下：&lt;/p&gt;
-&lt;h3 id=&#34;基于分组的数据隔离&#34;&gt;基于分组的数据隔离&lt;/h3&gt;
-&lt;p&gt;SaaS 系统，多租户系统，最基本的要求是保证数据隔离。客户只能看到自己的数据（报表）。&lt;/p&gt;
-&lt;p&gt;Metabase 数据隔离的手段只有分组。基于分组隔离客户，一个客户一个分组。因为少部分客户才会用到 Metabase 功能，所以分组不会非常多。&lt;/p&gt;
-&lt;h3 id=&#34;报表功能复用&#34;&gt;报表功能复用？&lt;/h3&gt;
-&lt;p&gt;&lt;del&gt;这个有点难。只能一个个客户（对应每个分组）做报表。通用的功能，copy -&amp;gt; SQL里修改客户隔离标识 -&amp;gt; paste。&lt;/del&gt;&lt;/p&gt;
-&lt;p&gt;参考：&lt;a href=&#34;https://xujiahua.github.io/posts/20200615-metabase-customer-isolation/&#34;&gt;Metabase 客户隔离&lt;/a&gt;&lt;/p&gt;
-&lt;h3 id=&#34;定制-sso-系统&#34;&gt;定制 SSO 系统&lt;/h3&gt;
-&lt;p&gt;认证页、获取用户信息，每个SSO系统都是有的。这里需要考虑的是用户字段与Metabase的映射。&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;Metabase中用户信息有：&lt;code&gt;email&lt;/code&gt;/&lt;code&gt;first name&lt;/code&gt;/&lt;code&gt;last name&lt;/code&gt;。SSO系统需要有对应的字段。&lt;/li&gt;
-&lt;li&gt;不是每个SaaS客户都能使用Metabase。SSO用户信息加入用户标识&lt;code&gt;metabase_enabled&lt;/code&gt;。没有标识，禁止进入 Metabase，Metabase 进行提示。&lt;/li&gt;
-&lt;li&gt;用户信息中有客户隔离标识 &lt;code&gt;mid&lt;/code&gt;。对应 Metabase 分组。&lt;/li&gt;
-&lt;/ol&gt;
-&lt;h3 id=&#34;metabase&#34;&gt;Metabase&lt;/h3&gt;
-&lt;p&gt;前端，Auth Provider 配置页：&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;配置SSO认证页地址。（不能写死，生产、测试环境地址不同）&lt;/li&gt;
-&lt;li&gt;配置SSO Token API地址。&lt;/li&gt;
-&lt;li&gt;客户隔离标识与Metabase group映射。&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;前端，登录页：&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;提供一个点击登录按钮。跳转到SSO认证页面。&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;后端：&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;对接 SSO 用户接口。&lt;/li&gt;
-&lt;/ol&gt;
-- https://xujiahua.github.io/posts/20200609-metabase-sso-login/ - </description>
-        </item>
-    
-    
-    
-        <item>
-        <title>Metabase 日期筛选控件实践</title>
-        <link>https://xujiahua.github.io/posts/20200605-metabase-field-filter/</link>
-        <pubDate>Fri, 05 Jun 2020 14:41:44 +0800</pubDate>
-        
-        <guid>https://xujiahua.github.io/posts/20200605-metabase-field-filter/</guid>
-        <description>许嘉华的笔记 https://xujiahua.github.io/posts/20200605-metabase-field-filter/ -&lt;p&gt;Metabase Dashboard 可以是动态的，常用的是指定时间范围筛选，查看这个时间段的指标。&lt;/p&gt;
-&lt;h2 id=&#34;简单示范&#34;&gt;简单示范&lt;/h2&gt;
-&lt;p&gt;使用 SAMPLE DATASET 数据库。定义一个Question：在某一时间段，订单数是多少。使用以下 SQL模板。&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sql&#34; data-lang=&#34;sql&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;select&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;count&lt;/span&gt;(&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;) &lt;span style=&#34;color:#66d9ef&#34;&gt;FROM&lt;/span&gt; ORDERS
-&lt;span style=&#34;color:#66d9ef&#34;&gt;WHERE&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt; 
-[[&lt;span style=&#34;color:#66d9ef&#34;&gt;AND&lt;/span&gt; &lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;{{&lt;/span&gt;CREATED_AT&lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;}}&lt;/span&gt; ]]
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;在&lt;code&gt;Variables&lt;/code&gt;侧栏选择如下：&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;Variable type：Field Filter。（其他选项，Text/Number/Date 都是单值，没有范围。）&lt;/li&gt;
-&lt;li&gt;Field to map to：选择对应的数据表字段，这里使用&lt;code&gt;ORDERS&lt;/code&gt;表的&lt;code&gt;CREATED_AT&lt;/code&gt;字段。&lt;/li&gt;
-&lt;li&gt;Filter widget type：Date Range。&lt;strong&gt;注意，只有日期类型（&lt;code&gt;date&lt;/code&gt;/ &lt;code&gt;timestamp&lt;/code&gt;）有这些选择。&lt;/strong&gt;（其他选项，大同小异，都会生成对应SQL语句。）&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image-20200605151107271.png&#34; alt=&#34;image-20200605151107271&#34;&gt;&lt;/p&gt;
-&lt;p&gt;在日期控件中选择时间范围，实际执行的SQL语句如下。&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sql&#34; data-lang=&#34;sql&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;select&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;count&lt;/span&gt;(&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;) &lt;span style=&#34;color:#66d9ef&#34;&gt;FROM&lt;/span&gt; ORDERS
-&lt;span style=&#34;color:#66d9ef&#34;&gt;WHERE&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt; 
-&lt;span style=&#34;color:#66d9ef&#34;&gt;AND&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;CAST&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;PUBLIC&amp;#34;&lt;/span&gt;.&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;ORDERS&amp;#34;&lt;/span&gt;.&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;CREATED_AT&amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;AS&lt;/span&gt; date) &lt;span style=&#34;color:#66d9ef&#34;&gt;BETWEEN&lt;/span&gt; date &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;2020-06-03&amp;#39;&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;AND&lt;/span&gt; date &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;2020-06-04&amp;#39;&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;打开浏览器开发者工具就能看到。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image-20200605151454671.png&#34; alt=&#34;image-20200605151454671&#34;&gt;&lt;/p&gt;
-&lt;p&gt;可以看到，生成了这个过滤条件：&lt;code&gt;CAST(&amp;quot;PUBLIC&amp;quot;.&amp;quot;ORDERS&amp;quot;.&amp;quot;CREATED_AT&amp;quot; AS date) BETWEEN date &#39;2020-06-03&#39; AND date &#39;2020-06-04&#39;&lt;/code&gt;替代了。&lt;/p&gt;
-&lt;p&gt;column &lt;code&gt;CREATED_AT&lt;/code&gt; 被转为&lt;code&gt;date&lt;/code&gt;类型。因为日期控件的日期精度只到年月日，没有时分秒，实际使用中确实也没必要时分秒。&lt;/p&gt;
-&lt;p&gt;不同的数据库，支持的数据类型是不同的，比如&lt;code&gt;Impala&lt;/code&gt;就不支持&lt;code&gt;date&lt;/code&gt;类型。Metabase 用如下语句达到相同效果（由各个数据库驱动负责实现），将&lt;code&gt;timestamp&lt;/code&gt;类型的精度截断到年月日：&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sql&#34; data-lang=&#34;sql&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;CAST&lt;/span&gt;(from_unixtime(unix_timestamp(from_timestamp(&lt;span style=&#34;color:#66d9ef&#34;&gt;CAST&lt;/span&gt;(&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;table&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;.&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;column&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;AS&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;timestamp&lt;/span&gt;), &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;yyyy-MM-dd&amp;#39;&lt;/span&gt;), &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;yyyy-MM-dd&amp;#39;&lt;/span&gt;)) &lt;span style=&#34;color:#66d9ef&#34;&gt;AS&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;timestamp&lt;/span&gt;) &lt;span style=&#34;color:#66d9ef&#34;&gt;BETWEEN&lt;/span&gt; to_timestamp(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;2020-05-25 00:00:00&amp;#39;&lt;/span&gt;, &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;yyyy-MM-dd HH:mm:ss&amp;#39;&lt;/span&gt;) &lt;span style=&#34;color:#66d9ef&#34;&gt;AND&lt;/span&gt; to_timestamp(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;2020-05-31 00:00:00&amp;#39;&lt;/span&gt;, &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;yyyy-MM-dd HH:mm:ss&amp;#39;&lt;/span&gt;) 
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;参考：&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;SQL Parameters &lt;a href=&#34;https://www.metabase.com/docs/latest/users-guide/13-sql-parameters.html&#34;&gt;https://www.metabase.com/docs/latest/users-guide/13-sql-parameters.html&lt;/a&gt;&lt;/li&gt;
-&lt;/ol&gt;
-&lt;h2 id=&#34;查询优化&#34;&gt;查询优化&lt;/h2&gt;
-&lt;p&gt;分享下 Metabase 和 Impala 搭配使用场景下查询优化经验。&lt;/p&gt;
-&lt;p&gt;查询优化的关键，主要还是SQL语句是否能够用到索引和分区键，尽量少地读数据文件。&lt;/p&gt;
-&lt;p&gt;Impala 数据库以日期分区，ETL脚本每日都会为数据表新增一个分区。Impala 不支持以&lt;code&gt;timestamp&lt;/code&gt;类型作为分区键，也不支持&lt;code&gt;date&lt;/code&gt;类型，所以日期分区键的类型是&lt;code&gt;string&lt;/code&gt;，是不得不接受的现实。&lt;/p&gt;
-&lt;p&gt;并建一个日期小表（如下），适应 Metabase 默认只有日期类型支持日期范围筛选的硬性要求。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image-20200605160349439.png&#34; alt=&#34;image-20200605160349439&#34;&gt;&lt;/p&gt;
-&lt;p&gt;Question定义从单表查询：&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sql&#34; data-lang=&#34;sql&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;SELECT&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;count&lt;/span&gt;(&lt;span style=&#34;color:#66d9ef&#34;&gt;distinct&lt;/span&gt; openid)
-&lt;span style=&#34;color:#66d9ef&#34;&gt;FROM&lt;/span&gt; dwd_fact_dks_wx_subscribe_v3
-&lt;span style=&#34;color:#66d9ef&#34;&gt;WHERE&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;
-&lt;span style=&#34;color:#66d9ef&#34;&gt;AND&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;CAST&lt;/span&gt;(from_unixtime(unix_timestamp(from_timestamp(&lt;span style=&#34;color:#66d9ef&#34;&gt;CAST&lt;/span&gt;(&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;dwd_fact_dks_wx_subscribe_v3&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;.&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;subscribetime&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;AS&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;timestamp&lt;/span&gt;), &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;yyyy-MM-dd&amp;#39;&lt;/span&gt;), &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;yyyy-MM-dd&amp;#39;&lt;/span&gt;)) &lt;span style=&#34;color:#66d9ef&#34;&gt;AS&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;timestamp&lt;/span&gt;) &lt;span style=&#34;color:#66d9ef&#34;&gt;BETWEEN&lt;/span&gt; to_timestamp(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;2020-05-01 00:00:00&amp;#39;&lt;/span&gt;, &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;yyyy-MM-dd HH:mm:ss&amp;#39;&lt;/span&gt;) &lt;span style=&#34;color:#66d9ef&#34;&gt;AND&lt;/span&gt; to_timestamp(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;2020-05-16 00:00:00&amp;#39;&lt;/span&gt;, &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;yyyy-MM-dd HH:mm:ss&amp;#39;&lt;/span&gt;)
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;img src=&#34;../../images/image-20200605162741364.png&#34; alt=&#34;image-20200605162741364&#34;&gt;&lt;/p&gt;
-&lt;p&gt;换成多表关联查询：&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sql&#34; data-lang=&#34;sql&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;SELECT&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;count&lt;/span&gt;(&lt;span style=&#34;color:#66d9ef&#34;&gt;distinct&lt;/span&gt; openid)
-&lt;span style=&#34;color:#66d9ef&#34;&gt;FROM&lt;/span&gt; dwd_fact_dks_wx_subscribe_v3
-&lt;span style=&#34;color:#66d9ef&#34;&gt;inner&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;join&lt;/span&gt; dwd_dim_date_with_timestamp
-&lt;span style=&#34;color:#66d9ef&#34;&gt;on&lt;/span&gt; dwd_fact_dks_wx_subscribe_v3.dt &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; dwd_dim_date_with_timestamp.dt
-&lt;span style=&#34;color:#66d9ef&#34;&gt;WHERE&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;
-&lt;span style=&#34;color:#66d9ef&#34;&gt;AND&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;CAST&lt;/span&gt;(from_unixtime(unix_timestamp(from_timestamp(&lt;span style=&#34;color:#66d9ef&#34;&gt;CAST&lt;/span&gt;(&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;dwd_dim_date_with_timestamp&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;.&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;date_timestamp&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;AS&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;timestamp&lt;/span&gt;), &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;yyyy-MM-dd&amp;#39;&lt;/span&gt;), &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;yyyy-MM-dd&amp;#39;&lt;/span&gt;)) &lt;span style=&#34;color:#66d9ef&#34;&gt;AS&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;timestamp&lt;/span&gt;) &lt;span style=&#34;color:#66d9ef&#34;&gt;BETWEEN&lt;/span&gt; to_timestamp(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;2020-05-01 00:00:00&amp;#39;&lt;/span&gt;, &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;yyyy-MM-dd HH:mm:ss&amp;#39;&lt;/span&gt;) &lt;span style=&#34;color:#66d9ef&#34;&gt;AND&lt;/span&gt; to_timestamp(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;2020-05-16 00:00:00&amp;#39;&lt;/span&gt;, &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;yyyy-MM-dd HH:mm:ss&amp;#39;&lt;/span&gt;)
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;img src=&#34;../../images/image-20200605162706843.png&#34; alt=&#34;image-20200605162706843&#34;&gt;&lt;/p&gt;
-&lt;p&gt;因为用到分区键，Impala 少读不少文件，查询速度也快了很多。&lt;/p&gt;
-&lt;p&gt;所以关键是要定义一个日期小表，查询使用分区键是常识。这样一个日期小表，还能解决如下的问题：&lt;/p&gt;
-&lt;p&gt;一个&lt;code&gt;Question&lt;/code&gt;涉及多个事实表查询的，每个表都有时间戳字段。定义两个&lt;code&gt;Variable&lt;/code&gt;显得啰嗦，定义一个&lt;code&gt;Variable&lt;/code&gt;就无法处理了（每个Variable对应一个table column）。这时候共同关联到日期小表，用日期小表进行日期筛选。&lt;/p&gt;
-&lt;h3 id=&#34;string类型也使用日期筛选控件&#34;&gt;string类型也使用日期筛选控件？&lt;/h3&gt;
-&lt;p&gt;&lt;code&gt;dt&lt;/code&gt;字段是&lt;code&gt;string&lt;/code&gt;类型。以下查询与上文多表关联查询效果是一样的，但是少了定义日期小表的工作。&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sql&#34; data-lang=&#34;sql&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;SELECT&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;count&lt;/span&gt;(&lt;span style=&#34;color:#66d9ef&#34;&gt;distinct&lt;/span&gt; openid)
-&lt;span style=&#34;color:#66d9ef&#34;&gt;FROM&lt;/span&gt; dwd_fact_dks_wx_subscribe_v3
-&lt;span style=&#34;color:#66d9ef&#34;&gt;WHERE&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;
-&lt;span style=&#34;color:#66d9ef&#34;&gt;AND&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;CAST&lt;/span&gt;(from_unixtime(unix_timestamp(from_timestamp(&lt;span style=&#34;color:#66d9ef&#34;&gt;CAST&lt;/span&gt;(&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;dwd_fact_dks_wx_subscribe_v3&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;.&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;dt&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;AS&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;timestamp&lt;/span&gt;), &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;yyyy-MM-dd&amp;#39;&lt;/span&gt;), &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;yyyy-MM-dd&amp;#39;&lt;/span&gt;)) &lt;span style=&#34;color:#66d9ef&#34;&gt;AS&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;timestamp&lt;/span&gt;) &lt;span style=&#34;color:#66d9ef&#34;&gt;BETWEEN&lt;/span&gt; to_timestamp(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;2020-05-01 00:00:00&amp;#39;&lt;/span&gt;, &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;yyyy-MM-dd HH:mm:ss&amp;#39;&lt;/span&gt;) &lt;span style=&#34;color:#66d9ef&#34;&gt;AND&lt;/span&gt; to_timestamp(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;2020-05-16 00:00:00&amp;#39;&lt;/span&gt;, &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;yyyy-MM-dd HH:mm:ss&amp;#39;&lt;/span&gt;)
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;所以，如何让&lt;code&gt;string&lt;/code&gt;类型也使用日期筛选控件呢？翻了下文档，还真可以，Metabase 真的想的太周到了！&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;A field’s “special type” is used to determine how to display it, and can also give certain types of fields special functionality. For example, by marking fields in a table as Latitude and Longitude, you allow the table to be used to create pin and heat maps. Similarly, marking a field as a URL allows users to click on it and go to that URL. &lt;a href=&#34;https://www.metabase.com/docs/latest/administration-guide/03-metadata-editing.html&#34;&gt;https://www.metabase.com/docs/latest/administration-guide/03-metadata-editing.html&lt;/a&gt;&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;p&gt;管理员模式，将原是&lt;code&gt;string&lt;/code&gt;类型的字段映射成&lt;code&gt;Creation date&lt;/code&gt;类型。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image-20200605170922208.png&#34; alt=&#34;image-20200605170922208&#34;&gt;&lt;/p&gt;
-&lt;p&gt;Metabase 有三种数据类型：&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;Database type：数据库中的类型。由数据库驱动设置Database type到Data type的映射关系。&lt;/li&gt;
-&lt;li&gt;Data type：Clojure进程中的类型。&lt;/li&gt;
-&lt;li&gt;Field type：有特殊业务含义的类型。&lt;/li&gt;
-&lt;/ol&gt;
-&lt;h2 id=&#34;总结&#34;&gt;总结&lt;/h2&gt;
-&lt;p&gt;Metabase 的设计想的很周到，文档也很齐全。因为少看了点文档，走了些弯路。&lt;/p&gt;
-- https://xujiahua.github.io/posts/20200605-metabase-field-filter/ - </description>
-        </item>
-    
-    
-    
-        <item>
-        <title>使用 REPL 调试 Clojure 项目（Metabase）</title>
-        <link>https://xujiahua.github.io/posts/20200604-clojure-repl-debug/</link>
-        <pubDate>Thu, 04 Jun 2020 16:13:27 +0800</pubDate>
-        
-        <guid>https://xujiahua.github.io/posts/20200604-clojure-repl-debug/</guid>
-        <description>许嘉华的笔记 https://xujiahua.github.io/posts/20200604-clojure-repl-debug/ -&lt;h2 id=&#34;开发工具&#34;&gt;开发工具&lt;/h2&gt;
-&lt;h3 id=&#34;intellij-idea--cursive&#34;&gt;Intellij IDEA + Cursive&lt;/h3&gt;
-&lt;p&gt;安装 IDEA 社区版即可，并安装插件 Cursive。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image-20200604161831382.png&#34; alt=&#34;image-20200604161831382&#34;&gt;&lt;/p&gt;
-&lt;h4 id=&#34;cursive-插件按键冲突&#34;&gt;Cursive 插件按键冲突&lt;/h4&gt;
-&lt;p&gt;比如我会用组合键&lt;code&gt;⌘ + [&lt;/code&gt;浏览代码，与 Cursive 插件的按键冲突。可以取消 Cursive 的这个组合键。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image-20200604162732892.png&#34; alt=&#34;image-20200604162732892&#34;&gt;&lt;/p&gt;
-&lt;h3 id=&#34;emacs&#34;&gt;Emacs&lt;/h3&gt;
-&lt;p&gt;&lt;em&gt;Added 2020-07-10&lt;/em&gt;&lt;/p&gt;
-&lt;p&gt;参考：&lt;a href=&#34;https://www.braveclojure.com/basic-emacs/&#34;&gt;How to Use Emacs, an Excellent Clojure Editor&lt;/a&gt;&lt;/p&gt;
-&lt;p&gt;&lt;em&gt;实践&lt;code&gt;Metabase&lt;/code&gt;代码库失败：在REPL中执行(-main)直接挂了，待研究。TBD&lt;/em&gt;&lt;/p&gt;
-&lt;h2 id=&#34;实践&#34;&gt;实践&lt;/h2&gt;
-&lt;h3 id=&#34;metabase&#34;&gt;Metabase&lt;/h3&gt;
-&lt;p&gt;接触 Clojure 是因为 Metabase 这个项目 &lt;a href=&#34;https://github.com/metabase/metabase&#34;&gt;https://github.com/metabase/metabase&lt;/a&gt; 。以 Metabase 为例，说明如何调试 Clojure 项目。&lt;/p&gt;
-&lt;p&gt;Metabase 由前后端两部分组成，后端是由 Clojure 写的 REST API 项目。启动前端工程，需要在前端界面上触发 API 请求。&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;yarn build-hot
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;参考&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;Metabase developers-guide &lt;a href=&#34;https://github.com/metabase/metabase/blob/master/docs/developers-guide.md&#34;&gt;https://github.com/metabase/metabase/blob/master/docs/developers-guide.md&lt;/a&gt;&lt;/li&gt;
-&lt;/ol&gt;
-&lt;h3 id=&#34;repl-调试-clojure-项目&#34;&gt;REPL 调试 Clojure 项目&lt;/h3&gt;
-&lt;p&gt;新建一个 Clojure REPL 配置。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image-20200604163122517.png&#34; alt=&#34;image-20200604163122517&#34;&gt;&lt;/p&gt;
-&lt;p&gt;展开右下角的 REPL 子窗口，Run REPL for metabase-core。（注意，此时，项目中的 clojure namespace 并没有实际加载。代码编辑区运行 Clojure 函数，会报错，&lt;code&gt;Error: :namespace-not-found&lt;/code&gt;）&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image-20200604163823092.png&#34; alt=&#34;image-20200604163823092&#34;&gt;&lt;/p&gt;
-&lt;p&gt;metabase.core.clj 是整个项目的入口文件。执行 Load File in REPL。插件自动把所有 metabase.core 的依赖加载进 REPL 中。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image-20200604164551541.png&#34; alt=&#34;image-20200604164551541&#34;&gt;&lt;/p&gt;
-&lt;p&gt;Load 成功。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image-20200604165257244.png&#34; alt=&#34;image-20200604165257244&#34;&gt;&lt;/p&gt;
-&lt;p&gt;入口函数&lt;code&gt;-main&lt;/code&gt;并不会自动运行的。调用&lt;code&gt;-main&lt;/code&gt;并发送函数到 REPL 中执行。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image-20200604165642551.png&#34; alt=&#34;image-20200604165642551&#34;&gt;&lt;/p&gt;
-&lt;p&gt;print 调试，改完代码即可生效。如下，加入打印变量函数，执行&lt;code&gt;Load File in REPL&lt;/code&gt;/&lt;code&gt;Sync Files in REPL&lt;/code&gt;/&lt;code&gt;Send xxx to REPL&lt;/code&gt;让函数生效。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image-20200604171525496.png&#34; alt=&#34;image-20200604171525496&#34;&gt;&lt;/p&gt;
-&lt;h4 id=&#34;repl-会阻塞&#34;&gt;REPL 会阻塞&lt;/h4&gt;
-&lt;p&gt;会有发送函数到 REPL 中执行，而没有反应的情况。需要注意，REPL 会阻塞。&lt;/p&gt;
-&lt;p&gt;&lt;code&gt;(.join (server/instance)))&lt;/code&gt; Jetty Server 阻塞住当前线程。所以其他函数在 REPL 中被阻塞了。&lt;/p&gt;
-&lt;p&gt;Metabase 入口代码：&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-clojure&#34; data-lang=&#34;clojure&#34;&gt;(&lt;span style=&#34;color:#66d9ef&#34;&gt;defn- &lt;/span&gt;start-normally []
-  (&lt;span style=&#34;color:#a6e22e&#34;&gt;log/info&lt;/span&gt; (&lt;span style=&#34;color:#a6e22e&#34;&gt;trs&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Starting Metabase in STANDALONE mode&amp;#34;&lt;/span&gt;))
-  (&lt;span style=&#34;color:#a6e22e&#34;&gt;try&lt;/span&gt;
-    &lt;span style=&#34;color:#75715e&#34;&gt;;; launch embedded webserver async&lt;/span&gt;
-    (&lt;span style=&#34;color:#a6e22e&#34;&gt;server/start-web-server!&lt;/span&gt; handler/app)
-    &lt;span style=&#34;color:#75715e&#34;&gt;;; run our initialization process&lt;/span&gt;
-    (&lt;span style=&#34;color:#a6e22e&#34;&gt;init!&lt;/span&gt;)
-    &lt;span style=&#34;color:#75715e&#34;&gt;;; Ok, now block forever while Jetty does its thing&lt;/span&gt;
-    (when (&lt;span style=&#34;color:#a6e22e&#34;&gt;config/config-bool&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;:mb-jetty-join&lt;/span&gt;)
-      (&lt;span style=&#34;color:#a6e22e&#34;&gt;.join&lt;/span&gt; (&lt;span style=&#34;color:#a6e22e&#34;&gt;server/instance&lt;/span&gt;)))
-    (&lt;span style=&#34;color:#a6e22e&#34;&gt;catch&lt;/span&gt; Throwable e
-      (&lt;span style=&#34;color:#a6e22e&#34;&gt;log/error&lt;/span&gt; e (&lt;span style=&#34;color:#a6e22e&#34;&gt;trs&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Metabase Initialization FAILED&amp;#34;&lt;/span&gt;))
-      (&lt;span style=&#34;color:#a6e22e&#34;&gt;System/exit&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;))))
-
-(&lt;span style=&#34;color:#66d9ef&#34;&gt;defn &lt;/span&gt;-main
-  &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Launch Metabase in standalone mode.&amp;#34;&lt;/span&gt;
-  [&lt;span style=&#34;color:#f92672&#34;&gt;&amp;amp;&lt;/span&gt; [cmd &lt;span style=&#34;color:#f92672&#34;&gt;&amp;amp;&lt;/span&gt; args]]
-  (&lt;span style=&#34;color:#a6e22e&#34;&gt;maybe-enable-tracing&lt;/span&gt;)
-  (&lt;span style=&#34;color:#66d9ef&#34;&gt;if &lt;/span&gt;cmd
-    (&lt;span style=&#34;color:#a6e22e&#34;&gt;run-cmd&lt;/span&gt; cmd args) &lt;span style=&#34;color:#75715e&#34;&gt;; run a command like `java -jar metabase.jar migrate release-locks` or `lein run migrate release-locks`&lt;/span&gt;
-    (&lt;span style=&#34;color:#a6e22e&#34;&gt;start-normally&lt;/span&gt;))) &lt;span style=&#34;color:#75715e&#34;&gt;; with no command line args just start Metabase normally&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;解决办法，就是不要让代码阻塞住当前线程、REPL。&lt;/p&gt;
-&lt;p&gt;参考：&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;The Cursive REPL &lt;a href=&#34;https://cursive-ide.com/userguide/repl.html&#34;&gt;https://cursive-ide.com/userguide/repl.html&lt;/a&gt;&lt;/li&gt;
-&lt;/ol&gt;
-&lt;h4 id=&#34;metabase-run-with-repl&#34;&gt;metabase run-with-repl&lt;/h4&gt;
-&lt;p&gt;&lt;em&gt;Added 2020-07-10&lt;/em&gt;&lt;/p&gt;
-&lt;p&gt;Cursive中也支持指定Profiles。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image-20200710155103818.png&#34; alt=&#34;image-20200710155103818&#34;&gt;&lt;/p&gt;
-&lt;p&gt;这个profile的作用是设置&lt;code&gt;:mb-jetty-join&lt;/code&gt;为&lt;code&gt;false&lt;/code&gt;，不阻塞REPL主线程。另外启动&lt;code&gt;metabase.core/-main&lt;/code&gt;。&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-clojure&#34; data-lang=&#34;clojure&#34;&gt;project.clj
-
-...
-&lt;span style=&#34;color:#e6db74&#34;&gt;:run-with-repl&lt;/span&gt;
-   [&lt;span style=&#34;color:#e6db74&#34;&gt;:exclude-tests&lt;/span&gt;
-    &lt;span style=&#34;color:#e6db74&#34;&gt;:include-all-drivers&lt;/span&gt;
-
-    {&lt;span style=&#34;color:#e6db74&#34;&gt;:env&lt;/span&gt;
-     {&lt;span style=&#34;color:#e6db74&#34;&gt;:mb-jetty-join&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;false&amp;#34;&lt;/span&gt;}
-
-     &lt;span style=&#34;color:#e6db74&#34;&gt;:repl-options&lt;/span&gt;
-     {&lt;span style=&#34;color:#e6db74&#34;&gt;:init&lt;/span&gt;    (&lt;span style=&#34;color:#66d9ef&#34;&gt;do &lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;require&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;metabase.core&lt;/span&gt;)
-                   (&lt;span style=&#34;color:#a6e22e&#34;&gt;metabase.core/-main&lt;/span&gt;))
-      &lt;span style=&#34;color:#e6db74&#34;&gt;:timeout&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;60000&lt;/span&gt;}}]
-...
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;这种方式有一个缺点，&lt;code&gt;modules/drivers&lt;/code&gt;下的（源码）驱动并不会成功加载，调试&lt;code&gt;src/&lt;/code&gt;目录下的源码是没问题的。具体报错如下：（其中impala是driver名字）&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;Could not locate metabase/driver/impala__init.class, metabase/driver/impala.clj or metabase/driver/impala.cljc on classpath.&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;p&gt;试验了下，&lt;code&gt;plugins&lt;/code&gt;目录下的driver是可以成功加载的。&lt;/p&gt;
-&lt;p&gt;开发模式下，按照加载机制，如果&lt;code&gt;plugins&lt;/code&gt;下的driver与&lt;code&gt;modules/drivers&lt;/code&gt;下的driver重名，会被后者覆盖掉。其实这是个bug，值没取对，导致两个目录下的同一个driver，重复加载并覆盖。（之前还好奇为何要加载两遍driver）&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image-20200710160645843.png&#34; alt=&#34;image-20200710160645843&#34;&gt;&lt;/p&gt;
-&lt;p&gt;总结，目前使用这种配置，调试&lt;code&gt;Metabase&lt;/code&gt;核心包是没问题的，plugin driver建议放到&lt;code&gt;plugins&lt;/code&gt;目录。Root Cause？&lt;/p&gt;
-&lt;p&gt;不用&lt;code&gt;Cursive&lt;/code&gt;，直接运行&lt;code&gt;lein run-with-repl&lt;/code&gt;可以自然加载&lt;code&gt;modules/drivers&lt;/code&gt;下的driver源码。&lt;/p&gt;
-&lt;h4 id=&#34;metabase-remote-repl&#34;&gt;Metabase Remote REPL&lt;/h4&gt;
-&lt;p&gt;&lt;em&gt;Added 2020-07-10&lt;/em&gt;&lt;/p&gt;
-&lt;p&gt;命令行中，&lt;code&gt;lein run-with-repl&lt;/code&gt; Lein REPL会在本地生成一个&lt;code&gt;.nrepl-port&lt;/code&gt;的文件，内含repl server的端口。&lt;/p&gt;
-&lt;p&gt;创建一个Remote REPL配置，让其引用&lt;code&gt;.nrepl-port&lt;/code&gt;文件。上节如何调试plugin driver源码的问题就是解决了。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image-20200710163401330.png&#34; alt=&#34;image-20200710163401330&#34;&gt;&lt;/p&gt;
-&lt;h4 id=&#34;clojure-动态性&#34;&gt;Clojure 动态性：#&amp;rsquo;&lt;/h4&gt;
-&lt;p&gt;&lt;code&gt;#&#39;&lt;/code&gt;是 Clojure 里的一个reader macro，可以理解为一个语法糖。 &lt;a href=&#34;https://en.wikibooks.org/wiki/Learning_Clojure/Reader_Macros&#34;&gt;https://en.wikibooks.org/wiki/Learning_Clojure/Reader_Macros&lt;/a&gt;&lt;/p&gt;
-&lt;p&gt;实际展开为&lt;code&gt;var&lt;/code&gt;方法。&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;#&#39;foo                 ; (var foo)
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;比如一个内置方法&lt;code&gt;inc&lt;/code&gt;，以下两种写法都能用。&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-clojure&#34; data-lang=&#34;clojure&#34;&gt;(inc &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;)
-=&amp;gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;
-&lt;span style=&#34;color:#75715e&#34;&gt;;; = ((var inc) 1)&lt;/span&gt;
-(&lt;span style=&#34;color:#f92672&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;inc&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;)
-=&amp;gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;两种写法的区别，打开一个REPL试试。&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-clojure&#34; data-lang=&#34;clojure&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;;; twice version 1&lt;/span&gt;
-(&lt;span style=&#34;color:#66d9ef&#34;&gt;defn &lt;/span&gt;twice [n] (* n &lt;span style=&#34;color:#ae81ff&#34;&gt;2.0&lt;/span&gt;))
-=&amp;gt; &lt;span style=&#34;color:#f92672&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;user/twice&lt;/span&gt;
-
-&lt;span style=&#34;color:#75715e&#34;&gt;;; #&amp;#39;twice = (var twice) 定义simple-calc时编译器不会指向twice的内容内存地址，只是twice var的地址。&lt;/span&gt;
-(&lt;span style=&#34;color:#66d9ef&#34;&gt;def &lt;/span&gt;simple-calc &lt;span style=&#34;color:#f92672&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;twice&lt;/span&gt;)
-=&amp;gt; &lt;span style=&#34;color:#f92672&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;user/simple-calc&lt;/span&gt;
-(&lt;span style=&#34;color:#a6e22e&#34;&gt;simple-calc&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;3&lt;/span&gt;)
-=&amp;gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;6.0&lt;/span&gt;
-
-&lt;span style=&#34;color:#75715e&#34;&gt;;; 定义simple-calc2时编译器指向twice的内容内存地址。&lt;/span&gt;
-(&lt;span style=&#34;color:#66d9ef&#34;&gt;def &lt;/span&gt;simple-calc2 twice)
-=&amp;gt; &lt;span style=&#34;color:#f92672&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;user/simple-calc2&lt;/span&gt;
-(&lt;span style=&#34;color:#a6e22e&#34;&gt;simple-calc2&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;3&lt;/span&gt;)
-=&amp;gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;6.0&lt;/span&gt;
-
-&lt;span style=&#34;color:#75715e&#34;&gt;;; 更新了 twice 的内容，两个 simple-calc 的表现就不一样了&lt;/span&gt;
-&lt;span style=&#34;color:#75715e&#34;&gt;;; twice version 2&lt;/span&gt;
-(&lt;span style=&#34;color:#66d9ef&#34;&gt;defn &lt;/span&gt;twice [n] (* n &lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;))
-=&amp;gt; &lt;span style=&#34;color:#f92672&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;user/twice&lt;/span&gt;
-
-&lt;span style=&#34;color:#75715e&#34;&gt;;; 结果随着twice的变动更新了&lt;/span&gt;
-&lt;span style=&#34;color:#75715e&#34;&gt;;; 每次运行 simple-calc，都会执行 (var twice)，保证取twice最新的内容内存地址。&lt;/span&gt;
-(&lt;span style=&#34;color:#a6e22e&#34;&gt;simple-calc&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;3&lt;/span&gt;)
-=&amp;gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;6&lt;/span&gt;
-
-&lt;span style=&#34;color:#75715e&#34;&gt;;; 结果没变。因为内部使用的还是编译前的twice的内容内存地址。&lt;/span&gt;
-(&lt;span style=&#34;color:#a6e22e&#34;&gt;simple-calc2&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;3&lt;/span&gt;)
-=&amp;gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;6.0&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;这个回答是很好的解释：&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;Dynamic handler update in Clojure Ring/Compojure REPL &lt;a href=&#34;https://stackoverflow.com/questions/28904260/dynamic-handler-update-in-clojure-ring-compojure-repl&#34;&gt;https://stackoverflow.com/questions/28904260/dynamic-handler-update-in-clojure-ring-compojure-repl&lt;/a&gt;&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;其实 Clojure 中最常用到的就是Var类型了，使用defn/def定义方法、变量都是定义Var类型，Var类型可以理解为一个容器，指向Function、Value。Clojure之所以如此动态，就是因为Var类型指向的内容可以随时更新。参考以下：&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/clojure-functional-concurrency-for-the-jvm-presented-at-oscon-47-728.jpg&#34; alt=&#34;Everything&amp;rsquo;s a Var! Function Namespace&#34;&gt;&lt;/p&gt;
-&lt;p&gt;&lt;a href=&#34;https://www.slideshare.net/hlship/clojure-functional-concurrency-for-the-jvm-presented-at-oscon/47-Everythings_a_Var_Function_Namespace&#34;&gt;https://www.slideshare.net/hlship/clojure-functional-concurrency-for-the-jvm-presented-at-oscon/47-Everythings_a_Var_Function_Namespace&lt;/a&gt;&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;Vars (instances of &lt;a href=&#34;https://github.com/clojure/clojure/blob/master/src/jvm/clojure/lang/Var.java&#34;&gt;&lt;code&gt;clojure.lang.Var&lt;/code&gt;&lt;/a&gt;) are one of four constructs the Clojure language gives us to maintain a persistent reference to a changing value.&lt;a href=&#34;https://8thlight.com/blog/aaron-lahey/2016/07/20/relationship-between-clojure-functions-symbols-vars-namespaces.html#footnote-3&#34;&gt;3&lt;/a&gt; In fact, of the four constructs (&lt;a href=&#34;http://clojure.org/reference/vars&#34;&gt;vars&lt;/a&gt;, &lt;a href=&#34;http://clojure.org/reference/atoms&#34;&gt;atoms&lt;/a&gt;, &lt;a href=&#34;http://clojure.org/reference/refs&#34;&gt;refs&lt;/a&gt;, and &lt;a href=&#34;http://clojure.org/reference/agents&#34;&gt;agents&lt;/a&gt;), they&amp;rsquo;re probably the one you use the most without even realizing it! Every time something is defined using the special form &lt;code&gt;def&lt;/code&gt; (or the &lt;code&gt;defn&lt;/code&gt; macro which uses &lt;code&gt;def&lt;/code&gt; internally), Clojure creates a new var and places the value or function inside&amp;hellip;&lt;/p&gt;
-&lt;p&gt;Having this mutable container act as a layer of indirection between a caller and the function being called is what allows Clojure to be so dynamic at runtime. If all invocations of a particular function are routed through this container, we&amp;rsquo;re given the opportunity to dynamically update the behavior of our program by changing or altering what is inside&amp;hellip;&lt;/p&gt;
-&lt;p&gt;&lt;a href=&#34;https://8thlight.com/blog/aaron-lahey/2016/07/20/relationship-between-clojure-functions-symbols-vars-namespaces.html&#34;&gt;https://8thlight.com/blog/aaron-lahey/2016/07/20/relationship-between-clojure-functions-symbols-vars-namespaces.html&lt;/a&gt;&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;p&gt;Metabase 代码里就有很多&lt;code&gt;#&#39;&lt;/code&gt;的使用，比如这里定义的HTTP请求的middleware，保证开发时随时更改随时生效，提高开发效率。&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-clojure&#34; data-lang=&#34;clojure&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;;; default-middleware是一个Vector（数组），每个元素都是一个含相同方法签名的方法。&lt;/span&gt;
-(&lt;span style=&#34;color:#66d9ef&#34;&gt;def &lt;/span&gt;default-middleware
-  &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;The default set of middleware applied to queries ran via `process-query`.&amp;#34;&lt;/span&gt;
-  [&lt;span style=&#34;color:#f92672&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;mbql-to-native/mbql-&amp;gt;native&lt;/span&gt;
-   &lt;span style=&#34;color:#f92672&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;check-features/check-features&lt;/span&gt;
-   &lt;span style=&#34;color:#f92672&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;optimize-datetime-filters/optimize-datetime-filters&lt;/span&gt;
-   ...])
-
-(&lt;span style=&#34;color:#66d9ef&#34;&gt;def &lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;^&lt;/span&gt;{&lt;span style=&#34;color:#e6db74&#34;&gt;:arglists&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;&amp;#39;&lt;/span&gt;([query] [query context])} process-query-async
-  &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Process a query asynchronously, returning a `core.async` channel that is called with the final result (or Throwable).&amp;#34;&lt;/span&gt;
-  (&lt;span style=&#34;color:#a6e22e&#34;&gt;base-qp&lt;/span&gt; default-middleware))
-
-&lt;span style=&#34;color:#75715e&#34;&gt;;; In REPL-based dev rebuild the QP every time it is called; this way we don&amp;#39;t need to reload this namespace when&lt;/span&gt;
-&lt;span style=&#34;color:#75715e&#34;&gt;;; middleware is changed. Outside of dev only build the QP once for performance/locality （build once? HOW?）&lt;/span&gt;
-(&lt;span style=&#34;color:#66d9ef&#34;&gt;defn- &lt;/span&gt;base-qp [middleware]
-  &lt;span style=&#34;color:#75715e&#34;&gt;;; letfn与let类似，定义一个本地变量，letfn定义的是一个方法（变量）。&lt;/span&gt;
-  (&lt;span style=&#34;color:#a6e22e&#34;&gt;letfn&lt;/span&gt; [(&lt;span style=&#34;color:#a6e22e&#34;&gt;qp&lt;/span&gt; [] &lt;span style=&#34;color:#75715e&#34;&gt;;; qp 方法名 [] 入参&lt;/span&gt;
-              &lt;span style=&#34;color:#75715e&#34;&gt;;; 将middleware数组合并成一个middleware，可以合并是因为方法签名是一致的&lt;/span&gt;
-            (&lt;span style=&#34;color:#a6e22e&#34;&gt;qp.reducible/async-qp&lt;/span&gt; (&lt;span style=&#34;color:#a6e22e&#34;&gt;qp.reducible/combine-middleware&lt;/span&gt; middleware)))]
-    (&lt;span style=&#34;color:#66d9ef&#34;&gt;if &lt;/span&gt;config/is-dev?
-      (&lt;span style=&#34;color:#66d9ef&#34;&gt;fn &lt;/span&gt;[&lt;span style=&#34;color:#f92672&#34;&gt;&amp;amp;&lt;/span&gt; args]
-        (apply (&lt;span style=&#34;color:#a6e22e&#34;&gt;qp&lt;/span&gt;) args))
-      (&lt;span style=&#34;color:#a6e22e&#34;&gt;qp&lt;/span&gt;))))
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;总结&#34;&gt;总结&lt;/h2&gt;
-&lt;p&gt;REPL 的方式调试代码还是蛮新奇的，对我来说。&lt;/p&gt;
-- https://xujiahua.github.io/posts/20200604-clojure-repl-debug/ - </description>
         </item>
     
     

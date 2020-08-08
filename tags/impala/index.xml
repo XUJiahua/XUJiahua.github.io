@@ -6,10 +6,25 @@
     <description>Recent content in Impala on 许嘉华的笔记</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Tue, 14 Jul 2020 10:14:14 +0800</lastBuildDate>
+    <lastBuildDate>Fri, 07 Aug 2020 15:06:49 +0800</lastBuildDate>
     
 	<atom:link href="https://xujiahua.github.io/tags/impala/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>记录一个 Impala JDBC 驱动问题</title>
+      <link>https://xujiahua.github.io/posts/20200807-impala/</link>
+      <pubDate>Fri, 07 Aug 2020 15:06:49 +0800</pubDate>
+      
+      <guid>https://xujiahua.github.io/posts/20200807-impala/</guid>
+      <description>现象 洪敏在用 Metabase 写报表过程中，使用 Metabase 的日期变量，发现的诡异问题。两条语句仅有部分差异，返回的结果却差了一天。
+期望结果。
+与期望结果差了一天。
+在 CDH 中查看 impala 服务器接收到的请求。
+得到期望结果的SQL：
+dt 是字符串，内容是日期，参数是TIMESTAMP，SQL引擎会自动转为两个 TIMESTAMP比较。
+SELECT `a`.`dt`, (`a`.`x` - `b`.`x`) as `净增人数` FROM (SELECT `f_ods_wx_subscribe_di`.`dt`, COUNT(DISTINCT `f_ods_wx_subscribe_di`.`userinfo_openid`) as `x` FROM `product`.`f_ods_wx_subscribe_di` WHERE ((`f_ods_wx_subscribe_di`.`dt` &amp;lt; CAST( &amp;#39;2020-08-05 00:00:00.0&amp;#39; AS TIMESTAMP)) AND ((`f_ods_wx_subscribe_di`.`mid` = &amp;#39;jt20191017175015910985&amp;#39;) AND (`f_ods_wx_subscribe_di`.`dt` &amp;gt;= CAST( &amp;#39;2020-08-01 00:00:00.0&amp;#39; AS TIMESTAMP)))) GROUP BY `f_ods_wx_subscribe_di`.`dt`) AS a LEFT JOIN (SELECT `f_ods_wx_unsubscribe_di`.`dt`, COUNT(DISTINCT `f_ods_wx_unsubscribe_di`.`userinfo_openid`) as `x` FROM `product`.`f_ods_wx_unsubscribe_di` WHERE ((`f_ods_wx_unsubscribe_di`.`dt` &amp;lt; CAST( &amp;#39;2020-08-05 00:00:00.</description>
+    </item>
     
     <item>
       <title>Metabase Impala Driver 时区问题</title>

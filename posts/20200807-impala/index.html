@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html><head>
+<title>记录一个 Impala JDBC 驱动问题</title>
+
+<meta charset="utf-8">
+<meta name="X-UA-Compatible" content="IE=edge">
+<meta name="google-site-verification" content="">
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport">
+<meta content="telephone=no" name="format-detection">
+<meta name="description" content="">
+<meta name="renderer" content="webkit">
+<meta name="theme-color" content="#ffffff">
+
+
+
+
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+	ga('create', 'UA-162706610-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+
+
+
+<script src="/vendor/js/jquery.min.js" ></script>
+<script src="/vendor/js/popper.min.js" ></script>
+<script src="/vendor/js/bootstrap.min.js" ></script>
+<script src="/vendor/js/smooth-scroll.polyfills.min.js" ></script>
+<link type="text/css" rel="stylesheet" href="/vendor/css/bootstrap.min.css">
+<script src="/vendor/js/vue.min.js" ></script>
+
+
+
+
+<link rel="stylesheet" href="https://xujiahua.github.io/scss/journal.min.5c667e74038e21ddbb9024b67930f8544e02af62491281cf73fdb817eec2947e.css" integrity="sha256-XGZ&#43;dAOOId27kCS2eTD4VE4Cr2JJEoHPc/24F&#43;7ClH4=" media="screen">
+
+<script src="https://xujiahua.github.io//js/loadCSS.js"></script>
+<script src="https://xujiahua.github.io//js/table.js"></script>
+
+
+<script src="https://xujiahua.github.io//js/toc.js"></script>
+
+
+<script>
+    loadCSS("https://fonts.googleapis.com/css?family=Lora|Montserrat|Fira+Mono|Noto+Serif+SC|Material+Icons");
+</script>
+
+
+
+
+
+
+</head><body>
+    	<div id="app"><div ref="sideContainer" class="side-container">
+    
+    <a class="a-block nav-head false" href="https://xujiahua.github.io/">
+    
+        <div class="nav-title">
+            许嘉华的笔记
+        </div>
+        
+    </a>
+
+    <div class="nav-link-list">
+        
+        
+            
+            
+            
+                
+            
+            
+            
+            <a class="a-block nav-link-item active" href="/posts">
+                Archive
+            </a>
+            
+        
+            
+            
+            
+            
+            
+            <a class="a-block nav-link-item false" href="/categories">
+                Categories
+            </a>
+            
+        
+            
+            
+            
+            
+            
+            <a class="a-block nav-link-item false" href="/tags">
+                Tags
+            </a>
+            
+        
+            
+            
+            
+            
+            
+            <a class="a-block nav-link-item false" href="/index.xml">
+                RSS Feed
+            </a>
+            
+        
+    </div>
+
+    
+
+    <div class="nav-footer">
+        
+Hugo Theme <a href="https://github.com/amazingrise/hugo-theme-diary">Diary</a> by <a href="https://amazingrise.net">Rise</a>
+<br>
+Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopener">Makito</a>'s <a href="https://github.com/SumiMakito/hexo-theme-journal/" target="_blank" rel="noreferrer noopener">Journal.</a> <br>
+<br>
+
+&copy;
+	
+	2020 许嘉华的笔记
+	
+    </div>
+    
+</div><div ref="extraContainer" class="extra-container">
+    
+    <div class="toc animated-visibility" :class="{ invisible: scrollY <= 140 }">
+
+
+	<div class="toc-content">
+	
+		
+		
+		
+		<center>- CATALOG -</center>
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e7%8e%b0%e8%b1%a1" v-on:click="closeDrawer" id="现象-nav">
+										 现象
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#metabase-%e6%89%93%e5%8d%b0%e6%97%a5%e5%bf%97-query-param" v-on:click="closeDrawer" id="metabase-打印日志-query-param-nav">
+										 Metabase 打印日志 query, param
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e5%a4%8d%e7%8e%b0%e9%97%ae%e9%a2%98" v-on:click="closeDrawer" id="复现问题-nav">
+										 复现问题
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e6%8e%92%e6%9f%a5%e8%bf%87%e7%a8%8b%e4%b8%ad%e7%9a%84%e8%af%af%e5%8c%ba" v-on:click="closeDrawer" id="排查过程中的误区-nav">
+										 排查过程中的误区
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e4%b8%b4%e6%97%b6%e8%a7%a3%e5%86%b3%e6%96%b9%e6%a1%88" v-on:click="closeDrawer" id="临时解决方案-nav">
+										 临时解决方案
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+	</div>
+
+</div>
+    
+    <div class="pagination">
+        <a id="globalBackToTop" class="pagination-action animated-visibility" href="#top" :class="{ invisible: scrollY == 0 }">
+            <i class="material-icons pagination-action-icon">
+                keyboard_arrow_up
+            </i>
+        </a>
+        
+    </div>
+</div><div class="single-column-drawer-container" ref="drawer"
+     v-bind:class="{ 'single-column-drawer-container-active': isDrawerOpen }">
+    <div class="drawer-content">
+        <div class="drawer-menu">
+            
+            
+                
+                
+                
+                    
+                
+                
+                
+                <a class="a-block drawer-menu-item active" href="/posts">
+                    Archive
+                </a>
+                
+            
+                
+                
+                
+                
+                
+                <a class="a-block drawer-menu-item false" href="/categories">
+                    Categories
+                </a>
+                
+            
+                
+                
+                
+                
+                
+                <a class="a-block drawer-menu-item false" href="/tags">
+                    Tags
+                </a>
+                
+            
+                
+                
+                
+                
+                
+                <a class="a-block drawer-menu-item false" href="/index.xml">
+                    RSS Feed
+                </a>
+                
+            
+            
+            <div class="toc">
+
+
+	<div class="toc-content">
+	
+		
+		
+		
+		<center>- CATALOG -</center>
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e7%8e%b0%e8%b1%a1" v-on:click="closeDrawer" id="现象-nav">
+										 现象
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#metabase-%e6%89%93%e5%8d%b0%e6%97%a5%e5%bf%97-query-param" v-on:click="closeDrawer" id="metabase-打印日志-query-param-nav">
+										 Metabase 打印日志 query, param
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e5%a4%8d%e7%8e%b0%e9%97%ae%e9%a2%98" v-on:click="closeDrawer" id="复现问题-nav">
+										 复现问题
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e6%8e%92%e6%9f%a5%e8%bf%87%e7%a8%8b%e4%b8%ad%e7%9a%84%e8%af%af%e5%8c%ba" v-on:click="closeDrawer" id="排查过程中的误区-nav">
+										 排查过程中的误区
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e4%b8%b4%e6%97%b6%e8%a7%a3%e5%86%b3%e6%96%b9%e6%a1%88" v-on:click="closeDrawer" id="临时解决方案-nav">
+										 临时解决方案
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+	</div>
+
+</div>
+            
+        </div>
+    </div>
+</div>
+<transition name="fade">
+    <div v-bind:class="{ 'single-column-drawer-mask': mounted }" v-if="isDrawerOpen" v-on:click="toggleDrawer"></div>
+</transition>
+<nav ref="navBar" class="navbar sticky-top navbar-light single-column-nav-container">
+    <div ref="navBackground" class="nav-background"></div>
+    <div class="container container-narrow nav-content">
+        <button id="nav_dropdown_btn" class="nav-dropdown-toggle" type="button" v-on:click="toggleDrawer">
+            <i class="material-icons">
+                menu
+            </i>
+        </button>
+        <a ref="navTitle" class="navbar-brand" href="https://xujiahua.github.io/">
+            许嘉华的笔记
+        </a>
+    </div>
+</nav>
+<div class="single-column-header-container" ref="pageHead"
+     v-bind:style="{ transform: 'translateZ(0px) translateY('+.3*scrollY+'px)', opacity: 1-navOpacity }">
+    <a href="https://xujiahua.github.io/">
+        <div class="single-column-header-title">许嘉华的笔记</div>
+        
+
+    </a>
+</div>
+            <div id="content">
+<div ref="streamContainer" class="stream-container">
+    <div class="post-list-container post-list-container-shadow">
+        <div class="post">
+            
+            
+            
+
+            <div class="post-head-wrapper-text-only"
+                 style="background-image: url('/')">
+                <div class="post-title">
+                    记录一个 Impala JDBC 驱动问题
+                    
+                    <div class="post-meta">
+                        
+                        <time itemprop="datePublished">
+                            2020-08-07 15:06
+                        </time>
+                        
+
+                        
+
+                        
+                            <i class="material-icons" style="">label</i>
+                            
+                                <a href="/tags/impala">Impala</a>
+                                &nbsp;
+                            
+                        
+                    </div>
+                </div>
+            </div>
+            
+            <div class="post-body-wrapper">
+                <div class="post-body">
+                    <h3 id="现象">现象</h3>
+<p>洪敏在用 Metabase 写报表过程中，使用 Metabase 的日期变量，发现的诡异问题。两条语句仅有部分差异，返回的结果却差了一天。</p>
+<p><img src="../../images/image-20200807173209949.png" alt="image-20200807173209949"></p>
+<p>期望结果。</p>
+<p><img src="../../images/image-20200807173143617.png" alt="image-20200807173143617"></p>
+<p>与期望结果差了一天。</p>
+<p>在 CDH 中查看 impala 服务器接收到的请求。</p>
+<p>得到期望结果的SQL：</p>
+<p>dt 是字符串，内容是日期，参数是TIMESTAMP，SQL引擎会自动转为两个 TIMESTAMP比较。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">SELECT</span> <span style="color:#f92672">`</span>a<span style="color:#f92672">`</span>.<span style="color:#f92672">`</span>dt<span style="color:#f92672">`</span>, (<span style="color:#f92672">`</span>a<span style="color:#f92672">`</span>.<span style="color:#f92672">`</span>x<span style="color:#f92672">`</span> <span style="color:#f92672">-</span> <span style="color:#f92672">`</span>b<span style="color:#f92672">`</span>.<span style="color:#f92672">`</span>x<span style="color:#f92672">`</span>) <span style="color:#66d9ef">as</span> <span style="color:#f92672">`</span><span style="color:#960050;background-color:#1e0010">净增人数</span><span style="color:#f92672">`</span> <span style="color:#66d9ef">FROM</span> (<span style="color:#66d9ef">SELECT</span> <span style="color:#f92672">`</span>f_ods_wx_subscribe_di<span style="color:#f92672">`</span>.<span style="color:#f92672">`</span>dt<span style="color:#f92672">`</span>, <span style="color:#66d9ef">COUNT</span>(<span style="color:#66d9ef">DISTINCT</span> <span style="color:#f92672">`</span>f_ods_wx_subscribe_di<span style="color:#f92672">`</span>.<span style="color:#f92672">`</span>userinfo_openid<span style="color:#f92672">`</span>) <span style="color:#66d9ef">as</span> <span style="color:#f92672">`</span>x<span style="color:#f92672">`</span> <span style="color:#66d9ef">FROM</span> <span style="color:#f92672">`</span>product<span style="color:#f92672">`</span>.<span style="color:#f92672">`</span>f_ods_wx_subscribe_di<span style="color:#f92672">`</span> <span style="color:#66d9ef">WHERE</span> ((<span style="color:#f92672">`</span>f_ods_wx_subscribe_di<span style="color:#f92672">`</span>.<span style="color:#f92672">`</span>dt<span style="color:#f92672">`</span> <span style="color:#f92672">&lt;</span> <span style="color:#66d9ef">CAST</span>( <span style="color:#e6db74">&#39;2020-08-05 00:00:00.0&#39;</span> <span style="color:#66d9ef">AS</span> <span style="color:#66d9ef">TIMESTAMP</span>)) <span style="color:#66d9ef">AND</span> ((<span style="color:#f92672">`</span>f_ods_wx_subscribe_di<span style="color:#f92672">`</span>.<span style="color:#f92672">`</span>mid<span style="color:#f92672">`</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;jt20191017175015910985&#39;</span>) <span style="color:#66d9ef">AND</span> (<span style="color:#f92672">`</span>f_ods_wx_subscribe_di<span style="color:#f92672">`</span>.<span style="color:#f92672">`</span>dt<span style="color:#f92672">`</span> <span style="color:#f92672">&gt;=</span> <span style="color:#66d9ef">CAST</span>( <span style="color:#e6db74">&#39;2020-08-01 00:00:00.0&#39;</span> <span style="color:#66d9ef">AS</span> <span style="color:#66d9ef">TIMESTAMP</span>)))) <span style="color:#66d9ef">GROUP</span> <span style="color:#66d9ef">BY</span> <span style="color:#f92672">`</span>f_ods_wx_subscribe_di<span style="color:#f92672">`</span>.<span style="color:#f92672">`</span>dt<span style="color:#f92672">`</span>) <span style="color:#66d9ef">AS</span> a <span style="color:#66d9ef">LEFT</span> <span style="color:#66d9ef">JOIN</span> (<span style="color:#66d9ef">SELECT</span> <span style="color:#f92672">`</span>f_ods_wx_unsubscribe_di<span style="color:#f92672">`</span>.<span style="color:#f92672">`</span>dt<span style="color:#f92672">`</span>, <span style="color:#66d9ef">COUNT</span>(<span style="color:#66d9ef">DISTINCT</span> <span style="color:#f92672">`</span>f_ods_wx_unsubscribe_di<span style="color:#f92672">`</span>.<span style="color:#f92672">`</span>userinfo_openid<span style="color:#f92672">`</span>) <span style="color:#66d9ef">as</span> <span style="color:#f92672">`</span>x<span style="color:#f92672">`</span> <span style="color:#66d9ef">FROM</span> <span style="color:#f92672">`</span>product<span style="color:#f92672">`</span>.<span style="color:#f92672">`</span>f_ods_wx_unsubscribe_di<span style="color:#f92672">`</span> <span style="color:#66d9ef">WHERE</span> ((<span style="color:#f92672">`</span>f_ods_wx_unsubscribe_di<span style="color:#f92672">`</span>.<span style="color:#f92672">`</span>dt<span style="color:#f92672">`</span> <span style="color:#f92672">&lt;</span> <span style="color:#66d9ef">CAST</span>( <span style="color:#e6db74">&#39;2020-08-05 00:00:00.0&#39;</span> <span style="color:#66d9ef">AS</span> <span style="color:#66d9ef">TIMESTAMP</span>)) <span style="color:#66d9ef">AND</span> ((<span style="color:#f92672">`</span>f_ods_wx_unsubscribe_di<span style="color:#f92672">`</span>.<span style="color:#f92672">`</span>mid<span style="color:#f92672">`</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;jt20191017175015910985&#39;</span>) <span style="color:#66d9ef">AND</span> (<span style="color:#f92672">`</span>f_ods_wx_unsubscribe_di<span style="color:#f92672">`</span>.<span style="color:#f92672">`</span>dt<span style="color:#f92672">`</span> <span style="color:#f92672">&gt;=</span> <span style="color:#66d9ef">CAST</span>( <span style="color:#e6db74">&#39;2020-08-01 00:00:00.0&#39;</span> <span style="color:#66d9ef">AS</span> <span style="color:#66d9ef">TIMESTAMP</span>)))) <span style="color:#66d9ef">GROUP</span> <span style="color:#66d9ef">BY</span> <span style="color:#f92672">`</span>f_ods_wx_unsubscribe_di<span style="color:#f92672">`</span>.<span style="color:#f92672">`</span>dt<span style="color:#f92672">`</span>) <span style="color:#66d9ef">AS</span> b <span style="color:#66d9ef">ON</span> (<span style="color:#f92672">`</span>a<span style="color:#f92672">`</span>.<span style="color:#f92672">`</span>dt<span style="color:#f92672">`</span> <span style="color:#f92672">=</span> <span style="color:#f92672">`</span>b<span style="color:#f92672">`</span>.<span style="color:#f92672">`</span>dt<span style="color:#f92672">`</span>)
+</code></pre></div><p>得到错误结果的SQL：</p>
+<p>dt 本身是字符串，参数也是字符串。变成两个字符串比较，结果确实差一天。只是在select里使用了一个函数，就造成SQL巨大差异，很神奇。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"> <span style="color:#66d9ef">select</span> a.dt ,(a.x <span style="color:#f92672">-</span> nvl(b.x,<span style="color:#ae81ff">0</span>)) <span style="color:#66d9ef">as</span> <span style="color:#f92672">`</span><span style="color:#960050;background-color:#1e0010">净增人数</span><span style="color:#f92672">`</span> <span style="color:#66d9ef">from</span> ( <span style="color:#66d9ef">SELECT</span> dt, <span style="color:#66d9ef">count</span>(<span style="color:#66d9ef">distinct</span> userinfo_openid) <span style="color:#66d9ef">as</span> x <span style="color:#66d9ef">FROM</span> f_ods_wx_subscribe_di <span style="color:#66d9ef">WHERE</span> mid <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;jt20191017175015910985&#39;</span> <span style="color:#66d9ef">AND</span> dt <span style="color:#f92672">&gt;=</span> <span style="color:#e6db74">&#39;2020-08-01 00:00:00.0&#39;</span> <span style="color:#66d9ef">and</span> dt <span style="color:#f92672">&lt;</span> <span style="color:#e6db74">&#39;2020-08-05 00:00:00.0&#39;</span> <span style="color:#66d9ef">group</span> <span style="color:#66d9ef">by</span> dt ) a <span style="color:#66d9ef">left</span> <span style="color:#66d9ef">join</span> ( <span style="color:#66d9ef">SELECT</span> dt, <span style="color:#66d9ef">count</span>(<span style="color:#66d9ef">distinct</span> userinfo_openid) <span style="color:#66d9ef">as</span> x <span style="color:#66d9ef">FROM</span> f_ods_wx_unsubscribe_di <span style="color:#66d9ef">WHERE</span> mid <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;jt20191017175015910985&#39;</span> <span style="color:#66d9ef">AND</span> dt <span style="color:#f92672">&gt;=</span> <span style="color:#e6db74">&#39;2020-08-01 00:00:00.0&#39;</span> <span style="color:#66d9ef">and</span> dt <span style="color:#f92672">&lt;</span> <span style="color:#e6db74">&#39;2020-08-05 00:00:00.0&#39;</span> <span style="color:#66d9ef">group</span> <span style="color:#66d9ef">by</span> dt ) b <span style="color:#66d9ef">on</span> a.dt <span style="color:#f92672">=</span> b.dt
+</code></pre></div><p>metabase，metabase impala driver，impala JDBC driver都会有问题。</p>
+<h3 id="metabase-打印日志-query-param">Metabase 打印日志 query, param</h3>
+<p>native_form/query 构造完成后，会执行 executef，底层是driver/execute-reducible-query，就是JDBC prepareStatement构造与执行。</p>
+<p>在executef方法记录日志。</p>
+<p><img src="../../images/image-20200807174516355.png" alt="image-20200807174516355"></p>
+<p>query的区别如之前、params是完全一致的。所以，不是Metabase的问题。</p>
+<p><img src="../../images/image-20200807175049064.png" alt="image-20200807175049064"></p>
+<p>而 metabase impala driver 也没有重载 driver/execute-reducible-query 方法。也基本排除了嫌疑。</p>
+<h3 id="复现问题">复现问题</h3>
+<p>目标锁定在 impala JDBC driver。写一个Java程序复现。</p>
+<ol>
+<li>使用相同的 Impala JDBC 驱动。</li>
+<li>同样是参数化提交 SQL。</li>
+<li>准备类似的SQL Statement。</li>
+</ol>
+<p><img src="../../images/image-20200807172918590.png" alt="image-20200807172918590"></p>
+<p>核心逻辑。<a href="https://github.com/XUJiahua/impala-jdbc-sql-rewrite">代码在此</a>。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">                    connection <span style="color:#f92672">=</span> DriverManager<span style="color:#f92672">.</span><span style="color:#a6e22e">getConnection</span><span style="color:#f92672">(</span>CONNECTION_URL<span style="color:#f92672">);</span>
+                    ps <span style="color:#f92672">=</span> connection<span style="color:#f92672">.</span><span style="color:#a6e22e">prepareStatement</span><span style="color:#f92672">(</span>sql<span style="color:#f92672">);</span>
+                    ps<span style="color:#f92672">.</span><span style="color:#a6e22e">setString</span><span style="color:#f92672">(</span>1<span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;jt20191017175015910985&#34;</span><span style="color:#f92672">);</span>
+                    ps<span style="color:#f92672">.</span><span style="color:#a6e22e">setTimestamp</span><span style="color:#f92672">(</span>2<span style="color:#f92672">,</span> <span style="color:#66d9ef">new</span> Timestamp<span style="color:#f92672">(</span>2020 <span style="color:#f92672">-</span> 1900<span style="color:#f92672">,</span> 8 <span style="color:#f92672">-</span> 1<span style="color:#f92672">,</span> 1<span style="color:#f92672">,</span> 0<span style="color:#f92672">,</span> 0<span style="color:#f92672">,</span> 0<span style="color:#f92672">,</span> 0<span style="color:#f92672">));</span>
+                    ps<span style="color:#f92672">.</span><span style="color:#a6e22e">setTimestamp</span><span style="color:#f92672">(</span>3<span style="color:#f92672">,</span> <span style="color:#66d9ef">new</span> Timestamp<span style="color:#f92672">(</span>2020 <span style="color:#f92672">-</span> 1900<span style="color:#f92672">,</span> 8 <span style="color:#f92672">-</span> 1<span style="color:#f92672">,</span> 5<span style="color:#f92672">,</span> 0<span style="color:#f92672">,</span> 0<span style="color:#f92672">,</span> 0<span style="color:#f92672">,</span> 0<span style="color:#f92672">));</span>
+                    ps<span style="color:#f92672">.</span><span style="color:#a6e22e">setString</span><span style="color:#f92672">(</span>4<span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;jt20191017175015910985&#34;</span><span style="color:#f92672">);</span>
+                    ps<span style="color:#f92672">.</span><span style="color:#a6e22e">setTimestamp</span><span style="color:#f92672">(</span>5<span style="color:#f92672">,</span> <span style="color:#66d9ef">new</span> Timestamp<span style="color:#f92672">(</span>2020 <span style="color:#f92672">-</span> 1900<span style="color:#f92672">,</span> 8 <span style="color:#f92672">-</span> 1<span style="color:#f92672">,</span> 1<span style="color:#f92672">,</span> 0<span style="color:#f92672">,</span> 0<span style="color:#f92672">,</span> 0<span style="color:#f92672">,</span> 0<span style="color:#f92672">));</span>
+                    ps<span style="color:#f92672">.</span><span style="color:#a6e22e">setTimestamp</span><span style="color:#f92672">(</span>6<span style="color:#f92672">,</span> <span style="color:#66d9ef">new</span> Timestamp<span style="color:#f92672">(</span>2020 <span style="color:#f92672">-</span> 1900<span style="color:#f92672">,</span> 8 <span style="color:#f92672">-</span> 1<span style="color:#f92672">,</span> 5<span style="color:#f92672">,</span> 0<span style="color:#f92672">,</span> 0<span style="color:#f92672">,</span> 0<span style="color:#f92672">,</span> 0<span style="color:#f92672">));</span>
+                    resultSet <span style="color:#f92672">=</span> ps<span style="color:#f92672">.</span><span style="color:#a6e22e">executeQuery</span><span style="color:#f92672">();</span>
+                    ResultSetMetaData rsmd <span style="color:#f92672">=</span> resultSet<span style="color:#f92672">.</span><span style="color:#a6e22e">getMetaData</span><span style="color:#f92672">();</span>
+                    <span style="color:#66d9ef">int</span> columnsNumber <span style="color:#f92672">=</span> rsmd<span style="color:#f92672">.</span><span style="color:#a6e22e">getColumnCount</span><span style="color:#f92672">();</span>
+                    <span style="color:#66d9ef">while</span> <span style="color:#f92672">(</span>resultSet<span style="color:#f92672">.</span><span style="color:#a6e22e">next</span><span style="color:#f92672">())</span> <span style="color:#f92672">{</span>
+                        <span style="color:#66d9ef">for</span> <span style="color:#f92672">(</span><span style="color:#66d9ef">int</span> i <span style="color:#f92672">=</span> 1<span style="color:#f92672">;</span> i <span style="color:#f92672">&lt;=</span> columnsNumber<span style="color:#f92672">;</span> i<span style="color:#f92672">++)</span> <span style="color:#f92672">{</span>
+                            <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>i <span style="color:#f92672">&gt;</span> 1<span style="color:#f92672">)</span> System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">print</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;,  &#34;</span><span style="color:#f92672">);</span>
+                            String columnValue <span style="color:#f92672">=</span> resultSet<span style="color:#f92672">.</span><span style="color:#a6e22e">getString</span><span style="color:#f92672">(</span>i<span style="color:#f92672">);</span>
+                            System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">print</span><span style="color:#f92672">(</span>columnValue <span style="color:#f92672">+</span> <span style="color:#e6db74">&#34; &#34;</span> <span style="color:#f92672">+</span> rsmd<span style="color:#f92672">.</span><span style="color:#a6e22e">getColumnName</span><span style="color:#f92672">(</span>i<span style="color:#f92672">));</span>
+                        <span style="color:#f92672">}</span>
+                        System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;&#34;</span><span style="color:#f92672">);</span>
+                    <span style="color:#f92672">}</span>
+</code></pre></div><p>服务器上执行，结果复现。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ java -jar impala-jdbc-sql-rewrite-1.0-SNAPSHOT.jar 1.sql
+2020-08-05 dt,  <span style="color:#ae81ff">29257</span> 净增人数
+2020-08-02 dt,  <span style="color:#ae81ff">37285</span> 净增人数
+2020-08-04 dt,  <span style="color:#ae81ff">24640</span> 净增人数
+2020-08-03 dt,  <span style="color:#ae81ff">29253</span> 净增人数
+
+$ java -jar impala-jdbc-sql-rewrite-1.0-SNAPSHOT.jar 2.sql
+2020-08-02 dt,  <span style="color:#ae81ff">37285</span> 净增人数
+2020-08-04 dt,  <span style="color:#ae81ff">24640</span> 净增人数
+2020-08-03 dt,  <span style="color:#ae81ff">29253</span> 净增人数
+2020-08-01 dt,  <span style="color:#ae81ff">37235</span> 净增人数
+</code></pre></div><h3 id="排查过程中的误区">排查过程中的误区</h3>
+<p>一直以为Metabase服务返回的native_form/query是实际提交给JDBC驱动的sql。</p>
+<p><img src="../../images/image-20200807171929947.png" alt="image-20200807171929947"></p>
+<p>其实并不然。native_form/query是拼接好的SQL，参数已经填充进了SQL语句中。而实际执行SQL，使用的是参数化提交。源码表示返回的native_form/query是query实际执行后的产物。所以对排查问题有误导作用。</p>
+<p><img src="../../images/image-20200807172259322.png" alt="image-20200807172259322"></p>
+<h3 id="临时解决方案">临时解决方案</h3>
+<p>驱动的问题暂时无法解决，Workaround是有的。只要保证日期比较的时候，条件表达式左右之一至少是TIMESTAMP类型。</p>
+
+                    
+                    <HR width="100%" id="EOF">
+                    <p style="color:#777;">Last modified on 2020-08-07</p>
+                    
+                </div>
+            </div>
+            
+            
+            <nav class="post-pagination">
+
+                
+                <a class="newer-posts">
+                    Next<br>No newer posts.
+                </a>
+                
+                
+                
+                <a class="older-posts" href="https://xujiahua.github.io/posts/20200807-ray-grpc-arrow/">
+                    Previous<br>【阅读】How Ray Uses gRPC (and Arrow) to Outperform gRPC
+                </a>
+                
+            </nav>
+            <div class="post-comment-wrapper">
+                
+
+
+
+
+
+
+            </div>
+        </div>
+    </div>
+</div>
+
+            </div><div id="single-column-footer">
+Hugo Theme <a href="https://github.com/amazingrise/hugo-theme-diary">Diary</a> by <a href="https://amazingrise.net">Rise</a>
+<br>
+Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopener">Makito</a>'s <a href="https://github.com/SumiMakito/hexo-theme-journal/" target="_blank" rel="noreferrer noopener">Journal.</a> <br>
+<br>
+
+&copy;
+	
+	2020 许嘉华的笔记
+	</div>
+    	</div>
+    <script src="https://xujiahua.github.io//js/journal.js"></script>
+    </body>
+</html>
