@@ -6,10 +6,21 @@
     <description>Recent content in docker on 许嘉华的笔记</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Tue, 14 Apr 2020 09:53:35 +0800</lastBuildDate>
+    <lastBuildDate>Tue, 01 Sep 2020 12:03:13 +0800</lastBuildDate>
     
 	<atom:link href="https://xujiahua.github.io/tags/docker/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Linux Namespace</title>
+      <link>https://xujiahua.github.io/posts/20200901-linux-namespace/</link>
+      <pubDate>Tue, 01 Sep 2020 12:03:13 +0800</pubDate>
+      
+      <guid>https://xujiahua.github.io/posts/20200901-linux-namespace/</guid>
+      <description>Linux Namespace namespace 在编程语言中是一种常见的概念，C++/Clojure 中就使用 namespace 关键字来模块化组织代码。模块与模块之间互不污染，模块A有个 helloworld 的方法，模块B也可以有一个 helloworld 的方法。Java/Go 中的 package 也是同样的意义。
+Linux namespaces 是 Linux 内核用于隔离内核资源的手段，进程使用隔离的内核资源保证了与其他进程之间的独立。也是 Docker 容器的底层技术（Docker 主要开发语言是 Go，container 的创建使用 C）。
+ Namespaces are a feature of the Linux kernel that partitions kernel resources such that one set of processes sees one set of resources while another set of processes sees a different set of resources. The feature works by having the same namespace for a set of resources and processes, but those namespaces refer to distinct resources.</description>
+    </item>
     
     <item>
       <title>k8s 应用日志收集</title>

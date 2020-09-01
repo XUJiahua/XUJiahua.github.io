@@ -5,9 +5,72 @@
     <description>Recent content on 许嘉华的笔记</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Fri, 07 Aug 2020 15:06:49 +0800</lastBuildDate>
+    <lastBuildDate>Tue, 01 Sep 2020 12:03:13 +0800</lastBuildDate>
     
         <atom:link href="https://xujiahua.github.io/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    
+        <item>
+        <title>2019 eBay Big Data TechDay</title>
+        <link>https://xujiahua.github.io/posts/20191123-ebay-bigdata-techday/</link>
+        <pubDate>Sat, 23 Nov 2019 16:13:01 +0800</pubDate>
+        
+        <guid>https://xujiahua.github.io/posts/20191123-ebay-bigdata-techday/</guid>
+        <description>许嘉华的笔记 https://xujiahua.github.io/posts/20191123-ebay-bigdata-techday/ -&lt;p&gt;（笔记迁移 @ 2020年）&lt;/p&gt;
+&lt;p&gt;现场听了下eBay大数据的分享。视频/PPT &lt;a href=&#34;https://www.slidestalk.com/ebay&#34;&gt;https://www.slidestalk.com/ebay&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;总体感觉，很棒。&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;环境很好。德国中心，提供了星巴克、点心。&lt;/li&gt;
+&lt;li&gt;技术氛围好。几百人做大数据呢！而且做得都比较深。&lt;/li&gt;
+&lt;li&gt;拥抱开源：基于开源的二次开发，外围开发，平台化（易用性）等工作。&lt;/li&gt;
+&lt;li&gt;风控经理演讲水平好棒。&lt;/li&gt;
+&lt;li&gt;Spark SQL / Flink Streaming / Spark Streaming / ElasticSearch 这些是目前大数据的主流&lt;/li&gt;
+&lt;li&gt;真正投身大数据，最优选择是学习Spark。&lt;/li&gt;
+&lt;li&gt;没有中奖，不过拿了小礼物，心里美滋滋。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h4 id=&#34;应用角度data-driven-payment-risk&#34;&gt;【应用角度】Data Driven Payment Risk&lt;/h4&gt;
+&lt;ol&gt;
+&lt;li&gt;演讲、台风挺好的。&lt;/li&gt;
+&lt;li&gt;内容方面没有很新颖但是很扎实（基于图算法的挖掘其实挺少听见的，是让人眼前一亮的东西，但是我之前正好看过这块了。）。&lt;/li&gt;
+&lt;li&gt;基本上是在支付风控这个应用角度。&lt;/li&gt;
+&lt;li&gt;如果去PayPal，这块支付风控是可以好好学习的。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h4 id=&#34;flink-streamingrheos-sql-a-real-time-processing-language&#34;&gt;【Flink Streaming】Rheos-SQL: A Real-Time Processing Language&lt;/h4&gt;
+&lt;ol&gt;
+&lt;li&gt;两个年轻人联合做的分享。&lt;/li&gt;
+&lt;li&gt;基于Flink的，Flink还有SQL功能。Flink这块我没接触。&lt;/li&gt;
+&lt;li&gt;扩展SQL语法的思路，加入了一些新功能，比如sqlflow也是这么做的（阿里巴巴）。写SQL就能连Kafka、ES。这点很不错的扩展。&lt;/li&gt;
+&lt;li&gt;还做了一个平台。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h4 id=&#34;spark-streamingdesigning-etl-pipelines-with-structured-streaming-and-delta-lake&#34;&gt;【Spark Streaming】Designing ETL pipelines with Structured Streaming and Delta lake&lt;/h4&gt;
+&lt;ol&gt;
+&lt;li&gt;干货不多，一些最佳实践（因为没怎么做过streaming，印象不深）。感觉是Delta Lake的推广。&lt;/li&gt;
+&lt;li&gt;Delta Lake能替换hive么？&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h4 id=&#34;elasticsearchpronto---elasticsearch-as-a-service-at-ebay&#34;&gt;【ElasticSearch】Pronto - ElasticSearch as a service at ebay&lt;/h4&gt;
+&lt;ol&gt;
+&lt;li&gt;Kibaba插件开发扩展ELK&lt;/li&gt;
+&lt;li&gt;做了一个平台管理ES。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h4 id=&#34;aibigdatanous---empower-data-analysis-through-augmented-analytics&#34;&gt;【AI+BigData】Nous - Empower Data Analysis through Augmented Analytics&lt;/h4&gt;
+&lt;ol&gt;
+&lt;li&gt;增强分析。大数据分析+知识图谱，自然语言处理（英文）。这个topic太时髦了。&lt;/li&gt;
+&lt;li&gt;演示效果，界面真很好看了。&lt;/li&gt;
+&lt;li&gt;风趣的开场白。技术又好。&lt;/li&gt;
+&lt;li&gt;英语对话，这么流利。有被刺激到。&lt;/li&gt;
+&lt;li&gt;从规则引擎开始&lt;/li&gt;
+&lt;li&gt;积累数据，机器学习生成规则&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h4 id=&#34;spark-sqlcarmel---optimizing-sparksql-for-interative-analysis&#34;&gt;【Spark SQL】Carmel - Optimizing SparkSQL for Interative Analysis&lt;/h4&gt;
+&lt;ol&gt;
+&lt;li&gt;eBay优化Spark sql（改写内部代码）替换TeraData，作为MPP方案。Impala不好吗。。。&lt;/li&gt;
+&lt;li&gt;观众提问，SQL on spark没有索引，是不是历史的倒退。有个问题挺好。回答是下推到parquet，列式存储会过滤。&lt;/li&gt;
+&lt;li&gt;是大牛，技术做的很深。Druid/Kylin/Spark/Spark SQL。一句话很经典，批处理也可以很快。&lt;/li&gt;
+&lt;li&gt;演讲基本上是站着不动，看着PPT疯狂输出信息。&lt;/li&gt;
+&lt;/ol&gt;
+- https://xujiahua.github.io/posts/20191123-ebay-bigdata-techday/ - </description>
+        </item>
     
     
     
@@ -611,8 +674,6 @@ Dexposed的感受，Android 4.x Dalvik虚拟机上基本算是完美了，但是
 &lt;p&gt;小想法，Dexposed/AndFix这个套路修复问题，以后估计会越来越难做，Android 7.x都已经支持JIT了，将Java代码编译到了本地代码，还怎么劫持Java方法呢，跑的都是本地代码了。&lt;/p&gt;
 - https://xujiahua.github.io/posts/20170408-android-hot-update/ - </description>
         </item>
-    
-    
     
     
   </channel>

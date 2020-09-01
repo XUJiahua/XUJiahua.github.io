@@ -3,27 +3,37 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
+    <loc>https://xujiahua.github.io/tags/docker/</loc>
+    <lastmod>2020-09-01T12:03:13+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://xujiahua.github.io/posts/20200901-linux-namespace/</loc>
+    <lastmod>2020-09-01T12:03:13+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://xujiahua.github.io/posts/</loc>
+    <lastmod>2020-09-01T12:03:13+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://xujiahua.github.io/tags/</loc>
+    <lastmod>2020-09-01T12:03:13+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://xujiahua.github.io/</loc>
+    <lastmod>2020-09-01T12:03:13+08:00</lastmod>
+  </url>
+  
+  <url>
     <loc>https://xujiahua.github.io/tags/impala/</loc>
     <lastmod>2020-08-07T15:06:49+08:00</lastmod>
   </url>
   
   <url>
-    <loc>https://xujiahua.github.io/posts/</loc>
-    <lastmod>2020-08-07T15:06:49+08:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://xujiahua.github.io/tags/</loc>
-    <lastmod>2020-08-07T15:06:49+08:00</lastmod>
-  </url>
-  
-  <url>
     <loc>https://xujiahua.github.io/posts/20200807-impala/</loc>
-    <lastmod>2020-08-07T15:06:49+08:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://xujiahua.github.io/</loc>
     <lastmod>2020-08-07T15:06:49+08:00</lastmod>
   </url>
   
@@ -220,11 +230,6 @@
   <url>
     <loc>https://xujiahua.github.io/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E5%B7%A5%E7%A8%8B/</loc>
     <lastmod>2020-04-16T11:33:18+08:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://xujiahua.github.io/tags/docker/</loc>
-    <lastmod>2020-04-14T09:53:35+08:00</lastmod>
   </url>
   
   <url>

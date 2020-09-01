@@ -1,0 +1,1430 @@
+<!DOCTYPE html>
+<html><head>
+<title>Linux Namespace</title>
+
+<meta charset="utf-8">
+<meta name="X-UA-Compatible" content="IE=edge">
+<meta name="google-site-verification" content="">
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport">
+<meta content="telephone=no" name="format-detection">
+<meta name="description" content="">
+<meta name="renderer" content="webkit">
+<meta name="theme-color" content="#ffffff">
+
+
+
+
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+	ga('create', 'UA-162706610-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+
+
+
+<script src="/vendor/js/jquery.min.js" ></script>
+<script src="/vendor/js/popper.min.js" ></script>
+<script src="/vendor/js/bootstrap.min.js" ></script>
+<script src="/vendor/js/smooth-scroll.polyfills.min.js" ></script>
+<link type="text/css" rel="stylesheet" href="/vendor/css/bootstrap.min.css">
+<script src="/vendor/js/vue.min.js" ></script>
+
+
+
+
+<link rel="stylesheet" href="https://xujiahua.github.io/scss/journal.min.5c667e74038e21ddbb9024b67930f8544e02af62491281cf73fdb817eec2947e.css" integrity="sha256-XGZ&#43;dAOOId27kCS2eTD4VE4Cr2JJEoHPc/24F&#43;7ClH4=" media="screen">
+
+<script src="https://xujiahua.github.io//js/loadCSS.js"></script>
+<script src="https://xujiahua.github.io//js/table.js"></script>
+
+
+<script src="https://xujiahua.github.io//js/toc.js"></script>
+
+
+<script>
+    loadCSS("https://fonts.googleapis.com/css?family=Lora|Montserrat|Fira+Mono|Noto+Serif+SC|Material+Icons");
+</script>
+
+
+
+
+
+
+</head><body>
+    	<div id="app"><div ref="sideContainer" class="side-container">
+    
+    <a class="a-block nav-head false" href="https://xujiahua.github.io/">
+    
+        <div class="nav-title">
+            许嘉华的笔记
+        </div>
+        
+    </a>
+
+    <div class="nav-link-list">
+        
+        
+            
+            
+            
+                
+            
+            
+            
+            <a class="a-block nav-link-item active" href="/posts">
+                Archive
+            </a>
+            
+        
+            
+            
+            
+            
+            
+            <a class="a-block nav-link-item false" href="/categories">
+                Categories
+            </a>
+            
+        
+            
+            
+            
+            
+            
+            <a class="a-block nav-link-item false" href="/tags">
+                Tags
+            </a>
+            
+        
+            
+            
+            
+            
+            
+            <a class="a-block nav-link-item false" href="/index.xml">
+                RSS Feed
+            </a>
+            
+        
+    </div>
+
+    
+
+    <div class="nav-footer">
+        
+Hugo Theme <a href="https://github.com/amazingrise/hugo-theme-diary">Diary</a> by <a href="https://amazingrise.net">Rise</a>
+<br>
+Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopener">Makito</a>'s <a href="https://github.com/SumiMakito/hexo-theme-journal/" target="_blank" rel="noreferrer noopener">Journal.</a> <br>
+<br>
+
+&copy;
+	
+	2020 许嘉华的笔记
+	
+    </div>
+    
+</div><div ref="extraContainer" class="extra-container">
+    
+    <div class="toc animated-visibility" :class="{ invisible: scrollY <= 140 }">
+
+
+	<div class="toc-content">
+	
+		
+		
+		
+		<center>- CATALOG -</center>
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#linux-namespace" v-on:click="closeDrawer" id="linux-namespace-nav">
+										 Linux Namespace
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e5%86%85%e6%a0%b8%e8%b5%84%e6%ba%90" v-on:click="closeDrawer" id="内核资源-nav">
+										 内核资源
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e6%96%87%e4%bb%b6%e7%b3%bb%e7%bb%9f-proc" v-on:click="closeDrawer" id="文件系统-proc-nav">
+										 文件系统 /proc
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e4%b8%89%e4%b8%aa-syscall" v-on:click="closeDrawer" id="三个-syscall-nav">
+										 三个 syscall
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#clone" v-on:click="closeDrawer" id="clone-nav">
+										 clone
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#unshare" v-on:click="closeDrawer" id="unshare-nav">
+										 unshare
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#setns" v-on:click="closeDrawer" id="setns-nav">
+										 setns
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e4%b8%a4%e4%b8%aa-cmd" v-on:click="closeDrawer" id="两个-cmd-nav">
+										 两个 cmd
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#unshare-1" v-on:click="closeDrawer" id="unshare-1-nav">
+										 unshare
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#nsenter" v-on:click="closeDrawer" id="nsenter-nav">
+										 nsenter
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e6%80%bb%e7%bb%93" v-on:click="closeDrawer" id="总结-nav">
+										 总结
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e5%8f%82%e8%80%83" v-on:click="closeDrawer" id="参考-nav">
+										 参考
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+	</div>
+
+</div>
+    
+    <div class="pagination">
+        <a id="globalBackToTop" class="pagination-action animated-visibility" href="#top" :class="{ invisible: scrollY == 0 }">
+            <i class="material-icons pagination-action-icon">
+                keyboard_arrow_up
+            </i>
+        </a>
+        
+    </div>
+</div><div class="single-column-drawer-container" ref="drawer"
+     v-bind:class="{ 'single-column-drawer-container-active': isDrawerOpen }">
+    <div class="drawer-content">
+        <div class="drawer-menu">
+            
+            
+                
+                
+                
+                    
+                
+                
+                
+                <a class="a-block drawer-menu-item active" href="/posts">
+                    Archive
+                </a>
+                
+            
+                
+                
+                
+                
+                
+                <a class="a-block drawer-menu-item false" href="/categories">
+                    Categories
+                </a>
+                
+            
+                
+                
+                
+                
+                
+                <a class="a-block drawer-menu-item false" href="/tags">
+                    Tags
+                </a>
+                
+            
+                
+                
+                
+                
+                
+                <a class="a-block drawer-menu-item false" href="/index.xml">
+                    RSS Feed
+                </a>
+                
+            
+            
+            <div class="toc">
+
+
+	<div class="toc-content">
+	
+		
+		
+		
+		<center>- CATALOG -</center>
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#linux-namespace" v-on:click="closeDrawer" id="linux-namespace-nav">
+										 Linux Namespace
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e5%86%85%e6%a0%b8%e8%b5%84%e6%ba%90" v-on:click="closeDrawer" id="内核资源-nav">
+										 内核资源
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e6%96%87%e4%bb%b6%e7%b3%bb%e7%bb%9f-proc" v-on:click="closeDrawer" id="文件系统-proc-nav">
+										 文件系统 /proc
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e4%b8%89%e4%b8%aa-syscall" v-on:click="closeDrawer" id="三个-syscall-nav">
+										 三个 syscall
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#clone" v-on:click="closeDrawer" id="clone-nav">
+										 clone
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#unshare" v-on:click="closeDrawer" id="unshare-nav">
+										 unshare
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#setns" v-on:click="closeDrawer" id="setns-nav">
+										 setns
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e4%b8%a4%e4%b8%aa-cmd" v-on:click="closeDrawer" id="两个-cmd-nav">
+										 两个 cmd
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#unshare-1" v-on:click="closeDrawer" id="unshare-1-nav">
+										 unshare
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#nsenter" v-on:click="closeDrawer" id="nsenter-nav">
+										 nsenter
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e6%80%bb%e7%bb%93" v-on:click="closeDrawer" id="总结-nav">
+										 总结
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e5%8f%82%e8%80%83" v-on:click="closeDrawer" id="参考-nav">
+										 参考
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+	</div>
+
+</div>
+            
+        </div>
+    </div>
+</div>
+<transition name="fade">
+    <div v-bind:class="{ 'single-column-drawer-mask': mounted }" v-if="isDrawerOpen" v-on:click="toggleDrawer"></div>
+</transition>
+<nav ref="navBar" class="navbar sticky-top navbar-light single-column-nav-container">
+    <div ref="navBackground" class="nav-background"></div>
+    <div class="container container-narrow nav-content">
+        <button id="nav_dropdown_btn" class="nav-dropdown-toggle" type="button" v-on:click="toggleDrawer">
+            <i class="material-icons">
+                menu
+            </i>
+        </button>
+        <a ref="navTitle" class="navbar-brand" href="https://xujiahua.github.io/">
+            许嘉华的笔记
+        </a>
+    </div>
+</nav>
+<div class="single-column-header-container" ref="pageHead"
+     v-bind:style="{ transform: 'translateZ(0px) translateY('+.3*scrollY+'px)', opacity: 1-navOpacity }">
+    <a href="https://xujiahua.github.io/">
+        <div class="single-column-header-title">许嘉华的笔记</div>
+        
+
+    </a>
+</div>
+            <div id="content">
+<div ref="streamContainer" class="stream-container">
+    <div class="post-list-container post-list-container-shadow">
+        <div class="post">
+            
+            
+            
+
+            <div class="post-head-wrapper-text-only"
+                 style="background-image: url('/')">
+                <div class="post-title">
+                    Linux Namespace
+                    
+                    <div class="post-meta">
+                        
+                        <time itemprop="datePublished">
+                            2020-09-01 12:03
+                        </time>
+                        
+
+                        
+
+                        
+                            <i class="material-icons" style="">label</i>
+                            
+                                <a href="/tags/docker">Docker</a>
+                                &nbsp;
+                            
+                        
+                    </div>
+                </div>
+            </div>
+            
+            <div class="post-body-wrapper">
+                <div class="post-body">
+                    <h2 id="linux-namespace">Linux Namespace</h2>
+<p>namespace 在编程语言中是一种常见的概念，C++/Clojure 中就使用 namespace 关键字来模块化组织代码。模块与模块之间互不污染，模块A有个 helloworld 的方法，模块B也可以有一个 helloworld 的方法。Java/Go 中的 package 也是同样的意义。</p>
+<p>Linux namespaces 是 Linux 内核用于隔离内核资源的手段，进程使用隔离的内核资源保证了与其他进程之间的独立。也是 Docker 容器的底层技术（Docker 主要开发语言是 Go，container 的创建使用 C）。</p>
+<blockquote>
+<p><strong>Namespaces</strong> are a feature of the <a href="https://en.wikipedia.org/wiki/Linux_kernel">Linux kernel</a> that partitions kernel resources such that one set of <a href="https://en.wikipedia.org/wiki/Process_(computing)">processes</a> sees one set of resources while another set of processes sees a different set of resources. The feature works by having the same namespace for a set of resources and processes, but those namespaces refer to distinct resources. Resources may exist in multiple spaces. Examples of such resources are process IDs, hostnames, user IDs, file names, and some names associated with network access, and <a href="https://en.wikipedia.org/wiki/Interprocess_communication">interprocess communication</a>.</p>
+<p>Namespaces are a fundamental aspect of <a href="https://en.wikipedia.org/wiki/Linux_containers">containers</a> on Linux.</p>
+</blockquote>
+<h3 id="内核资源">内核资源</h3>
+<p><code>man clone</code> 中列举了如下的资源：</p>
+<ol>
+<li>CLONE_NEWCGROUP:</li>
+<li>CLONE_NEWIPC: 隔离System V IPC和POSIX消息队列。</li>
+<li>CLONE_NEWNET: 网络的隔离，容器有自己的网络栈，IP，就像一个小主机。</li>
+<li>CLONE_NEWNS: 隔离文件系统挂载点。每个容器能看到不同的文件系统层次结构。因为是第一个实现的namespace，所以起名草率了。</li>
+<li>CLONE_NEWPID: 隔离进程ID。</li>
+<li>CLONE_NEWUSER: 隔离用户ID和组ID。</li>
+<li>CLONE_NEWUTS:  容器可以有独立的 domain name &amp; hostname。</li>
+</ol>
+<pre><code>       CLONE_NEWCGROUP (since Linux 4.6)
+              Create the process in a new cgroup namespace.  If this flag is not set, then (as with fork(2))  the
+              process is created in the same cgroup namespaces as the calling process.  This flag is intended for
+              the implementation of containers.
+
+              For further information on cgroup namespaces, see cgroup_namespaces(7).
+
+              Only a privileged process (CAP_SYS_ADMIN) can employ CLONE_NEWCGROUP.
+
+       CLONE_NEWIPC (since Linux 2.6.19)
+              If CLONE_NEWIPC is set, then create the process in a new IPC namespace.  If this flag is  not  set,
+              then  (as  with  fork(2)), the process is created in the same IPC namespace as the calling process.
+              This flag is intended for the implementation of containers.
+
+              An IPC namespace provides an isolated view of System V IPC objects (see svipc(7)) and (since  Linux
+              2.6.30)  POSIX  message queues (see mq_overview(7)).  The common characteristic of these IPC mecha-
+              nisms is that IPC objects are identified by mechanisms other than filesystem pathnames.
+
+              Objects created in an IPC namespace are visible to all other processes that  are  members  of  that
+              namespace, but are not visible to processes in other IPC namespaces.
+
+              When  an  IPC namespace is destroyed (i.e., when the last process that is a member of the namespace
+              terminates), all IPC objects in the namespace are automatically destroyed.
+
+              Only a privileged process (CAP_SYS_ADMIN) can employ CLONE_NEWIPC.  This flag can't be specified in
+              conjunction with CLONE_SYSVSEM.
+
+              For further information on IPC namespaces, see namespaces(7).
+
+       CLONE_NEWNET (since Linux 2.6.24)
+              (The implementation of this flag was completed only by about kernel version 2.6.29.)
+
+              If  CLONE_NEWNET  is  set, then create the process in a new network namespace.  If this flag is not
+              set, then (as with fork(2)) the process is created in the same network  namespace  as  the  calling
+              process.  This flag is intended for the implementation of containers.
+
+              A  network  namespace provides an isolated view of the networking stack (network device interfaces,
+              IPv4 and IPv6 protocol stacks, IP routing tables, firewall rules, the /proc/net and  /sys/class/net
+              directory  trees, sockets, etc.).  A physical network device can live in exactly one network names-
+              pace.  A virtual network (veth(4)) device pair provides a pipe-like abstraction that can be used to
+              create tunnels between network namespaces, and can be used to create a bridge to a physical network
+              device in another namespace.
+
+              When a network namespace is freed (i.e., when the last process in the  namespace  terminates),  its
+              physical  network devices are moved back to the initial network namespace (not to the parent of the
+              process).  For further information on network namespaces, see namespaces(7).
+
+              Only a privileged process (CAP_SYS_ADMIN) can employ CLONE_NEWNET.
+
+       CLONE_NEWNS (since Linux 2.4.19)
+              If CLONE_NEWNS is set, the cloned child is started in a new mount  namespace,  initialized  with  a
+              copy  of the namespace of the parent.  If CLONE_NEWNS is not set, the child lives in the same mount
+              namespace as the parent.
+
+              Only a privileged process (CAP_SYS_ADMIN) can employ CLONE_NEWNS.  It is not permitted  to  specify
+              both CLONE_NEWNS and CLONE_FS in the same clone() call.
+
+              For further information on mount namespaces, see namespaces(7) and mount_namespaces(7).
+
+       CLONE_NEWPID (since Linux 2.6.24)
+              If  CLONE_NEWPID  is set, then create the process in a new PID namespace.  If this flag is not set,
+              then (as with fork(2)) the process is created in the same PID namespace  as  the  calling  process.
+              This flag is intended for the implementation of containers.
+
+              For further information on PID namespaces, see namespaces(7) and pid_namespaces(7).
+
+              Only a privileged process (CAP_SYS_ADMIN) can employ CLONE_NEWPID.  This flag can't be specified in
+              conjunction with CLONE_THREAD or CLONE_PARENT.
+
+       CLONE_NEWUSER
+              (This flag first became meaningful for clone() in Linux 2.6.23, the current clone() semantics  were
+              merged in Linux 3.5, and the final pieces to make the user namespaces completely usable were merged
+              in Linux 3.8.)
+
+              If CLONE_NEWUSER is set, then create the process in a new user namespace.  If this flag is not set,
+              then (as with fork(2)) the process is created in the same user namespace as the calling process.
+
+              Before  Linux  3.8,  use  of  CLONE_NEWUSER  required  that  the  caller  have  three capabilities:
+              CAP_SYS_ADMIN, CAP_SETUID, and CAP_SETGID.  Starting with Linux 3.8, no privileges  are  needed  to
+              create a user namespace.
+
+              This  flag  can't be specified in conjunction with CLONE_THREAD or CLONE_PARENT.  For security rea-
+              sons, CLONE_NEWUSER cannot be specified in conjunction with CLONE_FS.
+
+              For further information on user namespaces, see namespaces(7) and user_namespaces(7).
+
+       CLONE_NEWUTS (since Linux 2.6.19)
+              If CLONE_NEWUTS is set, then create the process in a new UTS namespace, whose identifiers are  ini-
+              tialized  by  duplicating  the  identifiers from the UTS namespace of the calling process.  If this
+              flag is not set, then (as with fork(2)) the process is created in the same  UTS  namespace  as  the
+              calling process.  This flag is intended for the implementation of containers.
+
+              A  UTS  namespace  is the set of identifiers returned by uname(2); among these, the domain name and
+              the hostname can be modified by setdomainname(2) and sethostname(2), respectively.  Changes made to
+              the  identifiers  in  a UTS namespace are visible to all other processes in the same namespace, but
+              are not visible to processes in other UTS namespaces.
+
+              Only a privileged process (CAP_SYS_ADMIN) can employ CLONE_NEWUTS.
+
+              For further information on UTS namespaces, see namespaces(7).
+</code></pre><h3 id="文件系统-proc">文件系统 /proc</h3>
+<p>每个进程的namespace文件的路径格式：<code>/proc/&lt;pid&gt;/ns/&lt;ns_kind&gt;</code></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ ls -l /proc/$$/ns
+
+total <span style="color:#ae81ff">0</span>
+lrwxrwxrwx <span style="color:#ae81ff">1</span> vagrant vagrant <span style="color:#ae81ff">0</span> Sep  <span style="color:#ae81ff">1</span> 06:45 cgroup -&gt; <span style="color:#e6db74">&#39;cgroup:[4026531835]&#39;</span>
+lrwxrwxrwx <span style="color:#ae81ff">1</span> vagrant vagrant <span style="color:#ae81ff">0</span> Sep  <span style="color:#ae81ff">1</span> 06:45 ipc -&gt; <span style="color:#e6db74">&#39;ipc:[4026531839]&#39;</span>
+lrwxrwxrwx <span style="color:#ae81ff">1</span> vagrant vagrant <span style="color:#ae81ff">0</span> Sep  <span style="color:#ae81ff">1</span> 06:45 mnt -&gt; <span style="color:#e6db74">&#39;mnt:[4026531840]&#39;</span>
+lrwxrwxrwx <span style="color:#ae81ff">1</span> vagrant vagrant <span style="color:#ae81ff">0</span> Sep  <span style="color:#ae81ff">1</span> 06:45 net -&gt; <span style="color:#e6db74">&#39;net:[4026531993]&#39;</span>
+lrwxrwxrwx <span style="color:#ae81ff">1</span> vagrant vagrant <span style="color:#ae81ff">0</span> Sep  <span style="color:#ae81ff">1</span> 06:45 pid -&gt; <span style="color:#e6db74">&#39;pid:[4026531836]&#39;</span>
+lrwxrwxrwx <span style="color:#ae81ff">1</span> vagrant vagrant <span style="color:#ae81ff">0</span> Sep  <span style="color:#ae81ff">1</span> 06:45 pid_for_children -&gt; <span style="color:#e6db74">&#39;pid:[4026531836]&#39;</span>
+lrwxrwxrwx <span style="color:#ae81ff">1</span> vagrant vagrant <span style="color:#ae81ff">0</span> Sep  <span style="color:#ae81ff">1</span> 06:45 user -&gt; <span style="color:#e6db74">&#39;user:[4026531837]&#39;</span>
+lrwxrwxrwx <span style="color:#ae81ff">1</span> vagrant vagrant <span style="color:#ae81ff">0</span> Sep  <span style="color:#ae81ff">1</span> 06:45 uts -&gt; <span style="color:#e6db74">&#39;uts:[4026531838]&#39;</span>
+</code></pre></div><p><code>$$</code> 代表当前进程 pid。</p>
+<p>使用 <code>lsns</code> 可以看到 Linux 内核维护的所有 namespace。包括我用Docker启动了一个mysqld，内核为其准备的namespace。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ sudo lsns
+
+        NS TYPE   NPROCS   PID USER            COMMAND
+<span style="color:#ae81ff">4026531835</span> cgroup    <span style="color:#ae81ff">192</span>     <span style="color:#ae81ff">1</span> root            /lib/systemd/systemd --system --deserialize <span style="color:#ae81ff">18</span>
+<span style="color:#ae81ff">4026531836</span> pid       <span style="color:#ae81ff">191</span>     <span style="color:#ae81ff">1</span> root            /lib/systemd/systemd --system --deserialize <span style="color:#ae81ff">18</span>
+<span style="color:#ae81ff">4026531837</span> user      <span style="color:#ae81ff">193</span>     <span style="color:#ae81ff">1</span> root            /lib/systemd/systemd --system --deserialize <span style="color:#ae81ff">18</span>
+<span style="color:#ae81ff">4026531838</span> uts       <span style="color:#ae81ff">189</span>     <span style="color:#ae81ff">1</span> root            /lib/systemd/systemd --system --deserialize <span style="color:#ae81ff">18</span>
+<span style="color:#ae81ff">4026531839</span> ipc       <span style="color:#ae81ff">190</span>     <span style="color:#ae81ff">1</span> root            /lib/systemd/systemd --system --deserialize <span style="color:#ae81ff">18</span>
+<span style="color:#ae81ff">4026531840</span> mnt       <span style="color:#ae81ff">178</span>     <span style="color:#ae81ff">1</span> root            /lib/systemd/systemd --system --deserialize <span style="color:#ae81ff">18</span>
+<span style="color:#ae81ff">4026531861</span> mnt         <span style="color:#ae81ff">1</span>    <span style="color:#ae81ff">31</span> root            kdevtmpfs
+<span style="color:#ae81ff">4026531993</span> net       <span style="color:#ae81ff">190</span>     <span style="color:#ae81ff">1</span> root            /lib/systemd/systemd --system --deserialize <span style="color:#ae81ff">18</span>
+<span style="color:#ae81ff">4026532160</span> mnt         <span style="color:#ae81ff">1</span>  <span style="color:#ae81ff">4988</span> root            /lib/systemd/systemd-udevd
+<span style="color:#ae81ff">4026532162</span> mnt         <span style="color:#ae81ff">1</span>  <span style="color:#ae81ff">4449</span> systemd-network /lib/systemd/systemd-networkd
+<span style="color:#ae81ff">4026532181</span> mnt         <span style="color:#ae81ff">1</span>  <span style="color:#ae81ff">4481</span> systemd-resolve /lib/systemd/systemd-resolved
+<span style="color:#ae81ff">4026532182</span> mnt         <span style="color:#ae81ff">1</span>   <span style="color:#ae81ff">954</span> root            /usr/sbin/ModemManager --filter-policy<span style="color:#f92672">=</span>strict
+<span style="color:#ae81ff">4026532184</span> mnt         <span style="color:#ae81ff">1</span>  <span style="color:#ae81ff">1118</span> root            /usr/sbin/NetworkManager --no-daemon
+<span style="color:#ae81ff">4026532185</span> mnt         <span style="color:#ae81ff">1</span> <span style="color:#ae81ff">25318</span> root            sh
+<span style="color:#ae81ff">4026532190</span> uts         <span style="color:#ae81ff">1</span> <span style="color:#ae81ff">25318</span> root            sh
+<span style="color:#ae81ff">4026532191</span> ipc         <span style="color:#ae81ff">1</span> <span style="color:#ae81ff">25318</span> root            sh
+<span style="color:#ae81ff">4026532192</span> pid         <span style="color:#ae81ff">1</span> <span style="color:#ae81ff">25318</span> root            sh
+<span style="color:#ae81ff">4026532194</span> net         <span style="color:#ae81ff">1</span> <span style="color:#ae81ff">25318</span> root            sh
+<span style="color:#ae81ff">4026532241</span> mnt         <span style="color:#ae81ff">6</span>  <span style="color:#ae81ff">1782</span> root            /usr/sbin/apache2 -k start
+<span style="color:#ae81ff">4026532254</span> mnt         <span style="color:#ae81ff">1</span> <span style="color:#ae81ff">25816</span> <span style="color:#ae81ff">999</span>             mysqld
+<span style="color:#ae81ff">4026532255</span> uts         <span style="color:#ae81ff">1</span> <span style="color:#ae81ff">25816</span> <span style="color:#ae81ff">999</span>             mysqld
+<span style="color:#ae81ff">4026532256</span> ipc         <span style="color:#ae81ff">1</span> <span style="color:#ae81ff">25816</span> <span style="color:#ae81ff">999</span>             mysqld
+<span style="color:#ae81ff">4026532257</span> pid         <span style="color:#ae81ff">1</span> <span style="color:#ae81ff">25816</span> <span style="color:#ae81ff">999</span>             mysqld
+<span style="color:#ae81ff">4026532259</span> net         <span style="color:#ae81ff">1</span> <span style="color:#ae81ff">25816</span> <span style="color:#ae81ff">999</span>             mysqld
+<span style="color:#ae81ff">4026532313</span> uts         <span style="color:#ae81ff">1</span> <span style="color:#ae81ff">32225</span> root            ./newuts helloworld
+</code></pre></div><h2 id="三个-syscall">三个 syscall</h2>
+<p>Linux 提供了三个系统调用。</p>
+<h3 id="clone">clone</h3>
+<p>clone 系统调用允许父进程创建子进程时，让子进程使用独立的（新的）namespace。</p>
+<blockquote>
+<p>clone() creates a new process, in a manner similar to fork(2).</p>
+</blockquote>
+<p><code>man clone</code> 里的例子，创建一个子进程，设置了关于 hostname 的 namespace CLONE_NEWUTS：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#75715e">#define _GNU_SOURCE
+</span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;sys/wait.h&gt;</span><span style="color:#75715e">
+</span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;sys/utsname.h&gt;</span><span style="color:#75715e">
+</span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;sched.h&gt;</span><span style="color:#75715e">
+</span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;string.h&gt;</span><span style="color:#75715e">
+</span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;stdio.h&gt;</span><span style="color:#75715e">
+</span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;stdlib.h&gt;</span><span style="color:#75715e">
+</span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;unistd.h&gt;</span><span style="color:#75715e">
+</span><span style="color:#75715e"></span>
+<span style="color:#75715e">#define errExit(msg)        \
+</span><span style="color:#75715e">    do                      \
+</span><span style="color:#75715e">    {                       \
+</span><span style="color:#75715e">        perror(msg);        \
+</span><span style="color:#75715e">        exit(EXIT_FAILURE); \
+</span><span style="color:#75715e">    } while (0)
+</span><span style="color:#75715e"></span>
+<span style="color:#66d9ef">static</span> <span style="color:#66d9ef">int</span> <span style="color:#75715e">/* Start function for cloned child */</span>
+childFunc(<span style="color:#66d9ef">void</span> <span style="color:#f92672">*</span>arg)
+{
+    <span style="color:#66d9ef">struct</span> utsname uts;
+
+    <span style="color:#75715e">/* Change hostname in UTS namespace of child */</span>
+
+    <span style="color:#66d9ef">if</span> (sethostname(arg, strlen(arg)) <span style="color:#f92672">==</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>)
+        errExit(<span style="color:#e6db74">&#34;sethostname&#34;</span>);
+
+    <span style="color:#75715e">/* Retrieve and display hostname */</span>
+
+    <span style="color:#66d9ef">if</span> (uname(<span style="color:#f92672">&amp;</span>uts) <span style="color:#f92672">==</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>)
+        errExit(<span style="color:#e6db74">&#34;uname&#34;</span>);
+    printf(<span style="color:#e6db74">&#34;uts.nodename in child:  %s</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>, uts.nodename);
+
+    <span style="color:#75715e">/* Keep the namespace open for a while, by sleeping.
+</span><span style="color:#75715e">              This allows some experimentation--for example, another
+</span><span style="color:#75715e">              process might join the namespace. */</span>
+
+    sleep(<span style="color:#ae81ff">200</span>);
+
+    <span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>; <span style="color:#75715e">/* Child terminates now */</span>
+}
+
+<span style="color:#75715e">#define STACK_SIZE (1024 * 1024) </span><span style="color:#75715e">/* Stack size for cloned child */</span><span style="color:#75715e">
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">int</span> main(<span style="color:#66d9ef">int</span> argc, <span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>argv[])
+{
+    <span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>stack;    <span style="color:#75715e">/* Start of stack buffer */</span>
+    <span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>stackTop; <span style="color:#75715e">/* End of stack buffer */</span>
+    pid_t pid;
+    <span style="color:#66d9ef">struct</span> utsname uts;
+
+    <span style="color:#66d9ef">if</span> (argc <span style="color:#f92672">&lt;</span> <span style="color:#ae81ff">2</span>)
+    {
+        fprintf(stderr, <span style="color:#e6db74">&#34;Usage: %s &lt;child-hostname&gt;</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>, argv[<span style="color:#ae81ff">0</span>]);
+        exit(EXIT_SUCCESS);
+    }
+
+    <span style="color:#75715e">/* Allocate stack for child */</span>
+
+    stack <span style="color:#f92672">=</span> malloc(STACK_SIZE);
+    <span style="color:#66d9ef">if</span> (stack <span style="color:#f92672">==</span> NULL)
+        errExit(<span style="color:#e6db74">&#34;malloc&#34;</span>);
+    stackTop <span style="color:#f92672">=</span> stack <span style="color:#f92672">+</span> STACK_SIZE; <span style="color:#75715e">/* Assume stack grows downward */</span>
+
+    <span style="color:#75715e">/* Create child that has its own UTS namespace;
+</span><span style="color:#75715e">              child commences execution in childFunc() */</span>
+
+    pid <span style="color:#f92672">=</span> clone(childFunc, stackTop, CLONE_NEWUTS <span style="color:#f92672">|</span> SIGCHLD, argv[<span style="color:#ae81ff">1</span>]);
+    <span style="color:#66d9ef">if</span> (pid <span style="color:#f92672">==</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>)
+        errExit(<span style="color:#e6db74">&#34;clone&#34;</span>);
+    printf(<span style="color:#e6db74">&#34;clone() returned %ld</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>, (<span style="color:#66d9ef">long</span>)pid);
+
+    <span style="color:#75715e">/* Parent falls through to here */</span>
+
+    sleep(<span style="color:#ae81ff">1</span>); <span style="color:#75715e">/* Give child time to change its hostname */</span>
+
+    <span style="color:#75715e">/* Display hostname in parent&#39;s UTS namespace. This will be
+</span><span style="color:#75715e">              different from hostname in child&#39;s UTS namespace. */</span>
+
+    <span style="color:#66d9ef">if</span> (uname(<span style="color:#f92672">&amp;</span>uts) <span style="color:#f92672">==</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>)
+        errExit(<span style="color:#e6db74">&#34;uname&#34;</span>);
+    printf(<span style="color:#e6db74">&#34;uts.nodename in parent: %s</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>, uts.nodename);
+
+    <span style="color:#66d9ef">if</span> (waitpid(pid, NULL, <span style="color:#ae81ff">0</span>) <span style="color:#f92672">==</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>) <span style="color:#75715e">/* Wait for child */</span>
+        errExit(<span style="color:#e6db74">&#34;waitpid&#34;</span>);
+    printf(<span style="color:#e6db74">&#34;child has terminated</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>);
+
+    exit(EXIT_SUCCESS);
+}
+</code></pre></div><p>编译：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">gcc newuts.c -o newuts
+</code></pre></div><p>执行：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ sudo ./newuts helloworld &amp;
+
+<span style="color:#f92672">[</span>1<span style="color:#f92672">]</span> <span style="color:#ae81ff">25052</span>
+clone<span style="color:#f92672">()</span> returned <span style="color:#ae81ff">25059</span>                                                     
+uts.nodename in child:  helloworld <span style="color:#75715e"># 修改子进程的 hostname 不影响全局的 hostname。</span>
+uts.nodename in parent: ubuntu-bionic
+
+$ sudo ls -l /proc/25052/ns
+
+total <span style="color:#ae81ff">0</span>
+lrwxrwxrwx <span style="color:#ae81ff">1</span> root root <span style="color:#ae81ff">0</span> Sep  <span style="color:#ae81ff">1</span> 02:29 cgroup -&gt; <span style="color:#e6db74">&#39;cgroup:[4026531835]&#39;</span>
+lrwxrwxrwx <span style="color:#ae81ff">1</span> root root <span style="color:#ae81ff">0</span> Sep  <span style="color:#ae81ff">1</span> 02:29 ipc -&gt; <span style="color:#e6db74">&#39;ipc:[4026531839]&#39;</span>
+lrwxrwxrwx <span style="color:#ae81ff">1</span> root root <span style="color:#ae81ff">0</span> Sep  <span style="color:#ae81ff">1</span> 02:29 mnt -&gt; <span style="color:#e6db74">&#39;mnt:[4026531840]&#39;</span>
+lrwxrwxrwx <span style="color:#ae81ff">1</span> root root <span style="color:#ae81ff">0</span> Sep  <span style="color:#ae81ff">1</span> 02:29 net -&gt; <span style="color:#e6db74">&#39;net:[4026531993]&#39;</span>
+lrwxrwxrwx <span style="color:#ae81ff">1</span> root root <span style="color:#ae81ff">0</span> Sep  <span style="color:#ae81ff">1</span> 02:29 pid -&gt; <span style="color:#e6db74">&#39;pid:[4026531836]&#39;</span>
+lrwxrwxrwx <span style="color:#ae81ff">1</span> root root <span style="color:#ae81ff">0</span> Sep  <span style="color:#ae81ff">1</span> 02:29 pid_for_children -&gt; <span style="color:#e6db74">&#39;pid:[4026531836]&#39;</span>
+lrwxrwxrwx <span style="color:#ae81ff">1</span> root root <span style="color:#ae81ff">0</span> Sep  <span style="color:#ae81ff">1</span> 02:29 user -&gt; <span style="color:#e6db74">&#39;user:[4026531837]&#39;</span>
+lrwxrwxrwx <span style="color:#ae81ff">1</span> root root <span style="color:#ae81ff">0</span> Sep  <span style="color:#ae81ff">1</span> 02:29 uts -&gt; <span style="color:#e6db74">&#39;uts:[4026531838]&#39;</span>
+
+$ sudo ls -l /proc/25059/ns
+
+total <span style="color:#ae81ff">0</span>
+lrwxrwxrwx <span style="color:#ae81ff">1</span> root root <span style="color:#ae81ff">0</span> Sep  <span style="color:#ae81ff">1</span> 02:30 cgroup -&gt; <span style="color:#e6db74">&#39;cgroup:[4026531835]&#39;</span>
+lrwxrwxrwx <span style="color:#ae81ff">1</span> root root <span style="color:#ae81ff">0</span> Sep  <span style="color:#ae81ff">1</span> 02:30 ipc -&gt; <span style="color:#e6db74">&#39;ipc:[4026531839]&#39;</span>
+lrwxrwxrwx <span style="color:#ae81ff">1</span> root root <span style="color:#ae81ff">0</span> Sep  <span style="color:#ae81ff">1</span> 02:30 mnt -&gt; <span style="color:#e6db74">&#39;mnt:[4026531840]&#39;</span>
+lrwxrwxrwx <span style="color:#ae81ff">1</span> root root <span style="color:#ae81ff">0</span> Sep  <span style="color:#ae81ff">1</span> 02:30 net -&gt; <span style="color:#e6db74">&#39;net:[4026531993]&#39;</span>
+lrwxrwxrwx <span style="color:#ae81ff">1</span> root root <span style="color:#ae81ff">0</span> Sep  <span style="color:#ae81ff">1</span> 02:30 pid -&gt; <span style="color:#e6db74">&#39;pid:[4026531836]&#39;</span>
+lrwxrwxrwx <span style="color:#ae81ff">1</span> root root <span style="color:#ae81ff">0</span> Sep  <span style="color:#ae81ff">1</span> 02:30 pid_for_children -&gt; <span style="color:#e6db74">&#39;pid:[4026531836]&#39;</span>
+lrwxrwxrwx <span style="color:#ae81ff">1</span> root root <span style="color:#ae81ff">0</span> Sep  <span style="color:#ae81ff">1</span> 02:30 user -&gt; <span style="color:#e6db74">&#39;user:[4026531837]&#39;</span>
+lrwxrwxrwx <span style="color:#ae81ff">1</span> root root <span style="color:#ae81ff">0</span> Sep  <span style="color:#ae81ff">1</span> 02:30 uts -&gt; <span style="color:#e6db74">&#39;uts:[4026532313]&#39;</span> <span style="color:#75715e"># 可以看到子进程的uts与父进程的uts不同</span>
+</code></pre></div><h3 id="unshare">unshare</h3>
+<p>unshare 系统调用的作用，不创建新进程，设置当前线程（进程）的 namespace。unshare，代表不与父进程共享 namespace，也就是会创建新的 namespace。</p>
+<blockquote>
+<p>unshare()  allows  a process (or thread) to disassociate parts of its execution context that are currently being shared with other processes (or threads). The main use of unshare() is to allow a process to control its shared execution context without creating a new process. The flags argument is a bit mask that specifies which parts of the execution context should  be unshared.</p>
+</blockquote>
+<p><code>man 2 unshare</code> 里的例子，使用 unshare 创建新的 namespace：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c">
+<span style="color:#75715e">#define _GNU_SOURCE
+</span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;sched.h&gt;</span><span style="color:#75715e">
+</span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;unistd.h&gt;</span><span style="color:#75715e">
+</span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;stdlib.h&gt;</span><span style="color:#75715e">
+</span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;stdio.h&gt;</span><span style="color:#75715e">
+</span><span style="color:#75715e"></span>
+<span style="color:#75715e">/* A simple error-handling function: print an error message based
+</span><span style="color:#75715e">          on the value in &#39;errno&#39; and terminate the calling process */</span>
+
+<span style="color:#75715e">#define errExit(msg)        \
+</span><span style="color:#75715e">    do                      \
+</span><span style="color:#75715e">    {                       \
+</span><span style="color:#75715e">        perror(msg);        \
+</span><span style="color:#75715e">        exit(EXIT_FAILURE); \
+</span><span style="color:#75715e">    } while (0)
+</span><span style="color:#75715e"></span>
+<span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span>
+<span style="color:#a6e22e">usage</span>(<span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>pname)
+{
+    fprintf(stderr, <span style="color:#e6db74">&#34;Usage: %s [options] program [arg...]</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>, pname);
+    fprintf(stderr, <span style="color:#e6db74">&#34;Options can be:</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>);
+    fprintf(stderr, <span style="color:#e6db74">&#34;    -i   unshare IPC namespace</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>);
+    fprintf(stderr, <span style="color:#e6db74">&#34;    -m   unshare mount namespace</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>);
+    fprintf(stderr, <span style="color:#e6db74">&#34;    -n   unshare network namespace</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>);
+    fprintf(stderr, <span style="color:#e6db74">&#34;    -p   unshare PID namespace</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>);
+    fprintf(stderr, <span style="color:#e6db74">&#34;    -u   unshare UTS namespace</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>);
+    fprintf(stderr, <span style="color:#e6db74">&#34;    -U   unshare user namespace</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>);
+    exit(EXIT_FAILURE);
+}
+
+<span style="color:#66d9ef">int</span> <span style="color:#a6e22e">main</span>(<span style="color:#66d9ef">int</span> argc, <span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>argv[])
+{
+    <span style="color:#66d9ef">int</span> flags, opt;
+
+    flags <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+
+    <span style="color:#66d9ef">while</span> ((opt <span style="color:#f92672">=</span> getopt(argc, argv, <span style="color:#e6db74">&#34;imnpuU&#34;</span>)) <span style="color:#f92672">!=</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>)
+    {
+        <span style="color:#66d9ef">switch</span> (opt)
+        {
+        <span style="color:#66d9ef">case</span> <span style="color:#e6db74">&#39;i&#39;</span><span style="color:#f92672">:</span>
+            flags <span style="color:#f92672">|=</span> CLONE_NEWIPC;
+            <span style="color:#66d9ef">break</span>;
+        <span style="color:#66d9ef">case</span> <span style="color:#e6db74">&#39;m&#39;</span><span style="color:#f92672">:</span>
+            flags <span style="color:#f92672">|=</span> CLONE_NEWNS;
+            <span style="color:#66d9ef">break</span>;
+        <span style="color:#66d9ef">case</span> <span style="color:#e6db74">&#39;n&#39;</span><span style="color:#f92672">:</span>
+            flags <span style="color:#f92672">|=</span> CLONE_NEWNET;
+            <span style="color:#66d9ef">break</span>;
+        <span style="color:#66d9ef">case</span> <span style="color:#e6db74">&#39;p&#39;</span><span style="color:#f92672">:</span>
+            flags <span style="color:#f92672">|=</span> CLONE_NEWPID;
+            <span style="color:#66d9ef">break</span>;
+        <span style="color:#66d9ef">case</span> <span style="color:#e6db74">&#39;u&#39;</span><span style="color:#f92672">:</span>
+            flags <span style="color:#f92672">|=</span> CLONE_NEWUTS;
+            <span style="color:#66d9ef">break</span>;
+        <span style="color:#66d9ef">case</span> <span style="color:#e6db74">&#39;U&#39;</span><span style="color:#f92672">:</span>
+            flags <span style="color:#f92672">|=</span> CLONE_NEWUSER;
+            <span style="color:#66d9ef">break</span>;
+        <span style="color:#66d9ef">default</span><span style="color:#f92672">:</span>
+            usage(argv[<span style="color:#ae81ff">0</span>]);
+        }
+    }
+
+    <span style="color:#66d9ef">if</span> (optind <span style="color:#f92672">&gt;=</span> argc)
+        usage(argv[<span style="color:#ae81ff">0</span>]);
+
+    <span style="color:#66d9ef">if</span> (unshare(flags) <span style="color:#f92672">==</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>)
+        errExit(<span style="color:#e6db74">&#34;unshare&#34;</span>);
+
+    execvp(argv[optind], <span style="color:#f92672">&amp;</span>argv[optind]);
+    errExit(<span style="color:#e6db74">&#34;execvp&#34;</span>);
+}
+</code></pre></div><p>编译：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">gcc unshare.c -o unshare
+</code></pre></div><p>执行：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ readlink /proc/$$/ns/mnt
+mnt:<span style="color:#f92672">[</span>4026531840<span style="color:#f92672">]</span>
+
+$ sudo ./unshare -m /bin/bash
+
+<span style="color:#75715e"># readlink /proc/$$/ns/mnt</span>
+mnt:<span style="color:#f92672">[</span>4026532313<span style="color:#f92672">]</span>
+</code></pre></div><h3 id="setns">setns</h3>
+<p>Given a file descriptor referring to a namespace, reassociate the calling thread (current process) with that namespace.</p>
+<p><code>man setns</code> 里的例子，使用clone例子里子进程的uts namespace：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#75715e">#define _GNU_SOURCE
+</span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;fcntl.h&gt;</span><span style="color:#75715e">
+</span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;sched.h&gt;</span><span style="color:#75715e">
+</span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;unistd.h&gt;</span><span style="color:#75715e">
+</span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;stdlib.h&gt;</span><span style="color:#75715e">
+</span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;stdio.h&gt;</span><span style="color:#75715e">
+</span><span style="color:#75715e"></span>
+<span style="color:#75715e">#define errExit(msg)        \
+</span><span style="color:#75715e">    do                      \
+</span><span style="color:#75715e">    {                       \
+</span><span style="color:#75715e">        perror(msg);        \
+</span><span style="color:#75715e">        exit(EXIT_FAILURE); \
+</span><span style="color:#75715e">    } while (0)
+</span><span style="color:#75715e"></span>
+<span style="color:#66d9ef">int</span> <span style="color:#a6e22e">main</span>(<span style="color:#66d9ef">int</span> argc, <span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>argv[])
+{
+    <span style="color:#66d9ef">int</span> fd;
+
+    <span style="color:#66d9ef">if</span> (argc <span style="color:#f92672">&lt;</span> <span style="color:#ae81ff">3</span>)
+    {
+        fprintf(stderr, <span style="color:#e6db74">&#34;%s /proc/PID/ns/FILE cmd args...</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>, argv[<span style="color:#ae81ff">0</span>]);
+        exit(EXIT_FAILURE);
+    }
+
+    fd <span style="color:#f92672">=</span> open(argv[<span style="color:#ae81ff">1</span>], O_RDONLY); <span style="color:#75715e">/* Get file descriptor for namespace */</span>
+    <span style="color:#66d9ef">if</span> (fd <span style="color:#f92672">==</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>)
+        errExit(<span style="color:#e6db74">&#34;open&#34;</span>);
+
+    <span style="color:#66d9ef">if</span> (setns(fd, <span style="color:#ae81ff">0</span>) <span style="color:#f92672">==</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>) <span style="color:#75715e">/* Join that namespace */</span>
+        errExit(<span style="color:#e6db74">&#34;setns&#34;</span>);
+
+    execvp(argv[<span style="color:#ae81ff">2</span>], <span style="color:#f92672">&amp;</span>argv[<span style="color:#ae81ff">2</span>]); <span style="color:#75715e">/* Execute a command in namespace */</span>
+    errExit(<span style="color:#e6db74">&#34;execvp&#34;</span>);
+}
+
+</code></pre></div><p>编译：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">gcc ns_exec.c -o ns_exec
+</code></pre></div><p>执行：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ sudo ./ns_exec /proc/25164/ns/uts /bin/bash
+
+<span style="color:#75715e"># hostname</span>
+
+helloworld
+</code></pre></div><h2 id="两个-cmd">两个 cmd</h2>
+<h3 id="unshare-1">unshare</h3>
+<p>是 unshare 系统调用的包装。</p>
+<p><code>man unshare</code> 获取命令参考。</p>
+<p>举例，使用一个独立的 PID namespace。&ndash;fork &ndash;mount-proc &ndash;pid 都是为了 PID namespace。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ sudo unshare --fork --pid --mount-proc bash
+
+<span style="color:#75715e"># echo $$</span>
+
+<span style="color:#ae81ff">1</span>
+
+<span style="color:#75715e"># ls /proc/</span>
+
+1/                 devices            irq/               mdstat             schedstat          timer_list
+<span style="color:#ae81ff">15</span>                 diskstats          kallsyms           meminfo            scsi/              tty/
+<span style="color:#ae81ff">16</span>                 dma                kcore              misc               self/              uptime
+acpi/              driver/            key-users          modules            slabinfo           version
+buddyinfo          execdomains        keys               mounts             softirqs           version_signature
+bus/               fb                 kmsg               mpt/               stat               vmallocinfo
+cgroups            filesystems        kpagecgroup        mtrr               swaps              vmstat
+cmdline            fs/                kpagecount         net/               sys/               zoneinfo
+consoles           interrupts         kpageflags         pagetypeinfo       sysrq-trigger
+cpuinfo            iomem              loadavg            partitions         sysvipc/
+crypto             ioports            locks              sched_debug        thread-self/
+</code></pre></div><h3 id="nsenter">nsenter</h3>
+<p><code>man nsenter</code> 获取命令参考。</p>
+<p>生产环境的 container 因为要保持尽可能轻量的关系，container 内部缺少很多诊断工具。可以在宿主机中使用 nsenter 执行 shell 并使用 container 的 namespace，用途比如定位容器的网络问题。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ docker run -p 3306:3306 -e MYSQL_ROOT_PASSWORD<span style="color:#f92672">=</span>root -d mysql:5
+
+85fa62779aad
+
+$ docker inspect -f <span style="color:#e6db74">&#39;{ {.State.Pid} }&#39;</span> 85fa62779aad
+
+<span style="color:#ae81ff">25816</span>
+
+$ sudo nsenter -t <span style="color:#ae81ff">25816</span> -n zsh
+
+<span style="color:#75715e"># 进入了 mysqld 这个container的network namespace</span>
+$ ifconfig
+eth0: flags<span style="color:#f92672">=</span>4163&lt;UP,BROADCAST,RUNNING,MULTICAST&gt;  mtu <span style="color:#ae81ff">1500</span>
+        inet 172.17.0.2  netmask 255.255.0.0  broadcast 172.17.255.255
+        ether 02:42:ac:11:00:02  txqueuelen <span style="color:#ae81ff">0</span>  <span style="color:#f92672">(</span>Ethernet<span style="color:#f92672">)</span>
+        RX packets <span style="color:#ae81ff">130</span>  bytes <span style="color:#ae81ff">14337</span> <span style="color:#f92672">(</span>14.3 KB<span style="color:#f92672">)</span>
+        RX errors <span style="color:#ae81ff">0</span>  dropped <span style="color:#ae81ff">0</span>  overruns <span style="color:#ae81ff">0</span>  frame <span style="color:#ae81ff">0</span>
+        TX packets <span style="color:#ae81ff">0</span>  bytes <span style="color:#ae81ff">0</span> <span style="color:#f92672">(</span>0.0 B<span style="color:#f92672">)</span>
+        TX errors <span style="color:#ae81ff">0</span>  dropped <span style="color:#ae81ff">0</span> overruns <span style="color:#ae81ff">0</span>  carrier <span style="color:#ae81ff">0</span>  collisions <span style="color:#ae81ff">0</span>
+
+lo: flags<span style="color:#f92672">=</span>73&lt;UP,LOOPBACK,RUNNING&gt;  mtu <span style="color:#ae81ff">65536</span>
+        inet 127.0.0.1  netmask 255.0.0.0
+        loop  txqueuelen <span style="color:#ae81ff">1000</span>  <span style="color:#f92672">(</span>Local Loopback<span style="color:#f92672">)</span>
+        RX packets <span style="color:#ae81ff">0</span>  bytes <span style="color:#ae81ff">0</span> <span style="color:#f92672">(</span>0.0 B<span style="color:#f92672">)</span>
+        RX errors <span style="color:#ae81ff">0</span>  dropped <span style="color:#ae81ff">0</span>  overruns <span style="color:#ae81ff">0</span>  frame <span style="color:#ae81ff">0</span>
+        TX packets <span style="color:#ae81ff">0</span>  bytes <span style="color:#ae81ff">0</span> <span style="color:#f92672">(</span>0.0 B<span style="color:#f92672">)</span>
+        TX errors <span style="color:#ae81ff">0</span>  dropped <span style="color:#ae81ff">0</span> overruns <span style="color:#ae81ff">0</span>  carrier <span style="color:#ae81ff">0</span>  collisions <span style="color:#ae81ff">0</span>
+        
+</code></pre></div><h2 id="总结">总结</h2>
+<ol>
+<li>container 实际上就是一个 process。</li>
+<li>容器技术的核心 API 就是 clone/unshare/setns 系统调用以及 7 个 CLONE_NEW* flag。</li>
+</ol>
+<h2 id="参考">参考</h2>
+<ol>
+<li>Linux man(ual)  例子挺详细的。</li>
+<li>DOCKER基础技术：LINUX NAMESPACE（上） <a href="https://coolshell.cn/articles/17010.html">https://coolshell.cn/articles/17010.html</a></li>
+<li>DOCKER基础技术：LINUX NAMESPACE（下） <a href="https://coolshell.cn/articles/17029.html">https://coolshell.cn/articles/17029.html</a></li>
+</ol>
+<p>参考 coolshell 查看更多示例的实践，就不重复了。</p>
+
+                    
+                    <HR width="100%" id="EOF">
+                    <p style="color:#777;">Last modified on 2020-09-01</p>
+                    
+                </div>
+            </div>
+            
+            
+            <nav class="post-pagination">
+
+                
+                <a class="newer-posts">
+                    Next<br>No newer posts.
+                </a>
+                
+                
+                
+                <a class="older-posts" href="https://xujiahua.github.io/posts/20200807-impala/">
+                    Previous<br>记录一个 Impala JDBC 驱动问题
+                </a>
+                
+            </nav>
+            <div class="post-comment-wrapper">
+                
+
+
+
+
+
+
+            </div>
+        </div>
+    </div>
+</div>
+
+            </div><div id="single-column-footer">
+Hugo Theme <a href="https://github.com/amazingrise/hugo-theme-diary">Diary</a> by <a href="https://amazingrise.net">Rise</a>
+<br>
+Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopener">Makito</a>'s <a href="https://github.com/SumiMakito/hexo-theme-journal/" target="_blank" rel="noreferrer noopener">Journal.</a> <br>
+<br>
+
+&copy;
+	
+	2020 许嘉华的笔记
+	</div>
+    	</div>
+    <script src="https://xujiahua.github.io//js/journal.js"></script>
+    </body>
+</html>
