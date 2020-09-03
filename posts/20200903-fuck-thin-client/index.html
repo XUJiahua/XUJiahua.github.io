@@ -623,7 +623,7 @@ Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopene
 <p>搞笑的办法，瘦终端生成二维码，主机扫描，数据传输问题搞定。</p>
 <p>从网络角度，怎么解决呢。我们来严肃看待这个技术问题。</p>
 <h2 id="icmp">ICMP</h2>
-<p>实践发现，瘦终端里不能访问百度，但是能 ping 通。从 TCP/IP 的角度，瘦终端的网络上只是 TCP 传输层被流量管控了，IP 层还是畅通无阻的。</p>
+<p>实践发现，瘦终端里不能访问百度，但是能 ping 通。从 TCP/IP 的角度，瘦终端在网络上只是 TCP 传输层被流量管控了，IP 层还是畅通无阻的。</p>
 <p>下图为 TCP/IP 的层次结构，TCP 包封装于 IP 包。</p>
 <p><img src="../../images/Packet-encapsulation-TCP-IP-architecture-encapsulates-the-data-from-the-upper-layer-by.png" alt="3: Packet encapsulation. TCP/IP architecture encapsulates the data from the upper layer by attaching a &ldquo;header&rdquo; of the current-layer protocol into the data."></p>
 <p><a href="https://www.researchgate.net/figure/Packet-encapsulation-TCP-IP-architecture-encapsulates-the-data-from-the-upper-layer-by_fig4_49288737">https://www.researchgate.net/figure/Packet-encapsulation-TCP-IP-architecture-encapsulates-the-data-from-the-upper-layer-by_fig4_49288737</a></p>
@@ -641,7 +641,7 @@ Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopene
 <p><a href="https://en.wikipedia.org/wiki/ICMP_tunnel">https://en.wikipedia.org/wiki/ICMP_tunnel</a></p>
 </blockquote>
 <h3 id="建立-icmp-tunnel">建立 ICMP tunnel</h3>
-<p>前人早已栽树，开源实现：https://github.com/jamesbarlow/icmptunnel</p>
+<p>前人早已栽树，开源实现： <a href="https://github.com/jamesbarlow/icmptunnel">https://github.com/jamesbarlow/icmptunnel</a></p>
 <p>Linux 上编译 icmptunnel：</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ git clone git@github.com:jamesbarlow/icmptunnel.git
 $ make

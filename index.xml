@@ -21,7 +21,7 @@
 &lt;p&gt;搞笑的办法，瘦终端生成二维码，主机扫描，数据传输问题搞定。&lt;/p&gt;
 &lt;p&gt;从网络角度，怎么解决呢。我们来严肃看待这个技术问题。&lt;/p&gt;
 &lt;h2 id=&#34;icmp&#34;&gt;ICMP&lt;/h2&gt;
-&lt;p&gt;实践发现，瘦终端里不能访问百度，但是能 ping 通。从 TCP/IP 的角度，瘦终端的网络上只是 TCP 传输层被流量管控了，IP 层还是畅通无阻的。&lt;/p&gt;
+&lt;p&gt;实践发现，瘦终端里不能访问百度，但是能 ping 通。从 TCP/IP 的角度，瘦终端在网络上只是 TCP 传输层被流量管控了，IP 层还是畅通无阻的。&lt;/p&gt;
 &lt;p&gt;下图为 TCP/IP 的层次结构，TCP 包封装于 IP 包。&lt;/p&gt;
 &lt;p&gt;&lt;img src=&#34;../../images/Packet-encapsulation-TCP-IP-architecture-encapsulates-the-data-from-the-upper-layer-by.png&#34; alt=&#34;3: Packet encapsulation. TCP/IP architecture encapsulates the data from the upper layer by attaching a &amp;ldquo;header&amp;rdquo; of the current-layer protocol into the data.&#34;&gt;&lt;/p&gt;
 &lt;p&gt;&lt;a href=&#34;https://www.researchgate.net/figure/Packet-encapsulation-TCP-IP-architecture-encapsulates-the-data-from-the-upper-layer-by_fig4_49288737&#34;&gt;https://www.researchgate.net/figure/Packet-encapsulation-TCP-IP-architecture-encapsulates-the-data-from-the-upper-layer-by_fig4_49288737&lt;/a&gt;&lt;/p&gt;
@@ -39,7 +39,7 @@
 &lt;p&gt;&lt;a href=&#34;https://en.wikipedia.org/wiki/ICMP_tunnel&#34;&gt;https://en.wikipedia.org/wiki/ICMP_tunnel&lt;/a&gt;&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;h3 id=&#34;建立-icmp-tunnel&#34;&gt;建立 ICMP tunnel&lt;/h3&gt;
-&lt;p&gt;前人早已栽树，开源实现：https://github.com/jamesbarlow/icmptunnel&lt;/p&gt;
+&lt;p&gt;前人早已栽树，开源实现： &lt;a href=&#34;https://github.com/jamesbarlow/icmptunnel&#34;&gt;https://github.com/jamesbarlow/icmptunnel&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt;Linux 上编译 icmptunnel：&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;$ git clone git@github.com:jamesbarlow/icmptunnel.git
 $ make
