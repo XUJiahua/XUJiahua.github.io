@@ -645,7 +645,8 @@ Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopene
 <p>Linux 上编译 icmptunnel：</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ git clone git@github.com:jamesbarlow/icmptunnel.git
 $ make
-</code></pre></div><p>Vagrant 启动两台 Ubuntu 虚拟机试验下（没在瘦终端试验，因为还没尝试将 icmptunnel 编译到 Windows 平台），两台虚拟机通过网卡 enp0s8 互联，假设两者通信只允许 ICMP。</p>
+</code></pre></div><p>没在瘦终端试验，因为还没尝试将 icmptunnel 编译到 Windows 平台，https://github.com/esrrhs/pingtunnel 是跨平台的，可以参考下。</p>
+<p>Vagrant 启动两台 Ubuntu 虚拟机试验下，两台虚拟机通过网卡 enp0s8 互联，假设两者通信只允许 ICMP。</p>
 <p>Proxy server 192.168.33.12：</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e"># echo 1 &gt; /proc/sys/net/ipv4/icmp_echo_ignore_all</span>
 
@@ -768,6 +769,7 @@ tun0: flags<span style="color:#f92672">=</span>4305&lt;UP,POINTOPOINT,RUNNING,NO
 <ol>
 <li>ICMP tunnel <a href="https://en.wikipedia.org/wiki/ICMP_tunnel">https://en.wikipedia.org/wiki/ICMP_tunnel</a></li>
 <li>内网渗透之ICMP隐藏隧道 <a href="https://xz.aliyun.com/t/7875#toc-4">https://xz.aliyun.com/t/7875#toc-4</a></li>
+<li>内网渗透之内网穿透 <a href="https://xz.aliyun.com/t/7701">https://xz.aliyun.com/t/7701</a></li>
 </ol>
 
                     
