@@ -5,9 +5,170 @@
     <description>Recent content on 许嘉华的笔记</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Tue, 01 Sep 2020 12:03:13 +0800</lastBuildDate>
+    <lastBuildDate>Thu, 03 Sep 2020 17:02:18 +0800</lastBuildDate>
     
         <atom:link href="https://xujiahua.github.io/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    
+        <item>
+        <title>瘦终端指北 —— ICMP tunnel</title>
+        <link>https://xujiahua.github.io/posts/20200903-fuck-thin-client/</link>
+        <pubDate>Thu, 03 Sep 2020 17:02:18 +0800</pubDate>
+        
+        <guid>https://xujiahua.github.io/posts/20200903-fuck-thin-client/</guid>
+        <description>许嘉华的笔记 https://xujiahua.github.io/posts/20200903-fuck-thin-client/ -&lt;p&gt;因为公司有开发泄露源码在 Github，对公司声誉造成一定影响，公司层面推广起瘦终端，所有开发一起背锅 :( 。在瘦终端里，网络严格管控，vscode 下载插件都难，需要申请 IP 白名单。开发只允许在瘦终端里接触 git 仓库，只能向瘦终端拷贝文件，反之不能。这样就能防住代码泄露么？&lt;/p&gt;
+&lt;p&gt;搞笑的办法，瘦终端生成二维码，主机扫描，数据传输问题搞定。&lt;/p&gt;
+&lt;p&gt;从网络角度，怎么解决呢。我们来严肃看待这个技术问题。&lt;/p&gt;
+&lt;h2 id=&#34;icmp&#34;&gt;ICMP&lt;/h2&gt;
+&lt;p&gt;实践发现，瘦终端里不能访问百度，但是能 ping 通。从 TCP/IP 的角度，瘦终端的网络上只是 TCP 传输层被流量管控了，IP 层还是畅通无阻的。&lt;/p&gt;
+&lt;p&gt;下图为 TCP/IP 的层次结构，TCP 包封装于 IP 包。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/Packet-encapsulation-TCP-IP-architecture-encapsulates-the-data-from-the-upper-layer-by.png&#34; alt=&#34;3: Packet encapsulation. TCP/IP architecture encapsulates the data from the upper layer by attaching a &amp;ldquo;header&amp;rdquo; of the current-layer protocol into the data.&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://www.researchgate.net/figure/Packet-encapsulation-TCP-IP-architecture-encapsulates-the-data-from-the-upper-layer-by_fig4_49288737&#34;&gt;https://www.researchgate.net/figure/Packet-encapsulation-TCP-IP-architecture-encapsulates-the-data-from-the-upper-layer-by_fig4_49288737&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;目前网站的基石是 HTTP/TCP 协议，代理也普遍是基于 HTTP/TCP 的，shadowsocks 翻墙的思路不通。&lt;/p&gt;
+&lt;p&gt;所以 ICMP 协议是否能作为代理协议呢。从封包的角度，ICMP 与 TCP 一样，也是封在 IP 包中的。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/fire0602.gif&#34; alt=&#34;Figure 6.2&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;http://web.deu.edu.tr/doc/oreily/networking/firewall/ch06_03.htm&#34;&gt;http://web.deu.edu.tr/doc/oreily/networking/firewall/ch06_03.htm&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;ICMP 有 Data 字段，可用于存储需要被代理的 TCP 包（协议允许附加最大 64K 大小的 Payload）。从而突破防火墙。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/ICMP-packet-structure.png&#34; alt=&#34;ICMP packet structure &#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://www.researchgate.net/figure/ICMP-packet-structure_fig5_316727741&#34;&gt;https://www.researchgate.net/figure/ICMP-packet-structure_fig5_316727741&lt;/a&gt;&lt;/p&gt;
+&lt;h2 id=&#34;icmp-tunnel&#34;&gt;ICMP tunnel&lt;/h2&gt;
+&lt;p&gt;ICMP 隧道，使用 ICMP 协议建立的两台计算机的连接。可用该隧道传输 TCP 流量。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;An &lt;strong&gt;ICMP tunnel&lt;/strong&gt;[&lt;a href=&#34;https://en.wikipedia.org/wiki/ICMP_tunnel#cite_note-ptunnel-1&#34;&gt;1]&lt;/a&gt; establishes a &lt;a href=&#34;https://en.wikipedia.org/wiki/Covert_channel&#34;&gt;covert&lt;/a&gt; connection between two remote computers (a client and proxy), using &lt;a href=&#34;https://en.wikipedia.org/wiki/Internet_Control_Message_Protocol&#34;&gt;ICMP&lt;/a&gt; echo requests and reply packets. An example of this technique is &lt;a href=&#34;https://en.wikipedia.org/wiki/Tunneling_protocol&#34;&gt;tunneling&lt;/a&gt; complete &lt;a href=&#34;https://en.wikipedia.org/wiki/Transmission_Control_Protocol&#34;&gt;TCP&lt;/a&gt; traffic over ping requests and replies.&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://en.wikipedia.org/wiki/ICMP_tunnel&#34;&gt;https://en.wikipedia.org/wiki/ICMP_tunnel&lt;/a&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h3 id=&#34;建立-icmp-tunnel&#34;&gt;建立 ICMP tunnel&lt;/h3&gt;
+&lt;p&gt;前人早已栽树，开源实现：https://github.com/jamesbarlow/icmptunnel&lt;/p&gt;
+&lt;p&gt;Linux 上编译 icmptunnel：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;$ git clone git@github.com:jamesbarlow/icmptunnel.git
+$ make
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Vagrant 启动两台 Ubuntu 虚拟机，通过网卡 enp0s8 互联，假设两者通信只允许 ICMP。&lt;/p&gt;
+&lt;p&gt;Proxy server 192.168.33.12：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# echo 1 &amp;gt; /proc/sys/net/ipv4/icmp_echo_ignore_all&lt;/span&gt;
+
+&lt;span style=&#34;color:#75715e&#34;&gt;# ./icmptunnel –s&lt;/span&gt;
+opened tunnel device: tun0
+&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;ctrl-z&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt;
+&lt;span style=&#34;color:#75715e&#34;&gt;# bg&lt;/span&gt;
+&lt;span style=&#34;color:#75715e&#34;&gt;# ifconfig tun0 10.0.0.1 netmask 255.255.255.0&lt;/span&gt;
+
+&lt;span style=&#34;color:#75715e&#34;&gt;# ifconfig&lt;/span&gt;
+enp0s8: flags&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;4163&amp;lt;UP,BROADCAST,RUNNING,MULTICAST&amp;gt;  mtu &lt;span style=&#34;color:#ae81ff&#34;&gt;1500&lt;/span&gt;
+        inet 192.168.33.12  netmask 255.255.255.0  broadcast 192.168.33.255
+        inet6 fe80::a00:27ff:feb6:74f5  prefixlen &lt;span style=&#34;color:#ae81ff&#34;&gt;64&lt;/span&gt;  scopeid 0x20&amp;lt;link&amp;gt;
+        ether 08:00:27:b6:74:f5  txqueuelen &lt;span style=&#34;color:#ae81ff&#34;&gt;1000&lt;/span&gt;  &lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;Ethernet&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt;
+        RX packets &lt;span style=&#34;color:#ae81ff&#34;&gt;4808&lt;/span&gt;  bytes &lt;span style=&#34;color:#ae81ff&#34;&gt;321774&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;321.7 KB&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt;
+        RX errors &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;  dropped &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;  overruns &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;  frame &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;
+        TX packets &lt;span style=&#34;color:#ae81ff&#34;&gt;1077&lt;/span&gt;  bytes &lt;span style=&#34;color:#ae81ff&#34;&gt;95776&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;95.7 KB&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt;
+        TX errors &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;  dropped &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt; overruns &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;  carrier &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;  collisions &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;
+
+lo: flags&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;73&amp;lt;UP,LOOPBACK,RUNNING&amp;gt;  mtu &lt;span style=&#34;color:#ae81ff&#34;&gt;65536&lt;/span&gt;
+        inet 127.0.0.1  netmask 255.0.0.0
+        inet6 ::1  prefixlen &lt;span style=&#34;color:#ae81ff&#34;&gt;128&lt;/span&gt;  scopeid 0x10&amp;lt;host&amp;gt;
+        loop  txqueuelen &lt;span style=&#34;color:#ae81ff&#34;&gt;1000&lt;/span&gt;  &lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;Local Loopback&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt;
+        RX packets &lt;span style=&#34;color:#ae81ff&#34;&gt;44&lt;/span&gt;  bytes &lt;span style=&#34;color:#ae81ff&#34;&gt;3890&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;3.8 KB&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt;
+        RX errors &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;  dropped &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;  overruns &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;  frame &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;
+        TX packets &lt;span style=&#34;color:#ae81ff&#34;&gt;44&lt;/span&gt;  bytes &lt;span style=&#34;color:#ae81ff&#34;&gt;3890&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;3.8 KB&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt;
+        TX errors &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;  dropped &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt; overruns &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;  carrier &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;  collisions &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;
+
+tun0: flags&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;4305&amp;lt;UP,POINTOPOINT,RUNNING,NOARP,MULTICAST&amp;gt;  mtu &lt;span style=&#34;color:#ae81ff&#34;&gt;1500&lt;/span&gt;
+        inet 10.0.0.1  netmask 255.255.255.0  destination 10.0.0.1
+        inet6 fe80::2743:f01:5f93:4c90  prefixlen &lt;span style=&#34;color:#ae81ff&#34;&gt;64&lt;/span&gt;  scopeid 0x20&amp;lt;link&amp;gt;
+        unspec 00-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00  txqueuelen &lt;span style=&#34;color:#ae81ff&#34;&gt;500&lt;/span&gt;  &lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;UNSPEC&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt;
+        RX packets &lt;span style=&#34;color:#ae81ff&#34;&gt;156&lt;/span&gt;  bytes &lt;span style=&#34;color:#ae81ff&#34;&gt;18219&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;18.2 KB&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt;
+        RX errors &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;  dropped &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;  overruns &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;  frame &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;
+        TX packets &lt;span style=&#34;color:#ae81ff&#34;&gt;134&lt;/span&gt;  bytes &lt;span style=&#34;color:#ae81ff&#34;&gt;32887&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;32.8 KB&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt;
+        TX errors &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;  dropped &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt; overruns &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;  carrier &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;  collisions &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Client 192.168.33.11：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# echo 1 &amp;gt; /proc/sys/net/ipv4/icmp_echo_ignore_all&lt;/span&gt;
+&lt;span style=&#34;color:#75715e&#34;&gt;# ./icmptunnel 192.168.33.12&lt;/span&gt;
+opened tunnel device: tun0
+connection established.
+&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;ctrl-z&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt;
+&lt;span style=&#34;color:#75715e&#34;&gt;# bg&lt;/span&gt;
+&lt;span style=&#34;color:#75715e&#34;&gt;# ifconfig tun0 10.0.0.2 netmask 255.255.255.0&lt;/span&gt;
+
+&lt;span style=&#34;color:#75715e&#34;&gt;# ifconfig&lt;/span&gt;
+enp0s8: flags&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;4163&amp;lt;UP,BROADCAST,RUNNING,MULTICAST&amp;gt;  mtu &lt;span style=&#34;color:#ae81ff&#34;&gt;1500&lt;/span&gt;
+        inet 192.168.33.11  netmask 255.255.255.0  broadcast 192.168.33.255
+        inet6 fe80::a00:27ff:fe65:dae7  prefixlen &lt;span style=&#34;color:#ae81ff&#34;&gt;64&lt;/span&gt;  scopeid 0x20&amp;lt;link&amp;gt;
+        ether 08:00:27:65:da:e7  txqueuelen &lt;span style=&#34;color:#ae81ff&#34;&gt;1000&lt;/span&gt;  &lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;Ethernet&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt;
+        RX packets &lt;span style=&#34;color:#ae81ff&#34;&gt;1180&lt;/span&gt;  bytes &lt;span style=&#34;color:#ae81ff&#34;&gt;118335&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;118.3 KB&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt;
+        RX errors &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;  dropped &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;  overruns &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;  frame &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;
+        TX packets &lt;span style=&#34;color:#ae81ff&#34;&gt;4603&lt;/span&gt;  bytes &lt;span style=&#34;color:#ae81ff&#34;&gt;292845&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;292.8 KB&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt;
+        TX errors &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;  dropped &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt; overruns &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;  carrier &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;  collisions &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;
+
+lo: flags&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;73&amp;lt;UP,LOOPBACK,RUNNING&amp;gt;  mtu &lt;span style=&#34;color:#ae81ff&#34;&gt;65536&lt;/span&gt;
+        inet 127.0.0.1  netmask 255.0.0.0
+        inet6 ::1  prefixlen &lt;span style=&#34;color:#ae81ff&#34;&gt;128&lt;/span&gt;  scopeid 0x10&amp;lt;host&amp;gt;
+        loop  txqueuelen &lt;span style=&#34;color:#ae81ff&#34;&gt;1000&lt;/span&gt;  &lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;Local Loopback&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt;
+        RX packets &lt;span style=&#34;color:#ae81ff&#34;&gt;122&lt;/span&gt;  bytes &lt;span style=&#34;color:#ae81ff&#34;&gt;22468&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;22.4 KB&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt;
+        RX errors &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;  dropped &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;  overruns &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;  frame &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;
+        TX packets &lt;span style=&#34;color:#ae81ff&#34;&gt;122&lt;/span&gt;  bytes &lt;span style=&#34;color:#ae81ff&#34;&gt;22468&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;22.4 KB&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt;
+        TX errors &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;  dropped &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt; overruns &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;  carrier &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;  collisions &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;
+
+tun0: flags&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;4305&amp;lt;UP,POINTOPOINT,RUNNING,NOARP,MULTICAST&amp;gt;  mtu &lt;span style=&#34;color:#ae81ff&#34;&gt;1500&lt;/span&gt;
+        inet 10.0.0.2  netmask 255.255.255.0  destination 10.0.0.2
+        inet6 fe80::673f:aedd:d37e:afc4  prefixlen &lt;span style=&#34;color:#ae81ff&#34;&gt;64&lt;/span&gt;  scopeid 0x20&amp;lt;link&amp;gt;
+        unspec 00-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00  txqueuelen &lt;span style=&#34;color:#ae81ff&#34;&gt;500&lt;/span&gt;  &lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;UNSPEC&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt;
+        RX packets &lt;span style=&#34;color:#ae81ff&#34;&gt;130&lt;/span&gt;  bytes &lt;span style=&#34;color:#ae81ff&#34;&gt;32695&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;32.6 KB&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt;
+        RX errors &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;  dropped &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;  overruns &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;  frame &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;
+        TX packets &lt;span style=&#34;color:#ae81ff&#34;&gt;156&lt;/span&gt;  bytes &lt;span style=&#34;color:#ae81ff&#34;&gt;18219&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;18.2 KB&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt;
+        TX errors &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;  dropped &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt; overruns &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;  carrier &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;  collisions &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;试验联通性：&lt;/p&gt;
+&lt;p&gt;Server 上创建一个 web server。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;$ python3 -m http.server &lt;span style=&#34;color:#ae81ff&#34;&gt;8000&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Client 上 curl：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;$ curl 10.0.0.1:8000
+&amp;lt;!DOCTYPE HTML PUBLIC &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;-//W3C//DTD HTML 4.01//EN&amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;http://www.w3.org/TR/html4/strict.dtd&amp;#34;&lt;/span&gt;&amp;gt;
+&amp;lt;html&amp;gt;
+&amp;lt;head&amp;gt;
+...
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;这样，两台虚拟机通过 ICMP 协议建立 tunnel 成功。Client (10.0.0.2) 可通过 TCP 协议访问 Proxy Server (10.0.0.1)。&lt;/p&gt;
+&lt;h3 id=&#34;network-traffic&#34;&gt;Network Traffic&lt;/h3&gt;
+&lt;p&gt;Client/Server 上抓包，假设 enp0s8 网卡上，client -&amp;gt; server 只有 ICMP 协议流量。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# tcpdump -i tun0 -w tun0.pcap&lt;/span&gt;
+
+&lt;span style=&#34;color:#75715e&#34;&gt;# tcpdump -i enp0s8 -w enp0s8.pcap&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Client 执行 &lt;code&gt;curl 10.0.0.1:8000&lt;/code&gt;。&lt;/p&gt;
+&lt;p&gt;Client enp0s8：&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200903170657920.png&#34; alt=&#34;image-20200903170657920&#34;&gt;&lt;/p&gt;
+&lt;p&gt;Client tun0：&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200903170805505.png&#34; alt=&#34;image-20200903170805505&#34;&gt;&lt;/p&gt;
+&lt;p&gt;Server enp0s8：&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200903170855923.png&#34; alt=&#34;image-20200903170855923&#34;&gt;&lt;/p&gt;
+&lt;p&gt;Server tun0：&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200903170932762.png&#34; alt=&#34;image-20200903170932762&#34;&gt;&lt;/p&gt;
+&lt;p&gt;如预期，enp0s8 网卡上只有 ICMP 协议通信，而 tun0 允许 HTTP/TCP。&lt;/p&gt;
+&lt;h3 id=&#34;ssh-隧道代理&#34;&gt;SSH 隧道代理&lt;/h3&gt;
+&lt;p&gt;ssh 隧道翻墙跟连普通服务器没啥两样了。&lt;/p&gt;
+&lt;p&gt;Client 生成 SSH 秘钥：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# ssh-keygen&lt;/span&gt;
+&lt;span style=&#34;color:#75715e&#34;&gt;# cat ~/.ssh/id_rsa.pub&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Proxy server 让 client root 免密登录：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# vim ~/.ssh/authorized_keys&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Client 建立 socks 代理：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# ssh -D 8080 -N root@10.0.0.1&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;代理测试：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# curl -x socks5h://localhost:8080 http://baidu.com/&lt;/span&gt;
+&amp;lt;html&amp;gt;
+&amp;lt;meta http-equiv&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;refresh&amp;#34;&lt;/span&gt; content&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;0;url=http://www.baidu.com/&amp;#34;&lt;/span&gt;&amp;gt;
+&amp;lt;/html&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;总结&#34;&gt;总结&lt;/h2&gt;
+&lt;p&gt;道高一尺魔高一丈，要是被网管封禁了 ICMP 流量或是只允许定长的 ICMP 包，就 GG 了。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;One way to prevent this type of tunneling is to block ICMP traffic, at the cost of losing some network functionality that people usually take for granted (e.g. it might take tens of seconds to determine that a peer is offline, rather than almost instantaneously). Another method for mitigating this type of attack is to only allow fixed sized ICMP packets through firewalls, which can impede or eliminate this type of behavior.[&lt;a href=&#34;https://en.wikipedia.org/wiki/ICMP_tunnel#cite_note-3&#34;&gt;3]&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://en.wikipedia.org/wiki/ICMP_tunnel&#34;&gt;https://en.wikipedia.org/wiki/ICMP_tunnel&lt;/a&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;本文仅仅是一个技术探讨，切莫在犯罪的道路上越走越远。&lt;/p&gt;
+&lt;h2 id=&#34;参考&#34;&gt;参考&lt;/h2&gt;
+&lt;ol&gt;
+&lt;li&gt;ICMP tunnel &lt;a href=&#34;https://en.wikipedia.org/wiki/ICMP_tunnel&#34;&gt;https://en.wikipedia.org/wiki/ICMP_tunnel&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;内网渗透之ICMP隐藏隧道 &lt;a href=&#34;https://xz.aliyun.com/t/7875#toc-4&#34;&gt;https://xz.aliyun.com/t/7875#toc-4&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+- https://xujiahua.github.io/posts/20200903-fuck-thin-client/ - </description>
+        </item>
     
     
     
@@ -25,16 +186,18 @@
 &lt;p&gt;Namespaces are a fundamental aspect of &lt;a href=&#34;https://en.wikipedia.org/wiki/Linux_containers&#34;&gt;containers&lt;/a&gt; on Linux.&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;h3 id=&#34;内核资源&#34;&gt;内核资源&lt;/h3&gt;
-&lt;p&gt;&lt;code&gt;man clone&lt;/code&gt; 中列举了如下的资源：&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;CLONE_NEWCGROUP:&lt;/li&gt;
-&lt;li&gt;CLONE_NEWIPC: 隔离System V IPC和POSIX消息队列。&lt;/li&gt;
-&lt;li&gt;CLONE_NEWNET: 网络的隔离，容器有自己的网络栈，IP，就像一个小主机。&lt;/li&gt;
-&lt;li&gt;CLONE_NEWNS: 隔离文件系统挂载点。每个容器能看到不同的文件系统层次结构。因为是第一个实现的namespace，所以起名草率了。&lt;/li&gt;
-&lt;li&gt;CLONE_NEWPID: 隔离进程ID。&lt;/li&gt;
-&lt;li&gt;CLONE_NEWUSER: 隔离用户ID和组ID。&lt;/li&gt;
-&lt;li&gt;CLONE_NEWUTS:  容器可以有独立的 domain name &amp;amp; hostname。&lt;/li&gt;
-&lt;/ol&gt;
+&lt;p&gt;&lt;code&gt;man namespaces&lt;/code&gt; 列举：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;       Linux provides the following namespaces:
+
+       Namespace   Constant          Isolates
+       Cgroup      CLONE_NEWCGROUP   Cgroup root directory
+       IPC         CLONE_NEWIPC      System V IPC, POSIX message queues 容器有自己的网络栈，IP，就像一个小主机。
+       Network     CLONE_NEWNET      Network devices, stacks, ports, etc.
+       Mount       CLONE_NEWNS       Mount points 因为是第一个实现的namespace，所以起名草率了。
+       PID         CLONE_NEWPID      Process IDs
+       User        CLONE_NEWUSER     User and group IDs
+       UTS         CLONE_NEWUTS      Hostname and NIS domain name
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;code&gt;man clone&lt;/code&gt; 中列举了如下的资源的描述：&lt;/p&gt;
 &lt;pre&gt;&lt;code&gt;       CLONE_NEWCGROUP (since Linux 4.6)
               Create the process in a new cgroup namespace.  If this flag is not set, then (as with fork(2))  the
               process is created in the same cgroup namespaces as the calling process.  This flag is intended for
@@ -1293,40 +1456,6 @@ python3 -m http.server &lt;span style=&#34;color:#ae81ff&#34;&gt;8088&lt;/span&g
 &lt;li&gt;去除没有必要的方法（首先得理解方法的含义）。&lt;/li&gt;
 &lt;/ol&gt;
 - https://xujiahua.github.io/posts/20200710-metabase-impala-driver/ - </description>
-        </item>
-    
-    
-    
-        <item>
-        <title>Metabase 客户隔离</title>
-        <link>https://xujiahua.github.io/posts/20200615-metabase-customer-isolation/</link>
-        <pubDate>Mon, 15 Jun 2020 17:19:50 +0800</pubDate>
-        
-        <guid>https://xujiahua.github.io/posts/20200615-metabase-customer-isolation/</guid>
-        <description>许嘉华的笔记 https://xujiahua.github.io/posts/20200615-metabase-customer-isolation/ -&lt;p&gt;之前有讨论，在不改动代码的情况下，可以使用分组功能来做客户隔离。但是该方案面临的问题是，每个客户一套模板，模板可维护性低。&lt;/p&gt;
-&lt;p&gt;问题的关键就是如何共享SQL模板并客户隔离。需要改动源代码。&lt;/p&gt;
-&lt;h3 id=&#34;目标&#34;&gt;目标&lt;/h3&gt;
-&lt;ol&gt;
-&lt;li&gt;代码复用。同一套SQL代码。不用copy/paste，好维护。一个dashboard所有客户都能看。&lt;/li&gt;
-&lt;li&gt;客户隔离，保证数据安全。不同客户只能看到自己的数据。&lt;/li&gt;
-&lt;/ol&gt;
-&lt;h3 id=&#34;实现&#34;&gt;实现&lt;/h3&gt;
-&lt;p&gt;执行dashboard/chart中SQL代码时，动态插入客户隔离标识。&lt;/p&gt;
-&lt;p&gt;首先来看下一次SQL Query的生命周期。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image-20200616151301507.png&#34; alt=&#34;image-20200616151301507&#34;&gt;&lt;/p&gt;
-&lt;p&gt;找了个比较接近的处理逻辑，&lt;code&gt;substitute-parameters&lt;/code&gt;用于将&lt;code&gt;{ {xxx} }&lt;/code&gt;替换为widget中选的值。模仿之，SQL中定义一个&lt;code&gt;##client_id##&lt;/code&gt;占位符，写了一个&lt;code&gt;substitute-placeholder&lt;/code&gt;方法使用用户的&lt;code&gt;client-id&lt;/code&gt;替代占位符。&lt;/p&gt;
-&lt;p&gt;code: &lt;a href=&#34;https://github.com/XUJiahua/metabase/pull/4/files&#34;&gt;https://github.com/XUJiahua/metabase/pull/4/files&lt;/a&gt;&lt;/p&gt;
-&lt;h3 id=&#34;demo&#34;&gt;DEMO&lt;/h3&gt;
-&lt;p&gt;效果&lt;/p&gt;
-&lt;p&gt;使用Sample Data数据集测试。&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sql&#34; data-lang=&#34;sql&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;select&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;from&lt;/span&gt; PEOPLE
-&lt;span style=&#34;color:#66d9ef&#34;&gt;where&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;STATE&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;{{&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;STATE&lt;/span&gt;&lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;}}&lt;/span&gt;
-&lt;span style=&#34;color:#66d9ef&#34;&gt;and&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;SOURCE&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;=##&lt;/span&gt;client_id&lt;span style=&#34;color:#f92672&#34;&gt;##&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;返回的SQL中，可见占位符被替换为Google。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image-20200616150506812.png&#34; alt=&#34;image-20200616150506812&#34;&gt;&lt;/p&gt;
-&lt;p&gt;因为还没有集成SSO系统，&lt;code&gt;client-id&lt;/code&gt;临时用&lt;code&gt;first-name&lt;/code&gt;来代替。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image-20200616150614876.png&#34; alt=&#34;image-20200616150614876&#34;&gt;&lt;/p&gt;
-- https://xujiahua.github.io/posts/20200615-metabase-customer-isolation/ - </description>
         </item>
     
     

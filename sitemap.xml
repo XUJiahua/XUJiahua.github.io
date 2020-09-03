@@ -3,6 +3,31 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
+    <loc>https://xujiahua.github.io/posts/</loc>
+    <lastmod>2020-09-03T17:02:18+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://xujiahua.github.io/posts/20200903-fuck-thin-client/</loc>
+    <lastmod>2020-09-03T17:02:18+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://xujiahua.github.io/</loc>
+    <lastmod>2020-09-03T17:02:18+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://xujiahua.github.io/categories/</loc>
+    <lastmod>2020-09-01T12:03:13+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://xujiahua.github.io/categories/docker/</loc>
+    <lastmod>2020-09-01T12:03:13+08:00</lastmod>
+  </url>
+  
+  <url>
     <loc>https://xujiahua.github.io/tags/docker/</loc>
     <lastmod>2020-09-01T12:03:13+08:00</lastmod>
   </url>
@@ -13,17 +38,7 @@
   </url>
   
   <url>
-    <loc>https://xujiahua.github.io/posts/</loc>
-    <lastmod>2020-09-01T12:03:13+08:00</lastmod>
-  </url>
-  
-  <url>
     <loc>https://xujiahua.github.io/tags/</loc>
-    <lastmod>2020-09-01T12:03:13+08:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://xujiahua.github.io/</loc>
     <lastmod>2020-09-01T12:03:13+08:00</lastmod>
   </url>
   
@@ -35,11 +50,6 @@
   <url>
     <loc>https://xujiahua.github.io/posts/20200807-impala/</loc>
     <lastmod>2020-08-07T15:06:49+08:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://xujiahua.github.io/categories/</loc>
-    <lastmod>2020-08-07T10:34:23+08:00</lastmod>
   </url>
   
   <url>

@@ -5,9 +5,69 @@
     <description>Recent content on 许嘉华的笔记</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Tue, 01 Sep 2020 12:03:13 +0800</lastBuildDate>
+    <lastBuildDate>Thu, 03 Sep 2020 17:02:18 +0800</lastBuildDate>
     
         <atom:link href="https://xujiahua.github.io/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    
+        <item>
+        <title>Implicit：推荐系统协同过滤库的测评</title>
+        <link>https://xujiahua.github.io/posts/20200211-recsys-implicit/</link>
+        <pubDate>Tue, 11 Feb 2020 14:34:27 +0800</pubDate>
+        
+        <guid>https://xujiahua.github.io/posts/20200211-recsys-implicit/</guid>
+        <description>许嘉华的笔记 https://xujiahua.github.io/posts/20200211-recsys-implicit/ -&lt;h2 id=&#34;简介&#34;&gt;简介&lt;/h2&gt;
+&lt;p&gt;Implicit是一个推荐系统协同过滤库。所谓协同过滤，只用到了user、item的ID和user、item交互后的评分（或是某个度量）。&lt;/p&gt;
+&lt;p&gt;GitHub：https://github.com/benfred/implicit&lt;/p&gt;
+&lt;h2 id=&#34;安装&#34;&gt;安装&lt;/h2&gt;
+&lt;pre&gt;&lt;code&gt;pip install implicit
+&lt;/code&gt;&lt;/pre&gt;&lt;h2 id=&#34;其他选择&#34;&gt;其他选择&lt;/h2&gt;
+&lt;p&gt;自己照着「推荐系统实战」里的基于物品推荐的相似度公式（类似关联分析中的Lift公式），也写了一个item-item recommender。&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;看推荐结果，自己写与implicit ALS有点差别，与implicit Cosine的结果差不多。&lt;/li&gt;
+&lt;li&gt;纯python，没有并行，没有用C/C++，果然很慢。&lt;/li&gt;
+&lt;li&gt;自己写一个的目的，除了练手，也想看看implicit的效果具体怎么样。&lt;/li&gt;
+&lt;li&gt;生产使用，不建议用自己手写的，水平真的有限。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;Spark Mllib怎么样。&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Spark Mllib支持分布式，感觉没必要。本来Implicit单机就很强了。只要把数据导出来，导到训练机器上即可。&lt;/li&gt;
+&lt;li&gt;Spark分布式，扩展性好，但是性能并没有Implicit那么好。&lt;/li&gt;
+&lt;li&gt;Spark还得搭配HDFS，真的蛮重的，开发效率也没那么好。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2 id=&#34;背后的原理&#34;&gt;背后的原理&lt;/h2&gt;
+&lt;p&gt;今早根据作者文章Distance Metrics for Fun and Profit，整理了一份读后感，把之前的知识给梳理起来了。这篇文章主要介绍的是距离公式，用于K近邻的推荐算法。&lt;/p&gt;
+&lt;p&gt;协同过滤算法分两类：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;基于记忆的，K近邻算法（基于“距离”公式），建议使用BM25。优势在读后感中有写。（实际效果怎么样，还得看数据）&lt;/li&gt;
+&lt;li&gt;基于模型的，矩阵分解算法，建议使用 (implicit) ALS，其变种是支持implicit dataset的。矩阵分解算法SGD，只适用于评分。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;效果，见测评图。ALS的效果是最好的了。这是在movielens100k的结果。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/3D66F424-97FD-4236-8A57-98111FAF65A7.png&#34; alt=&#34;3D66F424-97FD-4236-8A57-98111FAF65A7&#34;&gt;&lt;/p&gt;
+&lt;p&gt;看起来指标都很低，「推荐系统实战」里差不多这个结果。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/FBC00415-D1AE-4F22-9B86-A0B070484ACF.png&#34; alt=&#34;FBC00415-D1AE-4F22-9B86-A0B070484ACF&#34;&gt;&lt;/p&gt;
+&lt;h2 id=&#34;遇到的小问题&#34;&gt;遇到的小问题&lt;/h2&gt;
+&lt;ol&gt;
+&lt;li&gt;K近邻算法的model没有model.recommend_all方法。&lt;/li&gt;
+&lt;li&gt;model.recommend与model.recommend_all的返回数据结构不同，model.recommend是包含评分的，而model.recommend_all只返回ID。&lt;/li&gt;
+&lt;li&gt;recommend(0)，传入第一个用户ID，与recommend_all[0]，取出第一个用户ID，两者的结果是不一样的，不管用什么算法都一样！去年12月就有这样的issue：https://github.com/benfred/implicit/issues/299，我解决了，回复了这个issue。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;猜想，因为recommend方法用到indices的原因？试着重新构建下user-item维度的sparse matrix。改完后，果然就一致了。技术原因，sparse matrix transpose后，indices是未转置前的indices，没有变化。 具体地，user_items.indices与item_users.T.indices是不同的。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/159B8A3D-4238-401B-A4D3-61E086FF9F0B.png&#34; alt=&#34;159B8A3D-4238-401B-A4D3-61E086FF9F0B&#34;&gt;&lt;/p&gt;
+&lt;ol start=&#34;4&#34;&gt;
+&lt;li&gt;ALS算法在Mac上表现稀烂啊，同样的代码。ALS_Faiss还报错了。先在Linux上用吧。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;Mac上的ALS效果：&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/409E288C-81F6-4588-8731-9849D1F3278B.png&#34; alt=&#34;409E288C-81F6-4588-8731-9849D1F3278B&#34;&gt;&lt;/p&gt;
+&lt;p&gt;Linux上的ALS效果：&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/8DD26395-F62D-4DA8-A801-493098799456.png&#34; alt=&#34;8DD26395-F62D-4DA8-A801-493098799456&#34;&gt;&lt;/p&gt;
+&lt;h2 id=&#34;冷启动&#34;&gt;冷启动&lt;/h2&gt;
+&lt;p&gt;一开始并没有那么多行为数据。训练出的结果肯定是挺一般的。这时候用标签推荐，运营根据经验配置标签和推荐的映射即可。&lt;/p&gt;
+&lt;h2 id=&#34;考虑用户特征商品特征而不仅仅是id&#34;&gt;考虑用户特征、商品特征（而不仅仅是ID）&lt;/h2&gt;
+&lt;p&gt;如果有user特征、item特征，可以使用更一般的监督学习算法。或是使用factorization machine。&lt;/p&gt;
+- https://xujiahua.github.io/posts/20200211-recsys-implicit/ - </description>
+        </item>
     
     
     
@@ -645,34 +705,6 @@ $GOPATH/bin/pprof -http=:9000 coupon http://localhost:8000/debug/pprof/profile
 &lt;p&gt;严格控制生产部署。
 也不需要写Jenkins插件，做在pipeline里，因为其本身就是基于Groovy的DSL，可以在其中写点代码。&lt;/p&gt;
 - https://xujiahua.github.io/posts/20170413-jenkins&#43;ansible/ - </description>
-        </item>
-    
-    
-    
-        <item>
-        <title>Android热更新框架的使用</title>
-        <link>https://xujiahua.github.io/posts/20170408-android-hot-update/</link>
-        <pubDate>Sat, 08 Apr 2017 11:45:49 +0800</pubDate>
-        
-        <guid>https://xujiahua.github.io/posts/20170408-android-hot-update/</guid>
-        <description>许嘉华的笔记 https://xujiahua.github.io/posts/20170408-android-hot-update/ -&lt;h2 id=&#34;一个伪需求&#34;&gt;一个伪需求&lt;/h2&gt;
-&lt;p&gt;Android热更新框架听的多了，真正开始用是因为组织突发奇想，说能否在智能POS上做个应用／插件，让开发者不改一行代码就能支持做扫码交易了。&lt;/p&gt;
-&lt;p&gt;智能POS其实就是带刷卡槽，芯片插卡槽，NFC读卡器的Android系统。&lt;/p&gt;
-&lt;p&gt;看完需求后，感觉意义不大啊，都是Android系统了，加个扫码模块很难么，对一个Android程序员，分分钟集成一个这是基本素养了。有点伪需求的味道。&lt;/p&gt;
-&lt;h2 id=&#34;好奇心&#34;&gt;好奇心&lt;/h2&gt;
-&lt;p&gt;不管是不是伪需求，还是激发了我的好奇心，有趣，如果做，该怎么做。有想过让硬件供应商协助下，能否在SDK上开个口，但想想还是算了，成本有点高。&lt;/p&gt;
-&lt;p&gt;交代下，后端提供了套规范，终端将条码信息转成卡号和二磁道信息，后端就能转回条码，发往微信、支付宝。所以无论是刷卡交易还是条码交易，对终端来说，请求报文可以做到是一套规范。&lt;/p&gt;
-&lt;p&gt;自然就想到了方法劫持的思路，打开刷卡器方法变成打开摄像头，读磁道信息方法变成读取扫描到的条码，这样用户真不用改什么代码了。说到方法劫持，就要指望Android的热更新框架了。&lt;/p&gt;
-&lt;h2 id=&#34;android热更新框架&#34;&gt;Android热更新框架&lt;/h2&gt;
-&lt;p&gt;Android的热更新框架一般都是阿里系、腾讯系的作品。可能是他们的apk包实在很大吧。相比我们的应用只有几M。
-收集了些资料，简单对比了下。个人没有每个都实践过。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/android_hot_fix_framework.png&#34; alt=&#34;Android热更新框架对比&#34;&gt;&lt;/p&gt;
-&lt;p&gt;回到需求上来，我们需要的是一个能够即时生效的框架。目前用了下Dexposed，因为编程方式比较方便。
-Dexposed的感受，Android 4.x Dalvik虚拟机上基本算是完美了，但是ART虚拟机就不适配了。也是Dexposed被弃用的原因。AndFix延续了Dexposed。&lt;/p&gt;
-&lt;p&gt;因为使用Dexposed，第一版，只能用在Android 4.x上，这周演示效果良好。有机会再做下Android 5.x的兼容。&lt;/p&gt;
-&lt;p&gt;最后产品还是要让开发者动代码，加一行代码。因为这些热更新框架没有哪个是能劫持其他APP方法的。&lt;/p&gt;
-&lt;p&gt;小想法，Dexposed/AndFix这个套路修复问题，以后估计会越来越难做，Android 7.x都已经支持JIT了，将Java代码编译到了本地代码，还怎么劫持Java方法呢，跑的都是本地代码了。&lt;/p&gt;
-- https://xujiahua.github.io/posts/20170408-android-hot-update/ - </description>
         </item>
     
     

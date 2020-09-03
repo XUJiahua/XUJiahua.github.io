@@ -873,6 +873,10 @@ Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopene
                         
 
                         
+                            <i class="material-icons" style="">folder</i>
+                                <a href="/categories/">[Docker]</a>
+                                &nbsp;
+                        
 
                         
                             <i class="material-icons" style="">label</i>
@@ -895,16 +899,18 @@ Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopene
 <p>Namespaces are a fundamental aspect of <a href="https://en.wikipedia.org/wiki/Linux_containers">containers</a> on Linux.</p>
 </blockquote>
 <h3 id="内核资源">内核资源</h3>
-<p><code>man clone</code> 中列举了如下的资源：</p>
-<ol>
-<li>CLONE_NEWCGROUP:</li>
-<li>CLONE_NEWIPC: 隔离System V IPC和POSIX消息队列。</li>
-<li>CLONE_NEWNET: 网络的隔离，容器有自己的网络栈，IP，就像一个小主机。</li>
-<li>CLONE_NEWNS: 隔离文件系统挂载点。每个容器能看到不同的文件系统层次结构。因为是第一个实现的namespace，所以起名草率了。</li>
-<li>CLONE_NEWPID: 隔离进程ID。</li>
-<li>CLONE_NEWUSER: 隔离用户ID和组ID。</li>
-<li>CLONE_NEWUTS:  容器可以有独立的 domain name &amp; hostname。</li>
-</ol>
+<p><code>man namespaces</code> 列举：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">       Linux provides the following namespaces:
+
+       Namespace   Constant          Isolates
+       Cgroup      CLONE_NEWCGROUP   Cgroup root directory
+       IPC         CLONE_NEWIPC      System V IPC, POSIX message queues 容器有自己的网络栈，IP，就像一个小主机。
+       Network     CLONE_NEWNET      Network devices, stacks, ports, etc.
+       Mount       CLONE_NEWNS       Mount points 因为是第一个实现的namespace，所以起名草率了。
+       PID         CLONE_NEWPID      Process IDs
+       User        CLONE_NEWUSER     User and group IDs
+       UTS         CLONE_NEWUTS      Hostname and NIS domain name
+</code></pre></div><p><code>man clone</code> 中列举了如下的资源的描述：</p>
 <pre><code>       CLONE_NEWCGROUP (since Linux 4.6)
               Create the process in a new cgroup namespace.  If this flag is not set, then (as with fork(2))  the
               process is created in the same cgroup namespaces as the calling process.  This flag is intended for
@@ -1390,8 +1396,8 @@ lo: flags<span style="color:#f92672">=</span>73&lt;UP,LOOPBACK,RUNNING&gt;  mtu 
             <nav class="post-pagination">
 
                 
-                <a class="newer-posts">
-                    Next<br>No newer posts.
+                <a class="newer-posts" href="https://xujiahua.github.io/posts/20200903-fuck-thin-client/">
+                    Next<br>瘦终端指北 —— ICMP tunnel
                 </a>
                 
                 
