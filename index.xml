@@ -43,7 +43,7 @@
 &lt;p&gt;Linux 上编译 icmptunnel：&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;$ git clone git@github.com:jamesbarlow/icmptunnel.git
 $ make
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Vagrant 启动两台 Ubuntu 虚拟机，通过网卡 enp0s8 互联，假设两者通信只允许 ICMP。&lt;/p&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Vagrant 启动两台 Ubuntu 虚拟机试验下（没在瘦终端试验，因为还没尝试将 icmptunnel 编译到 Windows 平台），两台虚拟机通过网卡 enp0s8 互联，假设两者通信只允许 ICMP。&lt;/p&gt;
 &lt;p&gt;Proxy server 192.168.33.12：&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# echo 1 &amp;gt; /proc/sys/net/ipv4/icmp_echo_ignore_all&lt;/span&gt;
 
