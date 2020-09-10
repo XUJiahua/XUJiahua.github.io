@@ -5,9 +5,39 @@
     <description>Recent content on 许嘉华的笔记</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Mon, 07 Sep 2020 11:35:39 +0800</lastBuildDate>
+    <lastBuildDate>Wed, 09 Sep 2020 09:52:37 +0800</lastBuildDate>
     
         <atom:link href="https://xujiahua.github.io/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    
+        <item>
+        <title>Impala TIMESTAMP 时区处理</title>
+        <link>https://xujiahua.github.io/posts/20200713-impala-timezone/</link>
+        <pubDate>Mon, 13 Jul 2020 16:16:27 +0800</pubDate>
+        
+        <guid>https://xujiahua.github.io/posts/20200713-impala-timezone/</guid>
+        <description>许嘉华的笔记 https://xujiahua.github.io/posts/20200713-impala-timezone/ -&lt;h2 id=&#34;现象&#34;&gt;现象&lt;/h2&gt;
+&lt;p&gt;&lt;code&gt;Hive&lt;/code&gt; 以&lt;code&gt;Parquet&lt;/code&gt;数据存储格式写入的 &lt;code&gt;TIMESTAMP&lt;/code&gt;字段内容，&lt;code&gt;Impala&lt;/code&gt;读取，时间差8小时。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200713162929821.png&#34; alt=&#34;image-20200713162929821&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;Hive&lt;/code&gt;写入&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200713163001445.png&#34; alt=&#34;image-20200713163001445&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;Impala&lt;/code&gt;读取差8小时，北京时间与UTC差8小时。&lt;/p&gt;
+&lt;h2 id=&#34;原因&#34;&gt;原因&lt;/h2&gt;
+&lt;p&gt;&lt;code&gt;Hive&lt;/code&gt;写&lt;code&gt;Parquet&lt;/code&gt;数据文件，&lt;code&gt;TIMESTAMP&lt;/code&gt;先规范化到UTC格式再存储。而&lt;code&gt;Impala&lt;/code&gt;直接读取数据文件中的内容，不会进行TIMEZONE的调整。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;When Hive writes to Parquet data files, the TIMESTAMP values are normalized to UTC from the local time zone of the host where the data was written. On the other hand, Impala does not make any time zone adjustment when it writes or reads INT96 TIMESTAMP values to Parquet files. This difference in time zone handling can cause potentially inconsistent results when Impala processes TIMESTAMP values in the Parquet files written by Hive.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;&lt;a href=&#34;https://docs.cloudera.com/documentation/enterprise/latest/topics/impala_timestamp.html&#34;&gt;https://docs.cloudera.com/documentation/enterprise/latest/topics/impala_timestamp.html&lt;/a&gt;&lt;/p&gt;
+&lt;h2 id=&#34;解决&#34;&gt;解决&lt;/h2&gt;
+&lt;p&gt;&lt;code&gt;impalad&lt;/code&gt;加入如下参数：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;--use_local_tz_for_unix_timestamp_conversions=true
+--convert_legacy_hive_parquet_utc_timestamps=true
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;CDH 配置：&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200713163849195.png&#34; alt=&#34;image-20200713163849195&#34;&gt;&lt;/p&gt;
+&lt;p&gt;重启即可生效。&lt;/p&gt;
+- https://xujiahua.github.io/posts/20200713-impala-timezone/ - </description>
+        </item>
     
     
     
@@ -1106,117 +1136,6 @@ org.apache.hive/hive-jdbc &amp;quot;1.2.1&amp;quot;
 &lt;p&gt;通过摸索，改进 Metabase sparksql 包后，我们可以使用 Impala 了。至于有多少坑，还得等我深度使用后才知道。&lt;/p&gt;
 &lt;p&gt;代码 &lt;a href=&#34;https://github.com/XUJiahua/metabase/tree/driver-impala-in-sparksql&#34;&gt;https://github.com/XUJiahua/metabase/tree/driver-impala-in-sparksql&lt;/a&gt;&lt;/p&gt;
 - https://xujiahua.github.io/posts/20200527-metabase-impala-driver/ - </description>
-        </item>
-    
-    
-    
-        <item>
-        <title>微信用户授权头像内容带随机干扰的问题</title>
-        <link>https://xujiahua.github.io/posts/20200514-wx-avatar/</link>
-        <pubDate>Thu, 14 May 2020 13:38:12 +0800</pubDate>
-        
-        <guid>https://xujiahua.github.io/posts/20200514-wx-avatar/</guid>
-        <description>许嘉华的笔记 https://xujiahua.github.io/posts/20200514-wx-avatar/ -&lt;p&gt;项目需要基于头像、昵称对不同实体账号下的微信用户进行匹配。基于这个思路，打算先下载微信头像的图像，后计算其MD5，“单元测试”了下这个简单方法，结果惊人。&lt;/p&gt;
-&lt;p&gt;同一个人的同一个头像链接返回的图像内容都不一样。内容不一样，MD5值也就不一样。&lt;/p&gt;
-&lt;p&gt;看来微信对我们这些拙劣的手段早有防备。&lt;/p&gt;
-&lt;h2 id=&#34;微信头像内容分析&#34;&gt;微信头像内容分析&lt;/h2&gt;
-&lt;p&gt;同一个头像链接下载两次。&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;$ wget -O 1.png https://wx.qlogo.cn/mmopen/vi_32/DYAIOgq83eoc614h6RfCUnwQTblG9y2dq4g5PKVicVZd5CQO9JNdPCWCovl8cmsvxQcWDemcLYGW6pSt97uUW5A/132
-$ wget -O 2.png https://wx.qlogo.cn/mmopen/vi_32/DYAIOgq83eoc614h6RfCUnwQTblG9y2dq4g5PKVicVZd5CQO9JNdPCWCovl8cmsvxQcWDemcLYGW6pSt97uUW5A/132
-
-$ md5 1.png
-MD5 &lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;1.png&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; dd6aa938cbec381a3e83702776be88a3
-$ md5 2.png
-MD5 &lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;2.png&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; 83668a6ad7eeee8fa8e5e0db339233d1
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;肉眼比较&#34;&gt;肉眼比较&lt;/h3&gt;
-&lt;p&gt;肉眼完全无法区分。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image-20200514134445598.png&#34; alt=&#34;image-20200514134445598&#34;&gt;&lt;/p&gt;
-&lt;h3 id=&#34;字节级比较&#34;&gt;字节级比较&lt;/h3&gt;
-&lt;p&gt;两张图，可以看出差异很大。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image-20200514134712953.png&#34; alt=&#34;image-20200514134712953&#34;&gt;&lt;/p&gt;
-&lt;h3 id=&#34;像素级比较&#34;&gt;像素级比较&lt;/h3&gt;
-&lt;p&gt;为了方便对比，图先灰度化（一个像素点的RGB三值改为1个值）。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image-20200514184021629.png&#34; alt=&#34;image-20200514184021629&#34;&gt;&lt;/p&gt;
-&lt;p&gt;两张灰度图差值的数据分布。x轴为差值，y轴为出现次数。&lt;/p&gt;
-&lt;p&gt;0代表相同位置的像素点相同，非0代表相同位置像素点有差异及其差异幅度。&lt;/p&gt;
-&lt;p&gt;0出现次数最多，可见两张图的大部分像素点的值是相同的。差异主要分为两部分，1-10 闭区间。（试了几张图）&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image-20200515094333720.png&#34; alt=&#34;image-20200515094333720&#34;&gt;&lt;/p&gt;
-&lt;p&gt;另一种可视化，白色代表两图相同位置像素点不同。可见，图片污染非常严重。&lt;/p&gt;
-&lt;p&gt;上图生成脚本：&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;color:#f92672&#34;&gt;import&lt;/span&gt; numpy &lt;span style=&#34;color:#f92672&#34;&gt;as&lt;/span&gt; np
-&lt;span style=&#34;color:#f92672&#34;&gt;from&lt;/span&gt; PIL &lt;span style=&#34;color:#f92672&#34;&gt;import&lt;/span&gt; Image
-
-&lt;span style=&#34;color:#66d9ef&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;read_to_2d_array&lt;/span&gt;(filename):
-    img &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; Image&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;open(filename)
-    img &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; img&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;convert(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;L&amp;#39;&lt;/span&gt;)
-    &lt;span style=&#34;color:#66d9ef&#34;&gt;print&lt;/span&gt;(img&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;size)
-    &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; np&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;array(img)
-
-data1 &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; read_to_2d_array(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;1.png&amp;#34;&lt;/span&gt;)
-data2 &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; read_to_2d_array(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;2.png&amp;#34;&lt;/span&gt;)
-&lt;span style=&#34;color:#75715e&#34;&gt;# NOTE: np.uint8(3) - np.uint8(4) = 255 引起的误差让我绝望了&lt;/span&gt;
-diff &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; np&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;uint8(np&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;abs(np&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;int16(data1) &lt;span style=&#34;color:#f92672&#34;&gt;-&lt;/span&gt; np&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;int16(data2)))
-
-&lt;span style=&#34;color:#f92672&#34;&gt;import&lt;/span&gt; matplotlib.pyplot &lt;span style=&#34;color:#f92672&#34;&gt;as&lt;/span&gt; plt
-x, y &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; np&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;unique(diff, return_counts&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;True)
-x &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; [f&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;{e}&amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;for&lt;/span&gt; e &lt;span style=&#34;color:#f92672&#34;&gt;in&lt;/span&gt; x]
-&lt;span style=&#34;color:#66d9ef&#34;&gt;print&lt;/span&gt;(x)
-&lt;span style=&#34;color:#66d9ef&#34;&gt;print&lt;/span&gt;(y)
-plt&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;bar(x, y)
-plt&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;show()
-
-&lt;span style=&#34;color:#66d9ef&#34;&gt;print&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;count of non-zero point&amp;#34;&lt;/span&gt;, (diff &lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;)&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;sum())
-
-diff &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; diff &lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;
-Image&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;fromarray(diff, mode&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;1&amp;#39;&lt;/span&gt;)&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;save(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;diff12.png&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;PNG&amp;#34;&lt;/span&gt;)
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;目标消除白点&#34;&gt;目标：消除白点&lt;/h2&gt;
-&lt;p&gt;要达到多份干扰图生成相同的哈希值的效果，就是要消除白点，也就是降采样图像，主要两个方式：&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;降低灰度级别。比如 8bit（256级灰度）图像压缩到6bit（64级灰度）图像，原像素点0、1、2、3归为一个像素点0，以此类推。&lt;/li&gt;
-&lt;li&gt;降低图像尺寸。比如尺寸同比缩小一倍。&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;在有限数据量下测试，32级灰度，10x10 尺寸下，白点消失了。&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;color:#f92672&#34;&gt;import&lt;/span&gt; numpy &lt;span style=&#34;color:#f92672&#34;&gt;as&lt;/span&gt; np
-&lt;span style=&#34;color:#f92672&#34;&gt;from&lt;/span&gt; PIL &lt;span style=&#34;color:#f92672&#34;&gt;import&lt;/span&gt; Image
-
-&lt;span style=&#34;color:#66d9ef&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;read_to_2d_array&lt;/span&gt;(filename, size&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;None, bit&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;8&lt;/span&gt;):
-    img &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; Image&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;open(filename)
-    img &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; img&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;convert(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;L&amp;#39;&lt;/span&gt;)
-    &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; size &lt;span style=&#34;color:#f92672&#34;&gt;is&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;not&lt;/span&gt; None:
-        img &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; img&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;resize(size)
-    data &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; np&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;array(img)
-    &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; bit &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;8&lt;/span&gt;:
-        data &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; data &lt;span style=&#34;color:#f92672&#34;&gt;//&lt;/span&gt; (&lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;**&lt;/span&gt;(&lt;span style=&#34;color:#ae81ff&#34;&gt;8&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;-&lt;/span&gt;bit)) &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt; (&lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;**&lt;/span&gt;(&lt;span style=&#34;color:#ae81ff&#34;&gt;8&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;-&lt;/span&gt;bit))
-    &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; data
-
-size_options &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; [
-    (&lt;span style=&#34;color:#ae81ff&#34;&gt;64&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;64&lt;/span&gt;),
-    (&lt;span style=&#34;color:#ae81ff&#34;&gt;40&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;40&lt;/span&gt;),
-    (&lt;span style=&#34;color:#ae81ff&#34;&gt;32&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;32&lt;/span&gt;),
-    (&lt;span style=&#34;color:#ae81ff&#34;&gt;20&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;20&lt;/span&gt;),
-    (&lt;span style=&#34;color:#ae81ff&#34;&gt;10&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;10&lt;/span&gt;)
-]
-
-&lt;span style=&#34;color:#66d9ef&#34;&gt;for&lt;/span&gt; bit &lt;span style=&#34;color:#f92672&#34;&gt;in&lt;/span&gt; range(&lt;span style=&#34;color:#ae81ff&#34;&gt;8&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;, &lt;span style=&#34;color:#f92672&#34;&gt;-&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;):
-    &lt;span style=&#34;color:#66d9ef&#34;&gt;for&lt;/span&gt; size &lt;span style=&#34;color:#f92672&#34;&gt;in&lt;/span&gt; size_options:
-        data1 &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; read_to_2d_array(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;1.png&amp;#34;&lt;/span&gt;, size&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;size, bit&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;bit)
-        data2 &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; read_to_2d_array(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;2.png&amp;#34;&lt;/span&gt;, size&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;size, bit&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;bit)
-        diff &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; np&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;uint8(np&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;abs(np&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;int16(data1) &lt;span style=&#34;color:#f92672&#34;&gt;-&lt;/span&gt; np&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;int16(data2)))
-        &lt;span style=&#34;color:#66d9ef&#34;&gt;print&lt;/span&gt;(diff&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;shape)
-        &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; (diff &lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;)&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;sum() &lt;span style=&#34;color:#f92672&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;:
-            Image&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;fromarray(data1)&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;save(f&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;{bit}_{size}_1.png&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;PNG&amp;#34;&lt;/span&gt;)
-            Image&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;fromarray(data2)&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;save(f&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;{bit}_{size}_2.png&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;PNG&amp;#34;&lt;/span&gt;)
-        ratio &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; (diff &lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;)&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;sum() &lt;span style=&#34;color:#f92672&#34;&gt;/&lt;/span&gt; (diff&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;shape[&lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;]&lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt;diff&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;shape[&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;])
-        &lt;span style=&#34;color:#66d9ef&#34;&gt;print&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;bit: {0}, size: {1}, 脏点率：{2}&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;format(bit, size, ratio))
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;参考：&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;相似图片搜索的原理 &lt;a href=&#34;http://www.ruanyifeng.com/blog/2011/07/principle_of_similar_image_search.html&#34;&gt;http://www.ruanyifeng.com/blog/2011/07/principle_of_similar_image_search.html&lt;/a&gt;&lt;/li&gt;
-&lt;/ol&gt;
-&lt;h2 id=&#34;总结&#34;&gt;总结&lt;/h2&gt;
-&lt;p&gt;微信为了保护用户隐私，防止通过头像昵称进行用户匹配，对每次通过头像链接获取的头像内容加入了随机的扰动，像素点扰动幅度范围在 [-10, 10]，大概15%的像素点（两份干扰图的差异）受干扰，图像的差异肉眼难以察觉。&lt;/p&gt;
-&lt;p&gt;最终图像哈希用于 SQL JOIN，需要将有些许差异的图像映射成一个值。不考虑相似度算法。&lt;/p&gt;
-&lt;p&gt;通过在图像色彩、尺寸上降维，初步解决了这个问题。&lt;/p&gt;
-- https://xujiahua.github.io/posts/20200514-wx-avatar/ - </description>
         </item>
     
     

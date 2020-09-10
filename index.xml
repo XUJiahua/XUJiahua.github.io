@@ -5,9 +5,48 @@
     <description>Recent content on 许嘉华的笔记</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Mon, 07 Sep 2020 11:35:39 +0800</lastBuildDate>
+    <lastBuildDate>Wed, 09 Sep 2020 09:52:37 +0800</lastBuildDate>
     
         <atom:link href="https://xujiahua.github.io/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    
+        <item>
+        <title>Docker/Kubernetes 系列目录</title>
+        <link>https://xujiahua.github.io/posts/20200909-docker-series/</link>
+        <pubDate>Wed, 09 Sep 2020 09:52:37 +0800</pubDate>
+        
+        <guid>https://xujiahua.github.io/posts/20200909-docker-series/</guid>
+        <description>许嘉华的笔记 https://xujiahua.github.io/posts/20200909-docker-series/ -&lt;p&gt;不定时更新中。&lt;/p&gt;
+&lt;h2 id=&#34;docker&#34;&gt;Docker&lt;/h2&gt;
+&lt;h3 id=&#34;基础&#34;&gt;基础&lt;/h3&gt;
+&lt;ol&gt;
+&lt;li&gt;Docker 入门，get-started 页面多看几遍&lt;/li&gt;
+&lt;li&gt;Docker 如何改变工作方式&lt;/li&gt;
+&lt;li&gt;Dockerfile 最佳实践&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://xujiahua.github.io/posts/20200321-docker-network/&#34;&gt;Docker Network小结&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://xujiahua.github.io/posts/20200403-docker-logging/&#34;&gt;Docker 日志驱动小结&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://xujiahua.github.io/posts/20200402-use-fluentd/&#34;&gt;使用 fluentd 收集 Docker 日志&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3 id=&#34;进阶&#34;&gt;进阶&lt;/h3&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;a href=&#34;https://xujiahua.github.io/posts/20200901-linux-namespace/&#34;&gt;Linux namespace 介绍&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://xujiahua.github.io/posts/20200907-docker-bridge-net-sim/&#34;&gt;使用 ip/iptables 命令模拟 Docker bridge 网络&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;Linux cgroup 介绍&lt;/li&gt;
+&lt;li&gt;Docker 中 namespace/cgroup 的体现&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2 id=&#34;kubernetes&#34;&gt;Kubernetes&lt;/h2&gt;
+&lt;h3 id=&#34;基础-1&#34;&gt;基础&lt;/h3&gt;
+&lt;ol&gt;
+&lt;li&gt;k8s 虚拟机体验 &lt;a href=&#34;https://github.com/XUJiahua/k8s-try&#34;&gt;https://github.com/XUJiahua/k8s-try&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2 id=&#34;参考链接&#34;&gt;参考链接&lt;/h2&gt;
+&lt;h2 id=&#34;参考书籍&#34;&gt;参考书籍&lt;/h2&gt;
+&lt;ol&gt;
+&lt;li&gt;Kubernetes网络权威指南：基础、原理与实践 2019&lt;/li&gt;
+&lt;/ol&gt;
+- https://xujiahua.github.io/posts/20200909-docker-series/ - </description>
+        </item>
     
     
     
@@ -1701,36 +1740,6 @@ python3 -m http.server &lt;span style=&#34;color:#ae81ff&#34;&gt;8088&lt;/span&g
 &lt;h2 id=&#34;修复&#34;&gt;修复&lt;/h2&gt;
 &lt;p&gt;&lt;img src=&#34;../../images/image-20200714113658545.png&#34; alt=&#34;image-20200714113658545&#34;&gt;&lt;/p&gt;
 - https://xujiahua.github.io/posts/20200714-metabase-timezone/ - </description>
-        </item>
-    
-    
-    
-        <item>
-        <title>Impala TIMESTAMP 时区处理</title>
-        <link>https://xujiahua.github.io/posts/20200713-impala-timezone/</link>
-        <pubDate>Mon, 13 Jul 2020 16:16:27 +0800</pubDate>
-        
-        <guid>https://xujiahua.github.io/posts/20200713-impala-timezone/</guid>
-        <description>许嘉华的笔记 https://xujiahua.github.io/posts/20200713-impala-timezone/ -&lt;h2 id=&#34;现象&#34;&gt;现象&lt;/h2&gt;
-&lt;p&gt;&lt;code&gt;Hive&lt;/code&gt; 以&lt;code&gt;Parquet&lt;/code&gt;数据存储格式写入的 &lt;code&gt;TIMESTAMP&lt;/code&gt;字段内容，&lt;code&gt;Impala&lt;/code&gt;读取，时间差8小时。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image-20200713162929821.png&#34; alt=&#34;image-20200713162929821&#34;&gt;&lt;/p&gt;
-&lt;p&gt;&lt;code&gt;Hive&lt;/code&gt;写入&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image-20200713163001445.png&#34; alt=&#34;image-20200713163001445&#34;&gt;&lt;/p&gt;
-&lt;p&gt;&lt;code&gt;Impala&lt;/code&gt;读取差8小时，北京时间与UTC差8小时。&lt;/p&gt;
-&lt;h2 id=&#34;原因&#34;&gt;原因&lt;/h2&gt;
-&lt;p&gt;&lt;code&gt;Hive&lt;/code&gt;写&lt;code&gt;Parquet&lt;/code&gt;数据文件，&lt;code&gt;TIMESTAMP&lt;/code&gt;先规范化到UTC格式再存储。而&lt;code&gt;Impala&lt;/code&gt;直接读取数据文件中的内容，不会进行TIMEZONE的调整。&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;When Hive writes to Parquet data files, the TIMESTAMP values are normalized to UTC from the local time zone of the host where the data was written. On the other hand, Impala does not make any time zone adjustment when it writes or reads INT96 TIMESTAMP values to Parquet files. This difference in time zone handling can cause potentially inconsistent results when Impala processes TIMESTAMP values in the Parquet files written by Hive.&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;p&gt;&lt;a href=&#34;https://docs.cloudera.com/documentation/enterprise/latest/topics/impala_timestamp.html&#34;&gt;https://docs.cloudera.com/documentation/enterprise/latest/topics/impala_timestamp.html&lt;/a&gt;&lt;/p&gt;
-&lt;h2 id=&#34;解决&#34;&gt;解决&lt;/h2&gt;
-&lt;p&gt;&lt;code&gt;impalad&lt;/code&gt;加入如下参数：&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;--use_local_tz_for_unix_timestamp_conversions=true
---convert_legacy_hive_parquet_utc_timestamps=true
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;CDH 配置：&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image-20200713163849195.png&#34; alt=&#34;image-20200713163849195&#34;&gt;&lt;/p&gt;
-&lt;p&gt;重启即可生效。&lt;/p&gt;
-- https://xujiahua.github.io/posts/20200713-impala-timezone/ - </description>
         </item>
     
     
