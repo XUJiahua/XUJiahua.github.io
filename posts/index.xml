@@ -18,7 +18,7 @@
       
       <guid>https://xujiahua.github.io/posts/20200909-docker-series/</guid>
       <description>不定时更新中。
-Docker 基础  Docker 入门，get-started 页面多看几遍 Docker 如何改变工作方式 Dockerfile 最佳实践 Docker Network小结 Docker 日志驱动小结 使用 fluentd 收集 Docker 日志  进阶  Linux namespace 介绍 使用 ip/iptables 命令模拟 Docker bridge 网络 Linux cgroup 介绍 Docker 中 namespace/cgroup 的体现  Kubernetes 基础  k8s 虚拟机体验 https://github.com/XUJiahua/k8s-try  参考链接 参考书籍  Kubernetes网络权威指南：基础、原理与实践 2019  </description>
+Docker 基础  Docker 入门，官方 get started 边看边实践 Docker 如何改变软件开发协作 Dockerfile 最佳实践 Docker Network小结 Docker 日志驱动小结 使用 fluentd 收集 Docker 日志  进阶  Linux namespace 介绍 使用 ip/iptables 命令模拟 Docker bridge 网络 Linux cgroup 介绍 Docker 中 namespace/cgroup 的体现 Union file system libcontainer/containerd/runc libnetwork  Kubernetes 基础  k8s 虚拟机体验 https://github.com/XUJiahua/k8s-try  参考链接  官方文档 https://docs.docker.com/ Docker — 从入门到实践 https://www.yuque.com/grasilife/docker/readme  参考书籍  Docker技术入门与实战（第3版）（2018） Docker 进阶与实战（2016） - 华为 Docker 实践小组 Kubernetes网络权威指南：基础、原理与实践 （2019）  </description>
     </item>
     
     <item>

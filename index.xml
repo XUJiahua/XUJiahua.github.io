@@ -21,8 +21,8 @@
 &lt;h2 id=&#34;docker&#34;&gt;Docker&lt;/h2&gt;
 &lt;h3 id=&#34;基础&#34;&gt;基础&lt;/h3&gt;
 &lt;ol&gt;
-&lt;li&gt;Docker 入门，get-started 页面多看几遍&lt;/li&gt;
-&lt;li&gt;Docker 如何改变工作方式&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://docs.docker.com/get-started/&#34;&gt;Docker 入门&lt;/a&gt;，官方 get started 边看边实践&lt;/li&gt;
+&lt;li&gt;Docker 如何改变软件开发协作&lt;/li&gt;
 &lt;li&gt;Dockerfile 最佳实践&lt;/li&gt;
 &lt;li&gt;&lt;a href=&#34;https://xujiahua.github.io/posts/20200321-docker-network/&#34;&gt;Docker Network小结&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;&lt;a href=&#34;https://xujiahua.github.io/posts/20200403-docker-logging/&#34;&gt;Docker 日志驱动小结&lt;/a&gt;&lt;/li&gt;
@@ -34,6 +34,9 @@
 &lt;li&gt;&lt;a href=&#34;https://xujiahua.github.io/posts/20200907-docker-bridge-net-sim/&#34;&gt;使用 ip/iptables 命令模拟 Docker bridge 网络&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;Linux cgroup 介绍&lt;/li&gt;
 &lt;li&gt;Docker 中 namespace/cgroup 的体现&lt;/li&gt;
+&lt;li&gt;Union file system&lt;/li&gt;
+&lt;li&gt;libcontainer/containerd/runc&lt;/li&gt;
+&lt;li&gt;libnetwork&lt;/li&gt;
 &lt;/ol&gt;
 &lt;h2 id=&#34;kubernetes&#34;&gt;Kubernetes&lt;/h2&gt;
 &lt;h3 id=&#34;基础-1&#34;&gt;基础&lt;/h3&gt;
@@ -41,9 +44,15 @@
 &lt;li&gt;k8s 虚拟机体验 &lt;a href=&#34;https://github.com/XUJiahua/k8s-try&#34;&gt;https://github.com/XUJiahua/k8s-try&lt;/a&gt;&lt;/li&gt;
 &lt;/ol&gt;
 &lt;h2 id=&#34;参考链接&#34;&gt;参考链接&lt;/h2&gt;
+&lt;ol&gt;
+&lt;li&gt;官方文档 &lt;a href=&#34;https://docs.docker.com/&#34;&gt;https://docs.docker.com/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;Docker — 从入门到实践 &lt;a href=&#34;https://www.yuque.com/grasilife/docker/readme&#34;&gt;https://www.yuque.com/grasilife/docker/readme&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
 &lt;h2 id=&#34;参考书籍&#34;&gt;参考书籍&lt;/h2&gt;
 &lt;ol&gt;
-&lt;li&gt;Kubernetes网络权威指南：基础、原理与实践 2019&lt;/li&gt;
+&lt;li&gt;Docker技术入门与实战（第3版）（2018）&lt;/li&gt;
+&lt;li&gt;Docker 进阶与实战（2016） - 华为 Docker 实践小组&lt;/li&gt;
+&lt;li&gt;Kubernetes网络权威指南：基础、原理与实践 （2019）&lt;/li&gt;
 &lt;/ol&gt;
 - https://xujiahua.github.io/posts/20200909-docker-series/ - </description>
         </item>
