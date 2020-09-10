@@ -6,10 +6,23 @@
     <description>Recent content in Docker on 许嘉华的笔记</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Tue, 01 Sep 2020 12:03:13 +0800</lastBuildDate>
+    <lastBuildDate>Mon, 07 Sep 2020 11:35:39 +0800</lastBuildDate>
     
 	<atom:link href="https://xujiahua.github.io/categories/docker/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>使用 ip/iptables 命令模拟 Docker bridge 网络</title>
+      <link>https://xujiahua.github.io/posts/20200907-docker-bridge-net-sim/</link>
+      <pubDate>Mon, 07 Sep 2020 11:35:39 +0800</pubDate>
+      
+      <guid>https://xujiahua.github.io/posts/20200907-docker-bridge-net-sim/</guid>
+      <description>如前文介绍，Linux Network namespace 用于给进程创建一个新的网络栈，路由、防火墙规则、网络设备。man ip-netns：
+ A network namespace is logically another copy of the network stack, with its own routes, firewall rules, and network devices.
+ 作为对 Network namespace 的实践，本文使用 ip/iptables 等命令模拟下 Docker bridge 网络，并会接触到 Network namespace，veth pair，Linux bridge，NAT 等概念。
+实验 使用 ip命令操作 Network namespace ip netns 子命令用于操作 Network namespace。使用 add 子命令，创建一个 Network namespace。
+# ip netns add netns1 查看 netns1 的网络设备（network device）。使用 exec 子命令，后接 netns1 和要执行的命令。默认有一个 DOWN 状态的 lo 设备。</description>
+    </item>
     
     <item>
       <title>Linux Namespace</title>

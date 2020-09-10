@@ -904,8 +904,8 @@ Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopene
 
        Namespace   Constant          Isolates
        Cgroup      CLONE_NEWCGROUP   Cgroup root directory
-       IPC         CLONE_NEWIPC      System V IPC, POSIX message queues 容器有自己的网络栈，IP，就像一个小主机。
-       Network     CLONE_NEWNET      Network devices, stacks, ports, etc.
+       IPC         CLONE_NEWIPC      System V IPC, POSIX message queues
+       Network     CLONE_NEWNET      Network devices, stacks, ports, etc. 容器有自己的网络栈，IP，就像一个小主机。
        Mount       CLONE_NEWNS       Mount points 因为是第一个实现的namespace，所以起名草率了。
        PID         CLONE_NEWPID      Process IDs
        User        CLONE_NEWUSER     User and group IDs

@@ -5,9 +5,268 @@
     <description>Recent content on 许嘉华的笔记</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Thu, 03 Sep 2020 17:02:18 +0800</lastBuildDate>
+    <lastBuildDate>Mon, 07 Sep 2020 11:35:39 +0800</lastBuildDate>
     
         <atom:link href="https://xujiahua.github.io/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    
+        <item>
+        <title>使用 ip/iptables 命令模拟 Docker bridge 网络</title>
+        <link>https://xujiahua.github.io/posts/20200907-docker-bridge-net-sim/</link>
+        <pubDate>Mon, 07 Sep 2020 11:35:39 +0800</pubDate>
+        
+        <guid>https://xujiahua.github.io/posts/20200907-docker-bridge-net-sim/</guid>
+        <description>许嘉华的笔记 https://xujiahua.github.io/posts/20200907-docker-bridge-net-sim/ -&lt;p&gt;如&lt;a href=&#34;https://xujiahua.github.io/posts/20200901-linux-namespace/&#34;&gt;前文&lt;/a&gt;介绍，Linux Network namespace 用于给进程创建一个新的网络栈，路由、防火墙规则、网络设备。&lt;code&gt;man ip-netns&lt;/code&gt;：&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;A network namespace is logically another copy of the network stack, with its own routes, firewall rules, and network devices.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;作为对 Network namespace 的实践，本文使用 ip/iptables 等命令模拟下 Docker bridge 网络，并会接触到 Network namespace，veth pair，Linux bridge，NAT 等概念。&lt;/p&gt;
+&lt;h2 id=&#34;实验&#34;&gt;实验&lt;/h2&gt;
+&lt;h3 id=&#34;使用-ip命令操作-network-namespace&#34;&gt;使用 &lt;code&gt;ip&lt;/code&gt;命令操作 Network namespace&lt;/h3&gt;
+&lt;p&gt;ip netns 子命令用于操作 Network namespace。使用 add 子命令，创建一个 Network namespace。&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;# ip netns add netns1
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;查看 netns1 的网络设备（network device）。使用 exec 子命令，后接 netns1 和要执行的命令。默认有一个 DOWN 状态的 lo 设备。&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;# ip netns exec netns1 ip addr
+1: lo: &amp;lt;LOOPBACK&amp;gt; mtu 65536 qdisc noop state DOWN group default qlen 1000
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;启动 lo 设备。&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;# ip netns exec netns1 ip link set dev lo up
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;ping 127.0.0.1。&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;# ip netns exec netns1 ip addr
+1: lo: &amp;lt;LOOPBACK,UP,LOWER_UP&amp;gt; mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+    inet 127.0.0.1/8 scope host lo
+       valid_lft forever preferred_lft forever
+    inet6 ::1/128 scope host
+       valid_lft forever preferred_lft forever
+
+# ip netns exec netns1 ping 127.0.0.1
+PING 127.0.0.1 (127.0.0.1) 56(84) bytes of data.
+64 bytes from 127.0.0.1: icmp_seq=1 ttl=64 time=0.013 ms
+&lt;/code&gt;&lt;/pre&gt;&lt;h3 id=&#34;通过-veth-pair两个-network-namespace-之间点对点网络&#34;&gt;通过 veth pair，两个 Network namespace 之间点对点网络&lt;/h3&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/linuxswitch-veth.png&#34; alt=&#34;veth pair&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://www.opencloudblog.com/?p=66&#34;&gt;https://www.opencloudblog.com/?p=66&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;veth（virtual ethernet） 是虚拟网络设备（没有硬件，软件实现），veth 设备总是成对创建，数据包从 veth pair 的一头进入，从 veth pair 的另一头出。&lt;code&gt;man veth&lt;/code&gt;：&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;The veth devices are virtual Ethernet devices.  They can act as tunnels between network namespaces to create a bridge to a physical network device in another namespace, but can also be used as standalone network devices.&lt;/p&gt;
+&lt;p&gt;veth devices are always created in interconnected pairs.&lt;/p&gt;
+&lt;p&gt;Packets transmitted on one device in the pair are immediately received on the other device.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;通信方式如下图：&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/virtual-device-veth-1.png&#34; alt=&#34;img&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://www.fir3net.com/Networking/Terms-and-Concepts/virtual-networking-devices-tun-tap-and-veth-pairs-explained.html&#34;&gt;https://www.fir3net.com/Networking/Terms-and-Concepts/virtual-networking-devices-tun-tap-and-veth-pairs-explained.html&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;创建 veth pair。默认存在于系统默认的 Network namespace。&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;# ip link add veth0 type veth peer name veth1
+# ip link show
+...
+35: veth1@veth0: &amp;lt;BROADCAST,MULTICAST,M-DOWN&amp;gt; mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 1000
+    link/ether a2:6d:54:66:9d:24 brd ff:ff:ff:ff:ff:ff
+36: veth0@veth1: &amp;lt;BROADCAST,MULTICAST,M-DOWN&amp;gt; mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 1000
+    link/ether 12:73:b7:aa:c6:10 brd ff:ff:ff:ff:ff:ff
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;可分配到其他 Network namespace。&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;# ip link set veth1 netns netns1
+# ip link show
+...
+36: veth0@if35: &amp;lt;BROADCAST,MULTICAST&amp;gt; mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 1000
+    link/ether 12:73:b7:aa:c6:10 brd ff:ff:ff:ff:ff:ff link-netnsid 1
+
+# ip netns exec netns1 ip link show
+1: lo: &amp;lt;LOOPBACK,UP,LOWER_UP&amp;gt; mtu 65536 qdisc noqueue state UNKNOWN mode DEFAULT group default qlen 1000
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+35: veth1@if36: &amp;lt;BROADCAST,MULTICAST&amp;gt; mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 1000
+    link/ether a2:6d:54:66:9d:24 brd ff:ff:ff:ff:ff:ff link-netnsid 0
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;启动网络设备分配 IP 地址和网关。就可以通过 IP 互 ping 了。&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;# ip link set veth0 up
+# ip address add 10.1.1.1/24 dev veth0
+# ip netns exec netns1 ip link set veth1 up
+# ip netns exec netns1 ip address add 10.1.1.2/24 dev veth1
+
+# ip addr
+...
+36: veth0@if35: &amp;lt;BROADCAST,MULTICAST,UP,LOWER_UP&amp;gt; mtu 1500 qdisc noqueue state UP group default qlen 1000
+    link/ether 12:73:b7:aa:c6:10 brd ff:ff:ff:ff:ff:ff link-netnsid 1
+    inet 10.1.1.1/24 scope global veth0
+       valid_lft forever preferred_lft forever
+    inet6 fe80::1073:b7ff:feaa:c610/64 scope link
+       valid_lft forever preferred_lft forever
+
+# ip netns exec netns1 ip addr
+...
+35: veth1@if36: &amp;lt;BROADCAST,MULTICAST,UP,LOWER_UP&amp;gt; mtu 1500 qdisc noqueue state UP group default qlen 1000
+    link/ether a2:6d:54:66:9d:24 brd ff:ff:ff:ff:ff:ff link-netnsid 0
+    inet 10.1.1.2/24 scope global veth1
+       valid_lft forever preferred_lft forever
+    inet6 fe80::a06d:54ff:fe66:9d24/64 scope link
+       valid_lft forever preferred_lft forever
+       
+# ping 10.1.1.2
+PING 10.1.1.2 (10.1.1.2) 56(84) bytes of data.
+64 bytes from 10.1.1.2: icmp_seq=1 ttl=64 time=0.042 ms
+...
+
+# ip netns exec netns1 ping 10.1.1.1
+PING 10.1.1.1 (10.1.1.1) 56(84) bytes of data.
+64 bytes from 10.1.1.1: icmp_seq=1 ttl=64 time=0.058 ms
+...
+&lt;/code&gt;&lt;/pre&gt;&lt;h3 id=&#34;通过-linux-bridge多个-network-namespace-之间局域网络&#34;&gt;通过 Linux bridge，多个 Network namespace 之间局域网络&lt;/h3&gt;
+&lt;p&gt;veth pair 只能处理两个 Network namespace 之间的通信。Linux bridge 用于解决多对多通信的问题，这是 Docker 单机的组网方式。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/bridge_network-9634835.jpg&#34; alt=&#34;docker bridge network&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://godleon.github.io/blog/Docker/docker-network-bridge/&#34;&gt;https://godleon.github.io/blog/Docker/docker-network-bridge/&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;我在 Linux 主机上运行两个 Docker 容器，果然在默认 Network namespace 下有两个 veth 虚拟网络设备，并与 docker0 这个 bridge 连接。&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;# ip link show | grep veth
+6: vethef984be@if5: &amp;lt;BROADCAST,MULTICAST,UP,LOWER_UP&amp;gt; mtu 1500 qdisc noqueue master docker0 state UP mode DEFAULT group default
+39: vetha6c50b1@if38: &amp;lt;BROADCAST,MULTICAST,UP,LOWER_UP&amp;gt; mtu 1500 qdisc noqueue master docker0 state UP mode DEFAULT group default
+
+# brctl show
+bridge name	bridge id		STP enabled	interfaces
+docker0		8000.0242bd4f236d	no		vetha6c50b1
+							vethef984be
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Linux bridge 相当于一个软件虚拟的网络交换机，工作在链路层。多个端口（如下图）连上多个网络设备，数据从任何端口（网络设备）进来，根据 MAC 地址决定数据的出口端口（网络设备）。效果上，交换机是把多个所属一个子网网段的物理网络设备组成一个局域网。Linux bridge，把多个所属一个子网网段的虚拟网络设备组成一个局域网。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;A bridge is a piece of software used to unite two or more network segments. A bridge behaves like a virtual network switch, working transparently (the other machines do not need to know about its existence). Any real devices (e.g. &lt;code&gt;eth0&lt;/code&gt;) and virtual devices (e.g. &lt;code&gt;tap0&lt;/code&gt;) can be connected to it.&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://wiki.archlinux.org/index.php/Network_bridge&#34;&gt;https://wiki.archlinux.org/index.php/Network_bridge&lt;/a&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;blockquote&gt;
+&lt;p&gt;A &lt;strong&gt;network switch&lt;/strong&gt; (also called &lt;strong&gt;switching hub&lt;/strong&gt;, &lt;strong&gt;bridging hub&lt;/strong&gt;, and by the &lt;a href=&#34;https://en.wikipedia.org/wiki/IEEE&#34;&gt;IEEE&lt;/a&gt; &lt;strong&gt;MAC bridge&lt;/strong&gt;)[&lt;a href=&#34;https://en.wikipedia.org/wiki/Network_switch#cite_note-1&#34;&gt;1]&lt;/a&gt; is &lt;a href=&#34;https://en.wikipedia.org/wiki/Networking_hardware&#34;&gt;networking hardware&lt;/a&gt; that connects devices on a &lt;a href=&#34;https://en.wikipedia.org/wiki/Computer_network&#34;&gt;computer network&lt;/a&gt; by using &lt;a href=&#34;https://en.wikipedia.org/wiki/Packet_switching&#34;&gt;packet switching&lt;/a&gt; to receive and forward data to the destination device.&lt;/p&gt;
+&lt;p&gt;A network switch is a multiport &lt;a href=&#34;https://en.wikipedia.org/wiki/Network_bridge&#34;&gt;network bridge&lt;/a&gt; that uses &lt;a href=&#34;https://en.wikipedia.org/wiki/MAC_address&#34;&gt;MAC addresses&lt;/a&gt; to forward data at the &lt;a href=&#34;https://en.wikipedia.org/wiki/Data_link_layer&#34;&gt;data link layer&lt;/a&gt; (layer 2) of the &lt;a href=&#34;https://en.wikipedia.org/wiki/OSI_model&#34;&gt;OSI model&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://en.wikipedia.org/wiki/Network_switch&#34;&gt;https://en.wikipedia.org/wiki/Network_switch&lt;/a&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/370px-2550T-PWR-Front.jpg&#34; alt=&#34;img&#34;&gt;&lt;/p&gt;
+&lt;p&gt;动手使用 Linux bridge 和 veth pair 组成一个容器网络。创建网络设备，2 x veth pair，1 x bridge。网络设备的连接状态：veth0 &amp;lt;-&amp;gt; veth1，veth2 &amp;lt;-&amp;gt; veth3，br0。&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;# ip link add veth0 type veth peer name veth1
+# ip link add veth2 type veth peer name veth3
+# ip link add br0 type bridge
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;veth0/veth2 连上 br0，veth0/veth2 沦为「网线」。 网络设备的连接状态：veth3 &amp;lt;-&amp;gt; veth2 &amp;lt;-&amp;gt; br0 &amp;lt;-&amp;gt; veth0 &amp;lt;-&amp;gt; veth1。&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;# ip link set veth0 master br0
+# ip link set veth2 master br0
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;创建两个容器网络，veth1/veth3 分别放入容器网络。&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;# ip netns add netns1
+# ip netns add netns2
+
+# ip link set veth1 netns netns1
+# ip link set veth3 netns netns2
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;启动网络设备。&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;# ip link set veth0 up
+# ip netns exec netns1 ip link set veth1 up
+# ip link set veth2 up
+# ip netns exec netns2 ip link set veth3 up
+# ip link set br0 up
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;分别为主机 br0，容器 veth1，容器 veth3 设置同一网段的 IP。&lt;/p&gt;
+&lt;p&gt;网络设备的连接状态：veth3（10.1.1.3） &amp;lt;-&amp;gt; veth2 &amp;lt;-&amp;gt; br0（10.1.1.1） &amp;lt;-&amp;gt; veth0 &amp;lt;-&amp;gt; veth1（10.1.1.2）。&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;# ip address add 10.1.1.1/24 dev br0
+# ip netns exec netns1 ip address add 10.1.1.2/24 dev veth1
+# ip netns exec netns2 ip address add 10.1.1.3/24 dev veth3
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;网络状态如下。&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;# ip netns exec netns2 ip addr
+...
+6: veth3@if7: &amp;lt;BROADCAST,MULTICAST,UP,LOWER_UP&amp;gt; mtu 1500 qdisc noqueue state UP group default qlen 1000
+    link/ether 62:d1:04:0b:cc:3d brd ff:ff:ff:ff:ff:ff link-netnsid 0
+    inet 10.1.1.3/24 scope global veth3
+       valid_lft forever preferred_lft forever
+    inet6 fe80::60d1:4ff:fe0b:cc3d/64 scope link
+       valid_lft forever preferred_lft forever
+
+# ip netns exec netns1 ip addr
+...
+3: veth1@if4: &amp;lt;BROADCAST,MULTICAST,UP,LOWER_UP&amp;gt; mtu 1500 qdisc noqueue state UP group default qlen 1000
+    link/ether 32:9c:7e:1b:38:ac brd ff:ff:ff:ff:ff:ff link-netnsid 0
+    inet 10.1.1.2/24 scope global veth1
+       valid_lft forever preferred_lft forever
+    inet6 fe80::309c:7eff:fe1b:38ac/64 scope link
+       valid_lft forever preferred_lft forever
+
+# ip addr
+...
+4: veth0@if3: &amp;lt;BROADCAST,MULTICAST,UP,LOWER_UP&amp;gt; mtu 1500 qdisc noqueue master br0 state UP group default qlen 1000
+    link/ether ee:5f:6c:c2:b2:e8 brd ff:ff:ff:ff:ff:ff link-netnsid 0
+    inet6 fe80::ec5f:6cff:fec2:b2e8/64 scope link
+       valid_lft forever preferred_lft forever
+5: br0: &amp;lt;BROADCAST,MULTICAST,UP,LOWER_UP&amp;gt; mtu 1500 qdisc noqueue state UP group default qlen 1000
+    link/ether 72:a4:b4:52:bf:6d brd ff:ff:ff:ff:ff:ff
+    inet 10.1.1.1/24 scope global br0
+       valid_lft forever preferred_lft forever
+    inet6 fe80::d0e2:fff:fe05:da37/64 scope link
+       valid_lft forever preferred_lft forever
+7: veth2@if6: &amp;lt;BROADCAST,MULTICAST,UP,LOWER_UP&amp;gt; mtu 1500 qdisc noqueue master br0 state UP group default qlen 1000
+    link/ether 72:a4:b4:52:bf:6d brd ff:ff:ff:ff:ff:ff link-netnsid 1
+    inet6 fe80::70a4:b4ff:fe52:bf6d/64 scope link
+       valid_lft forever preferred_lft forever
+
+# brctl show
+bridge name	bridge id		STP enabled	interfaces
+br0		8000.72a4b452bf6d	no		veth0
+							veth2
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;宿主机与两个容器能互 ping 成功。&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;# ping 10.1.1.2
+PING 10.1.1.2 (10.1.1.2) 56(84) bytes of data.
+64 bytes from 10.1.1.2: icmp_seq=1 ttl=64 time=0.033 ms
+
+# ping 10.1.1.3
+PING 10.1.1.3 (10.1.1.3) 56(84) bytes of data.
+64 bytes from 10.1.1.3: icmp_seq=1 ttl=64 time=0.046 ms
+
+# ip netns exec netns1 ping 10.1.1.1
+# ip netns exec netns1 ping 10.1.1.3
+
+# ip netns exec netns2 ping 10.1.1.1
+# ip netns exec netns2 ping 10.1.1.2
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;网络结构类似如下。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200909154031492.png&#34; alt=&#34;image-20200909154031492&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://wvi.cz/diyC/networking/#connecting-containers-using-bridge&#34;&gt;https://wvi.cz/diyC/networking/#connecting-containers-using-bridge&lt;/a&gt;&lt;/p&gt;
+&lt;h3 id=&#34;通过-nathttpsenwikipediaorgwikinetwork_address_translation-iptables-设置访问外部网络&#34;&gt;通过 &lt;a href=&#34;https://en.wikipedia.org/wiki/Network_address_translation&#34;&gt;NAT&lt;/a&gt; （iptables 设置）访问外部网络&lt;/h3&gt;
+&lt;p&gt;目前为止，容器局域网通了，但容器内还无法访问外部网络。&lt;/p&gt;
+&lt;p&gt;我们的宿主机现在是双网卡，一个 eth0 连接外部网络，一个 br0 连接容器网络。宿主机上开启 IP forwarding。&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;# sysctl -w net.ipv4.ip_forward=1
+&lt;/code&gt;&lt;/pre&gt;&lt;blockquote&gt;
+&lt;p&gt;IP forwarding should be enabled when you want the system to act as a router, that is transfer IP packets from one network to another.&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://serverfault.com/questions/248841/ip-forwarding-when-and-why-is-this-required#:~:text=IP%20forwarding%20also%20known%20as,from%20each%20other%20by%20routers&#34;&gt;https://serverfault.com/questions/248841/ip-forwarding-when-and-why-is-this-required#:~:text=IP%20forwarding%20also%20known%20as,from%20each%20other%20by%20routers&lt;/a&gt;.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;宿主机上使用 iptables (administration tool for IPv4/IPv6 packet filtering and NAT) 进行 10.1.1.0/24 网段地址的地址转换，因为 eth0 网络不认识 10.1.1.0/24 网段地址。&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;# iptables -t nat -A POSTROUTING -s 10.1.1.0/24 -j MASQUERADE
+&lt;/code&gt;&lt;/pre&gt;&lt;ol&gt;
+&lt;li&gt;-t nat：选择 nat 表，不指定，默认是 filter 表。&lt;/li&gt;
+&lt;li&gt;-A：Append 新增一条规则，-D Delete，-L List。&lt;/li&gt;
+&lt;li&gt;POSTROUTING：选择 POSTROUTING chain，POSTROUTING代表数据包出口阶段。&lt;/li&gt;
+&lt;li&gt;-s 10.1.1.0/24：匹配条件，source address 是网段 10.1.1.0/24 中的 IP。&lt;/li&gt;
+&lt;li&gt;-j MASQUERADE：匹配后执行命令，执行 MASQUERADE，也就是源 IP 地址伪装为出口网卡 IP。对于 nat 表来说，可选项有 DNAT/MASQUERADE/REDIRECT/SNAT。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;因为 Network namespace 隔离后，路由也是独立的。容器内添加默认网关，ping baidu.com，baidu 的 IP 不在当前网段，让默认网关处理，也就是 br0 的 IP 地址 10.1.1.1。&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;# ip netns exec netns1 ip route add default via 10.1.1.1 dev veth1
+# ip netns exec netns2 ip route add default via 10.1.1.1 dev veth3
+
+# ip netns exec netns1 ip route
+default via 10.1.1.1 dev veth1
+10.1.1.0/24 dev veth1 proto kernel scope link src 10.1.1.2
+
+# ip netns exec netns2 ip route
+default via 10.1.1.1 dev veth3
+10.1.1.0/24 dev veth3 proto kernel scope link src 10.1.1.3
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;容器内增加 DNS 地址解析。宿主机上默认是 127.0.0.53:53，而容器网络栈内没有这个服务。因为文件系统没有容器隔离，可以直接修改 /etc/resolv.conf，新增一个 114 DNS 地址。&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;# vim /etc/resolv.conf
+
+nameserver 114.114.114.114
+nameserver 127.0.0.53
+options edns0
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;外部网络可通。&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;# ip netns exec netns1 ping baidu.com
+PING baidu.com (220.181.38.148) 56(84) bytes of data.
+64 bytes from 220.181.38.148 (220.181.38.148): icmp_seq=1 ttl=61 time=29.4 ms
+&lt;/code&gt;&lt;/pre&gt;&lt;h2 id=&#34;参考&#34;&gt;参考&lt;/h2&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;code&gt;man ip-netns&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;man ip-link&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;man veth&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;man address&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;man iptables&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;man iptables-extensions&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;Network bridge &lt;a href=&#34;https://wiki.archlinux.org/index.php/Network_bridge&#34;&gt;https://wiki.archlinux.org/index.php/Network_bridge&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;探索 Docker bridge 的正确姿势，亲测有效！http://blog.daocloud.io/docker-bridge/&lt;/li&gt;
+&lt;li&gt;NAT - Network Address Translation &lt;a href=&#34;https://www.karlrupp.net/en/computer/nat_tutorial&#34;&gt;https://www.karlrupp.net/en/computer/nat_tutorial&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;How to Disable/Enable IP forwarding in Linux &lt;a href=&#34;https://linuxconfig.org/how-to-turn-on-off-ip-forwarding-in-linux&#34;&gt;https://linuxconfig.org/how-to-turn-on-off-ip-forwarding-in-linux&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+- https://xujiahua.github.io/posts/20200907-docker-bridge-net-sim/ - </description>
+        </item>
     
     
     
@@ -38,8 +297,8 @@
 &lt;p&gt;An &lt;strong&gt;ICMP tunnel&lt;/strong&gt;[&lt;a href=&#34;https://en.wikipedia.org/wiki/ICMP_tunnel#cite_note-ptunnel-1&#34;&gt;1]&lt;/a&gt; establishes a &lt;a href=&#34;https://en.wikipedia.org/wiki/Covert_channel&#34;&gt;covert&lt;/a&gt; connection between two remote computers (a client and proxy), using &lt;a href=&#34;https://en.wikipedia.org/wiki/Internet_Control_Message_Protocol&#34;&gt;ICMP&lt;/a&gt; echo requests and reply packets. An example of this technique is &lt;a href=&#34;https://en.wikipedia.org/wiki/Tunneling_protocol&#34;&gt;tunneling&lt;/a&gt; complete &lt;a href=&#34;https://en.wikipedia.org/wiki/Transmission_Control_Protocol&#34;&gt;TCP&lt;/a&gt; traffic over ping requests and replies.&lt;/p&gt;
 &lt;p&gt;&lt;a href=&#34;https://en.wikipedia.org/wiki/ICMP_tunnel&#34;&gt;https://en.wikipedia.org/wiki/ICMP_tunnel&lt;/a&gt;&lt;/p&gt;
 &lt;/blockquote&gt;
-&lt;h3 id=&#34;建立-icmp-tunnel&#34;&gt;建立 ICMP tunnel&lt;/h3&gt;
 &lt;p&gt;前人早已栽树，开源实现： &lt;a href=&#34;https://github.com/jamesbarlow/icmptunnel&#34;&gt;https://github.com/jamesbarlow/icmptunnel&lt;/a&gt;&lt;/p&gt;
+&lt;h3 id=&#34;建立-icmp-tunnel&#34;&gt;建立 ICMP tunnel&lt;/h3&gt;
 &lt;p&gt;Linux 上编译 icmptunnel：&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;$ git clone git@github.com:jamesbarlow/icmptunnel.git
 $ make
@@ -156,7 +415,36 @@ tun0: flags&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;4305&amp;lt;U
 &amp;lt;html&amp;gt;
 &amp;lt;meta http-equiv&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;refresh&amp;#34;&lt;/span&gt; content&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;0;url=http://www.baidu.com/&amp;#34;&lt;/span&gt;&amp;gt;
 &amp;lt;/html&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;总结&#34;&gt;总结&lt;/h2&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;原理&#34;&gt;原理&lt;/h3&gt;
+&lt;p&gt;流程图借用 &lt;a href=&#34;https://github.com/DhavalKapil/icmptunnel&#34;&gt;https://github.com/DhavalKapil/icmptunnel&lt;/a&gt;&lt;/p&gt;
+&lt;h4 id=&#34;overall-architecture&#34;&gt;Overall Architecture&lt;/h4&gt;
+&lt;p&gt;示例中貌似 Client/Proxy Server分别是通过 tun0 网卡上的IP 通信。&lt;/p&gt;
+&lt;p&gt;Client 与 Proxy Server 之间通过 ICMP 协议通信，TCP/UDP over ICMP。Client 发送 Echo Request，Proxy Server 发送 Echo Reply。&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;+--------------+                         +------------+
+|              |       ICMP traffic      |            |       IP traffic
+|    Client    |  -------------------&amp;gt;   |   Proxy    |   ------------------&amp;gt;
+|              |  &amp;lt;-------------------   |   Server   |   &amp;lt;------------------
+|              |    through restricted   |            |     proper internet
++--------------+         internet        +------------+
+&lt;/code&gt;&lt;/pre&gt;&lt;h4 id=&#34;client-architecture&#34;&gt;Client Architecture&lt;/h4&gt;
+&lt;pre&gt;&lt;code&gt;+--------------+                                    +------------+
+|              |  IP traffic  +------+  IP traffic  |            |   ICMP traffic
+|     User     |  ---------&amp;gt;  | tun0 |  ---------&amp;gt;  | icmptunnel | ---------------&amp;gt;
+| Applications |  &amp;lt;---------  +------+  &amp;lt;---------  |  program   | &amp;lt;---------------
+|              |        (Virtual Interface)         |            |    restricted 
++--------------+                                    +------------+     internet
+&lt;/code&gt;&lt;/pre&gt;&lt;h4 id=&#34;proxy-server-architecture&#34;&gt;Proxy Server Architecture&lt;/h4&gt;
+&lt;pre&gt;&lt;code&gt;                 +------------+
+  ICMP traffic   |            |  IP traffic     +------+       NAT/Masquerading
+---------------&amp;gt; | icmptunnel | ------------&amp;gt;   | tun0 |    ---------------------&amp;gt; 
+&amp;lt;--------------- |  program   | &amp;lt;------------   +------+    &amp;lt;---------------------
+   restricted    |            |           (Virtual Interface)   proper internet
+    internet     +------------+
+&lt;/code&gt;&lt;/pre&gt;&lt;h4 id=&#34;实现注意事项&#34;&gt;实现注意事项&lt;/h4&gt;
+&lt;p&gt;The client will perform all its communications using ICMP echo request (ping) packets (type 8), whereas the proxy will use echo reply packets (type 0)&lt;/p&gt;
+&lt;p&gt;Both the client and proxy maintain their own sequence number, and also a number indicating the last sequence number acknowledged by the remote peer.&lt;/p&gt;
+&lt;h2 id=&#34;总结&#34;&gt;总结&lt;/h2&gt;
+&lt;p&gt;除了瘦终端这个场景，如果你有在公共场所，比如酒店，用过需要网页注册登录才能使用的 WIFI，在不登录的情况下，你的主机只被分配了 IP，而没有浏览网页的能力。icmptunnel 这个工具就能派上用处了。&lt;/p&gt;
 &lt;p&gt;道高一尺魔高一丈，要是被网管封禁了 ICMP 流量或是只允许定长的 ICMP 包，就 GG 了。&lt;/p&gt;
 &lt;blockquote&gt;
 &lt;p&gt;One way to prevent this type of tunneling is to block ICMP traffic, at the cost of losing some network functionality that people usually take for granted (e.g. it might take tens of seconds to determine that a peer is offline, rather than almost instantaneously). Another method for mitigating this type of attack is to only allow fixed sized ICMP packets through firewalls, which can impede or eliminate this type of behavior.[&lt;a href=&#34;https://en.wikipedia.org/wiki/ICMP_tunnel#cite_note-3&#34;&gt;3]&lt;/a&gt;&lt;/p&gt;
@@ -166,8 +454,10 @@ tun0: flags&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;4305&amp;lt;U
 &lt;h2 id=&#34;参考&#34;&gt;参考&lt;/h2&gt;
 &lt;ol&gt;
 &lt;li&gt;ICMP tunnel &lt;a href=&#34;https://en.wikipedia.org/wiki/ICMP_tunnel&#34;&gt;https://en.wikipedia.org/wiki/ICMP_tunnel&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;icmptunnel: Pivot with Ping &lt;a href=&#34;https://labs.f-secure.com/tools/pivot-with-ping/&#34;&gt;https://labs.f-secure.com/tools/pivot-with-ping/&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;内网渗透之ICMP隐藏隧道 &lt;a href=&#34;https://xz.aliyun.com/t/7875#toc-4&#34;&gt;https://xz.aliyun.com/t/7875#toc-4&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;内网渗透之内网穿透 &lt;a href=&#34;https://xz.aliyun.com/t/7701&#34;&gt;https://xz.aliyun.com/t/7701&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;Ping Tunnel &lt;a href=&#34;http://www.cs.uit.no/~daniels/PingTunnel/&#34;&gt;http://www.cs.uit.no/~daniels/PingTunnel/&lt;/a&gt;&lt;/li&gt;
 &lt;/ol&gt;
 - https://xujiahua.github.io/posts/20200903-fuck-thin-client/ - </description>
         </item>
@@ -193,8 +483,8 @@ tun0: flags&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;4305&amp;lt;U
 
        Namespace   Constant          Isolates
        Cgroup      CLONE_NEWCGROUP   Cgroup root directory
-       IPC         CLONE_NEWIPC      System V IPC, POSIX message queues 容器有自己的网络栈，IP，就像一个小主机。
-       Network     CLONE_NEWNET      Network devices, stacks, ports, etc.
+       IPC         CLONE_NEWIPC      System V IPC, POSIX message queues
+       Network     CLONE_NEWNET      Network devices, stacks, ports, etc. 容器有自己的网络栈，IP，就像一个小主机。
        Mount       CLONE_NEWNS       Mount points 因为是第一个实现的namespace，所以起名草率了。
        PID         CLONE_NEWPID      Process IDs
        User        CLONE_NEWUSER     User and group IDs
@@ -1441,23 +1731,6 @@ python3 -m http.server &lt;span style=&#34;color:#ae81ff&#34;&gt;8088&lt;/span&g
 &lt;p&gt;&lt;img src=&#34;../../images/image-20200713163849195.png&#34; alt=&#34;image-20200713163849195&#34;&gt;&lt;/p&gt;
 &lt;p&gt;重启即可生效。&lt;/p&gt;
 - https://xujiahua.github.io/posts/20200713-impala-timezone/ - </description>
-        </item>
-    
-    
-    
-        <item>
-        <title>Metabase Impala Driver 0710更新日志</title>
-        <link>https://xujiahua.github.io/posts/20200710-metabase-impala-driver/</link>
-        <pubDate>Fri, 10 Jul 2020 10:35:08 +0800</pubDate>
-        
-        <guid>https://xujiahua.github.io/posts/20200710-metabase-impala-driver/</guid>
-        <description>许嘉华的笔记 https://xujiahua.github.io/posts/20200710-metabase-impala-driver/ -&lt;p&gt;基于 Metabase 0.35.4 版本和Cloudera的Impala JDBC驱动，重构了一份独立的 &lt;a href=&#34;https://github.com/XUJiahua/metabase-impala-driver&#34;&gt;Metabase Impala Driver&lt;/a&gt;。&lt;/p&gt;
-&lt;p&gt;整体思路参考 &lt;a href=&#34;https://github.com/metabase/metabase/wiki/Writing-a-Driver&#34;&gt;Writing A Driver&lt;/a&gt; ，更多时间是参考其他驱动的代码和根据实际用例调试。还有不少待完善的地方：&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;单元测试缺乏。&lt;/li&gt;
-&lt;li&gt;去除没有必要的方法（首先得理解方法的含义）。&lt;/li&gt;
-&lt;/ol&gt;
-- https://xujiahua.github.io/posts/20200710-metabase-impala-driver/ - </description>
         </item>
     
     

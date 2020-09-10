@@ -5,9 +5,104 @@
     <description>Recent content on 许嘉华的笔记</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Thu, 03 Sep 2020 17:02:18 +0800</lastBuildDate>
+    <lastBuildDate>Mon, 07 Sep 2020 11:35:39 +0800</lastBuildDate>
     
         <atom:link href="https://xujiahua.github.io/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    
+        <item>
+        <title>NUC8i5BEH Hackintosh</title>
+        <link>https://xujiahua.github.io/posts/20200504-hackintosh/</link>
+        <pubDate>Mon, 04 May 2020 13:11:09 +0800</pubDate>
+        
+        <guid>https://xujiahua.github.io/posts/20200504-hackintosh/</guid>
+        <description>许嘉华的笔记 https://xujiahua.github.io/posts/20200504-hackintosh/ -&lt;p&gt;买了个 NUC8i5BEH 当玩具，不怎么折腾的方式体验下黑苹果。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200504145011481.png&#34; alt=&#34;image-20200504145011481&#34;&gt;&lt;/p&gt;
+&lt;h2 id=&#34;效果&#34;&gt;效果&lt;/h2&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200504132303349.png&#34; alt=&#34;image-20200504132303349&#34;&gt;&lt;/p&gt;
+&lt;p&gt;与我的 2018 MBP 13.3 做对比。处理器、显卡是一样的。用很少的钱提升内存，16GB 2133 DDR3 -&amp;gt; 32GB 2400 DDR4。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200504132417310.png&#34; alt=&#34;image-20200504132417310&#34;&gt;&lt;/p&gt;
+&lt;h3 id=&#34;成本&#34;&gt;成本&lt;/h3&gt;
+&lt;p&gt;大概 ￥4000。2018年买的MacBook近￥15000。&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;NUC8i5BEH ￥2379&lt;/li&gt;
+&lt;li&gt;DDR4 2400 16 GB X 2 笔记本内存条 ￥978&lt;/li&gt;
+&lt;li&gt;500GB M.2 SSD 大约￥600（不在这次消费计划里，从现有机器抠出来的）&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3 id=&#34;不足&#34;&gt;不足&lt;/h3&gt;
+&lt;p&gt;WiFi、蓝牙，以及之上的AirDrop等功能缺失。&lt;/p&gt;
+&lt;p&gt;网上有解决方案，主要是网卡使用Macbook的配件替代。感觉配件也不便宜，应该是炒热了。用网线，不折腾了。&lt;/p&gt;
+&lt;h2 id=&#34;why-nuc8i5beh&#34;&gt;WHY NUC8i5BEH&lt;/h2&gt;
+&lt;p&gt;豆子峡谷 NUC8i5BEH 机箱真的小！性能也不差。可以说，是最具性价比的了。&lt;/p&gt;
+&lt;p&gt;能做这么小，机箱与电源分离的设计功不可没。- -!&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/v2-80ec6cb9eb82fa2c5e0e16cbda516f41_720w.jpg&#34; alt=&#34;v2-80ec6cb9eb82fa2c5e0e16cbda516f41_720w&#34;&gt;&lt;/p&gt;
+&lt;h3 id=&#34;nuc8i5beh-vs-nuc8i5bek&#34;&gt;NUC8i5BEH vs NUC8i5BEK&lt;/h3&gt;
+&lt;p&gt;BEH 胖版，BEK 瘦版。瘦版差一个 2.5 寸盘位。硬盘只有一个M.2插槽。网卡魔改的方案使用M.2插槽，这样BEK就不能放硬盘了。BEH 虽然胖一点，还是很mini。&lt;/p&gt;
+&lt;h3 id=&#34;nuc8i5beh-vs-nuc8i7beh&#34;&gt;NUC8i5BEH vs NUC8i7BEH&lt;/h3&gt;
+&lt;p&gt;区别在CPU。差大约￥700。&lt;/p&gt;
+&lt;h3 id=&#34;nuc8i5beh-vs-nuc8i7hvk&#34;&gt;NUC8i5BEH vs NUC8i7HVK&lt;/h3&gt;
+&lt;p&gt;冥王峡谷 NUC8i7HVK 拥有 AMD 显卡。不玩电脑游戏，AMD卡又不方便做深度学习，另外小机身大功耗散热问题一定存在，就不考虑了。价格￥6000 起。那就非常没有必要了。&lt;/p&gt;
+&lt;h2 id=&#34;安装教程&#34;&gt;安装教程&lt;/h2&gt;
+&lt;h3 id=&#34;硬件安装&#34;&gt;硬件安装&lt;/h3&gt;
+&lt;p&gt;插内存条和硬盘，看说明书就行。&lt;/p&gt;
+&lt;h3 id=&#34;macos-安装&#34;&gt;MacOS 安装&lt;/h3&gt;
+&lt;p&gt;MacOS是认硬件的，所以直接按照Apple官方制作MacOS启动盘的方式肯定不行。目前主要是用 Clover/OpenCore 等 BootLoader 骗过系统。安装过程中有两个阶段：U盘启动，硬盘启动，为了能够顺利进入系统，都要对它们的EFI分区进行修改。&lt;/p&gt;
+&lt;p&gt;根据这个图文教程（NUC8i5BEH 黑果安装教程 &lt;a href=&#34;https://www.jianshu.com/p/ebd6054d4799&#34;&gt;https://www.jianshu.com/p/ebd6054d4799&lt;/a&gt; ），完成了 Mojave 的安装。图文教程对新人来说比较友好，对细节也有详细描述。（因为使用高手们封装好的镜像，U盘 EFI 分区在这个教程里就忽略了。）&lt;/p&gt;
+&lt;p&gt;这个教程大差不差，但也是费了很长时间。&lt;/p&gt;
+&lt;h4 id=&#34;意外情况&#34;&gt;意外情况&lt;/h4&gt;
+&lt;ol&gt;
+&lt;li&gt;主要问题，引导很慢，一直是白苹果进度条的画面。睡了一觉起来还是这个状态，真的很气啊。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;重启重试多几次。慢慢发现，要是2~3分钟进度条没走完，大概率是卡住了。多重启几次，总会有转机的。不明白到底发生了什么，所以这步操作运气成分很大。&lt;/p&gt;
+&lt;ol start=&#34;2&#34;&gt;
+&lt;li&gt;引导过程中遇到白苹果变成了禁止标志。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;重启重试即可。&lt;/p&gt;
+&lt;ol start=&#34;3&#34;&gt;
+&lt;li&gt;Mojave的镜像文件，内置的证书过期了。报错信息应用程序副本已损坏。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;参考 &lt;a href=&#34;https://blog.csdn.net/qq_41855420/article/details/102762647&#34;&gt;https://blog.csdn.net/qq_41855420/article/details/102762647&lt;/a&gt;&lt;/p&gt;
+&lt;ol start=&#34;4&#34;&gt;
+&lt;li&gt;另外注意，MacOS 选择文件系统 APFS（教程中用的默认选项），适合SSD。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h4 id=&#34;bios-配置&#34;&gt;BIOS 配置&lt;/h4&gt;
+&lt;p&gt;&lt;em&gt;仅作记录&lt;/em&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Boot -&amp;gt; Boot Configuration, disable &amp;ldquo;&lt;strong&gt;Network Boot&lt;/strong&gt;&amp;rdquo;&lt;/li&gt;
+&lt;li&gt;Power -&amp;gt; Secondary Power Settings, &amp;ldquo;&lt;strong&gt;Wake on LAN from S4/S5&lt;/strong&gt;&amp;rdquo;, set to &amp;ldquo;&lt;strong&gt;Stay Off&lt;/strong&gt;&amp;rdquo;&lt;/li&gt;
+&lt;li&gt;Boot -&amp;gt; Secure Boot, disable &amp;ldquo;&lt;strong&gt;Secure Boot&lt;/strong&gt;&amp;rdquo;&lt;/li&gt;
+&lt;li&gt;Devices -&amp;gt; OnBoard Devices, disable &amp;ldquo;&lt;strong&gt;Bluetooth&lt;/strong&gt;&amp;rdquo; (macOS is not compatible well with Intel Wi-Fi/Bluetooth)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Suggested:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Boot -&amp;gt; Boot Priority -&amp;gt; Legacy Boot Priority, enable &amp;ldquo;&lt;strong&gt;Legacy Boot&lt;/strong&gt;&amp;rdquo;.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;参考 &lt;a href=&#34;https://github.com/sarkrui/NUC8i7BEH-Hackintosh-Build&#34;&gt;https://github.com/sarkrui/NUC8i7BEH-Hackintosh-Build&lt;/a&gt;&lt;/p&gt;
+&lt;h4 id=&#34;apple-id--icloud--app-store&#34;&gt;Apple ID / iCloud / App Store&lt;/h4&gt;
+&lt;p&gt;不考虑 iMessage / FaceTime，没使用场景。&lt;/p&gt;
+&lt;p&gt;按照网上说法，只要生成随机三码（工具按照规则生成），使用 iCloud / App Store 没什么问题。&lt;/p&gt;
+&lt;p&gt;怎么生成随机三码，参考：NUC8（豆子峡谷）在线安装macOS，这才是OpenCore正确的打开方式 &lt;a href=&#34;https://www.jianshu.com/p/78510cfa4a64&#34;&gt;https://www.jianshu.com/p/78510cfa4a64&lt;/a&gt; （最后一节）&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200513100122246.png&#34; alt=&#34;image-20200513100122246&#34;&gt;&lt;/p&gt;
+&lt;p&gt;关于什么是三码、AppleID的安全性，参考：NUC8（豆子峡谷）黑苹果新手指南Q&amp;amp;A &lt;a href=&#34;https://www.jianshu.com/p/b298da6afef3&#34;&gt;https://www.jianshu.com/p/b298da6afef3&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200513100850310.png&#34; alt=&#34;image-20200513100850310&#34;&gt;&lt;/p&gt;
+&lt;h4 id=&#34;其他教程&#34;&gt;其他教程&lt;/h4&gt;
+&lt;ol&gt;
+&lt;li&gt;[GUIDE] Building a Mac mini beast with NUC8i7BEH &lt;a href=&#34;https://github.com/sarkrui/NUC8i7BEH-Hackintosh-Build&#34;&gt;https://github.com/sarkrui/NUC8i7BEH-Hackintosh-Build&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;包含如何处理WiFi、蓝牙模块。&lt;/p&gt;
+&lt;ol start=&#34;2&#34;&gt;
+&lt;li&gt;NUC8I5BEH Hackintosh &lt;a href=&#34;https://github.com/csrutil/NUC8I5BEH&#34;&gt;https://github.com/csrutil/NUC8I5BEH&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;配置文件可以直接使用。不算是教程。描述得比较简略。不懂的还是不懂。&lt;/p&gt;
+&lt;h2 id=&#34;使用后续&#34;&gt;使用后续&lt;/h2&gt;
+&lt;h3 id=&#34;2020-05-29&#34;&gt;2020-05-29&lt;/h3&gt;
+&lt;p&gt;NUC 差不多用了一个月，体验很不错，超预期。我是放在办公室使用的，下班锁屏，上班解锁，电脑工作状态一点没改变，上班来就进入状态了。因为价格便宜，猛跑程序，电脑呼呼响，情绪也很稳定。&lt;/p&gt;
+&lt;p&gt;一开始还担心不稳定，还带着 Macbook 备用，发现是多余的担心。&lt;/p&gt;
+&lt;p&gt;一个小问题：连三星显示器偶尔出现雪花屏，试验下来，是 HDMI 接口容易雪花。TYPEC 接口没这个问题。&lt;/p&gt;
+&lt;p&gt;workaround：关闭显示器电源，拔掉HDMI线，重新打开显示器电源，插入HDMI线。NUC HDMI 接口是过热了么？&lt;/p&gt;
+- https://xujiahua.github.io/posts/20200504-hackintosh/ - </description>
+        </item>
     
     
     
@@ -970,174 +1065,6 @@ root@ubuntu-parallel:~# docker logs journald_logging_driver
 &lt;/ol&gt;
 &lt;p&gt;应用日志如果是写到文件的，需要考虑通过数据卷，挂载等将日志与容器分离。采集挂载目录上的日志文件，以前怎么收集，现在还是怎么收集。还是建议写标准输出，这是目前的最佳实践。&lt;/p&gt;
 - https://xujiahua.github.io/posts/20200403-docker-logging/ - </description>
-        </item>
-    
-    
-    
-        <item>
-        <title>Fluentd实战</title>
-        <link>https://xujiahua.github.io/posts/20200402-use-fluentd/</link>
-        <pubDate>Thu, 02 Apr 2020 16:58:23 +0800</pubDate>
-        
-        <guid>https://xujiahua.github.io/posts/20200402-use-fluentd/</guid>
-        <description>许嘉华的笔记 https://xujiahua.github.io/posts/20200402-use-fluentd/ -&lt;p&gt;以收集Docker容器日志的例子，介绍下Fluentd的用法。不考虑logstash，太占服务器资源了。&lt;/p&gt;
-&lt;h2 id=&#34;安装-fluentd&#34;&gt;安装 Fluentd&lt;/h2&gt;
-&lt;p&gt;Ubuntu 18.04上的安装命令（https://docs.fluentd.org/installation/install-by-deb）：&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;root@ubuntu-parallel:~# curl -L https://toolbelt.treasuredata.com/sh/install-ubuntu-bionic-td-agent3.sh | sh
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;以Daemon方式启动：&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;root@ubuntu-parallel:~# systemctl start td-agent.service
-root@ubuntu-parallel:~# systemctl status td-agent.service
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;fluentd的安装目录是在/opt/td-agent/下的。为演示方便，我们可以直接使用 &lt;code&gt;/opt/td-agent/embedded/bin/fluentd&lt;/code&gt;这个程序。&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;root@ubuntu-parallel:~# ps -ef | grep fluentd
-td-agent 30596     1  0 17:10 ?        00:00:00 /opt/td-agent/embedded/bin/ruby /opt/td-agent/embedded/bin/fluentd --log /var/log/td-agent/td-agent.log --daemon /var/run/td-agent/td-agent.pid
-td-agent 30602 30596  9 17:10 ?        00:00:00 /opt/td-agent/embedded/bin/ruby -Eascii-8bit:ascii-8bit /opt/td-agent/embedded/bin/fluentd --log /var/log/td-agent/td-agent.log --daemon /var/run/td-agent/td-agent.pid --under-supervisor
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;其他系统的安装参考：https://docs.fluentd.org/installation&lt;/p&gt;
-&lt;h3 id=&#34;小试牛刀&#34;&gt;小试牛刀&lt;/h3&gt;
-&lt;p&gt;配置文件 test.conf，启动一个HTTP服务，并把接收到的日志，打印到标准输出。&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;&amp;lt;source&amp;gt;
-  @type http
-  port 9880
-&amp;lt;/source&amp;gt;
-
-&amp;lt;match *.*&amp;gt;
-  @type stdout
-&amp;lt;/match&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;启动fluentd进程。&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;root@ubuntu-parallel:~# /opt/td-agent/embedded/bin/fluentd -c test.conf
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;通过HTTP服务提交日志。可以看到fluentd终端打印出了输入的日志。&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;root@ubuntu-parallel:~# curl -X POST -d &#39;json={&amp;quot;event&amp;quot;:&amp;quot;data&amp;quot;}&#39; http://localhost:9880/my.tag
-&lt;/code&gt;&lt;/pre&gt;&lt;h2 id=&#34;实战收集linux主机上的docker容器日志&#34;&gt;实战：收集Linux主机上的Docker容器日志&lt;/h2&gt;
-&lt;p&gt;Docker官方有fluentd的Logging Driver。不足之处：&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;因为没有了本地日志文件，docker logs 不管用了。&lt;/li&gt;
-&lt;li&gt;需要额外配置，或是在daemon.json里设定，或是docker run时候设定。新增机器或是运行容器，很容易忘记。&lt;/li&gt;
-&lt;li&gt;如果远程数据存储down了，会不会丢日志。&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;考虑到这些问题，本实验以收集本地日志的方式使用fluentd。&lt;/p&gt;
-&lt;h3 id=&#34;实验前提条件&#34;&gt;实验前提条件&lt;/h3&gt;
-&lt;ol&gt;
-&lt;li&gt;Linux系统&lt;/li&gt;
-&lt;li&gt;Docker容器使用默认的Logging Driver，也就是json-file&lt;/li&gt;
-&lt;li&gt;容器日志目录（也包含其他配置文件的）&lt;code&gt;/var/lib/docker/containers&lt;/code&gt;&lt;/li&gt;
-&lt;/ol&gt;
-&lt;h3 id=&#34;配置文件输出到stdout&#34;&gt;配置文件（输出到stdout）&lt;/h3&gt;
-&lt;p&gt;定义一个配置文件 docker.container.log.conf&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;&amp;lt;source&amp;gt;
-  @type tail
-  path /var/lib/docker/containers/*/*-json.log
-  pos_file /var/log/docker_container.log.pos
-  tag docker.*
-  refresh_interval 10
-  read_from_head true
-  &amp;lt;parse&amp;gt;
-    @type json
-  &amp;lt;/parse&amp;gt;
-&amp;lt;/source&amp;gt;
-
-&amp;lt;filter docker.var.lib.docker.containers.*.*.log&amp;gt;
-  @type parser
-  key_name log
-  remove_key_name_field true
-  &amp;lt;parse&amp;gt;
-    @type json
-  &amp;lt;/parse&amp;gt;
-&amp;lt;/filter&amp;gt;
-
-&amp;lt;filter docker.var.lib.docker.containers.*.*.log&amp;gt;
-  @type record_transformer
-  &amp;lt;record&amp;gt;
-    container_id ${tag_parts[5]}
-    hostname &amp;quot;#{Socket.gethostname}&amp;quot;
-  &amp;lt;/record&amp;gt;
-&amp;lt;/filter&amp;gt;
-
-&amp;lt;match docker.var.lib.docker.containers.*.*.log&amp;gt;
-  @type stdout
-&amp;lt;/match&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;h4 id=&#34;简要介绍&#34;&gt;简要介绍&lt;/h4&gt;
-&lt;p&gt;一个典型的日志收集过程分三部分：&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;定义数据源，也就是source部分&lt;/li&gt;
-&lt;li&gt;每条数据可以增删修改字段，也就是filter部分，filter可以是0个或是多个，按顺序处理。&lt;/li&gt;
-&lt;li&gt;数据输出，也就是match部分&lt;/li&gt;
-&lt;/ol&gt;
-&lt;h4 id=&#34;source&#34;&gt;source&lt;/h4&gt;
-&lt;ol&gt;
-&lt;li&gt;@type tail 使用tail插件 &lt;a href=&#34;https://docs.fluentd.org/input/tail&#34;&gt;https://docs.fluentd.org/input/tail&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;path 定义路径，正则匹配&lt;/li&gt;
-&lt;li&gt;pos_file 存放读文件的offset&lt;/li&gt;
-&lt;li&gt;需要定义tag，filter、match使用tag进行匹配。&lt;/li&gt;
-&lt;li&gt;tag docker.*，*会被实际的文件名给替代&lt;/li&gt;
-&lt;li&gt;refresh_interval 设置多久刷新监听的文件列表，默认60秒&lt;/li&gt;
-&lt;li&gt;read_from_head 默认false，也就是，没有pos存在的话，从文件尾读取。设置为true，解决新增文件而文件又没被fluentd及时监听起来的问题。&lt;/li&gt;
-&lt;li&gt;parse 使用json解析，因为docker的logging driver用的json-file&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;更多source插件见：https://docs.fluentd.org/input&lt;/p&gt;
-&lt;h4 id=&#34;filter&#34;&gt;filter&lt;/h4&gt;
-&lt;ol&gt;
-&lt;li&gt;指定tag pattern&lt;/li&gt;
-&lt;li&gt;@type parser 使用parser插件 &lt;a href=&#34;https://docs.fluentd.org/filter/parser&#34;&gt;https://docs.fluentd.org/filter/parser&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;key_name 需要parse的字段名&lt;/li&gt;
-&lt;li&gt;remove_key_name_field 因为我们只需要log字段的json内容，log字段本身不需要保留&lt;/li&gt;
-&lt;li&gt;parse 解析为json，因为我们的应用日志是json格式输出的&lt;/li&gt;
-&lt;li&gt;@type record_transformer 使用record_transformer插件 &lt;a href=&#34;https://docs.fluentd.org/filter/record_transformer&#34;&gt;https://docs.fluentd.org/filter/record_transformer&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;record 新增字段&lt;/li&gt;
-&lt;li&gt;${tag_parts[5]} 预定义的变量，tag_parts是tag字符串被&amp;rdquo;.&amp;ldquo;切分后的数组，第6个代表的是container_id&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;&amp;quot;#{Socket.gethostname}&amp;quot;&lt;/code&gt; ruby内的变量&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;更多filter插件见：https://docs.fluentd.org/filter&lt;/p&gt;
-&lt;h4 id=&#34;match&#34;&gt;match&lt;/h4&gt;
-&lt;ol&gt;
-&lt;li&gt;指定tag pattern&lt;/li&gt;
-&lt;li&gt;@type stdout 使用stdout插件，用于演示 &lt;a href=&#34;https://docs.fluentd.org/output/stdout&#34;&gt;https://docs.fluentd.org/output/stdout&lt;/a&gt;&lt;/li&gt;
-&lt;/ol&gt;
-&lt;h3 id=&#34;启动fluentd&#34;&gt;启动fluentd&lt;/h3&gt;
-&lt;p&gt;注意查看日志。&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;root@ubuntu-parallel:~# /opt/td-agent/embedded/bin/fluentd -c docker.container.log.conf
-&lt;/code&gt;&lt;/pre&gt;&lt;h3 id=&#34;生成日志&#34;&gt;生成日志&lt;/h3&gt;
-&lt;p&gt;JSON格式输出每一行日志。&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;root@ubuntu-parallel:~# docker run -it busybox echo &#39;{&amp;quot;user&amp;quot;:1,&amp;quot;num&amp;quot;:2}&#39;
-{&amp;quot;user&amp;quot;:1,&amp;quot;num&amp;quot;:2}
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;观察 &lt;code&gt;/var/lib/docker/containers/*/*-json.log&lt;/code&gt;日志内容：&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;{&amp;quot;log&amp;quot;:&amp;quot;{\&amp;quot;user\&amp;quot;:1,\&amp;quot;num\&amp;quot;:2}\r\n&amp;quot;,&amp;quot;stream&amp;quot;:&amp;quot;stdout&amp;quot;,&amp;quot;time&amp;quot;:&amp;quot;2020-04-02T12:25:50.877037148Z&amp;quot;}
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;fluentd stdout输出：&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;{&amp;quot;user&amp;quot;:1,&amp;quot;num&amp;quot;:2,&amp;quot;container_id&amp;quot;:&amp;quot;e4fb94ee2d067450eeaf15837ed1497e2b7eb2f6754ba4eec1792ee37e31f12f&amp;quot;,&amp;quot;hostname&amp;quot;:&amp;quot;ubuntu-parallel&amp;quot;}
-&lt;/code&gt;&lt;/pre&gt;&lt;h3 id=&#34;输出从stdout改为elasticsearch&#34;&gt;输出从stdout改为elasticsearch&lt;/h3&gt;
-&lt;h4 id=&#34;启动es&#34;&gt;启动ES&lt;/h4&gt;
-&lt;p&gt;参考 &lt;a href=&#34;https://www.elastic.co/guide/en/elastic-stack-get-started/current/get-started-docker.html&#34;&gt;https://www.elastic.co/guide/en/elastic-stack-get-started/current/get-started-docker.html&lt;/a&gt;，使用docker-compose启动es和kibana服务。&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;root@ubuntu-parallel:~# docker-compose up
-&lt;/code&gt;&lt;/pre&gt;&lt;h4 id=&#34;修改match&#34;&gt;修改match&lt;/h4&gt;
-&lt;pre&gt;&lt;code&gt;&amp;lt;match docker.var.lib.docker.containers.*.*.log&amp;gt;
-  @type elasticsearch
-  host localhost
-  port 9200
-  logstash_format true
-&amp;lt;/match&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;参考：https://docs.fluentd.org/output/elasticsearch&lt;/p&gt;
-&lt;h4 id=&#34;启动fluentd-1&#34;&gt;启动fluentd&lt;/h4&gt;
-&lt;pre&gt;&lt;code&gt;root@ubuntu-parallel:~# /opt/td-agent/embedded/bin/fluentd -c docker.container.log.es.conf
-&lt;/code&gt;&lt;/pre&gt;&lt;h4 id=&#34;kibana日志分析&#34;&gt;kibana日志分析&lt;/h4&gt;
-&lt;p&gt;因为ES的日志已经是JSON格式输出的，所以也不需要额外造数据了。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image-20200403001746670.png&#34; alt=&#34;image-20200403001746670&#34;&gt;&lt;/p&gt;
-&lt;h3 id=&#34;容器上下文信息&#34;&gt;容器上下文信息&lt;/h3&gt;
-&lt;p&gt;可以考虑这个filter插件 &lt;a href=&#34;https://github.com/zsoltf/fluent-plugin-docker_metadata_elastic_filter&#34;&gt;https://github.com/zsoltf/fluent-plugin-docker_metadata_elastic_filter&lt;/a&gt;&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;&amp;lt;filter docker.var.lib.docker.containers.*.*.log&amp;gt;
-  type docker_metadata_elastic
-&amp;lt;/filter&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;新增 docker  结构体，包含镜像名称。&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;{
-  &amp;quot;log&amp;quot;: &amp;quot;2015/05/05 19:54:41 \n&amp;quot;,
-  &amp;quot;stream&amp;quot;: &amp;quot;stderr&amp;quot;,
-  &amp;quot;docker&amp;quot;: {
-    &amp;quot;id&amp;quot;: &amp;quot;df14e0d5ae4c07284fa636d739c8fc2e6b52bc344658de7d3f08c36a2e804115&amp;quot;,
-    &amp;quot;name&amp;quot;: &amp;quot;k8s_fabric8-console-container.efbd6e64_fabric8-console-controller-9knhj_default_8ae2f621-f360-11e4-8d12-54ee7527188d_7ec9aa3e&amp;quot;,
-    &amp;quot;container_hostname&amp;quot;: &amp;quot;fabric8-console-controller-9knhj&amp;quot;,
-    &amp;quot;image&amp;quot;: &amp;quot;fabric8/hawtio-kubernetes:latest&amp;quot;,
-    &amp;quot;image_id&amp;quot;: &amp;quot;b2bd1a24a68356b2f30128e6e28e672c1ef92df0d9ec01ec0c7faea5d77d2303&amp;quot;,
-    &amp;quot;labels&amp;quot;: {}
-  }
-}
-&lt;/code&gt;&lt;/pre&gt;- https://xujiahua.github.io/posts/20200402-use-fluentd/ - </description>
         </item>
     
     
