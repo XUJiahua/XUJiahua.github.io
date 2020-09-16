@@ -5,9 +5,109 @@
     <description>Recent content on 许嘉华的笔记</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Wed, 09 Sep 2020 09:52:37 +0800</lastBuildDate>
+    <lastBuildDate>Wed, 16 Sep 2020 10:48:11 +0800</lastBuildDate>
     
         <atom:link href="https://xujiahua.github.io/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    
+        <item>
+        <title>读 Mastering Ethereum</title>
+        <link>https://xujiahua.github.io/posts/20181029-mastering-ethereum/</link>
+        <pubDate>Mon, 29 Oct 2018 08:37:44 +0800</pubDate>
+        
+        <guid>https://xujiahua.github.io/posts/20181029-mastering-ethereum/</guid>
+        <description>许嘉华的笔记 https://xujiahua.github.io/posts/20181029-mastering-ethereum/ -&lt;p&gt;（笔记迁移 @ 2020年）&lt;/p&gt;
+&lt;p&gt;区块链上不应该只有数字货币。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Ethereum was conceived at a time when people recognized the power of the Bitcoin model, and were trying to move beyond cryptocurrency applications.&lt;/p&gt;
+&lt;p&gt;Ethereum’s founders were thinking about a blockchain without a specific purpose, that could support a broad variety of applications by being programmed.&lt;/p&gt;
+&lt;p&gt;Ethereum has memory that stores both code and data, and it uses the Ethereum blockchain to track how this memory changes over time.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h3 id=&#34;目录&#34;&gt;目录&lt;/h3&gt;
+&lt;ol&gt;
+&lt;li&gt;What Is Ethereum? &lt;a href=&#34;https://github.com/ethereumbook/ethereumbook/blob/develop/01what-is.asciidoc&#34;&gt;https://github.com/ethereumbook/ethereumbook/blob/develop/01what-is.asciidoc&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;Ethereum Basics &lt;a href=&#34;https://github.com/ethereumbook/ethereumbook/blob/develop/02intro.asciidoc&#34;&gt;https://github.com/ethereumbook/ethereumbook/blob/develop/02intro.asciidoc&lt;/a&gt; 【metaMask转账，在remix上smart contract开发、使用】&lt;/li&gt;
+&lt;li&gt;Ethereum Clients &lt;a href=&#34;https://github.com/ethereumbook/ethereumbook/blob/develop/03clients.asciidoc&#34;&gt;https://github.com/ethereumbook/ethereumbook/blob/develop/03clients.asciidoc&lt;/a&gt; 【安装节点，还有一些操作，需要等到数据同步完成】&lt;/li&gt;
+&lt;li&gt;Cryptography &lt;a href=&#34;https://github.com/ethereumbook/ethereumbook/blob/develop/04keys-addresses.asciidoc&#34;&gt;https://github.com/ethereumbook/ethereumbook/blob/develop/04keys-addresses.asciidoc&lt;/a&gt; 【密码学 公私钥】&lt;/li&gt;
+&lt;li&gt;Wallets &lt;a href=&#34;https://github.com/ethereumbook/ethereumbook/blob/develop/05wallets.asciidoc&#34;&gt;https://github.com/ethereumbook/ethereumbook/blob/develop/05wallets.asciidoc&lt;/a&gt; 【for user-facing】&lt;/li&gt;
+&lt;li&gt;Transactions &lt;a href=&#34;https://github.com/ethereumbook/ethereumbook/blob/develop/06transactions.asciidoc&#34;&gt;https://github.com/ethereumbook/ethereumbook/blob/develop/06transactions.asciidoc&lt;/a&gt; 【开始接触smart contract】&lt;/li&gt;
+&lt;li&gt;Smart Contracts and Solidity &lt;a href=&#34;https://github.com/ethereumbook/ethereumbook/blob/develop/07smart-contracts-solidity.asciidoc&#34;&gt;https://github.com/ethereumbook/ethereumbook/blob/develop/07smart-contracts-solidity.asciidoc&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;solidity文档是学习智能合约的好参考。https://solidity.readthedocs.io/en/v0.5.5/&lt;/p&gt;
+&lt;h3 id=&#34;笔记&#34;&gt;笔记&lt;/h3&gt;
+&lt;p&gt;两种账户类型：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;The type of account you created in the MetaMask wallet is called an externally owned account (EOA)&lt;/li&gt;
+&lt;li&gt;A contract account has smart contract code, which a simple EOA can’t have. Furthermore, a contract account does not have a private key. Instead, it is owned (and controlled) by the logic of its smart contract code: the software program recorded on the Ethereum blockchain at the contract account’s creation and executed by the EVM.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;节点分两种：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;full node client （需要大磁盘服务器）&lt;/li&gt;
+&lt;li&gt;remote client/ wallet (e.g., MetaMask)&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;安装Ethereum节点。&lt;em&gt;不安装也行，安装MetaMask插件后，每个chrome tab都有了web3的上下文。可以使用web3执行创建合约，转账等操作。&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;以安装Geth为例（Ethereum）。&lt;/p&gt;
+&lt;p&gt;下载源代码&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;git clone git@github.com:ethereum/go-ethereum.git&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;OR&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;go get -d github.com/ethereum/go-ethereum&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;编译并配置文件&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;cd $GOPATH/src/github.com/ethereum/go-ethereum
+
+make geth
+
+geth dumpconfig &amp;gt; geth.toml
+
+# modify geth.toml if nesserary
+
+geth --config geth.toml
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;reference:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/ethereumbook/ethereumbook/blob/develop/03clients.asciidoc&#34;&gt;https://github.com/ethereumbook/ethereumbook/blob/develop/03clients.asciidoc&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/ethereum/go-ethereum/blob/master/README.md&#34;&gt;https://github.com/ethereum/go-ethereum/blob/master/README.md&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;以太坊的transaction应该是多了个data字段。除了金额，还能承载一些东西。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;A transaction with only value is a payment. A transaction with only data is an invocation. A transaction with both value and data is both a payment and an invocation. A transaction with neither value nor data—well that’s probably just a waste of gas! But it is still possible.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200625085657502.png&#34; alt=&#34;image-20200625085657502&#34;&gt;&lt;/p&gt;
+&lt;p&gt;MetaMask利用的是Web3的能力。打开chrome console就能拿到上下文。直接使用Web3的能力。&lt;/p&gt;
+&lt;p&gt;Web3 JS API文档:
+&lt;a href=&#34;https://github.com/ethereum/wiki/wiki/JavaScript-API&#34;&gt;https://github.com/ethereum/wiki/wiki/JavaScript-API&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;智能合约，如果转账地址是contract address，非EOA， data字段就会被EVM解析成合约调用。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;For now, let’s assume your transaction is delivering data to a contract address. In that case, the data will be interpreted by the EVM as a contract invocation. Most contracts use this data more specifically as a function invocation, calling the named function and passing any encoded arguments to the function.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;data字段&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200625085721182.png&#34; alt=&#34;image-20200625085721182&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200625085734912.png&#34; alt=&#34;image-20200625085734912&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200625085741766.png&#34; alt=&#34;image-20200625085741766&#34;&gt;&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;function selector = 方法hash的前4个字节，&lt;/li&gt;
+&lt;li&gt;function arguments = hex(input argument)&lt;/li&gt;
+&lt;li&gt;payload = pad32(function selector, function arguments)&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;往合约地址，包含data的交易，只是执行合约。&lt;/p&gt;
+&lt;p&gt;往0x0地址（除了合约地址、EOA地址，所以0x0是第三种账户），包含data的交易，是合约的创建。&lt;/p&gt;
+&lt;p&gt;向非EOA地址，发送value，就是销毁ETH。&lt;/p&gt;
+&lt;p&gt;安装solc（编译合约代码成二进制）&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://solidity.readthedocs.io/en/v0.4.21/installing-solidity.html&#34;&gt;https://solidity.readthedocs.io/en/v0.4.21/installing-solidity.html&lt;/a&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;solc --bin Faucet.sol
+
+
+src = web3.eth.accounts[0]
+
+faucet_code = ...
+
+web3.eth.sendTransaction({from: src, to: 0, data: faucet_code, gas: 113558, gasPrice: 200000000000}, function(error, result){
+   if(!error)
+       console.log(JSON.stringify(result));
+   else
+       console.error(error);
+})
+&lt;/code&gt;&lt;/pre&gt;- https://xujiahua.github.io/posts/20181029-mastering-ethereum/ - </description>
+        </item>
     
     
     

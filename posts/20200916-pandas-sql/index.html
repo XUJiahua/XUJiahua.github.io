@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html><head>
-	<meta name="generator" content="Hugo 0.74.2" />
-<title>许嘉华的笔记</title>
+<title>pandasql库解析</title>
 
 <meta charset="utf-8">
 <meta name="X-UA-Compatible" content="IE=edge">
@@ -46,11 +45,7 @@ if (!doNotTrack) {
 <script src="https://xujiahua.github.io//js/table.js"></script>
 
 
-<style>
-  .toc{
-    display: none !important;
-  }
-</style>
+<script src="https://xujiahua.github.io//js/toc.js"></script>
 
 
 <script>
@@ -65,7 +60,7 @@ if (!doNotTrack) {
 </head><body>
     	<div id="app"><div ref="sideContainer" class="side-container">
     
-    <a class="a-block nav-head active" href="https://xujiahua.github.io/">
+    <a class="a-block nav-head false" href="https://xujiahua.github.io/">
     
         <div class="nav-title">
             许嘉华的笔记
@@ -79,9 +74,11 @@ if (!doNotTrack) {
             
             
             
+                
             
             
-            <a class="a-block nav-link-item false" href="/posts">
+            
+            <a class="a-block nav-link-item active" href="/posts">
                 Archive
             </a>
             
@@ -135,30 +132,17 @@ Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopene
     
 </div><div ref="extraContainer" class="extra-container">
     
+    <div class="toc animated-visibility" :class="{ invisible: scrollY <= 140 }">
+
+
+</div>
+    
     <div class="pagination">
         <a id="globalBackToTop" class="pagination-action animated-visibility" href="#top" :class="{ invisible: scrollY == 0 }">
             <i class="material-icons pagination-action-icon">
                 keyboard_arrow_up
             </i>
         </a>
-        
-        
-            <div class="pagination-indicator">
-                <span style="text-align: center">
-                    6<br><div style="display: inline-block; transform: rotate(-28deg)">-</div><br>6
-                </span>
-            </div>
-            
-            
-            <a class="pagination-action" href="/page/5/">
-                <i class="material-icons pagination-action-icon">
-                    chevron_left
-                </i>
-            </a>
-            
-
-            
-        
         
     </div>
 </div><div class="single-column-drawer-container" ref="drawer"
@@ -170,9 +154,11 @@ Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopene
                 
                 
                 
+                    
                 
                 
-                <a class="a-block drawer-menu-item false" href="/posts">
+                
+                <a class="a-block drawer-menu-item active" href="/posts">
                     Archive
                 </a>
                 
@@ -208,6 +194,11 @@ Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopene
                 
             
             
+            <div class="toc">
+
+
+</div>
+            
         </div>
     </div>
 </div>
@@ -236,126 +227,95 @@ Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopene
     </a>
 </div>
             <div id="content">
-
 <div ref="streamContainer" class="stream-container">
-    <div class="post-list-container post-list-container-no-background">
-        
+    <div class="post-list-container post-list-container-shadow">
+        <div class="post">
             
-            <a href="https://xujiahua.github.io/posts/20181029-mastering-ethereum/" class="a-block">
-                <div class="post-item-wrapper">
-                    <div class="post-item post-item-no-divider">
-                        <div class="post-item-info-wrapper">
-                            <div class="post-item-title">
-                                读 Mastering Ethereum
-                            </div>
-                            <div class="post-item-summary">
-                                
-                            </div>
-                            <div class="post-item-meta">
-                                2018-10-29
-                            </div>
-                        </div>
-                        
-                        
-                    </div>
-                </div>
             
-        
             
-            <a href="https://xujiahua.github.io/posts/20181017-perf-testing/" class="a-block">
-                <div class="post-item-wrapper">
-                    <div class="post-item post-item-no-divider">
-                        <div class="post-item-info-wrapper">
-                            <div class="post-item-title">
-                                一点压力测试的经验
-                            </div>
-                            <div class="post-item-summary">
-                                
-                            </div>
-                            <div class="post-item-meta">
-                                2018-10-17
-                            </div>
-                        </div>
+
+            <div class="post-head-wrapper-text-only"
+                 style="background-image: url('/')">
+                <div class="post-title">
+                    pandasql库解析
+                    
+                    <div class="post-meta">
                         
+                        <time itemprop="datePublished">
+                            2020-09-16 10:48
+                        </time>
+                        
+
+                        
+
+                        
+                            <i class="material-icons" style="">label</i>
+                            
+                                <a href="/tags/readcode">readcode</a>
+                                &nbsp;
+                            
                         
                     </div>
                 </div>
+            </div>
             
-        
-            
-            <a href="https://xujiahua.github.io/posts/20170413-jenkins&#43;ansible/" class="a-block">
-                <div class="post-item-wrapper">
-                    <div class="post-item post-item-no-divider">
-                        <div class="post-item-info-wrapper">
-                            <div class="post-item-title">
-                                利用Jenkins&#43;Ansible做持续部署
-                            </div>
-                            <div class="post-item-summary">
-                                
-                            </div>
-                            <div class="post-item-meta">
-                                2017-04-13
-                            </div>
-                        </div>
-                        
-                        
-                    </div>
+            <div class="post-body-wrapper">
+                <div class="post-body">
+                    <p>对 Pandas 库没有原生 SQL 支持表示遗憾，今天看到这么一个库 <a href="https://github.com/yhat/pandasql">https://github.com/yhat/pandasql</a> 。</p>
+<p>它的思路比较简单粗暴，先把 pandas Dataframe 存储到一个关系型数据库（sqlite/postgresql），最后 SQL query 的结果其实是查询关系型数据库返回的结果，封装成 Dataframe 来呈现。其中数据库操作使用 sqlalchemy 这个库。</p>
+<p>学到的知识点：locals()，globals() 这两个方法。</p>
+<blockquote>
+<p>The globals() method returns the dictionary of the current global symbol table. <a href="https://www.programiz.com/python-programming/methods/built-in/globals">https://www.programiz.com/python-programming/methods/built-in/globals</a></p>
+<p>The locals() method updates and returns a dictionary of the current local symbol table. <a href="https://www.programiz.com/python-programming/methods/built-in/locals">https://www.programiz.com/python-programming/methods/built-in/locals</a></p>
+</blockquote>
+<p>如下代码，meat 是一个 Dataframe 变量，为何 SQL query 里能直接引用这个变量。</p>
+<pre><code>$ python
+&gt;&gt;&gt; from pandasql import sqldf, load_meat, load_births
+&gt;&gt;&gt; pysqldf = lambda q: sqldf(q, globals())
+&gt;&gt;&gt; meat = load_meat()
+&gt;&gt;&gt; print pysqldf(&quot;SELECT * FROM meat LIMIT 10;&quot;).head()
+</code></pre><p>因为可以从 globals() 里通过符号 meat 拿到这个变量。</p>
+<pre><code>$ python
+&gt;&gt;&gt; a=4
+&gt;&gt;&gt; globals()['a']
+4
+</code></pre>
+                    
+                    <HR width="100%" id="EOF">
+                    <p style="color:#777;">Last modified on 2020-09-16</p>
+                    
                 </div>
+            </div>
             
-        
             
-            <a href="https://xujiahua.github.io/posts/20170408-android-hot-update/" class="a-block">
-                <div class="post-item-wrapper">
-                    <div class="post-item post-item-no-divider">
-                        <div class="post-item-info-wrapper">
-                            <div class="post-item-title">
-                                Android热更新框架的使用
-                            </div>
-                            <div class="post-item-summary">
-                                
-                            </div>
-                            <div class="post-item-meta">
-                                2017-04-08
-                            </div>
-                        </div>
-                        
-                        
-                    </div>
-                </div>
-            
-        
-            
-        
-        </a>
+            <nav class="post-pagination">
+
+                
+                <a class="newer-posts">
+                    Next<br>No newer posts.
+                </a>
+                
+                
+                
+                <a class="older-posts" href="https://xujiahua.github.io/posts/20200909-docker-series/">
+                    Previous<br>Docker/Kubernetes 系列目录
+                </a>
+                
+            </nav>
+            <div class="post-comment-wrapper">
+                
+
+
+
+
+
+
+            </div>
+        </div>
     </div>
 </div>
 
-            </div>
-
-<div class="pagination">
-    
-    <a class="pagination-action" href="/page/5/" style="opacity:1">
-    
-        <i class="material-icons pagination-action-icon">
-            chevron_left
-        </i>
-    </a>
-
-        <div class="pagination-indicator">
-            <span>6/6</span>
-        </div>
-
-        
-            <a class="pagination-action" style="opacity:0">
-        
-                <i class="material-icons pagination-action-icon">
-                    chevron_right
-                </i>
-            </a>
-</div>
-
-
-<div id="single-column-footer">
+            </div><div id="single-column-footer">
 Hugo Theme <a href="https://github.com/amazingrise/hugo-theme-diary">Diary</a> by <a href="https://amazingrise.net">Rise</a>
 <br>
 Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopener">Makito</a>'s <a href="https://github.com/SumiMakito/hexo-theme-journal/" target="_blank" rel="noreferrer noopener">Journal.</a> <br>

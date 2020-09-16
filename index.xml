@@ -5,9 +5,38 @@
     <description>Recent content on 许嘉华的笔记</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Wed, 09 Sep 2020 09:52:37 +0800</lastBuildDate>
+    <lastBuildDate>Wed, 16 Sep 2020 10:48:11 +0800</lastBuildDate>
     
         <atom:link href="https://xujiahua.github.io/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    
+        <item>
+        <title>pandasql库解析</title>
+        <link>https://xujiahua.github.io/posts/20200916-pandas-sql/</link>
+        <pubDate>Wed, 16 Sep 2020 10:48:11 +0800</pubDate>
+        
+        <guid>https://xujiahua.github.io/posts/20200916-pandas-sql/</guid>
+        <description>许嘉华的笔记 https://xujiahua.github.io/posts/20200916-pandas-sql/ -&lt;p&gt;对 Pandas 库没有原生 SQL 支持表示遗憾，今天看到这么一个库 &lt;a href=&#34;https://github.com/yhat/pandasql&#34;&gt;https://github.com/yhat/pandasql&lt;/a&gt; 。&lt;/p&gt;
+&lt;p&gt;它的思路比较简单粗暴，先把 pandas Dataframe 存储到一个关系型数据库（sqlite/postgresql），最后 SQL query 的结果其实是查询关系型数据库返回的结果，封装成 Dataframe 来呈现。其中数据库操作使用 sqlalchemy 这个库。&lt;/p&gt;
+&lt;p&gt;学到的知识点：locals()，globals() 这两个方法。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;The globals() method returns the dictionary of the current global symbol table. &lt;a href=&#34;https://www.programiz.com/python-programming/methods/built-in/globals&#34;&gt;https://www.programiz.com/python-programming/methods/built-in/globals&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;The locals() method updates and returns a dictionary of the current local symbol table. &lt;a href=&#34;https://www.programiz.com/python-programming/methods/built-in/locals&#34;&gt;https://www.programiz.com/python-programming/methods/built-in/locals&lt;/a&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;如下代码，meat 是一个 Dataframe 变量，为何 SQL query 里能直接引用这个变量。&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;$ python
+&amp;gt;&amp;gt;&amp;gt; from pandasql import sqldf, load_meat, load_births
+&amp;gt;&amp;gt;&amp;gt; pysqldf = lambda q: sqldf(q, globals())
+&amp;gt;&amp;gt;&amp;gt; meat = load_meat()
+&amp;gt;&amp;gt;&amp;gt; print pysqldf(&amp;quot;SELECT * FROM meat LIMIT 10;&amp;quot;).head()
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;因为可以从 globals() 里通过符号 meat 拿到这个变量。&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;$ python
+&amp;gt;&amp;gt;&amp;gt; a=4
+&amp;gt;&amp;gt;&amp;gt; globals()[&#39;a&#39;]
+4
+&lt;/code&gt;&lt;/pre&gt;- https://xujiahua.github.io/posts/20200916-pandas-sql/ - </description>
+        </item>
     
     
     
@@ -35,8 +64,9 @@
 &lt;li&gt;Linux cgroup 介绍&lt;/li&gt;
 &lt;li&gt;Docker 中 namespace/cgroup 的体现&lt;/li&gt;
 &lt;li&gt;Union file system&lt;/li&gt;
+&lt;li&gt;容器网络模型标准 Container Network Model (CNM) 与其实现 libnetwork &lt;a href=&#34;https://github.com/moby/libnetwork/blob/master/docs/design.md&#34;&gt;https://github.com/moby/libnetwork/blob/master/docs/design.md&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;CNI 标准，不再使用 docker 自带的网络驱动，docker run &amp;ndash;net=none&lt;/li&gt;
 &lt;li&gt;libcontainer/containerd/runc&lt;/li&gt;
-&lt;li&gt;libnetwork&lt;/li&gt;
 &lt;/ol&gt;
 &lt;h2 id=&#34;kubernetes&#34;&gt;Kubernetes&lt;/h2&gt;
 &lt;h3 id=&#34;基础-1&#34;&gt;基础&lt;/h3&gt;
@@ -47,6 +77,8 @@
 &lt;ol&gt;
 &lt;li&gt;官方文档 &lt;a href=&#34;https://docs.docker.com/&#34;&gt;https://docs.docker.com/&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;Docker — 从入门到实践 &lt;a href=&#34;https://www.yuque.com/grasilife/docker/readme&#34;&gt;https://www.yuque.com/grasilife/docker/readme&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;Golang UK Conf. 2016 - Liz Rice - What is a container, really? Let&amp;rsquo;s write one in Go from scratch &lt;a href=&#34;https://www.youtube.com/watch?v=HPuvDm8IC-4&#34;&gt;https://www.youtube.com/watch?v=HPuvDm8IC-4&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;Kubernetes for Full-Stack Developers &lt;a href=&#34;https://www.digitalocean.com/community/curriculums/kubernetes-for-full-stack-developers&#34;&gt;https://www.digitalocean.com/community/curriculums/kubernetes-for-full-stack-developers&lt;/a&gt;&lt;/li&gt;
 &lt;/ol&gt;
 &lt;h2 id=&#34;参考书籍&#34;&gt;参考书籍&lt;/h2&gt;
 &lt;ol&gt;
@@ -1714,41 +1746,6 @@ python3 -m http.server &lt;span style=&#34;color:#ae81ff&#34;&gt;8088&lt;/span&g
 &lt;li&gt;Tuning the Go HTTP Client Settings for Load Testing &lt;a href=&#34;http://tleyden.github.io/blog/2016/11/21/tuning-the-go-http-client-library-for-load-testing/&#34;&gt;http://tleyden.github.io/blog/2016/11/21/tuning-the-go-http-client-library-for-load-testing/&lt;/a&gt;&lt;/li&gt;
 &lt;/ol&gt;
 - https://xujiahua.github.io/posts/20200723-golang-http-reuse/ - </description>
-        </item>
-    
-    
-    
-        <item>
-        <title>Metabase Impala Driver 时区问题</title>
-        <link>https://xujiahua.github.io/posts/20200714-metabase-timezone/</link>
-        <pubDate>Tue, 14 Jul 2020 10:14:14 +0800</pubDate>
-        
-        <guid>https://xujiahua.github.io/posts/20200714-metabase-timezone/</guid>
-        <description>许嘉华的笔记 https://xujiahua.github.io/posts/20200714-metabase-timezone/ -&lt;h2 id=&#34;问题&#34;&gt;问题&lt;/h2&gt;
-&lt;p&gt;实际日期是上午11点，而&lt;code&gt;Metabase&lt;/code&gt;显示是下午7点。差8小时。&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sql&#34; data-lang=&#34;sql&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;select&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;CURRENT_TIMESTAMP&lt;/span&gt;(),hour(&lt;span style=&#34;color:#66d9ef&#34;&gt;CURRENT_TIMESTAMP&lt;/span&gt;())
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;img src=&#34;../../images/image-20200714113556806.png&#34; alt=&#34;image-20200714113556806&#34;&gt;&lt;/p&gt;
-&lt;h2 id=&#34;分析&#34;&gt;分析&lt;/h2&gt;
-&lt;p&gt;参考：&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;&lt;a href=&#34;https://www.metabase.com/docs/latest/operations-guide/handling-timezones.html&#34;&gt;Handling timezones in Metabase&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;https://www.metabase.com/docs/latest/troubleshooting-guide/timezones.html&#34;&gt;troubleshooting-guide/timezones&lt;/a&gt;&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;有几个时区有关的设置：&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;Database TimeZone，其中 impalad 启动环境是东八区，TIMESTAMP 不存储时区信息，存储的是东八区本地时间。&lt;/li&gt;
-&lt;li&gt;Metabase TimeZone = JVM TimeZone = OS TimeZone，使用的是东八区。&lt;/li&gt;
-&lt;li&gt;“Report Time Zone” setting，对 Impala 是不起作用的。&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;同样的SQL在MySQL上试了下，没问题。问题定位基本在&lt;code&gt;metabase&lt;/code&gt;到&lt;code&gt;impala&lt;/code&gt;的Driver层。&lt;/p&gt;
-&lt;p&gt;发现从&lt;code&gt;impala&lt;/code&gt;读取TIMESTAMP的值，TIMEZONE写死了UTC，应该是东八区。（Metabase SparkSQL Driver 也有这个问题，因为代码是从那copy的。）&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image-20200714113928339.png&#34; alt=&#34;image-20200714113928339&#34;&gt;&lt;/p&gt;
-&lt;p&gt;&lt;a href=&#34;https://github.com/XUJiahua/metabase-impala-driver/commit/0963f9890a9213d53511c61b53870476f8f82cf4&#34;&gt;https://github.com/XUJiahua/metabase-impala-driver/commit/0963f9890a9213d53511c61b53870476f8f82cf4&lt;/a&gt;&lt;/p&gt;
-&lt;p&gt;&lt;code&gt;metabase&lt;/code&gt;东八区启动，用北京时间显示，就会多加8小时。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image-20200714131930694.png&#34; alt=&#34;image-20200714131930694&#34;&gt;&lt;/p&gt;
-&lt;h2 id=&#34;修复&#34;&gt;修复&lt;/h2&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image-20200714113658545.png&#34; alt=&#34;image-20200714113658545&#34;&gt;&lt;/p&gt;
-- https://xujiahua.github.io/posts/20200714-metabase-timezone/ - </description>
         </item>
     
     

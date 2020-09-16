@@ -5,9 +5,111 @@
     <description>Recent content on 许嘉华的笔记</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Wed, 09 Sep 2020 09:52:37 +0800</lastBuildDate>
+    <lastBuildDate>Wed, 16 Sep 2020 10:48:11 +0800</lastBuildDate>
     
         <atom:link href="https://xujiahua.github.io/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    
+        <item>
+        <title>Hyper-V使用体验</title>
+        <link>https://xujiahua.github.io/posts/20200323-use-hyper-v/</link>
+        <pubDate>Tue, 03 Mar 2020 22:13:23 +0800</pubDate>
+        
+        <guid>https://xujiahua.github.io/posts/20200323-use-hyper-v/</guid>
+        <description>许嘉华的笔记 https://xujiahua.github.io/posts/20200323-use-hyper-v/ -&lt;h2 id=&#34;hyper-v-使用体验&#34;&gt;Hyper-V 使用体验&lt;/h2&gt;
+&lt;p&gt;Hyper-V是 Windows10 内置的虚拟机软件，没想到我会用到它。&lt;/p&gt;
+&lt;h3 id=&#34;为什么要用hyper-v&#34;&gt;为什么要用Hyper-V&lt;/h3&gt;
+&lt;ol&gt;
+&lt;li&gt;需要使用虚拟机来模拟Kubernetes环境。&lt;/li&gt;
+&lt;li&gt;Windows Docker依赖Hyper-V。貌似WSL2也是基于Hyper-V。应该是不会卸载Hyper-V了。&lt;/li&gt;
+&lt;li&gt;Hyper-V与其他虚拟机软件（VirtualBox, VMWare）冲突，用不了其他的，只能用Hyper-V。&lt;/li&gt;
+&lt;li&gt;Hyper-V与VirtualBox兼容的方案有没有。可能有，不想过于折腾了，那就不得不用。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3 id=&#34;hyper-v好不好用&#34;&gt;Hyper-V好不好用&lt;/h3&gt;
+&lt;ol&gt;
+&lt;li&gt;使用体验太差了，从Mac、从其他虚拟机使用过来，默认配置各种踩坑。&lt;/li&gt;
+&lt;li&gt;安装VM碰到DHCP超时的问题，反复试验无果，重启Windows后VM的DHCP不超时了。总结下，Windows上，如果怎么搞都搞不定，重启下可能就好了。WTF！&lt;/li&gt;
+&lt;li&gt;自带的NAT网络有点残疾，VM配置静态IP，网络就不通了。不像VirtualBox是开箱即用的。&lt;/li&gt;
+&lt;li&gt;最后借助网络上的零碎信息自定义了下NAT网络，各种神奇配置。&lt;/li&gt;
+&lt;li&gt;Windows还是很屎，除了打游戏，开发体验跟我之前的体验一样糟。最后搞定花了我一天时间。要是用VMware/VirtualBox，可能在2个小时内就能搞定。总结，不好用。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2 id=&#34;hyper-v-创建和克隆vm&#34;&gt;Hyper-V 创建和克隆VM&lt;/h2&gt;
+&lt;h3 id=&#34;创建vm&#34;&gt;创建VM&lt;/h3&gt;
+&lt;p&gt;从&lt;code&gt;*.iso&lt;/code&gt;文件创建VM。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/465F25A3-07A1-4DB7-90CE-FD02376D4C92.png&#34; alt=&#34;465F25A3-07A1-4DB7-90CE-FD02376D4C92&#34;&gt;&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;注意，Linux VM，不启用Windows Secure Boot。&lt;/li&gt;
+&lt;li&gt;更多选项里，设置VM的名称和交换机。&lt;/li&gt;
+&lt;li&gt;体验不好的地方：左上方的「选择操作系统」区域有长时间的加载过程，即使使用本地镜像文件也得等。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3 id=&#34;克隆vm&#34;&gt;克隆VM&lt;/h3&gt;
+&lt;p&gt;从硬盘文件创建VM。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/03603F71-9B97-4ABC-8D1F-91F6CBB6602E.png&#34; alt=&#34;03603F71-9B97-4ABC-8D1F-91F6CBB6602E&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/3C85F0B5-0763-468F-9ABC-2FC35AF20235.png&#34; alt=&#34;3C85F0B5-0763-468F-9ABC-2FC35AF20235&#34;&gt;&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;克隆是为了减少重复配置一些基础环境的工作量。&lt;/li&gt;
+&lt;li&gt;不像VirtualBox那样有直观的克隆按钮。摸索出的克隆功能是这样的：就是从VM硬盘创建VM。&lt;/li&gt;
+&lt;li&gt;建议先关机母体VM后，再基于母体VM的硬盘文件克隆。防止母体VM开机状态下一些更新并没有持久化到硬盘文件中。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2 id=&#34;hyper-v-nat网络搭建总结&#34;&gt;Hyper-V NAT网络搭建总结&lt;/h2&gt;
+&lt;p&gt;如果使用VMWare/VirtualBox的话，NAT网络是完全自动搭建的。&lt;/p&gt;
+&lt;p&gt;VMWare中有三种网络模式，Bridging、NAT、Host-only分别对应Hyper-V下的三种交换机，外部、内部、专用。&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Bridging：VM使用物理网络。GUEST VM与HOST相当于通过交换机连上一个网络（细节不确定）。&lt;/li&gt;
+&lt;li&gt;NAT：VM使用虚拟网络，HOST同时连入物理网络和虚拟网络。VM出口流量都会通过HOST，使用HOST IP。&lt;/li&gt;
+&lt;li&gt;Host-only：在NAT基础上，VM连不上外网，除非有路由设置。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3 id=&#34;默认的nat网络&#34;&gt;默认的NAT网络&lt;/h3&gt;
+&lt;p&gt;默认交换机支持NAT，但是瑕疵不少，无法满足工作需要。&lt;/p&gt;
+&lt;p&gt;Hyper-V Default Switch + VM DHCP 的组合默认有了NAT功能，满足以下：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;虚拟机之间可以互相访问&lt;/li&gt;
+&lt;li&gt;虚拟机与物理机之间可以互相访问&lt;/li&gt;
+&lt;li&gt;虚拟机可以访问互联网&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;但是：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;每次重启，Default Switch的IP都会变，Windows10 物理机上的网卡IPv4配置无法让他不变。&lt;/li&gt;
+&lt;li&gt;ping &lt;a href=&#34;http://baidu.com/&#34;&gt;baidu.com&lt;/a&gt; 启动过程特别慢，估计跟DNS有关。&lt;/li&gt;
+&lt;li&gt;VM设置静态IP，无法访问互联网，NAT就失效了。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3 id=&#34;自定义nat网络&#34;&gt;自定义NAT网络&lt;/h3&gt;
+&lt;p&gt;网络拓扑，摘自互联网。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/6EAD4887-1785-47EF-A527-7FF21A70F2DF.png&#34; alt=&#34;6EAD4887-1785-47EF-A527-7FF21A70F2DF&#34;&gt;&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Hyper-V 管理器中创建一个新的交换机， 并在VM中启用这个交换机。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/7FF4F0E4-B0D8-4A2E-8D64-668837898471.png&#34; alt=&#34;7FF4F0E4-B0D8-4A2E-8D64-668837898471&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/D33768BD-BFD7-4D57-B6B4-CB9A82CDD4AF.png&#34; alt=&#34;D33768BD-BFD7-4D57-B6B4-CB9A82CDD4AF&#34;&gt;&lt;/p&gt;
+&lt;ol start=&#34;2&#34;&gt;
+&lt;li&gt;定义一个C类网络，192.168.246.0，默认网关是192.168.246.1，这个网关地址也会在在物理机网卡上配置的。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;Ubuntu 18 配置静态IP，搜索关键词Ubuntu netplan即可。不赘述。必须加上nameservers，使用默认的nameserver无法解析域名。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/6186B767-AD19-45FC-81F7-4D7E2DDB0116.png&#34; alt=&#34;6186B767-AD19-45FC-81F7-4D7E2DDB0116&#34;&gt;&lt;/p&gt;
+&lt;ol start=&#34;3&#34;&gt;
+&lt;li&gt;把上面的网关地址填到Windows的这个虚拟网卡上。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;如果不是填网关地址，网络不通。所以，windows在这里的角色是网关的作用。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/7C3CCA08-E26D-46BE-8DBB-FD207C2AA497.png&#34; alt=&#34;7C3CCA08-E26D-46BE-8DBB-FD207C2AA497&#34;&gt;&lt;/p&gt;
+&lt;p&gt;ifconfig/ipconfig如下：&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/94315174-B7F8-4747-B042-555A903E28DA.png&#34; alt=&#34;94315174-B7F8-4747-B042-555A903E28DA&#34;&gt;&lt;/p&gt;
+&lt;ol start=&#34;4&#34;&gt;
+&lt;li&gt;最后命令行设置NAT&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;这一步最关键。决定了你是否能连互联网。不然只能局域网内连接了。&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;New-NetNat -Name NAT-VM -InternalIPInterfaceAddressPrefix 192.168.246.0/24
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;参考：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Hyper V NAT 网络设置 固定IP &lt;a href=&#34;https://www.cnblogs.com/wswind/p/11007613.html&#34;&gt;https://www.cnblogs.com/wswind/p/11007613.html&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;使用hyper-v搭建nat内部网络（与上篇雷同，太多命令行，容易误操作） &lt;a href=&#34;http://kael-aiur.com/%E9%BB%91%E7%A7%91%E6%8A%80/%E4%BD%BF%E7%94%A8hyper-v%E6%90%AD%E5%BB%BAnat%E5%86%85%E9%83%A8%E7%BD%91%E7%BB%9C.html&#34;&gt;http://kael-aiur.com/%E9%BB%91%E7%A7%91%E6%8A%80/%E4%BD%BF%E7%94%A8hyper-v%E6%90%AD%E5%BB%BAnat%E5%86%85%E9%83%A8%E7%BD%91%E7%BB%9C.html&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;遗留问题：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Windows VPN对NAT有影响，相当于断网了。&lt;/li&gt;
+&lt;/ol&gt;
+- https://xujiahua.github.io/posts/20200323-use-hyper-v/ - </description>
+        </item>
     
     
     
@@ -508,106 +610,6 @@ func main() {}
 &lt;p&gt;// BCCSP is the blockchain cryptographic service provider that offers
 // the implementation of cryptographic standards and algorithms.。&lt;/p&gt;
 - https://xujiahua.github.io/posts/20190304-go-plugin/ - </description>
-        </item>
-    
-    
-    
-        <item>
-        <title>读 Mastering Ethereum</title>
-        <link>https://xujiahua.github.io/posts/20181029-mastering-ethereum/</link>
-        <pubDate>Mon, 29 Oct 2018 08:37:44 +0800</pubDate>
-        
-        <guid>https://xujiahua.github.io/posts/20181029-mastering-ethereum/</guid>
-        <description>许嘉华的笔记 https://xujiahua.github.io/posts/20181029-mastering-ethereum/ -&lt;p&gt;（笔记迁移 @ 2020年）&lt;/p&gt;
-&lt;p&gt;区块链上不应该只有数字货币。&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;Ethereum was conceived at a time when people recognized the power of the Bitcoin model, and were trying to move beyond cryptocurrency applications.&lt;/p&gt;
-&lt;p&gt;Ethereum’s founders were thinking about a blockchain without a specific purpose, that could support a broad variety of applications by being programmed.&lt;/p&gt;
-&lt;p&gt;Ethereum has memory that stores both code and data, and it uses the Ethereum blockchain to track how this memory changes over time.&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;h3 id=&#34;目录&#34;&gt;目录&lt;/h3&gt;
-&lt;ol&gt;
-&lt;li&gt;What Is Ethereum? &lt;a href=&#34;https://github.com/ethereumbook/ethereumbook/blob/develop/01what-is.asciidoc&#34;&gt;https://github.com/ethereumbook/ethereumbook/blob/develop/01what-is.asciidoc&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;Ethereum Basics &lt;a href=&#34;https://github.com/ethereumbook/ethereumbook/blob/develop/02intro.asciidoc&#34;&gt;https://github.com/ethereumbook/ethereumbook/blob/develop/02intro.asciidoc&lt;/a&gt; 【metaMask转账，在remix上smart contract开发、使用】&lt;/li&gt;
-&lt;li&gt;Ethereum Clients &lt;a href=&#34;https://github.com/ethereumbook/ethereumbook/blob/develop/03clients.asciidoc&#34;&gt;https://github.com/ethereumbook/ethereumbook/blob/develop/03clients.asciidoc&lt;/a&gt; 【安装节点，还有一些操作，需要等到数据同步完成】&lt;/li&gt;
-&lt;li&gt;Cryptography &lt;a href=&#34;https://github.com/ethereumbook/ethereumbook/blob/develop/04keys-addresses.asciidoc&#34;&gt;https://github.com/ethereumbook/ethereumbook/blob/develop/04keys-addresses.asciidoc&lt;/a&gt; 【密码学 公私钥】&lt;/li&gt;
-&lt;li&gt;Wallets &lt;a href=&#34;https://github.com/ethereumbook/ethereumbook/blob/develop/05wallets.asciidoc&#34;&gt;https://github.com/ethereumbook/ethereumbook/blob/develop/05wallets.asciidoc&lt;/a&gt; 【for user-facing】&lt;/li&gt;
-&lt;li&gt;Transactions &lt;a href=&#34;https://github.com/ethereumbook/ethereumbook/blob/develop/06transactions.asciidoc&#34;&gt;https://github.com/ethereumbook/ethereumbook/blob/develop/06transactions.asciidoc&lt;/a&gt; 【开始接触smart contract】&lt;/li&gt;
-&lt;li&gt;Smart Contracts and Solidity &lt;a href=&#34;https://github.com/ethereumbook/ethereumbook/blob/develop/07smart-contracts-solidity.asciidoc&#34;&gt;https://github.com/ethereumbook/ethereumbook/blob/develop/07smart-contracts-solidity.asciidoc&lt;/a&gt;&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;solidity文档是学习智能合约的好参考。https://solidity.readthedocs.io/en/v0.5.5/&lt;/p&gt;
-&lt;h3 id=&#34;笔记&#34;&gt;笔记&lt;/h3&gt;
-&lt;p&gt;两种账户类型：&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;The type of account you created in the MetaMask wallet is called an externally owned account (EOA)&lt;/li&gt;
-&lt;li&gt;A contract account has smart contract code, which a simple EOA can’t have. Furthermore, a contract account does not have a private key. Instead, it is owned (and controlled) by the logic of its smart contract code: the software program recorded on the Ethereum blockchain at the contract account’s creation and executed by the EVM.&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;节点分两种：&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;full node client （需要大磁盘服务器）&lt;/li&gt;
-&lt;li&gt;remote client/ wallet (e.g., MetaMask)&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;安装Ethereum节点。&lt;em&gt;不安装也行，安装MetaMask插件后，每个chrome tab都有了web3的上下文。可以使用web3执行创建合约，转账等操作。&lt;/em&gt;&lt;/p&gt;
-&lt;p&gt;以安装Geth为例（Ethereum）。&lt;/p&gt;
-&lt;p&gt;下载源代码&lt;/p&gt;
-&lt;p&gt;&lt;code&gt;git clone git@github.com:ethereum/go-ethereum.git&lt;/code&gt;&lt;/p&gt;
-&lt;p&gt;OR&lt;/p&gt;
-&lt;p&gt;&lt;code&gt;go get -d github.com/ethereum/go-ethereum&lt;/code&gt;&lt;/p&gt;
-&lt;p&gt;编译并配置文件&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;cd $GOPATH/src/github.com/ethereum/go-ethereum
-
-make geth
-
-geth dumpconfig &amp;gt; geth.toml
-
-# modify geth.toml if nesserary
-
-geth --config geth.toml
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;reference:&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;&lt;a href=&#34;https://github.com/ethereumbook/ethereumbook/blob/develop/03clients.asciidoc&#34;&gt;https://github.com/ethereumbook/ethereumbook/blob/develop/03clients.asciidoc&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;https://github.com/ethereum/go-ethereum/blob/master/README.md&#34;&gt;https://github.com/ethereum/go-ethereum/blob/master/README.md&lt;/a&gt;&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;以太坊的transaction应该是多了个data字段。除了金额，还能承载一些东西。&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;A transaction with only value is a payment. A transaction with only data is an invocation. A transaction with both value and data is both a payment and an invocation. A transaction with neither value nor data—well that’s probably just a waste of gas! But it is still possible.&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image-20200625085657502.png&#34; alt=&#34;image-20200625085657502&#34;&gt;&lt;/p&gt;
-&lt;p&gt;MetaMask利用的是Web3的能力。打开chrome console就能拿到上下文。直接使用Web3的能力。&lt;/p&gt;
-&lt;p&gt;Web3 JS API文档:
-&lt;a href=&#34;https://github.com/ethereum/wiki/wiki/JavaScript-API&#34;&gt;https://github.com/ethereum/wiki/wiki/JavaScript-API&lt;/a&gt;&lt;/p&gt;
-&lt;p&gt;智能合约，如果转账地址是contract address，非EOA， data字段就会被EVM解析成合约调用。&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;For now, let’s assume your transaction is delivering data to a contract address. In that case, the data will be interpreted by the EVM as a contract invocation. Most contracts use this data more specifically as a function invocation, calling the named function and passing any encoded arguments to the function.&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;p&gt;data字段&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image-20200625085721182.png&#34; alt=&#34;image-20200625085721182&#34;&gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image-20200625085734912.png&#34; alt=&#34;image-20200625085734912&#34;&gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image-20200625085741766.png&#34; alt=&#34;image-20200625085741766&#34;&gt;&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;function selector = 方法hash的前4个字节，&lt;/li&gt;
-&lt;li&gt;function arguments = hex(input argument)&lt;/li&gt;
-&lt;li&gt;payload = pad32(function selector, function arguments)&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;往合约地址，包含data的交易，只是执行合约。&lt;/p&gt;
-&lt;p&gt;往0x0地址（除了合约地址、EOA地址，所以0x0是第三种账户），包含data的交易，是合约的创建。&lt;/p&gt;
-&lt;p&gt;向非EOA地址，发送value，就是销毁ETH。&lt;/p&gt;
-&lt;p&gt;安装solc（编译合约代码成二进制）&lt;/p&gt;
-&lt;p&gt;&lt;a href=&#34;https://solidity.readthedocs.io/en/v0.4.21/installing-solidity.html&#34;&gt;https://solidity.readthedocs.io/en/v0.4.21/installing-solidity.html&lt;/a&gt;&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;solc --bin Faucet.sol
-
-
-src = web3.eth.accounts[0]
-
-faucet_code = ...
-
-web3.eth.sendTransaction({from: src, to: 0, data: faucet_code, gas: 113558, gasPrice: 200000000000}, function(error, result){
-   if(!error)
-       console.log(JSON.stringify(result));
-   else
-       console.error(error);
-})
-&lt;/code&gt;&lt;/pre&gt;- https://xujiahua.github.io/posts/20181029-mastering-ethereum/ - </description>
         </item>
     
     

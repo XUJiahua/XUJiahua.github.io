@@ -3,17 +3,32 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
-    <loc>https://xujiahua.github.io/posts/20200909-docker-series/</loc>
-    <lastmod>2020-09-09T09:52:37+08:00</lastmod>
+    <loc>https://xujiahua.github.io/posts/20200916-pandas-sql/</loc>
+    <lastmod>2020-09-16T10:48:11+08:00</lastmod>
   </url>
   
   <url>
     <loc>https://xujiahua.github.io/posts/</loc>
-    <lastmod>2020-09-09T09:52:37+08:00</lastmod>
+    <lastmod>2020-09-16T10:48:11+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://xujiahua.github.io/tags/readcode/</loc>
+    <lastmod>2020-09-16T10:48:11+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://xujiahua.github.io/tags/</loc>
+    <lastmod>2020-09-16T10:48:11+08:00</lastmod>
   </url>
   
   <url>
     <loc>https://xujiahua.github.io/</loc>
+    <lastmod>2020-09-16T10:48:11+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://xujiahua.github.io/posts/20200909-docker-series/</loc>
     <lastmod>2020-09-09T09:52:37+08:00</lastmod>
   </url>
   
@@ -39,11 +54,6 @@
   
   <url>
     <loc>https://xujiahua.github.io/tags/network/</loc>
-    <lastmod>2020-09-07T11:35:39+08:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://xujiahua.github.io/tags/</loc>
     <lastmod>2020-09-07T11:35:39+08:00</lastmod>
   </url>
   

@@ -5,9 +5,206 @@
     <description>Recent content on 许嘉华的笔记</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Wed, 09 Sep 2020 09:52:37 +0800</lastBuildDate>
+    <lastBuildDate>Wed, 16 Sep 2020 10:48:11 +0800</lastBuildDate>
     
         <atom:link href="https://xujiahua.github.io/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    
+        <item>
+        <title>Metabase Impala Driver</title>
+        <link>https://xujiahua.github.io/posts/20200527-metabase-impala-driver/</link>
+        <pubDate>Wed, 27 May 2020 12:16:36 +0800</pubDate>
+        
+        <guid>https://xujiahua.github.io/posts/20200527-metabase-impala-driver/</guid>
+        <description>许嘉华的笔记 https://xujiahua.github.io/posts/20200527-metabase-impala-driver/ -&lt;p&gt;更新日志&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;a href=&#34;https://xujiahua.github.io/posts/20200528-metabase-impala-type/&#34;&gt;Metabase Impala Driver 0528更新日志&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://xujiahua.github.io/posts/20200710-metabase-impala-driver/&#34;&gt;Metabase Impala Driver 0710更新日志&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2 id=&#34;背景&#34;&gt;背景&lt;/h2&gt;
+&lt;p&gt;我们的数据仓库是 Hadoop/Hive 体系的。Hadoop 版本采用的是 CDH 发行版。在这个背景下 SQL on Hadoop 的方案有 Hive/Impala/(SparkSQL)。作为 BI 数据库，Impala 在我们的场景下比较合适。&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Hive：太慢了。做 ETL 可以，BI 非常不适。&lt;/li&gt;
+&lt;li&gt;SparkSQL：CDH 官方 Spark 不含 Thrift Server。为了能够使用 Metabase ，独立于 CDH 启了个 Thrift Server，用着还不错。问题就在于缺乏统一管理，比如 Kerberos 的管理就得自己写脚本处理、进程 OOM 挂掉了 CDH Manager 也监测不到。&lt;/li&gt;
+&lt;li&gt;Impala：CDH 官方出品，为 BI 而设计，由 CDH Manager 管理。根据这份报告，见下参考链接，Impala 好于 SparkSQL。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;出于尽可能复用已有基础设施的目的，选择 Impala。而 Metabase 官方、社区并不提供 Impala 驱动。本文就是为了探索并解决这个问题。&lt;/p&gt;
+&lt;p&gt;参考：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;开源OLAP引擎测评报告(SparkSql、Presto、Impala、HAWQ、ClickHouse、GreenPlum) &lt;a href=&#34;http://www.clickhouse.com.cn/topic/5c453371389ad55f127768ea&#34;&gt;http://www.clickhouse.com.cn/topic/5c453371389ad55f127768ea&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2 id=&#34;现有驱动探索&#34;&gt;现有驱动探索&lt;/h2&gt;
+&lt;h3 id=&#34;搭建-impala-开发环境&#34;&gt;搭建 Impala 开发环境&lt;/h3&gt;
+&lt;p&gt;使用 Cloudera Quickstart Docker 镜像（官方已经下架 quickstart vm ）。其中，Impala版本 2.5.0。（我们的生产环境：CDH 6.3.2 Impala 3.2.0 Hive 2.1.1）&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;docker run --name cloudera_quickstart --hostname&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;quickstart.cloudera &lt;span style=&#34;color:#ae81ff&#34;&gt;\
+&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;&lt;/span&gt;--privileged&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;true -t -i -d -p 8888:8888 -p 80:80 -p 10000:10000 -p 7180:7180 &lt;span style=&#34;color:#ae81ff&#34;&gt;\
+&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;&lt;/span&gt;-p 21050:21050 -p 50070:50070 -p 50075:50075 -p 50010:50010 -p 50020:50020 &lt;span style=&#34;color:#ae81ff&#34;&gt;\
+&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;&lt;/span&gt;-p 8020:8020 cloudera/quickstart /usr/bin/docker-quickstart
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;一些端口使用的说明：&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;Port&lt;/th&gt;
+&lt;th&gt;Use&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;80&lt;/td&gt;
+&lt;td&gt;Tutorial&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;8888&lt;/td&gt;
+&lt;td&gt;HUE&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;21050&lt;/td&gt;
+&lt;td&gt;Impala&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;10000&lt;/td&gt;
+&lt;td&gt;Hive&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;注意：关闭再启动容器，Impala进程并没有重启。重启 Impala 最直接的方法就是重建容器。&lt;/p&gt;
+&lt;p&gt;参考：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;quickstart docker image &lt;a href=&#34;https://hub.docker.com/r/cloudera/quickstart&#34;&gt;https://hub.docker.com/r/cloudera/quickstart&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;15分钟——在Docker启动Cloudera并开始体验 &lt;a href=&#34;https://xieshaohu.wordpress.com/2019/02/26/15%E5%88%86%E9%92%9F-%E5%9C%A8docker%E5%90%AF%E5%8A%A8cloudera%E5%B9%B6%E5%BC%80%E5%A7%8B%E4%BD%93%E9%AA%8C/&#34;&gt;https://xieshaohu.wordpress.com/2019/02/26/15%E5%88%86%E9%92%9F-%E5%9C%A8docker%E5%90%AF%E5%8A%A8cloudera%E5%B9%B6%E5%BC%80%E5%A7%8B%E4%BD%93%E9%AA%8C/&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3 id=&#34;尝试-mwullinkmetabase&#34;&gt;尝试 mwullink/metabase&lt;/h3&gt;
+&lt;p&gt;在 metabase issue 里看到一个关掉的关于Impala的PR，这方面的资料真的很少。如下：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Support Apache Impala database #3002 #3749 &lt;a href=&#34;https://github.com/metabase/metabase/pull/3749&#34;&gt;https://github.com/metabase/metabase/pull/3749&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;Support Apache Impala database #3002 &lt;a href=&#34;https://github.com/metabase/metabase/issues/3002&#34;&gt;https://github.com/metabase/metabase/issues/3002&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;可惜，并没有被合并到官方库。尝试编译作者mwullink的metabase版本。 &lt;a href=&#34;https://github.com/mwullink/metabase&#34;&gt;https://github.com/mwullink/metabase&lt;/a&gt;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;git clone https://github.com/mwullink/metabase.git metabase-mwullink
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;这个metabase版本太老了，前端依赖还是node 4.4.7（warning You are using Node &amp;ldquo;4.4.7&amp;rdquo; which is not supported and may encounter bugs or unexpected behavior. Yarn supports the following semver range: &amp;ldquo;^4.8.0 || ^5.7.0 || ^6.2.2 || &amp;gt;=8.0.0&amp;rdquo;），另外yarn对node4.x也有兼容问题（ &lt;a href=&#34;https://github.com/yarnpkg/yarn/issues/6900&#34;&gt;https://github.com/yarnpkg/yarn/issues/6900&lt;/a&gt; ）。&lt;/p&gt;
+&lt;p&gt;特殊处理逻辑：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# nvm 安装 node 4.x 版本&lt;/span&gt;
+nvm install lts/argon
+
+&lt;span style=&#34;color:#75715e&#34;&gt;# 修改 node 版本&lt;/span&gt;
+vim package.json
+  &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;engines&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#f92672&#34;&gt;{&lt;/span&gt;
+    &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;node&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;4.9.1&amp;#34;&lt;/span&gt;,
+    &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;npm&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;2.15.11&amp;#34;&lt;/span&gt;
+  &lt;span style=&#34;color:#f92672&#34;&gt;}&lt;/span&gt;,
+  
+&lt;span style=&#34;color:#75715e&#34;&gt;# 安装老版本的yarn&lt;/span&gt;
+npm --global install yarn@1.12.3
+
+&lt;span style=&#34;color:#75715e&#34;&gt;# 这样就可以了&lt;/span&gt;
+./bin/build
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;运行：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# jar目录&lt;/span&gt;
+cd ./target/uberjar
+
+&lt;span style=&#34;color:#75715e&#34;&gt;# 将impala驱动放这里。下载和安装参考 https://github.com/metabase/metabase/pull/3749/files&lt;/span&gt;
+mkdir plugins
+
+&lt;span style=&#34;color:#75715e&#34;&gt;# 换个端口号，本地还有其他版本metabase运行&lt;/span&gt;
+java -DMB_JETTY_PORT&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;12345&lt;/span&gt; -jar metabase.jar
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;效果：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;可以直接写SQL查询，基于查询结果也能做 chart/dashboard。&lt;/li&gt;
+&lt;li&gt;但是metadata（比如表结构）并没有同步。SQL查询的右边表结构也不会显示，filter功能受影响。&lt;/li&gt;
+&lt;li&gt;metadata没有同步，也没有报错信息。（作为对比，连mysql是有metadata同步的。）&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3 id=&#34;使用官方-sparksql-驱动&#34;&gt;使用官方 sparksql 驱动&lt;/h3&gt;
+&lt;p&gt;Metabase 版本：v0.35.3&lt;/p&gt;
+&lt;p&gt;尝试使用 sparksql 驱动来连接 Impala 数据库。&lt;/p&gt;
+&lt;p&gt;因为 SparkSQL 的 thrift server 复用的是 HiveServer2 的实现，架构如下图。而 Impala 可以使用 Hive 的JDBC Driver （ &lt;a href=&#34;https://impala.apache.org/docs/build/html/topics/impala_jdbc.html&#34;&gt;https://impala.apache.org/docs/build/html/topics/impala_jdbc.html&lt;/a&gt; &lt;a href=&#34;https://docs.cloudera.com/documentation/enterprise/latest/topics/impala_jdbc.html#jdbc_driver_choice&#34;&gt;https://docs.cloudera.com/documentation/enterprise/latest/topics/impala_jdbc.html#jdbc_driver_choice&lt;/a&gt; ）。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200520093534168.png&#34; alt=&#34;image-20200520093534168&#34;&gt;&lt;/p&gt;
+&lt;p&gt;效果：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;可以直接写SQL查询，基于查询结果也能做chart/dashboard。&lt;/li&gt;
+&lt;li&gt;但是表结构并没有同步。SQL查询的右边表结构也不会显示，filter功能受影响。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;同步有报错信息。终于有线索了&lt;/strong&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h4 id=&#34;db-metadata-同步出错&#34;&gt;db-metadata 同步出错&lt;/h4&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200525102147780.png&#34; alt=&#34;image-20200525102147780&#34;&gt;&lt;/p&gt;
+&lt;p&gt;第10行的这个方法崩了。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200525162346701.png&#34; alt=&#34;image-20200525162346701&#34;&gt;&lt;/p&gt;
+&lt;p&gt;方法 &lt;code&gt;driver/describe-database&lt;/code&gt; 的作用是获取db的所有表。方法 &lt;code&gt;driver/describe-table&lt;/code&gt;的作用是获取table的字段信息 。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-clojure&#34; data-lang=&#34;clojure&#34;&gt;(&lt;span style=&#34;color:#66d9ef&#34;&gt;defmulti &lt;/span&gt;describe-database
+  &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Return a map containing information that describes all of the tables in a `database`, an instance of the `Database`
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;  model. It is expected that this function will be peformant and avoid draining meaningful resources of the database.
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;  Results should match the `metabase.sync.interface/DatabaseMetadata` schema.&amp;#34;&lt;/span&gt;
+  {&lt;span style=&#34;color:#e6db74&#34;&gt;:arglists&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;&amp;#39;&lt;/span&gt;([driver database])}
+  dispatch-on-initialized-driver
+  &lt;span style=&#34;color:#e6db74&#34;&gt;:hierarchy&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;hierarchy&lt;/span&gt;)
+
+(&lt;span style=&#34;color:#66d9ef&#34;&gt;defmulti &lt;/span&gt;describe-table
+  &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Return a map containing information that describes the physical schema of `table` (i.e. the fields contained
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;  therein). `database` will be an instance of the `Database` model; and `table`, an instance of the `Table` model. It is
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;  expected that this function will be peformant and avoid draining meaningful resources of the database. Results
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;  should match the `metabase.sync.interface/TableMetadata` schema.&amp;#34;&lt;/span&gt;
+  {&lt;span style=&#34;color:#e6db74&#34;&gt;:arglists&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;&amp;#39;&lt;/span&gt;([driver database table])}
+  dispatch-on-initialized-driver
+  &lt;span style=&#34;color:#e6db74&#34;&gt;:hierarchy&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;hierarchy&lt;/span&gt;)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;这（两）个方法调用失败，Metabase 上自然就没有表结构信息了。&lt;/p&gt;
+&lt;p&gt;sparksql驱动“重载”了这两个方法。初步怀疑与重载有关，sparksql 的父驱动 jdbc-sql 是有默认实现的，尝试注释掉重载。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200525163902594.png&#34; alt=&#34;image-20200525163902594&#34;&gt;&lt;/p&gt;
+&lt;p&gt;神奇地发现，注释掉这两个方法，可以直接通过sparksql驱动连接impala服务器了。&lt;/p&gt;
+&lt;p&gt;猜想，SparkSQL的Thrift Server和Impala  Server实现有差异，SparkSQL Thrift Server可能因为有设计缺陷，需要在驱动上打上补丁。&lt;/p&gt;
+&lt;h2 id=&#34;自己写驱动&#34;&gt;自己写驱动&lt;/h2&gt;
+&lt;p&gt;基于最新版 Metabase 0.35.3 开发。（尝试编译 master 分支，发现打包结果 &lt;code&gt;java -jar metabase.jar&lt;/code&gt; 报错。）&lt;/p&gt;
+&lt;p&gt;自己写驱动，目前来看有两条路：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;通过分析 sparksql 驱动的报错信息，貌似找到了连接 Impala 数据库的方式。为了兼容现有的 sparksql 实现，在 sparksql 包中新增一个 impala 文件（复用hive-like父类实现，与sparksql 平行）。&lt;/li&gt;
+&lt;li&gt;新增一个驱动包 impala。基于Impala官方的JDBC驱动实现。需要系统理解下 Metabase 驱动开发逻辑。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;当然，都需要对 Metabase 有一定熟悉程度，先看下文档。&lt;/p&gt;
+&lt;h3 id=&#34;sparksql-包中新增一个-impala-driver&#34;&gt;sparksql 包中新增一个 impala driver&lt;/h3&gt;
+&lt;p&gt;按照上述思路，代码提交在这里。&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://github.com/XUJiahua/metabase/tree/driver-impala-in-sparksql/modules/drivers/sparksql&#34;&gt;https://github.com/XUJiahua/metabase/tree/driver-impala-in-sparksql/modules/drivers/sparksql&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;本地测试。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200526165539889.png&#34; alt=&#34;image-20200526165539889&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200526165644979.png&#34; alt=&#34;image-20200526165644979&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200526165735569.png&#34; alt=&#34;image-20200526165735569&#34;&gt;&lt;/p&gt;
+&lt;h4 id=&#34;sparksql-包的依赖问题-存量bug&#34;&gt;sparksql 包的依赖问题 （存量bug）&lt;/h4&gt;
+&lt;p&gt;如果服务端启用了 Kerberos 认证，会有这个问题。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200527105225274.png&#34; alt=&#34;image-20200527105225274&#34;&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;05-27 10:39:39 ERROR driver.util :: Database connection error
+java.lang.IllegalArgumentException: Unrecognized Hadoop major version number: 3.1.1
+	at org.apache.hadoop.hive.shims.ShimLoader.getMajorVersion(ShimLoader.java:174)
+	at org.apache.hadoop.hive.shims.ShimLoader.loadShims(ShimLoader.java:139)
+	at org.apache.hadoop.hive.shims.ShimLoader.getHadoopThriftAuthBridge(ShimLoader.java:125)
+	at org.apache.hive.service.auth.KerberosSaslHelper.getKerberosTransport(KerberosSaslHelper.java:54)
+	at org.apache.hive.jdbc.HiveConnection.createBinaryTransport(HiveConnection.java:445)
+	at org.apache.hive.jdbc.HiveConnection.openTransport(HiveConnection.java:201)
+	at org.apache.hive.jdbc.HiveConnection.&amp;lt;init&amp;gt;(HiveConnection.java:176)
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;sparksql jar 包依赖：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;# 作为 hadoop 基础包，含 Kerberos 认证逻辑代码
+org.apache.hadoop/hadoop-common &amp;quot;3.1.1&amp;quot;
+
+# 1.x 系列最后一个版本
+org.apache.hive/hive-jdbc &amp;quot;1.2.1&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;根据报错信息找到了Hive的源代码：&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200527110418542.png&#34; alt=&#34;image-20200527110418542&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://github.com/apache/hive/blob/release-1.2.1/shims/common/src/main/java/org/apache/hadoop/hive/shims/ShimLoader.java#L159&#34;&gt;https://github.com/apache/hive/blob/release-1.2.1/shims/common/src/main/java/org/apache/hadoop/hive/shims/ShimLoader.java#L159&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;所以 org.apache.hive/hive-jdbc &amp;ldquo;1.2.1&amp;rdquo; 压根就不兼容 org.apache.hadoop/hadoop-common &amp;ldquo;3.x&amp;rdquo; 版本的。人写代码的时候没测到这个case。&lt;/p&gt;
+&lt;p&gt;解决方式，引用hadoop-common 2.x最后一个版本：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;org.apache.hadoop/hadoop-common &amp;quot;2.10.0&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;重新编译打包后效果OK。&lt;/p&gt;
+&lt;h4 id=&#34;uberjar-的弊端&#34;&gt;uberjar 的弊端&lt;/h4&gt;
+&lt;p&gt;Metabase为了方便包的分发，整个项目、驱动都是uberjar的打包思路。弊端其实也挺明显。JDBC 驱动与数据库的兼容性问题，一般是适配数据库，JDBC 驱动被 uberjar 后，想换驱动就得重新编译源码。&lt;/p&gt;
+&lt;p&gt;比如 Hive Server 1.1.0，Hive JDBC 1.2.1 就连不上。开源产品的兼容性问题让人头秃。&lt;/p&gt;
+&lt;p&gt;&lt;del&gt;TODO：驱动不再uberjar，可以使用自己需要的依赖版本，比如我们使用 CDH 6.x 的 hadoop/hive jar包。&lt;/del&gt;&lt;/p&gt;
+&lt;p&gt;编译&lt;code&gt;Metabase&lt;/code&gt;时，&lt;code&gt;plugin driver&lt;/code&gt;不要打包到&lt;code&gt;metabase.jar&lt;/code&gt;即可。独立处理&lt;code&gt;plugin driver&lt;/code&gt;的打包和安装。&lt;/p&gt;
+&lt;h4 id=&#34;题外话-sparksql-deps&#34;&gt;题外话 sparksql-deps&lt;/h4&gt;
+&lt;p&gt;网上有个老版本的sparksql 驱动包 &lt;a href=&#34;https://s3.amazonaws.com/sparksql-deps/metabase-sparksql-deps-1.2.1.spark2-standalone.jar&#34;&gt;https://s3.amazonaws.com/sparksql-deps/metabase-sparksql-deps-1.2.1.spark2-standalone.jar&lt;/a&gt; 。之前解决这个问题，就是将其放到plugins目录。究其原因，其引用的hadoop-common版本是2.x的。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200527111551416.png&#34; alt=&#34;image-20200527111551416&#34;&gt;&lt;/p&gt;
+&lt;p&gt;而其源码包括历史记录（ &lt;a href=&#34;https://github.com/metabase/sparksql-deps&#34;&gt;https://github.com/metabase/sparksql-deps&lt;/a&gt; ）的hadoop-common版本是3.1.0。不要被误导了。&lt;/p&gt;
+&lt;h2 id=&#34;总结&#34;&gt;总结&lt;/h2&gt;
+&lt;p&gt;通过摸索，改进 Metabase sparksql 包后，我们可以使用 Impala 了。至于有多少坑，还得等我深度使用后才知道。&lt;/p&gt;
+&lt;p&gt;代码 &lt;a href=&#34;https://github.com/XUJiahua/metabase/tree/driver-impala-in-sparksql&#34;&gt;https://github.com/XUJiahua/metabase/tree/driver-impala-in-sparksql&lt;/a&gt;&lt;/p&gt;
+- https://xujiahua.github.io/posts/20200527-metabase-impala-driver/ - </description>
+        </item>
     
     
     
@@ -798,259 +995,6 @@ javax.security.sasl.SaslException: GSS initiate failed [Caused by GSSException: 
 &lt;li&gt;小bug多。用起来太容易烦躁了。对身心健康不好。&lt;/li&gt;
 &lt;/ol&gt;
 - https://xujiahua.github.io/posts/20200410-metabase-spark-sql/ - </description>
-        </item>
-    
-    
-    
-        <item>
-        <title>CDH6 启用 Spark Thrift Server</title>
-        <link>https://xujiahua.github.io/posts/20200410-spark-thrift-server-cdh/</link>
-        <pubDate>Fri, 10 Apr 2020 10:07:16 +0800</pubDate>
-        
-        <guid>https://xujiahua.github.io/posts/20200410-spark-thrift-server-cdh/</guid>
-        <description>许嘉华的笔记 https://xujiahua.github.io/posts/20200410-spark-thrift-server-cdh/ -&lt;p&gt;很遗憾，CDH版本的Spark阉割了Thrift Server。（可能与自家产品Impala有竞争关系的原因。）&lt;/p&gt;
-&lt;p&gt;参考 &lt;a href=&#34;https://docs.cloudera.com/documentation/enterprise/6/6.3/topics/spark.html#spark__d99299e107&#34;&gt;https://docs.cloudera.com/documentation/enterprise/6/6.3/topics/spark.html#spark__d99299e107&lt;/a&gt;&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;# ll /opt/cloudera/parcels/CDH/lib/spark/sbin/
-total 84
--rwxr-xr-x 1 root root 2803 Nov  9 00:05 slaves.sh
--rwxr-xr-x 1 root root 1429 Nov  9 00:05 spark-config.sh
--rwxr-xr-x 1 root root 5689 Nov  9 00:05 spark-daemon.sh
--rwxr-xr-x 1 root root 1262 Nov  9 00:05 spark-daemons.sh
--rwxr-xr-x 1 root root 1190 Nov  9 00:05 start-all.sh
--rwxr-xr-x 1 root root 1274 Nov  9 00:05 start-history-server.sh
--rwxr-xr-x 1 root root 2050 Nov  9 00:05 start-master.sh
--rwxr-xr-x 1 root root 1877 Nov  9 00:05 start-mesos-dispatcher.sh
--rwxr-xr-x 1 root root 1423 Nov  9 00:05 start-mesos-shuffle-service.sh
--rwxr-xr-x 1 root root 1279 Nov  9 00:05 start-shuffle-service.sh
--rwxr-xr-x 1 root root 3151 Nov  9 00:05 start-slave.sh
--rwxr-xr-x 1 root root 1527 Nov  9 00:05 start-slaves.sh
--rwxr-xr-x 1 root root 1478 Nov  9 00:05 stop-all.sh
--rwxr-xr-x 1 root root 1056 Nov  9 00:05 stop-history-server.sh
--rwxr-xr-x 1 root root 1080 Nov  9 00:05 stop-master.sh
--rwxr-xr-x 1 root root 1227 Nov  9 00:05 stop-mesos-dispatcher.sh
--rwxr-xr-x 1 root root 1084 Nov  9 00:05 stop-mesos-shuffle-service.sh
--rwxr-xr-x 1 root root 1067 Nov  9 00:05 stop-shuffle-service.sh
--rwxr-xr-x 1 root root 1557 Nov  9 00:05 stop-slave.sh
--rwxr-xr-x 1 root root 1064 Nov  9 00:05 stop-slaves.sh
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;可见，没有Thrift Server的启动脚本。&lt;/p&gt;
-&lt;p&gt;借鉴网上资料（CDH 6成功启动spark-thrift服务 &lt;a href=&#34;https://blog.csdn.net/qq_34864753/article/details/102729859&#34;&gt;https://blog.csdn.net/qq_34864753/article/details/102729859&lt;/a&gt;），在不修改CDH Spark的前提下，我们需要启动一个独立的Spark Thrift Server。&lt;/p&gt;
-&lt;p&gt;还需要考虑CDH Kerberos认证的问题。&lt;/p&gt;
-&lt;h2 id=&#34;spark-thrift-server-简介&#34;&gt;Spark Thrift Server 简介&lt;/h2&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/sparksqlthriftserver.png&#34; alt=&#34;Spark SQL Thrift Server&#34;&gt;&lt;/p&gt;
-&lt;p&gt;Spark Thrift Server是Spark社区基于HiveServer2实现的一个Thrift服务。旨在无缝兼容HiveServer2。&lt;/p&gt;
-&lt;p&gt;因为Spark Thrift Server的接口和协议都和HiveServer2完全一致，因此我们部署好Spark Thrift Server后，可以直接使用hive的beeline访问Spark Thrift Server执行相关语句。&lt;/p&gt;
-&lt;p&gt;Spark Thrift Server的目的也只是取代HiveServer2，因此它依旧可以和Hive Metastore进行交互，获取到hive的元数据。&lt;/p&gt;
-&lt;p&gt;参考 &lt;a href=&#34;https://www.jianshu.com/p/b719c6415411&#34;&gt;https://www.jianshu.com/p/b719c6415411&lt;/a&gt;&lt;/p&gt;
-&lt;h2 id=&#34;apache-spark配置&#34;&gt;Apache Spark配置&lt;/h2&gt;
-&lt;h3 id=&#34;下载官方版本&#34;&gt;下载官方版本&lt;/h3&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;cd /opt
-wget https://archive.apache.org/dist/spark/spark-2.4.0/spark-2.4.0-bin-hadoop2.7.tgz
-cd spark-2.4.0-bin-hadoop2.7 &lt;span style=&#34;color:#f92672&#34;&gt;&amp;amp;&amp;amp;&lt;/span&gt; ln -s &lt;span style=&#34;color:#e6db74&#34;&gt;`&lt;/span&gt;pwd&lt;span style=&#34;color:#e6db74&#34;&gt;`&lt;/span&gt; /opt/spark
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;spark配置文件&#34;&gt;Spark配置文件&lt;/h3&gt;
-&lt;p&gt;通过软链接的方式复用Hive的配置。&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;ln -s /etc/hive/conf/hive-site.xml /opt/spark/conf/hive-site.xml
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;最后配置文件夹长这样。&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# ll /opt/spark/conf/&lt;/span&gt;
--rw-r--r-- &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt; webapp webapp  &lt;span style=&#34;color:#ae81ff&#34;&gt;996&lt;/span&gt; Oct &lt;span style=&#34;color:#ae81ff&#34;&gt;29&lt;/span&gt;  &lt;span style=&#34;color:#ae81ff&#34;&gt;2018&lt;/span&gt; docker.properties.template
--rw-r--r-- &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt; webapp webapp &lt;span style=&#34;color:#ae81ff&#34;&gt;1105&lt;/span&gt; Oct &lt;span style=&#34;color:#ae81ff&#34;&gt;29&lt;/span&gt;  &lt;span style=&#34;color:#ae81ff&#34;&gt;2018&lt;/span&gt; fairscheduler.xml.template
-lrwxrwxrwx &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt; root   root     &lt;span style=&#34;color:#ae81ff&#34;&gt;28&lt;/span&gt; Apr  &lt;span style=&#34;color:#ae81ff&#34;&gt;9&lt;/span&gt; 11:05 hive-site.xml -&amp;gt; /etc/hive/conf/hive-site.xml
--rw-r--r-- &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt; webapp webapp &lt;span style=&#34;color:#ae81ff&#34;&gt;2025&lt;/span&gt; Oct &lt;span style=&#34;color:#ae81ff&#34;&gt;29&lt;/span&gt;  &lt;span style=&#34;color:#ae81ff&#34;&gt;2018&lt;/span&gt; log4j.properties.template
--rw-r--r-- &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt; webapp webapp &lt;span style=&#34;color:#ae81ff&#34;&gt;7801&lt;/span&gt; Oct &lt;span style=&#34;color:#ae81ff&#34;&gt;29&lt;/span&gt;  &lt;span style=&#34;color:#ae81ff&#34;&gt;2018&lt;/span&gt; metrics.properties.template
--rw-r--r-- &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt; webapp webapp  &lt;span style=&#34;color:#ae81ff&#34;&gt;865&lt;/span&gt; Oct &lt;span style=&#34;color:#ae81ff&#34;&gt;29&lt;/span&gt;  &lt;span style=&#34;color:#ae81ff&#34;&gt;2018&lt;/span&gt; slaves.template
--rw-r--r-- &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt; webapp webapp &lt;span style=&#34;color:#ae81ff&#34;&gt;1292&lt;/span&gt; Oct &lt;span style=&#34;color:#ae81ff&#34;&gt;29&lt;/span&gt;  &lt;span style=&#34;color:#ae81ff&#34;&gt;2018&lt;/span&gt; spark-defaults.conf.template
--rwxr-xr-x &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt; webapp webapp &lt;span style=&#34;color:#ae81ff&#34;&gt;4221&lt;/span&gt; Oct &lt;span style=&#34;color:#ae81ff&#34;&gt;29&lt;/span&gt;  &lt;span style=&#34;color:#ae81ff&#34;&gt;2018&lt;/span&gt; spark-env.sh.template
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h4 id=&#34;spark配置文件配置方式&#34;&gt;Spark配置文件配置方式&lt;/h4&gt;
-&lt;ol&gt;
-&lt;li&gt;默认配置路径：&lt;code&gt;$SPARK_HOME/conf&lt;/code&gt;，如果&lt;code&gt;$SPARK_HOME&lt;/code&gt;不存在，脚本中会把脚本上层目录当做&lt;code&gt;$SPARK_HOME&lt;/code&gt;。&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;$SPARK_CONF_DIR&lt;/code&gt;，可以指定SPARK配置文件夹。&lt;/li&gt;
-&lt;li&gt;Spark classpath，如果&lt;code&gt;hdfs-site.xml&lt;/code&gt; &lt;code&gt;core-site.xml&lt;/code&gt;在classpath，Spark可以读取。&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;$HADOOP_CONF_DIR&lt;/code&gt;，一般是&lt;code&gt;/etc/hadoop/conf&lt;/code&gt;目录，读Hadoop配置信息。&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;$YARN_CONF_DIR&lt;/code&gt;，一般也是&lt;code&gt;/etc/hadoop/conf&lt;/code&gt;目录。&lt;/li&gt;
-&lt;li&gt;命令行中可以覆盖以上配置文件中的具体参数。&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;参考 &lt;a href=&#34;https://spark.apache.org/docs/latest/configuration.html#inheriting-hadoop-cluster-configuration&#34;&gt;https://spark.apache.org/docs/latest/configuration.html#inheriting-hadoop-cluster-configuration&lt;/a&gt;&lt;/p&gt;
-&lt;h3 id=&#34;spark-lib修改&#34;&gt;Spark lib修改&lt;/h3&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;cd /opt/spark
-rm -rf jars/hadoop-yarn-*
-cp /opt/cloudera/parcels/CDH-6.3.2-1.cdh6.3.2.p0.1605554/jars/hadoop-yarn-* jars/
-cp /opt/cloudera/parcels/CDH-6.3.2-1.cdh6.3.2.p0.1605554/jars/hive-shims-scheduler-2.1.1-cdh6.3.2.jar jars/
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;kerberos-认证&#34;&gt;Kerberos 认证&lt;/h2&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image-20200410140136660.png&#34; alt=&#34;image-20200410140136660&#34;&gt;&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;图中的三个角色，在Kerkeros认证体系下都对应一个principal。Kerberos principal相当于用户名，keytab相当于密码。权限配置，依靠hive与hdfs本身。&lt;/li&gt;
-&lt;li&gt;JDBC客户端与Spark JDBC Server需要使用Kerberos认证。JDBC客户端需要拥有principal/keytab对。我们手动创建。&lt;/li&gt;
-&lt;li&gt;Spark JDBC Server与Hive metastore需要使用Kerberos认证。JDBC服务端需要拥有principal/keytab对。我们手动创建。&lt;/li&gt;
-&lt;li&gt;Hive metastore也拥有自己的principal/keytab对，不过这个已经由CDH托管了。&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;常见Kerberos错误：&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;org.apache.hive.service.ServiceException: Unable to login to kerberos with given principal/keytab / Caused by: java.io.IOException: HiveServer2 Kerberos principal or keytab is not correctly configured&lt;/li&gt;
-&lt;li&gt;Caused by: java.io.IOException: Login failure for &lt;a href=&#34;mailto:hive/xh-hd2-peggy-dost000003@PEGGY.LING&#34;&gt;hive/xh-hd2-peggy-dost000003@PEGGY.LING&lt;/a&gt; from keytab hive.keytab: javax.security.auth.login.LoginException: Unable to obtain password from user&lt;/li&gt;
-&lt;li&gt;SASL negotiation failure
-javax.security.sasl.SaslException: GSS initiate failed [Caused by GSSException: No valid credentials provided (Mechanism level: Failed to find any Kerberos tgt)]&lt;/li&gt;
-&lt;/ol&gt;
-&lt;h3 id=&#34;创建-spark-jdbc-server-的-principal&#34;&gt;创建 Spark JDBC Server 的 Principal&lt;/h3&gt;
-&lt;p&gt;因为复用了Hive的配置文件，待创建的principal的名字需要满足配置中的规范。&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;webapp@xh-hd2-peggy-dost000004 spark&lt;span style=&#34;color:#f92672&#34;&gt;]&lt;/span&gt;$ cat conf/hive-site.xml
-...
-  &amp;lt;property&amp;gt;
-    &amp;lt;name&amp;gt;hive.server2.authentication.kerberos.principal&amp;lt;/name&amp;gt;
-    &amp;lt;value&amp;gt;hive/_HOST@PEGGY.LING&amp;lt;/value&amp;gt;
-  &amp;lt;/property&amp;gt;
-... 
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;在Kerberos服务器创建 principal及导出 keytab，同步到Spark JDBC Server所在机器。&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# create principal&lt;/span&gt;
-kadmin.local addprinc -randkey hive/xh-hd2-peggy-dost000004
-&lt;span style=&#34;color:#75715e&#34;&gt;# export keytab&lt;/span&gt;
-kadmin.local ktadd -k hive.xh-hd2-peggy-dost000004.keytab hive/xh-hd2-peggy-dost000004
-&lt;span style=&#34;color:#75715e&#34;&gt;# 验证是否OK&lt;/span&gt;
-kinit -kt hive.xh-hd2-peggy-dost000004.keytab hive/xh-hd2-peggy-dost000004@PEGGY.LING
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;启动-spark-jdbc-server&#34;&gt;启动 Spark JDBC Server&lt;/h3&gt;
-&lt;p&gt;启动脚本如下。因为配置文件里没有指定keytab的路径，需要通过&lt;code&gt;--hiveconf&lt;/code&gt;指定。&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;#!/usr/bin/bash
-&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;
-export JAVA_HOME&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;/usr/java/jdk1.8.0_181-cloudera
-export PATH&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;$PATH:$JAVA_HOME/bin
-export HADOOP_CONF_DIR&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;/etc/hadoop/conf
-
-kinit -kt hive.xh-hd2-peggy-dost000004.keytab hive/xh-hd2-peggy-dost000004@PEGGY.LING
-
-sbin/start-thriftserver.sh &lt;span style=&#34;color:#ae81ff&#34;&gt;\
-&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;&lt;/span&gt;--hiveconf hive.server2.authentication.kerberos.keytab hive.xh-hd2-peggy-dost000004.keytab
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;也可以参考这篇文章：&lt;/p&gt;
-&lt;p&gt;Configuring Spark Thrift Server with Kerberos &lt;a href=&#34;https://mapr.com/docs/61/Spark/ConfiguringSparkSQLThriftServer_Kerberos.html&#34;&gt;https://mapr.com/docs/61/Spark/ConfiguringSparkSQLThriftServer_Kerberos.html&lt;/a&gt;&lt;/p&gt;
-&lt;h4 id=&#34;kinit-ticket过期问题&#34;&gt;kinit ticket过期问题&lt;/h4&gt;
-&lt;p&gt;Spark Thrift Server 进程会自动处理Kerberos ticket renewal操作。&lt;/p&gt;
-&lt;p&gt;默认的ticket_lifetime 1d，renew_lifetime 7d。上次kinit是04/10。&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;[webapp@xh-hd2-peggy-dost000004 spark]$ klist
-Ticket cache: FILE:/tmp/krb5cc_1000
-Default principal: hive/xh-hd2-peggy-dost000004@PEGGY.LING
-
-Valid starting       Expires              Service principal
-04/13/2020 01:32:45  04/14/2020 01:32:45  krbtgt/PEGGY.LING@PEGGY.LING
-	renew until 04/17/2020 15:56:45
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;就看7天后会怎么样了。renew周期过了，会重建么？理论上是可以的。&lt;/p&gt;
-&lt;p&gt;&lt;strong&gt;2020-05-30：实践证明，renew周期过后，ticket就无法renew，也就无法连接数据库。简单直接的方法，设置定时任务执行 kinit 命令，刷新ticket，不依赖 spark 的实现。&lt;/strong&gt;&lt;/p&gt;
-&lt;p&gt;看到Spark代码中已经有kerberos集成了，包括登录啥的。&lt;/p&gt;
-&lt;p&gt;spark/sql/hive-thriftserver/v2.3.5/src/main/java/org/apache/hive/service/auth/HiveAuthFactory.java&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image-20200413110032646.png&#34; alt=&#34;image-20200413110032646&#34;&gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image-20200413105917167.png&#34; alt=&#34;image-20200413105917167&#34;&gt;&lt;/p&gt;
-&lt;h3 id=&#34;创建-jdbc-client-的-principal&#34;&gt;创建 JDBC Client 的 Principal&lt;/h3&gt;
-&lt;p&gt;在Kerberos服务器创建 principal及导出 keytab，同步到 JDBC Client 所在机器。这里对principal的名称没有严格要求。&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# create principal&lt;/span&gt;
-kadmin.local addprinc -randkey hive/xh-hd2-peggy-dost000003
-&lt;span style=&#34;color:#75715e&#34;&gt;# export keytab&lt;/span&gt;
-kadmin.local ktadd -k hive.xh-hd2-peggy-dost000003.keytab hive/xh-hd2-peggy-dost000003 
-&lt;span style=&#34;color:#75715e&#34;&gt;# 验证是否OK&lt;/span&gt;
-kinit -kt hive.xh-hd2-peggy-dost000003.keytab hive/xh-hd2-peggy-dost000003@PEGGY.LING
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;启动-jdbc-client&#34;&gt;启动 JDBC Client&lt;/h3&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;webapp@xh-hd2-peggy-dost000003 spark&lt;span style=&#34;color:#f92672&#34;&gt;]&lt;/span&gt;$ kinit -kt hive.xh-hd2-peggy-dost000003.keytab hive/xh-hd2-peggy-dost000003@PEGGY.LING
-
-&lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;webapp@xh-hd2-peggy-dost000003 spark&lt;span style=&#34;color:#f92672&#34;&gt;]&lt;/span&gt;$ bin/beeline -u &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;jdbc:hive2://xh-hd2-peggy-dost000004:10000/default;principal=hive/xh-hd2-peggy-dost000004@PEGGY.LING&amp;#34;&lt;/span&gt;
-Connecting to jdbc:hive2://xh-hd2-peggy-dost000004:10000/default;principal&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;hive/xh-hd2-peggy-dost000004@PEGGY.LING
-2020-04-10 16:09:01 INFO  Utils:310 - Supplied authorities: xh-hd2-peggy-dost000004:10000
-2020-04-10 16:09:01 INFO  Utils:397 - Resolved authority: xh-hd2-peggy-dost000004:10000
-2020-04-10 16:09:01 INFO  HiveConnection:203 - Will try to open client transport with JDBC Uri: jdbc:hive2://xh-hd2-peggy-dost000004:10000/default;principal&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;hive/xh-hd2-peggy-dost000004@PEGGY.LING
-Connected to: Spark SQL &lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;version 2.4.0&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt;
-Driver: Hive JDBC &lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;version 1.2.1.spark2&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt;
-Transaction isolation: TRANSACTION_REPEATABLE_READ
-Beeline version 1.2.1.spark2 by Apache Hive
-0: jdbc:hive2://xh-hd2-peggy-dost000004:10000&amp;gt; show databases;
-+---------------+--+
-| databaseName  |
-+---------------+--+
-| db1           |
-| default       |
-| product       |
-+---------------+--+
-&lt;span style=&#34;color:#ae81ff&#34;&gt;3&lt;/span&gt; rows selected &lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;0.091 seconds&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;至此，Thrift Server的启用就完成了。&lt;/p&gt;
-&lt;h3 id=&#34;yarn-运行&#34;&gt;YARN 运行&lt;/h3&gt;
-&lt;p&gt;失败了，TODO&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;sbin/start-thriftserver.sh --hiveconf hive.server2.authentication.kerberos.keytab hive.keytab --hiveconf hive.server2.thrift.port=10001 --queue root.zm_yarn_pool.development  --master yarn --executor-memory 4g --executor-cores 2 --num-executors 20
-
-2020-04-09 17:56:19 INFO  Client:54 - Requesting a new application from cluster with 5 NodeManagers
-Exception in thread &amp;quot;main&amp;quot; java.lang.NoClassDefFoundError: org/apache/hadoop/util/FastNumberFormat
-        at org.apache.hadoop.yarn.api.records.ApplicationId.toString(ApplicationId.java:104)
-        at org.apache.spark.deploy.yarn.Client$.org$apache$spark$deploy$yarn$Client$$getAppStagingDir(Client.scala:1222)
-        at org.apache.spark.deploy.yarn.Client.org$apache$spark$deploy$yarn$Client$$cleanupStagingDirInternal$1(Client.scala:206)
-        at org.apache.spark.deploy.yarn.Client.cleanupStagingDir(Client.scala:226)
-        at org.apache.spark.deploy.yarn.Client.submitApplication(Client.scala:191)
-        at org.apache.spark.scheduler.cluster.YarnClientSchedulerBackend.start(YarnClientSchedulerBackend.scala:57)
-        at org.apache.spark.scheduler.TaskSchedulerImpl.start(TaskSchedulerImpl.scala:178)
-        at org.apache.spark.SparkContext.&amp;lt;init&amp;gt;(SparkContext.scala:501)
-        at org.apache.spark.SparkContext$.getOrCreate(SparkContext.scala:2520)
-        at org.apache.spark.sql.SparkSession$Builder$$anonfun$7.apply(SparkSession.scala:935)
-        at org.apache.spark.sql.SparkSession$Builder$$anonfun$7.apply(SparkSession.scala:926)
-        at scala.Option.getOrElse(Option.scala:121)
-&lt;/code&gt;&lt;/pre&gt;&lt;h2 id=&#34;外传cdh是如何管理hadoop配置文件的&#34;&gt;【外传】CDH是如何管理Hadoop配置文件的&lt;/h2&gt;
-&lt;p&gt;以下结果都是通过观察实践所得。&lt;/p&gt;
-&lt;p&gt;以Hive为例，&lt;code&gt;/etc/hive/conf&lt;/code&gt;下的配置文件由CDH生成。（CDH管理界面上可以修改这些配置。）&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# ll /etc/hive/conf/&lt;/span&gt;
-total &lt;span style=&#34;color:#ae81ff&#34;&gt;64&lt;/span&gt;
--rw-r--r-- &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt; root root   &lt;span style=&#34;color:#ae81ff&#34;&gt;21&lt;/span&gt; Dec &lt;span style=&#34;color:#ae81ff&#34;&gt;31&lt;/span&gt; 15:02 __cloudera_generation__
--rw-r--r-- &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt; root root   &lt;span style=&#34;color:#ae81ff&#34;&gt;70&lt;/span&gt; Dec &lt;span style=&#34;color:#ae81ff&#34;&gt;31&lt;/span&gt; 15:02 __cloudera_metadata__
--rw-r--r-- &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt; root root &lt;span style=&#34;color:#ae81ff&#34;&gt;3846&lt;/span&gt; Dec &lt;span style=&#34;color:#ae81ff&#34;&gt;31&lt;/span&gt; 15:02 core-site.xml
--rw-r--r-- &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt; root root  &lt;span style=&#34;color:#ae81ff&#34;&gt;617&lt;/span&gt; Dec &lt;span style=&#34;color:#ae81ff&#34;&gt;31&lt;/span&gt; 15:02 hadoop-env.sh
--rw-r--r-- &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt; root root &lt;span style=&#34;color:#ae81ff&#34;&gt;3839&lt;/span&gt; Dec &lt;span style=&#34;color:#ae81ff&#34;&gt;31&lt;/span&gt; 15:02 hdfs-site.xml
--rw-r--r-- &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt; root root &lt;span style=&#34;color:#ae81ff&#34;&gt;2655&lt;/span&gt; Dec &lt;span style=&#34;color:#ae81ff&#34;&gt;31&lt;/span&gt; 15:02 hive-env.sh
--rw-r--r-- &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt; root root &lt;span style=&#34;color:#ae81ff&#34;&gt;6925&lt;/span&gt; Dec &lt;span style=&#34;color:#ae81ff&#34;&gt;31&lt;/span&gt; 15:02 hive-site.xml
-...
-
-&lt;span style=&#34;color:#75715e&#34;&gt;# head /etc/hive/conf/hive-site.xml&lt;/span&gt;
-&amp;lt;?xml version&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;1.0&amp;#34;&lt;/span&gt; encoding&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;UTF-8&amp;#34;&lt;/span&gt;?&amp;gt;
-
-&amp;lt;!--Autogenerated by Cloudera Manager--&amp;gt;
-&amp;lt;configuration&amp;gt;
-  &amp;lt;property&amp;gt;
-    &amp;lt;name&amp;gt;hive.metastore.uris&amp;lt;/name&amp;gt;
-    &amp;lt;value&amp;gt;thrift://xh-hd2-peggy-dost001:9083&amp;lt;/value&amp;gt;
-  &amp;lt;/property&amp;gt;
-  &amp;lt;property&amp;gt;
-    &amp;lt;name&amp;gt;hive.metastore.client.socket.timeout&amp;lt;/name&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;我们的集群是开启了Kerberos认证的。但是上述配置文件里没见principal的keytab路径配置。&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# grep keytab /etc/hive/conf/hive-site.xml&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;也就是说，&lt;code&gt;/etc/hive/conf&lt;/code&gt;不是真正在被使用的配置文件。&lt;/p&gt;
-&lt;p&gt;&lt;code&gt;/var/run/cloudera-scm-agent/process/&lt;/code&gt; 这个目录中有所有CDH监控的进程，包括我们关注的Hive进程。&lt;/p&gt;
-&lt;p&gt;参考 &lt;a href=&#34;https://community.cloudera.com/t5/Support-Questions/Location-of-keytab-files/td-p/33716&#34;&gt;https://community.cloudera.com/t5/Support-Questions/Location-of-keytab-files/td-p/33716&lt;/a&gt;&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;# ls /var/run/cloudera-scm-agent/process/*hive*
-/var/run/cloudera-scm-agent/process/954-hive-HIVEMETASTORE:
-cloudera-monitor.properties        config.zip     creds.localjceks  hdfs-site.xml  hive-log4j2.properties  logs       redaction-rules.json  service-metrics.properties  supervisor_status
-cloudera-stack-monitor.properties  core-site.xml  exit_code         hive.keytab    hive-site.xml           proc.json  sentry-site.xml       supervisor.conf             yarn-conf
-
-/var/run/cloudera-scm-agent/process/955-hive-HIVESERVER2:
-cloudera-monitor.properties        config.zip     exit_code           hdfs-site.xml  hive-log4j2.properties  logs                         navigator.lineage.client.properties  redaction-rules.json  service-metrics.properties  supervisor.conf    yarn-conf
-cloudera-stack-monitor.properties  core-site.xml  fair-scheduler.xml  hive.keytab    hive-site.xml           navigator.client.properties  proc.json                            sentry-site.xml       spark-defaults.conf         supervisor_status
-
-/var/run/cloudera-scm-agent/process/956-hive-WEBHCAT:
-cloudera-monitor.properties        config.zip     exit_code      hive-site.xml  logs       redaction-rules.json        supervisor.conf    webhcat-default.xml       webhcat-site.xml
-cloudera-stack-monitor.properties  core-site.xml  hdfs-site.xml  HTTP.keytab    proc.json  service-metrics.properties  supervisor_status  webhcat-log4j.properties  yarn-conf
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;这里Hive有三个进程，metastore，hiveserver2，WEBHCAT。可见principal对应的keytab，这里的 &lt;code&gt;hive.keytab&lt;/code&gt;，也是在这里维护着。配置文件也是在&lt;code&gt;/etc/hive/conf&lt;/code&gt;基础上作了改动，比如keytab路径的设置。&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;root 954-hive-HIVEMETASTORE&lt;span style=&#34;color:#f92672&#34;&gt;]&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# grep kerberos hive-site.xml&lt;/span&gt;
-    &amp;lt;name&amp;gt;hive.metastore.kerberos.principal&amp;lt;/name&amp;gt;
-    &amp;lt;name&amp;gt;hive.metastore.kerberos.keytab.file&amp;lt;/name&amp;gt;
-    &amp;lt;value&amp;gt;kerberos&amp;lt;/value&amp;gt;
-    
-&lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;root 955-hive-HIVESERVER2&lt;span style=&#34;color:#f92672&#34;&gt;]&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# grep kerberos hive-site.xml&lt;/span&gt;
-    &amp;lt;value&amp;gt;kerberos&amp;lt;/value&amp;gt;
-    &amp;lt;name&amp;gt;hive.metastore.kerberos.principal&amp;lt;/name&amp;gt;
-    &amp;lt;name&amp;gt;hive.server2.authentication.kerberos.principal&amp;lt;/name&amp;gt;
-    &amp;lt;name&amp;gt;hive.server2.authentication.kerberos.keytab&amp;lt;/name&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;HiveMetaStore与HiveServer2使用的keytab是不同的。一个principal对应多个keytab么？TODO：可能是因为加密随机的原因？？？&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;root@xh-hd2-peggy-dost001 955-hive-HIVESERVER2&lt;span style=&#34;color:#f92672&#34;&gt;]&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# md5sum hive.keytab&lt;/span&gt;
-523357eec4f542b7b3df7ec52cee43b2  hive.keytab
-
-&lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;root@xh-hd2-peggy-dost001 954-hive-HIVEMETASTORE&lt;span style=&#34;color:#f92672&#34;&gt;]&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# md5sum hive.keytab&lt;/span&gt;
-3c6f52333067518ae4bdce1e99878857  hive.keytab
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;TODO：实验发现，导出两次，之前的keytab就失效了！进入知识盲区。&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;[root@xh-hd2-peggy-rost01 ~]# kadmin.local addprinc -randkey hive/xh-hd2-peggy-dost000003
-[root@xh-hd2-peggy-rost01 ~]# kadmin.local ktadd -k hive.xh-hd2-peggy-dost000003.keytab hive/xh-hd2-peggy-dost000003
-[root@xh-hd2-peggy-rost01 ~]# mv hive.xh-hd2-peggy-dost000003.keytab hive.xh-hd2-peggy-dost000003.keytab.bak
-[root@xh-hd2-peggy-rost01 ~]# kadmin.local ktadd -k hive.xh-hd2-peggy-dost000003.keytab hive/xh-hd2-peggy-dost000003
-[root@xh-hd2-peggy-rost01 ~]# kinit -kt hive.xh-hd2-peggy-dost000003.keytab hive/xh-hd2-peggy-dost000003@PEGGY.LING
-[root@xh-hd2-peggy-rost01 ~]# kinit -kt hive.xh-hd2-peggy-dost000003.keytab.bak hive/xh-hd2-peggy-dost000003@PEGGY.LING
-kinit: Password incorrect while getting initial credentials
-&lt;/code&gt;&lt;/pre&gt;- https://xujiahua.github.io/posts/20200410-spark-thrift-server-cdh/ - </description>
         </item>
     
     

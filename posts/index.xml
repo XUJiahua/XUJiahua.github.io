@@ -6,10 +6,25 @@
     <description>Recent content in Posts on 许嘉华的笔记</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Wed, 09 Sep 2020 09:52:37 +0800</lastBuildDate>
+    <lastBuildDate>Wed, 16 Sep 2020 10:48:11 +0800</lastBuildDate>
     
 	<atom:link href="https://xujiahua.github.io/posts/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>pandasql库解析</title>
+      <link>https://xujiahua.github.io/posts/20200916-pandas-sql/</link>
+      <pubDate>Wed, 16 Sep 2020 10:48:11 +0800</pubDate>
+      
+      <guid>https://xujiahua.github.io/posts/20200916-pandas-sql/</guid>
+      <description>对 Pandas 库没有原生 SQL 支持表示遗憾，今天看到这么一个库 https://github.com/yhat/pandasql 。
+它的思路比较简单粗暴，先把 pandas Dataframe 存储到一个关系型数据库（sqlite/postgresql），最后 SQL query 的结果其实是查询关系型数据库返回的结果，封装成 Dataframe 来呈现。其中数据库操作使用 sqlalchemy 这个库。
+学到的知识点：locals()，globals() 这两个方法。
+ The globals() method returns the dictionary of the current global symbol table. https://www.programiz.com/python-programming/methods/built-in/globals
+The locals() method updates and returns a dictionary of the current local symbol table. https://www.programiz.com/python-programming/methods/built-in/locals
+ 如下代码，meat 是一个 Dataframe 变量，为何 SQL query 里能直接引用这个变量。
+$ python &amp;gt;&amp;gt;&amp;gt; from pandasql import sqldf, load_meat, load_births &amp;gt;&amp;gt;&amp;gt; pysqldf = lambda q: sqldf(q, globals()) &amp;gt;&amp;gt;&amp;gt; meat = load_meat() &amp;gt;&amp;gt;&amp;gt; print pysqldf(&amp;quot;SELECT * FROM meat LIMIT 10;&amp;quot;).</description>
+    </item>
     
     <item>
       <title>Docker/Kubernetes 系列目录</title>
@@ -18,7 +33,7 @@
       
       <guid>https://xujiahua.github.io/posts/20200909-docker-series/</guid>
       <description>不定时更新中。
-Docker 基础  Docker 入门，官方 get started 边看边实践 Docker 如何改变软件开发协作 Dockerfile 最佳实践 Docker Network小结 Docker 日志驱动小结 使用 fluentd 收集 Docker 日志  进阶  Linux namespace 介绍 使用 ip/iptables 命令模拟 Docker bridge 网络 Linux cgroup 介绍 Docker 中 namespace/cgroup 的体现 Union file system libcontainer/containerd/runc libnetwork  Kubernetes 基础  k8s 虚拟机体验 https://github.com/XUJiahua/k8s-try  参考链接  官方文档 https://docs.docker.com/ Docker — 从入门到实践 https://www.yuque.com/grasilife/docker/readme  参考书籍  Docker技术入门与实战（第3版）（2018） Docker 进阶与实战（2016） - 华为 Docker 实践小组 Kubernetes网络权威指南：基础、原理与实践 （2019）  </description>
+Docker 基础  Docker 入门，官方 get started 边看边实践 Docker 如何改变软件开发协作 Dockerfile 最佳实践 Docker Network小结 Docker 日志驱动小结 使用 fluentd 收集 Docker 日志  进阶  Linux namespace 介绍 使用 ip/iptables 命令模拟 Docker bridge 网络 Linux cgroup 介绍 Docker 中 namespace/cgroup 的体现 Union file system 容器网络模型标准 Container Network Model (CNM) 与其实现 libnetwork https://github.com/moby/libnetwork/blob/master/docs/design.md CNI 标准，不再使用 docker 自带的网络驱动，docker run &amp;ndash;net=none libcontainer/containerd/runc  Kubernetes 基础  k8s 虚拟机体验 https://github.com/XUJiahua/k8s-try  参考链接  官方文档 https://docs.</description>
     </item>
     
     <item>
