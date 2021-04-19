@@ -5,9 +5,141 @@
     <description>Recent content on 许嘉华的笔记</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Wed, 16 Sep 2020 10:48:11 +0800</lastBuildDate>
+    <lastBuildDate>Mon, 19 Apr 2021 10:24:00 +0800</lastBuildDate>
     
         <atom:link href="https://xujiahua.github.io/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    
+        <item>
+        <title>专利申请流程小结</title>
+        <link>https://xujiahua.github.io/posts/20200311-patent/</link>
+        <pubDate>Wed, 11 Mar 2020 11:25:09 +0800</pubDate>
+        
+        <guid>https://xujiahua.github.io/posts/20200311-patent/</guid>
+        <description>许嘉华的笔记 https://xujiahua.github.io/posts/20200311-patent/ -&lt;p&gt;去年憋的一篇专利，到申请公布阶段了，算是去年研究区块链的副成果。https://patents.google.com/patent/CN110807211。整理下专利申请流程。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/01C8BAF0-B9C7-4F08-9575-38AF85AC4F14.png&#34; alt=&#34;01C8BAF0-B9C7-4F08-9575-38AF85AC4F14&#34;&gt;&lt;/p&gt;
+&lt;h2 id=&#34;专利申请流程&#34;&gt;专利申请流程&lt;/h2&gt;
+&lt;p&gt;主要流程如下图，来自网络。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/7CA0DB1A-692F-481B-BFA3-987F503E1E39.png&#34; alt=&#34;7CA0DB1A-692F-481B-BFA3-987F503E1E39&#34;&gt;&lt;/p&gt;
+&lt;h3 id=&#34;技术成果生成&#34;&gt;技术成果生成&lt;/h3&gt;
+&lt;p&gt;有可以申请专利的点，这个因人而异。基于点子，写个草稿。&lt;/p&gt;
+&lt;h3 id=&#34;申请专利&#34;&gt;申请专利&lt;/h3&gt;
+&lt;p&gt;找一个专利代理，让他们提供专利稿的修改意见。反复迭代直到专利代理觉得没问题了。&lt;/p&gt;
+&lt;p&gt;之后专利代理会出具一份「专利申请受理通知书」，你再交点钱，可能还会有税费减免。&lt;/p&gt;
+&lt;p&gt;我遇到了专利代理看不大懂专利的情况，僵持了一段时间，后面换了一家顺畅好多。&lt;/p&gt;
+&lt;h3 id=&#34;专利申请公布&#34;&gt;专利申请公布&lt;/h3&gt;
+&lt;p&gt;这个时间点叫做：申请公布日。&lt;/p&gt;
+&lt;p&gt;说明初审过了。实用新型和外观发明的话，直接就授权了，而发明还需要实质审查。&lt;/p&gt;
+&lt;p&gt;&amp;ldquo;初步审查合格后，实用新型和外观就直接授权了，而发明还要经过实质审查，检索国内外的资料，确认没有相同的才会授权，所以发明的含金量会高很多，因此发明专利审查的时间也会是比较长的，一般从申请到拿证书都需要2-3年，而实用、外观这两项专利一年能拿到。&amp;rdquo;&lt;/p&gt;
+&lt;h3 id=&#34;专利授权公告&#34;&gt;专利授权公告&lt;/h3&gt;
+&lt;p&gt;这个时间点叫做：授权公告日。&lt;/p&gt;
+&lt;p&gt;说明正式审查完了。这时候才算是真正拥有专利。&lt;/p&gt;
+- https://xujiahua.github.io/posts/20200311-patent/ - </description>
+        </item>
+    
+    
+    
+        <item>
+        <title>Github pages重新开始：使用Hugo、Typora</title>
+        <link>https://xujiahua.github.io/posts/20200310-github-pages-restart/</link>
+        <pubDate>Tue, 10 Mar 2020 11:24:49 +0800</pubDate>
+        
+        <guid>https://xujiahua.github.io/posts/20200310-github-pages-restart/</guid>
+        <description>许嘉华的笔记 https://xujiahua.github.io/posts/20200310-github-pages-restart/ -&lt;h2 id=&#34;重新开始github-pages&#34;&gt;重新开始GitHub pages&lt;/h2&gt;
+&lt;p&gt;曾使用&lt;code&gt;GitHub pages&lt;/code&gt; + &lt;code&gt; jekyll&lt;/code&gt; 写过一段时间博客，没啥营养。&lt;/p&gt;
+&lt;p&gt;打算重新开始：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;把我记录在Evernote和Typora中的资料迁移到&lt;code&gt;GitHub pages&lt;/code&gt;上。&lt;/li&gt;
+&lt;li&gt;另外做一些Web形式的小工具，挂载在一个子目录里，方便平时使用。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2 id=&#34;hugo--typora&#34;&gt;Hugo + Typora&lt;/h2&gt;
+&lt;p&gt;打算如下：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Markdown文件还是使用Typora写。用过MWeb、Typora，Typora使用感受更好些（这么好用还不要钱）。&lt;/li&gt;
+&lt;li&gt;Hugo作为静态网站生成，创建一个博客模板。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3 id=&#34;hugo-quickstart&#34;&gt;Hugo quickstart&lt;/h3&gt;
+&lt;pre&gt;&lt;code&gt;# 安装hugo（其实是Go编译的二进制文件）
+brew install hugo
+
+# 创建site
+hugo new site quickstart
+
+# 通过git submodule的方式下载主题
+git init
+git submodule -b master add https://github.com/dillonzq/LoveIt themes/LoveIt
+
+# 更新config.toml，配置主题参数，见loveit配置
+
+# 创建博客，创建的posts在content目录下。文件格式为：content/&amp;lt;CATEGORY&amp;gt;/&amp;lt;FILE&amp;gt;.&amp;lt;FORMAT&amp;gt;
+# hugo new 会采用 archetypes/default.md作为模板，把一些共性配置放在这个模板里吧。
+hugo new posts/my-first-post.md
+
+# 本地看blog效果，-D表示草稿状态的博客也显示
+hugo server -D
+
+# 生成静态网站到./public/，也可以指定目录
+hugo -D
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;挑选了一个比较实用的主题 &lt;a href=&#34;https://hugoloveit.com/&#34;&gt;https://hugoloveit.com/&lt;/a&gt;&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;比较基本的posts, tags, categories&lt;/li&gt;
+&lt;li&gt;文章页面右边可显示文章的目录表&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;参考：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;a href=&#34;https://gohugo.io/getting-started/quick-start/&#34;&gt;https://gohugo.io/getting-started/quick-start/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://hugoloveit.com/theme-documentation-basics/&#34;&gt;https://hugoloveit.com/theme-documentation-basics/&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3 id=&#34;图片文件夹的配置&#34;&gt;图片文件夹的配置&lt;/h3&gt;
+&lt;p&gt;Typora的贴图功能很方便：配置好图片文件夹，从剪贴板粘贴图像会自动将图片保存到图片文件夹，并自动命名。&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;hugo&lt;/code&gt;管理静态资源的方式跟Typora默认是不适配的，需要做些调整。&lt;/p&gt;
+&lt;h5 id=&#34;长话短说&#34;&gt;长话短说&lt;/h5&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;code&gt;hugo&lt;/code&gt;项目中，创建&lt;code&gt;static/images&lt;/code&gt;文件夹，并且软链接到项目根目录下：&lt;/li&gt;
+&lt;/ol&gt;
+&lt;pre&gt;&lt;code&gt;mkdir -p static/images &amp;amp;&amp;amp; ln -s `pwd`/static/images images
+&lt;/code&gt;&lt;/pre&gt;&lt;ol start=&#34;2&#34;&gt;
+&lt;li&gt;Typora打开content目录，并做配置如下。之后，像平常那样用Typora写文字吧。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200310184153667.png&#34; alt=&#34;image-20200310184153667&#34;&gt;&lt;/p&gt;
+&lt;h5 id=&#34;在根目录建images软链接的理由&#34;&gt;在根目录建&lt;code&gt;images&lt;/code&gt;软链接的理由&lt;/h5&gt;
+&lt;p&gt;一些信息和思路：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;code&gt;hugo&lt;/code&gt;的静态资源放在static目录下。&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;hugo&lt;/code&gt;生成静态文件，static目录会将其下的文件、文件夹平移到目标网站目录的根目录，比如&lt;code&gt;static/images/1.png&lt;/code&gt;，平移后为&lt;code&gt;images/1.png&lt;/code&gt;。html里使用&lt;code&gt;/images/*&lt;/code&gt;的方式引用。（可查看public文件夹的目录结构）&lt;/li&gt;
+&lt;li&gt;hugo static目录下的资源目录不能是软链接，WTF。Unsupported symlink found &lt;a href=&#34;https://github.com/gohugoio/hugo/issues/6225&#34;&gt;https://github.com/gohugoio/hugo/issues/6225&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;万幸Typora可以用软链接。&lt;/li&gt;
+&lt;li&gt;一篇post，在浏览器和文件系统上的目录结构是不同的。以最末层的文件夹为&lt;code&gt;./&lt;/code&gt;。浏览器下目录结构如下：&lt;/li&gt;
+&lt;/ol&gt;
+&lt;pre&gt;&lt;code&gt;/ =&amp;gt; ../.. 举例来说，以图片文件夹名称为`image`为例，`../../images/*` = `/images/*`
+	/posts/ =&amp;gt; ../
+		/posts/post_name/ =&amp;gt; ./
+&lt;/code&gt;&lt;/pre&gt;&lt;ol start=&#34;6&#34;&gt;
+&lt;li&gt;文件系统下的目录结构：&lt;/li&gt;
+&lt;/ol&gt;
+&lt;pre&gt;&lt;code&gt;hugo-blogger =&amp;gt; ../../
+	content =&amp;gt; ../
+		posts =&amp;gt; ./
+			post_name
+&lt;/code&gt;&lt;/pre&gt;&lt;ol start=&#34;7&#34;&gt;
+&lt;li&gt;所以为了能让文件系统和浏览器上都显示图像，&lt;code&gt;images&lt;/code&gt;软链接放在项目根目录下比较合适。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3 id=&#34;github-pages&#34;&gt;GitHub pages&lt;/h3&gt;
+&lt;p&gt;静态文件输出到xujiahua.github.io上去。&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;git submodule add -b master https://github.com/XUJiahua/XUJiahua.github.io.git public
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;复用这里的deploy脚本。https://gohugo.io/hosting-and-deployment/hosting-on-github/#put-it-into-a-script&lt;/p&gt;
+&lt;h4 id=&#34;图片资源404的问题&#34;&gt;图片资源404的问题&lt;/h4&gt;
+&lt;p&gt;_images文件夹下的资源404了。太奇怪了，路径OK，也没大小问题。过了很久还是不见效。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200312190900210.png&#34; alt=&#34;image-20200312190900210&#34;&gt;&lt;/p&gt;
+&lt;p&gt;尝试在images文件夹下放了个1.txt，理论上链接应该是 &lt;a href=&#34;https://xujiahua.github.io/images/1.txt&#34;&gt;https://xujiahua.github.io/images/1.txt&lt;/a&gt;，一开始也是404。过了半小时OK了。&lt;/p&gt;
+&lt;p&gt;结论是，_images文件夹取名可能有问题。那就改用images。&lt;/p&gt;
+&lt;p&gt;参考：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;a href=&#34;https://gohugo.io/hosting-and-deployment/hosting-on-github/&#34;&gt;https://gohugo.io/hosting-and-deployment/hosting-on-github/&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+- https://xujiahua.github.io/posts/20200310-github-pages-restart/ - </description>
+        </item>
     
     
     
@@ -434,182 +566,6 @@ export GOPROXY=https://goproxy.io
 还比较原始，刚好够自己目前所需。&lt;/p&gt;
 &lt;p&gt;想到交互式，是受&lt;code&gt;ncdu&lt;/code&gt;的启发。&lt;code&gt;ncdu&lt;/code&gt;命令是&lt;code&gt;du&lt;/code&gt;命令的交互式版本。&lt;/p&gt;
 - https://xujiahua.github.io/posts/20190429-docker-rmi/ - </description>
-        </item>
-    
-    
-    
-        <item>
-        <title>20190323黑客松总结</title>
-        <link>https://xujiahua.github.io/posts/20190325-blockchain-hackathon/</link>
-        <pubDate>Mon, 25 Mar 2019 10:45:59 +0800</pubDate>
-        
-        <guid>https://xujiahua.github.io/posts/20190325-blockchain-hackathon/</guid>
-        <description>许嘉华的笔记 https://xujiahua.github.io/posts/20190325-blockchain-hackathon/ -&lt;h2 id=&#34;过程&#34;&gt;过程&lt;/h2&gt;
-&lt;p&gt;比赛背景见 &lt;a href=&#34;https://www.tuoniaox.com/news/p-327352.html&#34;&gt;https://www.tuoniaox.com/news/p-327352.html&lt;/a&gt; 。
-打算从几个角度来讲下这个比赛过程。&lt;/p&gt;
-&lt;h3 id=&#34;关于团队&#34;&gt;关于团队&lt;/h3&gt;
-&lt;p&gt;我们公司3人（我、洪敏、天宇）参加比赛，都是开发背景。
-主办方根据协调，一位来自台湾的社交方向创业者参加进来，英语演讲不错，技术会一点，有过hackathon经验。
-比赛当天晚些时候，又有一位金融领域的伙伴加入进来，报名晚了，当时还没分配到队伍。
-&lt;em&gt;本来还有一位以太坊开发背景的参加，但是比赛当天还在加班。&lt;/em&gt;
-最终是一支5人小组。&lt;/p&gt;
-&lt;h3 id=&#34;产品设计&#34;&gt;产品设计&lt;/h3&gt;
-&lt;p&gt;团队主体是我们公司三人，花了比较多的时间在选题和创意设计。有想过比如聊天工具、抽奖工具，感觉都一般。我们的眼界还是比较狭窄。&lt;/p&gt;
-&lt;p&gt;主办方提供了多个topic，我们选了这个方向——了解客户（KYC）规则 Know-your-customer。因为这块涉及到用户身份，感觉能套在很多场景。&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;比赛前一天（周五）定了一个政府中心化KYC数据库的方案，区块链用于授权与审计用。&lt;/li&gt;
-&lt;li&gt;比赛当天清晨，改为去中心化的KYC方案，只有企业和用户，IPFS作为去中心化的存储，数据安全由公钥加密保证。区块链同样是用于授权、审计，和存储文件HASH。&lt;/li&gt;
-&lt;li&gt;主办方宣讲完毕，与其他组员REVIEW，一致用去中心化的方案，更贴比赛。这个作为我们的基础模型。&lt;/li&gt;
-&lt;li&gt;从B2C扩展到B2B，比如银行怎么Know一家向他借钱的酒店或是房屋租赁公司。引入IoT、智能设备采集真实入住率。通过合约，智能设备与C端用户交互，保证真实性。这里，区块链用于一份难以篡改的数据库，可以看出酒店的经营事件。&lt;/li&gt;
-&lt;li&gt;分工：我们公司3人开发，他们2人准备演示材料。&lt;/li&gt;
-&lt;/ol&gt;
-&lt;h3 id=&#34;技术实现&#34;&gt;技术实现&lt;/h3&gt;
-&lt;p&gt;我们没有实际的以太坊开发经验。所以，趟了很多坑，绕了很多弯路。低估了技术复杂度。按时间线：&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;当天下午，分析技术提供方提供的SDK（Go），是scryinfo的两个合约封装，一个是数据交换，一个是token交换。没法涵盖我们的设计场景，必须写自己的智能合约。&lt;/li&gt;
-&lt;li&gt;智能合约开发很顺利，使用remix+metaMask这个组合。&lt;/li&gt;
-&lt;li&gt;开始翻车之旅。&lt;/li&gt;
-&lt;li&gt;前端使用web3无法调用合约，还有web3js的版本问题、下载问题。&lt;/li&gt;
-&lt;li&gt;使用infura.io提供的免费的以太坊节点服务，发现有些方法没有开放。&lt;/li&gt;
-&lt;li&gt;连入主办方提供的以太坊节点，面对跨域（可解决）、还有一些新问题。&lt;/li&gt;
-&lt;li&gt;尝试同步一个以太坊测试节点，一个节点需要100G空间，时间和空间都没法满足。&lt;/li&gt;
-&lt;li&gt;翻阅SDK源码，尝试套用SDK中使用Go来包装智能合约调用的方式来调用我们的合约。执行合约方法进入无限等待。找SDK提供者一起review代码，也是无解。本以为翻车到此为止，能360度翻回正常轨道。&lt;/li&gt;
-&lt;li&gt;最后又想起创建一个私有链。但时间上不允许了。&lt;/li&gt;
-&lt;li&gt;紧急魔改代码，用于作品演示。&lt;/li&gt;
-&lt;li&gt;UI设计因为时间问题，比较粗暴。&lt;/li&gt;
-&lt;li&gt;第二天下午2点前，提交了代码。&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;技术上最大的问题，是应用无法调用合约。很多东西都是现学。
-为此，我们几位就睡了几个小时。少壮不努力，老大徒伤悲。留下没有技术的泪水。&lt;/p&gt;
-&lt;h3 id=&#34;展示&#34;&gt;展示&lt;/h3&gt;
-&lt;p&gt;因为评委主要是日本人，演讲全程需要英文。
-台湾小伙上，讲了一个故事：&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;以自己是一个开酒店的入题。&lt;/li&gt;
-&lt;li&gt;基于区块链的KYC解决了C端和B端重复繁琐的资料登记过程。&lt;/li&gt;
-&lt;li&gt;酒店初创，需要银行贷款，利用IoT+区块链和扩展的KYC应用，公开经营状况。解决银行对初创酒店的数据信任问题。&lt;/li&gt;
-&lt;li&gt;演讲中，意思表达还是有点折扣。不过，已经非常自然了。&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/WechatIMG2.jpeg&#34; alt=&#34;WechatIMG2&#34;&gt;
-&lt;em&gt;主办方整理的信息图&lt;/em&gt;&lt;/p&gt;
-&lt;p&gt;为了能增加亮点，金融小伙，拿来了之前准备好的树莓派和门锁，放入了演示环节。但是演示过程中，台上调试设备花了些时间，尴尬了几分钟。主持人马上与观众进入互动，避免令人窒息的安静。然后这个智能设备的演示也失败了，我们是唯一这么尴尬的小组。&lt;/p&gt;
-&lt;p&gt;这个过程，技术并不重要，合约没调通这个事情显得没那么严重了。重要的是演讲能力、演示效果。重要的是，打动用户，让自己的作品被理解。&lt;/p&gt;
-&lt;h2 id=&#34;总结&#34;&gt;总结&lt;/h2&gt;
-&lt;p&gt;在最后的环节，我们也看到了其他队伍的演讲演示。准备得非常充分，都是有备而来，有非常酷的PPT、还有成型的app供下载、非常流畅自然的英文演讲、更贴合主办方业务的产品设计。没有得奖，心服口服。&lt;/p&gt;
-&lt;p&gt;功在平时，厚积才能薄发。如果要赢，一定做好充足准备。需要做好这些准备：&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;痛点的定位。不能为技术而技术。&lt;/li&gt;
-&lt;li&gt;技术储备。&lt;/li&gt;
-&lt;li&gt;sales的能力。&lt;/li&gt;
-&lt;li&gt;英语。&lt;/li&gt;
-&lt;li&gt;最最重要的，还是teamwork，我们需要培育一个更强大的团队。&lt;/li&gt;
-&lt;/ol&gt;
-- https://xujiahua.github.io/posts/20190325-blockchain-hackathon/ - </description>
-        </item>
-    
-    
-    
-        <item>
-        <title>Go Plugin</title>
-        <link>https://xujiahua.github.io/posts/20190304-go-plugin/</link>
-        <pubDate>Mon, 04 Mar 2019 08:27:31 +0800</pubDate>
-        
-        <guid>https://xujiahua.github.io/posts/20190304-go-plugin/</guid>
-        <description>许嘉华的笔记 https://xujiahua.github.io/posts/20190304-go-plugin/ -&lt;p&gt;（笔记迁移 @ 2020年）&lt;/p&gt;
-&lt;p&gt;早已忘记 C/C++ 中常用的动态链接库了。日常开发中，使用 Go 引入一个组件，常常是&lt;code&gt;go get&lt;/code&gt;引入其源码，放在一起编译。&lt;/p&gt;
-&lt;p&gt;Go 1.8 起也提供了动态链接库的功能。&lt;/p&gt;
-&lt;p&gt;因为看 HyperLedger Fabric 源码的关系，接触到这块，稍微记录下。&lt;/p&gt;
-&lt;h2 id=&#34;一使用流程&#34;&gt;一、使用流程&lt;/h2&gt;
-&lt;p&gt;这里有个demo可以参考下：&lt;a href=&#34;https://github.com/vladimirvivien/go-plugin-example&#34;&gt;https://github.com/vladimirvivien/go-plugin-example&lt;/a&gt;&lt;/p&gt;
-&lt;p&gt;作者写作时，Go 1.8，plugin特性尚不支持MacOS。目前（Go 1.11.4），是支持Linux/MacOS的。&lt;/p&gt;
-&lt;h3 id=&#34;1-编译模块module-so&#34;&gt;1. 编译模块（module, .so）&lt;/h3&gt;
-&lt;pre&gt;&lt;code&gt;go build -buildmode=plugin -o path/to/shared/object/file.so path/to/source/code.go
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;注意&lt;code&gt;-buildmode=plugin&lt;/code&gt;这个编译Flag。&lt;/p&gt;
-&lt;h3 id=&#34;2-引入plugin&#34;&gt;2. 引入&amp;quot;plugin&amp;rdquo;&lt;/h3&gt;
-&lt;pre&gt;&lt;code&gt;import &amp;quot;plugin&amp;quot;
-&lt;/code&gt;&lt;/pre&gt;&lt;h3 id=&#34;3-加载module&#34;&gt;3. 加载module&lt;/h3&gt;
-&lt;pre&gt;&lt;code&gt;plug, err := plugin.Open(&amp;quot;path/to/shared/object/file.so&amp;quot;)
-&lt;/code&gt;&lt;/pre&gt;&lt;h3 id=&#34;4-查找symbol比如exported-functionvariable&#34;&gt;4. 查找symbol，比如exported function/variable&lt;/h3&gt;
-&lt;pre&gt;&lt;code&gt;symGreeter, err := plug.Lookup(&amp;quot;Greeter&amp;quot;)
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;plug.Lookup的返回类型是Symbol，其实就是&lt;a href=&#34;https://tip.golang.org/pkg/plugin/#Symbol&#34;&gt;interface{}&lt;/a&gt;，为了正常使用，需要做类型转换。&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;type Symbol interface{}
-&lt;/code&gt;&lt;/pre&gt;&lt;h3 id=&#34;5-类型转换-type-assertion&#34;&gt;5. 类型转换 type assertion&lt;/h3&gt;
-&lt;pre&gt;&lt;code&gt;var greeter Greeter
-greeter, ok := symGreeter.(Greeter)
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;很重要，不然没法使用。&lt;/p&gt;
-&lt;h3 id=&#34;6-正常使用&#34;&gt;6. 正常使用&lt;/h3&gt;
-&lt;pre&gt;&lt;code&gt;greeter.Greet()
-&lt;/code&gt;&lt;/pre&gt;&lt;h2 id=&#34;二已知问题&#34;&gt;二、已知问题&lt;/h2&gt;
-&lt;h3 id=&#34;无法debug&#34;&gt;无法debug&lt;/h3&gt;
-&lt;p&gt;分别在MacOS和Ubuntu尝试debug使用plugin包的应用，报错如下（Go 1.11.4）：&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;MacOS, could not launch process: decoding dwarf section info at offset 0x0: too short&lt;/li&gt;
-&lt;li&gt;Linux, could not launch process: could not get .debug_frame section: could not find .debug_frame section&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;使用gvm安装了其他Go版本尝试，no luck。&lt;/p&gt;
-&lt;p&gt;算是已知bug，一些issue如下：&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;官方说1.12会修复 &lt;a href=&#34;https://github.com/golang/go/issues/23733&#34;&gt;https://github.com/golang/go/issues/23733&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-&lt;h4 id=&#34;go-112&#34;&gt;Go 1.12&lt;/h4&gt;
-&lt;p&gt;Go 1.12发布了。看release notes并没有提到这块 &lt;a href=&#34;https://golang.org/doc/go1.12&#34;&gt;https://golang.org/doc/go1.12&lt;/a&gt; 。&lt;/p&gt;
-&lt;p&gt;尝试下：&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;go build -buildmode=plugin -o eng/eng.so eng/greeter.go
-dlv debug greeter.go
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;这次报错信息变了：&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;plugin.Open(&amp;rdquo;./eng/eng&amp;rdquo;): plugin was built with a different version of package math/bits
-Process 64622 has exited with status 1&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;p&gt;TBC.&lt;/p&gt;
-&lt;h2 id=&#34;三总结&#34;&gt;三、总结&lt;/h2&gt;
-&lt;p&gt;目前plugin特性还不够稳定，谨慎使用。&lt;/p&gt;
-&lt;h2 id=&#34;四在fabric中的应用&#34;&gt;四、在Fabric中的应用&lt;/h2&gt;
-&lt;p&gt;&lt;a href=&#34;https://hyperledger-fabric.readthedocs.io/en/latest/systemchaincode.html&#34;&gt;https://hyperledger-fabric.readthedocs.io/en/latest/systemchaincode.html&lt;/a&gt;&lt;/p&gt;
-&lt;h3 id=&#34;system-chaincode&#34;&gt;system chaincode&lt;/h3&gt;
-&lt;p&gt;system chaincode是作为plugin引入的。
-一例：&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;/*
-Copyright SecureKey Technologies Inc. All Rights Reserved.
-
-SPDX-License-Identifier: Apache-2.0
-*/
-
-package main
-
-import (
-	&amp;quot;github.com/hyperledger/fabric/core/chaincode/shim&amp;quot;
-	pb &amp;quot;github.com/hyperledger/fabric/protos/peer&amp;quot;
-)
-
-// New returns an implementation of the chaincode interface
-func New() shim.Chaincode {
-	return &amp;amp;scc{}
-}
-
-type scc struct{}
-
-// Init implements the chaincode shim interface
-func (s *scc) Init(stub shim.ChaincodeStubInterface) pb.Response {
-	return shim.Success(nil)
-}
-
-// Invoke implements the chaincode shim interface
-func (s *scc) Invoke(stub shim.ChaincodeStubInterface) pb.Response {
-	return shim.Success(nil)
-}
-
-func main() {}
-
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;倒是应用层的chaincode不需要实现New方法，只要实现一个interface的两个方法即可。&lt;/p&gt;
-&lt;h3 id=&#34;peerorderer-operation-implementation&#34;&gt;peer/orderer operation implementation&lt;/h3&gt;
-&lt;p&gt;另外一个是peer中的auth、endorer等操作的实现也是通过plugin加载进来的。&lt;/p&gt;
-&lt;p&gt;这是过度设计吧。有plugin形式，也有编译形式的。&lt;/p&gt;
-&lt;h3 id=&#34;加密服务&#34;&gt;加密服务&lt;/h3&gt;
-&lt;p&gt;BCCSP（Blockchain crypto provider)）也是plugin.&lt;/p&gt;
-&lt;p&gt;// BCCSP is the blockchain cryptographic service provider that offers
-// the implementation of cryptographic standards and algorithms.。&lt;/p&gt;
-- https://xujiahua.github.io/posts/20190304-go-plugin/ - </description>
         </item>
     
     

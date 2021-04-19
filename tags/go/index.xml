@@ -6,11 +6,7 @@
     <description>Recent content in Go on 许嘉华的笔记</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Thu, 23 Jul 2020 16:12:51 +0800</lastBuildDate>
-    
-	<atom:link href="https://xujiahua.github.io/tags/go/index.xml" rel="self" type="application/rss+xml" />
-    
-    
+    <lastBuildDate>Thu, 23 Jul 2020 16:12:51 +0800</lastBuildDate><atom:link href="https://xujiahua.github.io/tags/go/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>实验说明 Golang HTTP 连接池参数</title>
       <link>https://xujiahua.github.io/posts/20200723-golang-http-reuse/</link>
@@ -58,7 +54,7 @@ Go 1.8 起也提供了动态链接库的功能。
 一、使用流程 这里有个demo可以参考下：https://github.com/vladimirvivien/go-plugin-example
 作者写作时，Go 1.8，plugin特性尚不支持MacOS。目前（Go 1.11.4），是支持Linux/MacOS的。
 1. 编译模块（module, .so） go build -buildmode=plugin -o path/to/shared/object/file.so path/to/source/code.go 注意-buildmode=plugin这个编译Flag。
-2. 引入&amp;quot;plugin&amp;rdquo; import &amp;quot;plugin&amp;quot; 3. 加载module plug, err := plugin.Open(&amp;quot;path/to/shared/object/file.so&amp;quot;) 4. 查找symbol，比如exported function/variable symGreeter, err := plug.Lookup(&amp;quot;Greeter&amp;quot;) plug.Lookup的返回类型是Symbol，其实就是interface{}，为了正常使用，需要做类型转换。
+2. 引入&amp;quot;plugin&amp;quot; import &amp;quot;plugin&amp;quot; 3. 加载module plug, err := plugin.Open(&amp;quot;path/to/shared/object/file.so&amp;quot;) 4. 查找symbol，比如exported function/variable symGreeter, err := plug.Lookup(&amp;quot;Greeter&amp;quot;) plug.Lookup的返回类型是Symbol，其实就是interface{}，为了正常使用，需要做类型转换。
 type Symbol interface{} 5. 类型转换 type assertion var greeter Greeter greeter, ok := symGreeter.(Greeter) 很重要，不然没法使用。
 6. 正常使用 greeter.Greet() 二、已知问题 无法debug 分别在MacOS和Ubuntu尝试debug使用plugin包的应用，报错如下（Go 1.</description>
     </item>

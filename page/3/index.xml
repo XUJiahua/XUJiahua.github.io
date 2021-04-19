@@ -5,9 +5,367 @@
     <description>Recent content on 许嘉华的笔记</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Wed, 16 Sep 2020 10:48:11 +0800</lastBuildDate>
+    <lastBuildDate>Mon, 19 Apr 2021 10:24:00 +0800</lastBuildDate>
     
         <atom:link href="https://xujiahua.github.io/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    
+        <item>
+        <title>记一次数据项目经历</title>
+        <link>https://xujiahua.github.io/posts/20200529-bi_project/</link>
+        <pubDate>Fri, 29 May 2020 11:00:23 +0800</pubDate>
+        
+        <guid>https://xujiahua.github.io/posts/20200529-bi_project/</guid>
+        <description>许嘉华的笔记 https://xujiahua.github.io/posts/20200529-bi_project/ -&lt;p&gt;分享下 4月、5月（特别是5月，5/1假期后基本上全身心投入）在忙的这个数据项目经历，工作面覆盖陪同拜访客户、开会、需求分析、提供方案、数据清洗、数据分析、数据基础设施的搭建开发、帮甲方IT调试代码等环节，累到头秃。&lt;/p&gt;
+&lt;p&gt;（本文刻意隐去客户信息。）&lt;/p&gt;
+&lt;h2 id=&#34;需求背景&#34;&gt;需求背景&lt;/h2&gt;
+&lt;p&gt;客户需求是做一个聚合小程序（此处脑补下麦当劳的微信小程序「i麦当劳」），用于广告投放，比如微信系APP的弹屏广告。应用本身不复杂，只是罗列客户其他小程序、H5应用和一些广告链接，让用户选择。&lt;/p&gt;
+&lt;p&gt;投放效果需要数据量化，我们做了前后端的数据埋点，尽可能收集用户的行为记录。&lt;/p&gt;
+&lt;p&gt;客户花钱投广告，是为了企业销售额等指标的提升。我们也对接了客户的订单数据，多方数据进行交叉分析。&lt;/p&gt;
+&lt;p&gt;数据量化的结果，也就是数据报告，以日报、周报、月报的形式体现。&lt;/p&gt;
+&lt;h2 id=&#34;技术细节&#34;&gt;技术细节&lt;/h2&gt;
+&lt;p&gt;下文就以数据的生命周期来讲，数据是怎么从毛料，到精修，最后到报表的。&lt;/p&gt;
+&lt;h3 id=&#34;数据采集&#34;&gt;数据采集&lt;/h3&gt;
+&lt;p&gt;工作重点：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;定义数据对接规范，或是理解别人的规范。&lt;/li&gt;
+&lt;li&gt;与自家开发做好数据对接。把握数据质量。&lt;/li&gt;
+&lt;li&gt;与甲方开发做好数据对接。把握数据质量。（为了加快数据对接速度，又是写示例代码、又是帮他们定位中文编码问题。体验真是酸爽。还是自家小伙伴靠谱。）&lt;/li&gt;
+&lt;li&gt;数据质量很重要。数据质量决定了后续工作是否需要反复。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h4 id=&#34;1-前端应用埋点&#34;&gt;1. 前端应用埋点&lt;/h4&gt;
+&lt;p&gt;用于收集聚合小程序的用户行为记录。&lt;/p&gt;
+&lt;p&gt;整体架构还是沿用几年前的，唯一变化的就是埋点的规范，因为需求的不同而变化。基本上如下逻辑：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;前端应用开发主动在代码中加入用户行为埋点。&lt;/li&gt;
+&lt;li&gt;埋点 SDK 异步地将数据上传到服务器。多台服务器通过 DNS 解析来负载均衡。&lt;/li&gt;
+&lt;li&gt;WEB 服务器使用的是 openresty，有一些 lua 脚本，用于处理 cookie，和格式化存储行为日志。&lt;/li&gt;
+&lt;li&gt;之后数据通过Filebeat、Kafka、StreamSets等软件分发到Hadoop集群、实时处理任务。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200512145610312.png&#34; alt=&#34;image-20200512145610312&#34;&gt;&lt;/p&gt;
+&lt;h4 id=&#34;2-sftp-文件同步&#34;&gt;2. SFTP 文件同步&lt;/h4&gt;
+&lt;p&gt;用于接收甲方的订单数据（二期、三期项目还有其他类型数据）。&lt;/p&gt;
+&lt;p&gt;根据双方约定时间收取文件，将文件存入Hadoop集群。&lt;/p&gt;
+&lt;h4 id=&#34;3-微信公众号授权&#34;&gt;3. 微信公众号授权&lt;/h4&gt;
+&lt;p&gt;客户授权后，我们获取到了公众号的粉丝关注记录（由后端开发请求微信服务器取到数据并写入Kafka集群）。同样，也存放到了Hadoop集群。&lt;/p&gt;
+&lt;h3 id=&#34;etl-与-数据仓库&#34;&gt;ETL 与 数据仓库&lt;/h3&gt;
+&lt;p&gt;工作重点：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;承上启下的工作。以方便数据分析为出发点，反过来检验数据质量。&lt;/li&gt;
+&lt;li&gt;字符串类型的时间转为时间戳类型。BI 工具需要。&lt;/li&gt;
+&lt;li&gt;基于数据金字塔模型、维度分析模型建模。&lt;/li&gt;
+&lt;li&gt;数据仓库未来可以考虑 ClickHouse。Hadoop体系数据粒度是文件，更新历史数据中的某条记录，得更新所在的整个文件！&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h4 id=&#34;1-etl&#34;&gt;1. ETL&lt;/h4&gt;
+&lt;p&gt;经过数据采集阶段，毛料数据以文件形式存储于Hadoop集群。本阶段主要将毛料数据抽取成表（实际还是文件存储）。&lt;/p&gt;
+&lt;p&gt;技术上使用 Hive/Spark 框架写SQL。Hive SQL实在太慢了，所以一般使用Spark做清洗，Hive更多地是用其metastore组件，维护表结构信息。&lt;/p&gt;
+&lt;p&gt;因为Spark（SQL）脚本得用Python写。抽象了一个清洗脚本模板，填空：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;可选填清洗前执行的SQL。比如建表DDL。&lt;/li&gt;
+&lt;li&gt;可选填毛料数据的解析schema。（直接依靠框架采样推理出schema，与实际schema比，可能缺字段，程序会崩。schema也没必要手写。一个技巧就是准备一条最全的数据记录，让Spark推理，把schema存下来使用。）&lt;/li&gt;
+&lt;li&gt;填核心的清洗逻辑。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h4 id=&#34;2-数据仓库&#34;&gt;2. 数据仓库&lt;/h4&gt;
+&lt;p&gt;数据是有层次结构的。以用户行为记录为例：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;采集到的是&lt;strong&gt;毛料数据&lt;/strong&gt;。很多时候，为了埋点规范能够动态扩展，字段都定义在一个有嵌套JSON结构的字段里。&lt;/li&gt;
+&lt;li&gt;清洗成&lt;strong&gt;明细数据&lt;/strong&gt;。一般是一张扁平表，能够描述用户在某上下文（时间、手机型号、IP地址）中点了某按钮。&lt;/li&gt;
+&lt;li&gt;基于明细数据生成&lt;strong&gt;汇总数据&lt;/strong&gt;。明细数据中维度很多，是以用户维度、用户会话维度汇总？还是以按钮、手机型号汇总？&lt;/li&gt;
+&lt;li&gt;汇总是有不同程度的，比如按程度从低到高，按日、按月、按年。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;如果把占数据量绝大部分的毛料数据放在底部，占少部分的汇总数据放在上方，数据的层次结构可以想象成金字塔。所以也有数据金字塔模型一说。&lt;/p&gt;
+&lt;p&gt;数据仓库的材料网上很多，比如维度分析模型，就不展开了。&lt;/p&gt;
+&lt;h3 id=&#34;olap-数据库-与-bi-工具&#34;&gt;OLAP 数据库 与 BI 工具&lt;/h3&gt;
+&lt;p&gt;工作重点：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;为数据分析准备工作平台。&lt;/li&gt;
+&lt;li&gt;保证 OLAP 数据库高效稳定。&lt;/li&gt;
+&lt;li&gt;选择合适的BI工具，用户体验很重要。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200512153140285.png&#34; alt=&#34;image-20200512153140285&#34;&gt;&lt;/p&gt;
+&lt;h4 id=&#34;1-sql-on-hadoop&#34;&gt;1. SQL on Hadoop&lt;/h4&gt;
+&lt;p&gt;因为数据仓库是基于Hadoop/Hive的。在这个体系下的，分析型数据库选择就不多了。&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;使用的CDH版本Hadoop，自带Impala。&lt;/li&gt;
+&lt;li&gt;Hive。这个太慢了，无法适用BI场景。&lt;/li&gt;
+&lt;li&gt;SparkSQL。需要独立安装。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;最合适的就是Impala，查询速度快，天然由CDH Manager工具管理监控。而且每个impalad都是天然的proxy，任务会分发给其他节点，并行完成。&lt;/p&gt;
+&lt;p&gt;一开始还没有为 Metabase 开发 Impala 的数据库驱动。有单独部署一个 SparkSQL Thrift Server。随着数据量上升，太容易因为 OOM 崩了。&lt;/p&gt;
+&lt;h4 id=&#34;2-metabase&#34;&gt;2. Metabase&lt;/h4&gt;
+&lt;p&gt;去年 10月工作内容调整，重新着手数据相关的工作。当时，时不时有一个H5营销应用的网页分析报表下载需求。为了减少人工操作，开始调研开源的 BI 工具。&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;superset 名气挺大的，但是各种不方便。没法做 JOIN！写SQL没法直接做可视化！界面老土（用flask-appbuilder生成的UI模板）！&lt;/li&gt;
+&lt;li&gt;Metabase。连本地MySQL做数据分析，体验没有硬伤，还有很多惊喜。对比下，技术选型还是选择了 Metabase。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;Metabase的优点：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;开源。&lt;/li&gt;
+&lt;li&gt;简单干净的界面，良好的文档，没遇到过大bug。 &lt;a href=&#34;https://www.metabase.com/docs/latest/users-guide/start.html&#34;&gt;https://www.metabase.com/docs/latest/users-guide/start.html&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;X-Ray 功能。自动生成一张表的常见统计指标。惊喜的功能！我一度还在花时间写类似的工具，用于大数据上的数据探索。因为收益太低放弃了。&lt;/li&gt;
+&lt;li&gt;比较常用的可视化技术。 &lt;a href=&#34;https://www.metabase.com/docs/latest/users-guide/05-visualizing-results.html&#34;&gt;https://www.metabase.com/docs/latest/users-guide/05-visualizing-results.html&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;RBAC。权限控制。权限的粒度，数据库、表、分析文件夹。通过创建权限组，将一类用户集中管理。用途，某某项目组下的用户只能看到Dashboard，不能进行SQL操作，&lt;/li&gt;
+&lt;li&gt;Filters。Dashboard/Question 中可指定SQL参数，可设置默认值。用途，筛选时间段、筛选活动ID，不需要重复创建Dashboard。一个Dashboard建议不要太多 filter （更多filter，感觉Kibana+Elasticsearch的组合更合适）。详见 &lt;a href=&#34;https://www.metabase.com/docs/latest/users-guide/08-dashboard-filters.html&#34;&gt;https://www.metabase.com/docs/latest/users-guide/08-dashboard-filters.html&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;数据导出。Dashboard没法直接下载Question中的数据，需要点击进入各个Question下载。&lt;/li&gt;
+&lt;li&gt;BI工具，是真正贯彻了组件化思维。可视化都是选项，通过点击就能制作一个图表。平台不再是写死的，而是动态变化的。数据分析、数据工程、前后端开发，充分解耦。目前我们平台的问题就是数据分析和前后端开发是耦合在一起的，迭代会很慢。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;美中不足，没有开箱即用的 Impala 驱动。花了些时间研究，写了个 Impala 驱动，已经在生产使用了。参考 &lt;a href=&#34;https://xujiahua.github.io/posts/20200527-metabase-impala-driver/&#34;&gt;https://xujiahua.github.io/posts/20200527-metabase-impala-driver/&lt;/a&gt;&lt;/p&gt;
+&lt;h3 id=&#34;数据分析&#34;&gt;数据分析&lt;/h3&gt;
+&lt;p&gt;工作重点：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;理解客户需求，以客户需求为中心做数据分析。&lt;/li&gt;
+&lt;li&gt;写 SQL。维度分析和对比分析。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h4 id=&#34;客户需求&#34;&gt;客户需求&lt;/h4&gt;
+&lt;p&gt;客户需求，是运营在跟。而我是一个没有灵魂的SQL写手。渐渐因为只是写这些繁杂的SQL，觉得非常无聊。目前还深受折磨。&lt;/p&gt;
+&lt;p&gt;以客户需求为中心做数据分析。这是我跟运营学到的一课。虽然数据分析有套路，但是维度那么多、对比那么多，毫无目的地发散空耗自身精力。&lt;/p&gt;
+&lt;h4 id=&#34;隐藏的维度信息&#34;&gt;隐藏的维度信息&lt;/h4&gt;
+&lt;p&gt;比如行为记录埋点，只有一个按钮名称。这个按钮的真正去向是什么页面、什么时候创建的，需要向开发收集。&lt;/p&gt;
+&lt;p&gt;比如订单中，只有一个门店名称。这个门店所在的城市、分公司隶属关系这些信息需要收集，扩充门店的维度信息。&lt;/p&gt;
+&lt;h2 id=&#34;总结&#34;&gt;总结&lt;/h2&gt;
+&lt;p&gt;以上为近2月项目的浓缩总结。人力有限，每个环节都做得比较粗放。&lt;/p&gt;
+&lt;p&gt;但总体有条不紊，幸亏洪敏和我前期的积累。&lt;/p&gt;
+- https://xujiahua.github.io/posts/20200529-bi_project/ - </description>
+        </item>
+    
+    
+    
+        <item>
+        <title>Metabase Impala Driver 0528更新日志</title>
+        <link>https://xujiahua.github.io/posts/20200528-metabase-impala-type/</link>
+        <pubDate>Thu, 28 May 2020 09:30:09 +0800</pubDate>
+        
+        <guid>https://xujiahua.github.io/posts/20200528-metabase-impala-type/</guid>
+        <description>许嘉华的笔记 https://xujiahua.github.io/posts/20200528-metabase-impala-type/ -&lt;p&gt;体验过程中还是碰到不少问题。&lt;/p&gt;
+&lt;h2 id=&#34;1-timestamp-类型没有过滤器样式&#34;&gt;1. TIMESTAMP 类型没有过滤器样式&lt;/h2&gt;
+&lt;h3 id=&#34;现象&#34;&gt;现象&lt;/h3&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200528173609294.png&#34; alt=&#34;image-20200528173609294&#34;&gt;&lt;/p&gt;
+&lt;p&gt;连 SparkSQL 没这个问题。同样是TIMESTAMP类型，表现不同。&lt;/p&gt;
+&lt;h3 id=&#34;初步分析&#34;&gt;初步分析&lt;/h3&gt;
+&lt;p&gt;在数据库中查看存储的字段信息，Impala/SparkSQL对比看，发现 Impala 数据库下的字段 base_type 都是 &lt;code&gt;type/*&lt;/code&gt;。而 database_type，Impala 都是大写的，比如TIMESTAMP，而不是timestamp。所以，并不仅仅是TIMESTAMP类型没有过滤器样式。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200528173915594.png&#34; alt=&#34;image-20200528173915594&#34;&gt;&lt;/p&gt;
+&lt;p&gt;Metabase 数据库类型会映射为 Clojure类型，数据库类型的名称是大小写敏感的。所以不能复用hive-like中的实现（都是小写的），而且Hive与Impala的类型还是有些不同的。&lt;/p&gt;
+&lt;h3 id=&#34;hive-impala的数据类型异同&#34;&gt;Hive Impala的数据类型异同&lt;/h3&gt;
+&lt;p&gt;以 Hive Data Types 为基准。&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;Type Name&lt;/th&gt;
+&lt;th&gt;Type Catgory&lt;/th&gt;
+&lt;th&gt;Comment&lt;/th&gt;
+&lt;th&gt;Impala Support?&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;TINYINT&lt;/td&gt;
+&lt;td&gt;Numeric Types&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;td&gt;Yes&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;SMALLINT&lt;/td&gt;
+&lt;td&gt;Numeric Types&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;td&gt;Yes&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;INT&lt;/td&gt;
+&lt;td&gt;Numeric Types&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;td&gt;Yes&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;BIGINT&lt;/td&gt;
+&lt;td&gt;Numeric Types&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;td&gt;Yes&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;FLOAT&lt;/td&gt;
+&lt;td&gt;Numeric Types&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;td&gt;Yes&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;DOUBLE&lt;/td&gt;
+&lt;td&gt;Numeric Types&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;td&gt;Yes&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;DOUBLE PRECISION&lt;/td&gt;
+&lt;td&gt;Numeric Types&lt;/td&gt;
+&lt;td&gt;alias for DOUBLE, only available starting with Hive 2.2.0&lt;/td&gt;
+&lt;td&gt;No&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;DECIMAL&lt;/td&gt;
+&lt;td&gt;Numeric Types&lt;/td&gt;
+&lt;td&gt;Introduced in Hive 0.11.0 with a precision of 38 digits&lt;!-- raw HTML omitted --&gt;Hive 0.13.0 introduced user-definable precision and scale&lt;/td&gt;
+&lt;td&gt;Yes&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;NUMERIC&lt;/td&gt;
+&lt;td&gt;Numeric Types&lt;/td&gt;
+&lt;td&gt;same as DECIMAL, starting with Hive 3.0.0&lt;/td&gt;
+&lt;td&gt;No&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;TIMESTAMP&lt;/td&gt;
+&lt;td&gt;Date/Time Types&lt;/td&gt;
+&lt;td&gt;available starting with Hive 0.8.0&lt;/td&gt;
+&lt;td&gt;Yes&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;DATE&lt;/td&gt;
+&lt;td&gt;Date/Time Types&lt;/td&gt;
+&lt;td&gt;available starting with Hive 0.12.0&lt;/td&gt;
+&lt;td&gt;No&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;INTERVAL&lt;/td&gt;
+&lt;td&gt;Date/Time Types&lt;/td&gt;
+&lt;td&gt;available starting with Hive 1.2.0&lt;/td&gt;
+&lt;td&gt;No&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;STRING&lt;/td&gt;
+&lt;td&gt;String Types&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;td&gt;Yes&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;VARCHAR&lt;/td&gt;
+&lt;td&gt;String Types&lt;/td&gt;
+&lt;td&gt;available starting with Hive 0.12.0&lt;/td&gt;
+&lt;td&gt;Yes&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;CHAR&lt;/td&gt;
+&lt;td&gt;String Types&lt;/td&gt;
+&lt;td&gt;available starting with Hive 0.13.0&lt;/td&gt;
+&lt;td&gt;Yes&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;BOOLEAN&lt;/td&gt;
+&lt;td&gt;Misc Types&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;td&gt;Yes&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;BINARY&lt;/td&gt;
+&lt;td&gt;Misc Types&lt;/td&gt;
+&lt;td&gt;available starting with Hive 0.8.0&lt;/td&gt;
+&lt;td&gt;No&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;arrays: ARRAY&amp;lt;data_type&amp;gt;&lt;/td&gt;
+&lt;td&gt;Complex Types&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;td&gt;Yes&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;maps: MAP&amp;lt;primitive_type, data_type&amp;gt;&lt;/td&gt;
+&lt;td&gt;Complex Types&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;td&gt;Yes&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;structs: STRUCT&amp;lt;col_name : data_type [COMMENT col_comment], &amp;hellip;&amp;gt;&lt;/td&gt;
+&lt;td&gt;Complex Types&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;td&gt;Yes&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;union: UNIONTYPE&amp;lt;data_type, data_type, &amp;hellip;&amp;gt;&lt;/td&gt;
+&lt;td&gt;Complex Types&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;td&gt;No&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;参考：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Hive Data Types &lt;a href=&#34;https://cwiki.apache.org/confluence/display/Hive/LanguageManual+Types&#34;&gt;https://cwiki.apache.org/confluence/display/Hive/LanguageManual+Types&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;Impala Data Types &lt;a href=&#34;https://docs.cloudera.com/documentation/enterprise/latest/topics/impala_datatypes.html&#34;&gt;https://docs.cloudera.com/documentation/enterprise/latest/topics/impala_datatypes.html&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;SQL Differences Between Impala and Hive &lt;a href=&#34;https://docs.cloudera.com/documentation/enterprise/6/6.3/topics/impala_langref_unsupported.html&#34;&gt;https://docs.cloudera.com/documentation/enterprise/6/6.3/topics/impala_langref_unsupported.html&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3 id=&#34;fix&#34;&gt;fix&lt;/h3&gt;
+&lt;p&gt;根据与Hive数据类型对比，重写方法 &lt;code&gt;sql-jdbc.sync/database-type-&amp;gt;base-type&lt;/code&gt;。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-clojure&#34; data-lang=&#34;clojure&#34;&gt;(&lt;span style=&#34;color:#66d9ef&#34;&gt;defmethod &lt;/span&gt;sql-jdbc.sync/database-type-&amp;gt;base-type &lt;span style=&#34;color:#e6db74&#34;&gt;:impala&lt;/span&gt;
+  [_ database-type]
+  (&lt;span style=&#34;color:#a6e22e&#34;&gt;condp&lt;/span&gt; re-matches (name database-type)
+    &lt;span style=&#34;color:#f92672&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;TINYINT&amp;#34;&lt;/span&gt;          &lt;span style=&#34;color:#e6db74&#34;&gt;:type/Integer&lt;/span&gt;
+    &lt;span style=&#34;color:#f92672&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;SMALLINT&amp;#34;&lt;/span&gt;         &lt;span style=&#34;color:#e6db74&#34;&gt;:type/Integer&lt;/span&gt;
+    &lt;span style=&#34;color:#f92672&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;INT&amp;#34;&lt;/span&gt;              &lt;span style=&#34;color:#e6db74&#34;&gt;:type/Integer&lt;/span&gt;
+    &lt;span style=&#34;color:#f92672&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;BIGINT&amp;#34;&lt;/span&gt;           &lt;span style=&#34;color:#e6db74&#34;&gt;:type/BigInteger&lt;/span&gt;
+    &lt;span style=&#34;color:#f92672&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;FLOAT&amp;#34;&lt;/span&gt;            &lt;span style=&#34;color:#e6db74&#34;&gt;:type/Float&lt;/span&gt;
+    &lt;span style=&#34;color:#f92672&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;DOUBLE&amp;#34;&lt;/span&gt;           &lt;span style=&#34;color:#e6db74&#34;&gt;:type/Float&lt;/span&gt;
+    &lt;span style=&#34;color:#f92672&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;DECIMAL.*&amp;#34;&lt;/span&gt;        &lt;span style=&#34;color:#e6db74&#34;&gt;:type/Decimal&lt;/span&gt;
+    &lt;span style=&#34;color:#f92672&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;TIMESTAMP&amp;#34;&lt;/span&gt;        &lt;span style=&#34;color:#e6db74&#34;&gt;:type/DateTime&lt;/span&gt;
+    &lt;span style=&#34;color:#f92672&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;STRING.*&amp;#34;&lt;/span&gt;         &lt;span style=&#34;color:#e6db74&#34;&gt;:type/Text&lt;/span&gt;
+    &lt;span style=&#34;color:#f92672&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;VARCHAR.*&amp;#34;&lt;/span&gt;        &lt;span style=&#34;color:#e6db74&#34;&gt;:type/Text&lt;/span&gt;
+    &lt;span style=&#34;color:#f92672&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;CHAR.*&amp;#34;&lt;/span&gt;           &lt;span style=&#34;color:#e6db74&#34;&gt;:type/Text&lt;/span&gt;
+    &lt;span style=&#34;color:#f92672&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;BOOLEAN&amp;#34;&lt;/span&gt;          &lt;span style=&#34;color:#e6db74&#34;&gt;:type/Boolean&lt;/span&gt;
+    &lt;span style=&#34;color:#f92672&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;ARRAY.*&amp;#34;&lt;/span&gt;          &lt;span style=&#34;color:#e6db74&#34;&gt;:type/Array&lt;/span&gt;
+    &lt;span style=&#34;color:#f92672&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;MAP.*&amp;#34;&lt;/span&gt;            &lt;span style=&#34;color:#e6db74&#34;&gt;:type/Dictionary&lt;/span&gt;
+    &lt;span style=&#34;color:#f92672&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;.*&amp;#34;&lt;/span&gt;               &lt;span style=&#34;color:#e6db74&#34;&gt;:type/*&lt;/span&gt;))
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;a href=&#34;https://github.com/XUJiahua/metabase/pull/2/commits/e156683989844eb2405e5240e888249a2defe78c&#34;&gt;https://github.com/XUJiahua/metabase/pull/2/commits/e156683989844eb2405e5240e888249a2defe78c&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;效果：&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200528120341696.png&#34; alt=&#34;image-20200528120341696&#34;&gt;&lt;/p&gt;
+&lt;p&gt;这样，TIMESTAMP 类型就有过滤器样式了。&lt;/p&gt;
+&lt;h2 id=&#34;2-timestamp-xxx-报错信息&#34;&gt;2. timestamp xxx 报错信息&lt;/h2&gt;
+&lt;h3 id=&#34;现象-1&#34;&gt;现象&lt;/h3&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&amp;ldquo;ParseException: Syntax error in line 4:\nAND date_timestamp &amp;lt; timestamp &amp;lsquo;2019-01-03 00:00:00.000&amp;rsquo;\n ^\nEncountered: TIMESTAMP\nExpected: CASE, CAST, DEFAULT, EXISTS, FALSE, IF, INTERVAL, LEFT, NOT, NULL, REPLACE, RIGHT, TRUNCATE, TRUE, IDENTIFIER\n\nCAUSED BY: Exception: Syntax error\n&amp;rdquo;,&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;SQL过滤器测试用例：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sql&#34; data-lang=&#34;sql&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;select&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;from&lt;/span&gt; product.dwd_dim_date_with_timestamp
+&lt;span style=&#34;color:#66d9ef&#34;&gt;where&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;
+[[&lt;span style=&#34;color:#66d9ef&#34;&gt;AND&lt;/span&gt; date_timestamp &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&lt;/span&gt; &lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;{{&lt;/span&gt;date_timestamp&lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;}}&lt;/span&gt; ]]
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;洪敏眼尖，发现是 Impala 不支持这个语法。&lt;/p&gt;
+&lt;h3 id=&#34;分析&#34;&gt;分析&lt;/h3&gt;
+&lt;p&gt;hive-like 并没有重写处理 LocalDateTime 的方法。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200528165940717.png&#34; alt=&#34;image-20200528165940717&#34;&gt;&lt;/p&gt;
+&lt;p&gt;而 Impala TIMESTAMP是没有时区的，大概率会用这个方法。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;In Impala, the TIMESTAMP data type holds a value of date and time. It can be decomposed into year, month, day, hour, minute and seconds fields, but with no time zone information available, it does not correspond to any specific point in time. &lt;a href=&#34;https://docs.cloudera.com/documentation/enterprise/6/6.3/topics/impala_timestamp.html&#34;&gt;https://docs.cloudera.com/documentation/enterprise/6/6.3/topics/impala_timestamp.html&lt;/a&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;默认实现是 timestamp 语法，报错信息就在这。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-clojure&#34; data-lang=&#34;clojure&#34;&gt;(&lt;span style=&#34;color:#66d9ef&#34;&gt;defmethod &lt;/span&gt;unprepare-value [&lt;span style=&#34;color:#e6db74&#34;&gt;:sql&lt;/span&gt; LocalDateTime]
+  [_ t]
+  (&lt;span style=&#34;color:#a6e22e&#34;&gt;format&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;timestamp &amp;#39;%s&amp;#39;&amp;#34;&lt;/span&gt; (&lt;span style=&#34;color:#a6e22e&#34;&gt;t/format&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;yyyy-MM-dd HH:mm:ss.SSS&amp;#34;&lt;/span&gt; t)))
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;fix-1&#34;&gt;fix&lt;/h3&gt;
+&lt;p&gt;找到 Impala 对应的 SQL 函数。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-clojure&#34; data-lang=&#34;clojure&#34;&gt;(&lt;span style=&#34;color:#66d9ef&#34;&gt;defmethod &lt;/span&gt;unprepare/unprepare-value [&lt;span style=&#34;color:#e6db74&#34;&gt;:impala&lt;/span&gt; LocalDateTime]
+  [_ t]
+  (&lt;span style=&#34;color:#a6e22e&#34;&gt;format&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;to_timestamp(&amp;#39;%s&amp;#39;, &amp;#39;yyyy-MM-dd HH:mm:ss&amp;#39;)&amp;#34;&lt;/span&gt; (&lt;span style=&#34;color:#a6e22e&#34;&gt;t/format&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;yyyy-MM-dd HH:mm:ss&amp;#34;&lt;/span&gt; t)))
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;a href=&#34;https://github.com/XUJiahua/metabase/pull/2/commits/005b878caf2fbbbd8c00a7ed016c899187f59d3c&#34;&gt;https://github.com/XUJiahua/metabase/pull/2/commits/005b878caf2fbbbd8c00a7ed016c899187f59d3c&lt;/a&gt;&lt;/p&gt;
+&lt;h2 id=&#34;3-date_format-unknown&#34;&gt;3. date_format() unknown&lt;/h2&gt;
+&lt;h3 id=&#34;现象-2&#34;&gt;现象&lt;/h3&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200528210146896.png&#34; alt=&#34;image-20200528210146896&#34;&gt;&lt;/p&gt;
+&lt;h3 id=&#34;分析-1&#34;&gt;分析&lt;/h3&gt;
+&lt;p&gt;大概率又是 Impala 不支持 date_format 这个函数。代码中搜索关键字。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200528212547249.png&#34; alt=&#34;image-20200528212547249&#34;&gt;&lt;/p&gt;
+&lt;p&gt;这里简单说明下，&lt;code&gt;(hsql/call :date_format xx xx)&lt;/code&gt; 这个方法最终会生成 SQL语句 &lt;code&gt;date_format(xx, xx)&lt;/code&gt;。又一次，我们得找到 Impala 中的SQL函数来替代它。&lt;/p&gt;
+&lt;p&gt;参考：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Hive/SparkSQL Built-in Functions &lt;a href=&#34;https://spark.apache.org/docs/2.4.5/api/sql/index.html#date_format&#34;&gt;https://spark.apache.org/docs/2.4.5/api/sql/index.html#date_format&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;Impala Built-In Functions &lt;a href=&#34;https://docs.cloudera.com/documentation/enterprise/6/6.3/topics/impala_functions.html&#34;&gt;https://docs.cloudera.com/documentation/enterprise/6/6.3/topics/impala_functions.html&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;Impala Date and Time Functions &lt;a href=&#34;https://docs.cloudera.com/documentation/enterprise/6/6.3/topics/impala_datetime_functions.html&#34;&gt;https://docs.cloudera.com/documentation/enterprise/6/6.3/topics/impala_datetime_functions.html&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3 id=&#34;fix-2&#34;&gt;fix&lt;/h3&gt;
+&lt;p&gt;因为 &lt;code&gt;date-format&lt;/code&gt; 被应用中很多 &lt;code&gt;defmethod sql.qp/date&lt;/code&gt; 方法里，所以在 Impala 重新实现这些方法，尽可能用 Impala 内置的函数。&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://github.com/XUJiahua/metabase/pull/2/commits/01046a664dc8bc9d815184fd6ec419b7a4c1aa10&#34;&gt;https://github.com/XUJiahua/metabase/pull/2/commits/01046a664dc8bc9d815184fd6ec419b7a4c1aa10&lt;/a&gt;&lt;/p&gt;
+&lt;h2 id=&#34;总结&#34;&gt;总结&lt;/h2&gt;
+&lt;p&gt;这些问题主要还是 Impala 和 Hive 的 SQL 规范不一样。令人头秃。不过对 Metabase 越来越熟悉了。&lt;/p&gt;
+&lt;h3 id=&#34;未完待续&#34;&gt;未完待续&lt;/h3&gt;
+&lt;p&gt;这2个选项还在报错，应该是不支持对应的方法。还好暂时用不到。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200528213420179.png&#34; alt=&#34;image-20200528213420179&#34;&gt;&lt;/p&gt;
+- https://xujiahua.github.io/posts/20200528-metabase-impala-type/ - </description>
+        </item>
     
     
     
@@ -815,186 +1173,6 @@ size_options &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; [
 &lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;&lt;/span&gt;        -v &lt;span style=&#34;color:#e6db74&#34;&gt;`&lt;/span&gt;pwd&lt;span style=&#34;color:#e6db74&#34;&gt;`&lt;/span&gt;:/mnt/spec &lt;span style=&#34;color:#ae81ff&#34;&gt;\
 &lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;&lt;/span&gt;        -p 5000:5000 cortexlabs/python-serve:0.15.1
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;- https://xujiahua.github.io/posts/20200416-cortex/ - </description>
-        </item>
-    
-    
-    
-        <item>
-        <title>k8s 应用日志收集</title>
-        <link>https://xujiahua.github.io/posts/20200414-k8s-logging/</link>
-        <pubDate>Tue, 14 Apr 2020 09:53:35 +0800</pubDate>
-        
-        <guid>https://xujiahua.github.io/posts/20200414-k8s-logging/</guid>
-        <description>许嘉华的笔记 https://xujiahua.github.io/posts/20200414-k8s-logging/ -&lt;h2 id=&#34;k8s-日志收集架构&#34;&gt;k8s 日志收集架构&lt;/h2&gt;
-&lt;p&gt;以下是比较一般、普适的架构。更多参考：Kubernetes 日志架构 &lt;a href=&#34;https://kubernetes.io/zh/docs/concepts/cluster-administration/logging/&#34;&gt;https://kubernetes.io/zh/docs/concepts/cluster-administration/logging/&lt;/a&gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/logging-with-node-agent.png&#34; alt=&#34;使用节点日志记录代理&#34;&gt;&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;容器化应用将日志写入&lt;code&gt;stdout&lt;/code&gt;、&lt;code&gt;stderr&lt;/code&gt;。&lt;/li&gt;
-&lt;li&gt;Docker容器引擎将&lt;code&gt;stdout&lt;/code&gt;、&lt;code&gt;stderr&lt;/code&gt;流重定向到日志驱动，比如默认的json-file。&lt;/li&gt;
-&lt;li&gt;json-file日志驱动将日志写入到（宿主机上的）文件。&lt;/li&gt;
-&lt;li&gt;日志收集工具以DaemonSet的形式安装在每个节点。&lt;/li&gt;
-&lt;li&gt;日志收集工具监听文件变化，并将日志写入到日志中心服务。&lt;/li&gt;
-&lt;/ol&gt;
-&lt;h2 id=&#34;k8s-日志收集细节&#34;&gt;k8s 日志收集细节&lt;/h2&gt;
-&lt;h3 id=&#34;实战&#34;&gt;实战&lt;/h3&gt;
-&lt;p&gt;可以直接参考以下教程：minikube创建了一个Kubernetes集群，Fluentd收集日志，存入ElasticSearch，使用Kibana查看日志。典型的EFK技术栈。&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;Logging in Kubernetes with Elasticsearch, Kibana, and Fluentd &lt;a href=&#34;https://mherman.org/blog/logging-in-kubernetes-with-elasticsearch-Kibana-fluentd/&#34;&gt;https://mherman.org/blog/logging-in-kubernetes-with-elasticsearch-Kibana-fluentd/&lt;/a&gt;&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;在Kibana上看收集到的日志。能看到日志收集工具也采集了容器、镜像、Pod有关的信息。这些上下文信息能让人定位到是哪个应用在生产日志。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image-20200414104511399.png&#34; alt=&#34;image-20200414104511399&#34;&gt;&lt;/p&gt;
-&lt;h3 id=&#34;fluentd-收集上下文信息&#34;&gt;fluentd 收集上下文信息&lt;/h3&gt;
-&lt;p&gt;Docker &lt;code&gt;json-file&lt;/code&gt; 日志驱动写文件，并不记录上下文信息。 &lt;a href=&#34;https://docs.docker.com/config/containers/logging/json-file/&#34;&gt;https://docs.docker.com/config/containers/logging/json-file/&lt;/a&gt;&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;{&amp;quot;log&amp;quot;:&amp;quot;Log line is here\n&amp;quot;,&amp;quot;stream&amp;quot;:&amp;quot;stdout&amp;quot;,&amp;quot;time&amp;quot;:&amp;quot;2019-01-01T11:11:11.111111111Z&amp;quot;}
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;上文中使用的日志收集镜像是 &lt;code&gt;fluent/fluentd-kubernetes-daemonset:v1.3-debian-elasticsearch&lt;/code&gt;。&lt;/p&gt;
-&lt;p&gt;具体代码路径在此 &lt;a href=&#34;https://github.com/fluent/fluentd-kubernetes-daemonset/tree/master/docker-image/v1.3/debian-elasticsearch&#34;&gt;https://github.com/fluent/fluentd-kubernetes-daemonset/tree/master/docker-image/v1.3/debian-elasticsearch&lt;/a&gt;&lt;/p&gt;
-&lt;p&gt;收集容器目录下的日志。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image-20200414105706563.png&#34; alt=&#34;image-20200414105706563&#34;&gt;&lt;/p&gt;
-&lt;p&gt;使用&lt;code&gt;kubernetes_metadata&lt;/code&gt;这个第三方插件获取容器相关的上下文信息。这里是通过请求API server得到metadata的。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image-20200414105752287.png&#34; alt=&#34;image-20200414105752287&#34;&gt;&lt;/p&gt;
-&lt;p&gt;&lt;code&gt;kubernetes_metadata&lt;/code&gt; 插件地址 &lt;a href=&#34;https://github.com/fabric8io/fluent-plugin-kubernetes_metadata_filter&#34;&gt;https://github.com/fabric8io/fluent-plugin-kubernetes_metadata_filter&lt;/a&gt;&lt;/p&gt;
-&lt;p&gt;插件中有缓存metadata的选项，不用担心每处理一条日志，就要向API server发送请求。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image-20200414111028867.png&#34; alt=&#34;image-20200414111028867&#34;&gt;&lt;/p&gt;
-- https://xujiahua.github.io/posts/20200414-k8s-logging/ - </description>
-        </item>
-    
-    
-    
-        <item>
-        <title>Metabase &#43; Spark SQL</title>
-        <link>https://xujiahua.github.io/posts/20200410-metabase-spark-sql/</link>
-        <pubDate>Fri, 10 Apr 2020 16:41:53 +0800</pubDate>
-        
-        <guid>https://xujiahua.github.io/posts/20200410-metabase-spark-sql/</guid>
-        <description>许嘉华的笔记 https://xujiahua.github.io/posts/20200410-metabase-spark-sql/ -&lt;p&gt;这是大数据 BI 平台的第二步，BI 工具的搭建。假设已经配置好 Spark SQL JDBC Server，并启用了Kerberos。参考  &lt;a href=&#34;https://xujiahua.github.io/posts/20200410-spark-thrift-server-cdh/&#34;&gt;https://xujiahua.github.io/posts/20200410-spark-thrift-server-cdh/&lt;/a&gt;&lt;/p&gt;
-&lt;p&gt;这里，我们选择了开源产品 Metabase。&lt;/p&gt;
-&lt;p&gt;最终，大数据 BI 平台，是由 1) 以Metabase作为BI可视化，2) 由HDFS（分布式文件存储） + parquet（列式数据存储格式）+ Hive metastore（SQL表结构信息维护） + Spark SQL（批处理引擎）组合的OLAP数据库组成。&lt;/p&gt;
-&lt;h2 id=&#34;metabase-简介&#34;&gt;Metabase 简介&lt;/h2&gt;
-&lt;p&gt;Metabase is the easy, open source way for everyone in your company to ask questions and learn from data.&lt;/p&gt;
-&lt;p&gt;&lt;a href=&#34;https://www.metabase.com/&#34;&gt;https://www.metabase.com/&lt;/a&gt;&lt;/p&gt;
-&lt;h3 id=&#34;数据库支持&#34;&gt;数据库支持&lt;/h3&gt;
-&lt;ul&gt;
-&lt;li&gt;BigQuery&lt;/li&gt;
-&lt;li&gt;Druid&lt;/li&gt;
-&lt;li&gt;Google Analytics&lt;/li&gt;
-&lt;li&gt;H2&lt;/li&gt;
-&lt;li&gt;MongoDB&lt;/li&gt;
-&lt;li&gt;MySQL/MariaDB&lt;/li&gt;
-&lt;li&gt;PostgreSQL&lt;/li&gt;
-&lt;li&gt;Presto&lt;/li&gt;
-&lt;li&gt;Amazon Redshift&lt;/li&gt;
-&lt;li&gt;Snowflake&lt;/li&gt;
-&lt;li&gt;Spark SQL&lt;/li&gt;
-&lt;li&gt;SQLite&lt;/li&gt;
-&lt;li&gt;SQL Server&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;&lt;a href=&#34;https://www.metabase.com/docs/latest/faq/setup/which-databases-does-metabase-support.html&#34;&gt;https://www.metabase.com/docs/latest/faq/setup/which-databases-does-metabase-support.html&lt;/a&gt;&lt;/p&gt;
-&lt;p&gt;这里有我们需要的Spark SQL，我们的大数据集群可以支持。比较遗憾的是没有Impala。&lt;/p&gt;
-&lt;h2 id=&#34;metabase-安装&#34;&gt;Metabase 安装&lt;/h2&gt;
-&lt;h3 id=&#34;mysql&#34;&gt;MySQL&lt;/h3&gt;
-&lt;p&gt;使用MySQL作为元数据存储。复用之前CDH的MySQL实例。&lt;/p&gt;
-&lt;p&gt;创建数据库、用户。&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-SQL&#34; data-lang=&#34;SQL&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;-- 适合MySQL5.7及以上版本，支持更大的max key length。一个字符使用四个字节。
-&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;CREATE&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;DATABASE&lt;/span&gt; metabase CHARACTER &lt;span style=&#34;color:#66d9ef&#34;&gt;SET&lt;/span&gt; utf8mb4 &lt;span style=&#34;color:#66d9ef&#34;&gt;COLLATE&lt;/span&gt; utf8mb4_unicode_ci;
-&lt;span style=&#34;color:#75715e&#34;&gt;-- 适合MySQL5.6及以下版本。一个字符使用3个字节。
-&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;CREATE&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;DATABASE&lt;/span&gt; metabase CHARACTER &lt;span style=&#34;color:#66d9ef&#34;&gt;SET&lt;/span&gt; utf8 &lt;span style=&#34;color:#66d9ef&#34;&gt;COLLATE&lt;/span&gt; utf8_unicode_ci;
-
-&lt;span style=&#34;color:#75715e&#34;&gt;-- % 表示不限制host
-&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;CREATE&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;USER&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;metabase&amp;#39;&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;@&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;%&amp;#39;&lt;/span&gt; IDENTIFIED &lt;span style=&#34;color:#66d9ef&#34;&gt;BY&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;metabase&amp;#39;&lt;/span&gt;;
-&lt;span style=&#34;color:#66d9ef&#34;&gt;GRANT&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;ALL&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;ON&lt;/span&gt; metabase.&lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;TO&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;metabase&amp;#39;&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;@&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;%&amp;#39;&lt;/span&gt;;
-
-FLUSH &lt;span style=&#34;color:#66d9ef&#34;&gt;PRIVILEGES&lt;/span&gt;;
-&lt;span style=&#34;color:#75715e&#34;&gt;-- https://dev.mysql.com/doc/refman/5.7/en/grant.html
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h4 id=&#34;常见问题&#34;&gt;常见问题&lt;/h4&gt;
-&lt;p&gt;mysql 5.7与5.6的区别。&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;767 bytes is the &lt;a href=&#34;http://dev.mysql.com/doc/refman/5.1/en/create-index.html&#34;&gt;stated prefix limitation&lt;/a&gt; for InnoDB tables in MySQL version 5.6 (and prior versions). It&amp;rsquo;s 1,000 bytes long for MyISAM tables. In MySQL version 5.7 and upwards this limit has been increased to 3072 bytes.&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;p&gt;Caused by: java.sql.SQLException: Specified key was too long; max key length is 767 bytes&lt;/p&gt;
-&lt;p&gt;Caused by: liquibase.exception.DatabaseException: (conn=175553) Specified key was too long; max key length is 767 bytes [Failed SQL: CREATE TABLE &lt;code&gt;metabase&lt;/code&gt;.&lt;code&gt;core_organization&lt;/code&gt; (&lt;code&gt;id&lt;/code&gt; INT AUTO_INCREMENT NOT NULL, &lt;code&gt;slug&lt;/code&gt; VARCHAR(254) NOT NULL, &lt;code&gt;name&lt;/code&gt; VARCHAR(254) NOT NULL, &lt;code&gt;description&lt;/code&gt; TEXT NULL, &lt;code&gt;logo_url&lt;/code&gt; VARCHAR(254) NULL, &lt;code&gt;inherits&lt;/code&gt; BIT(1) NOT NULL, CONSTRAINT &lt;code&gt;PK_CORE_ORGANIZATION&lt;/code&gt; PRIMARY KEY (&lt;code&gt;id&lt;/code&gt;), UNIQUE (&lt;code&gt;slug&lt;/code&gt;))]&lt;/p&gt;
-&lt;h3 id=&#34;metabase&#34;&gt;Metabase&lt;/h3&gt;
-&lt;p&gt;下载metabase。&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# 以 /opt/metabase 为工作目录&lt;/span&gt;
-mkdir /opt/metabase &lt;span style=&#34;color:#f92672&#34;&gt;&amp;amp;&amp;amp;&lt;/span&gt; cd /opt/metabase
-&lt;span style=&#34;color:#75715e&#34;&gt;# 下载最新版本的metabase，参考 https://www.metabase.com/start/jar.html&lt;/span&gt;
-wget https://downloads.metabase.com/v0.35.1/metabase.jar
-&lt;span style=&#34;color:#75715e&#34;&gt;# 创建插件目录&lt;/span&gt; 
-mkdir plugins
-&lt;span style=&#34;color:#75715e&#34;&gt;# Spark SQL的驱动，jar包内置的有问题&lt;/span&gt;
-wget https://s3.amazonaws.com/sparksql-deps/metabase-sparksql-deps-1.2.1.spark2-standalone.jar -O plugins/metabase-sparksql-deps-1.2.1.spark2-standalone.jar
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;启动脚本 start.sh。&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;#!/usr/bin/bash
-&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;
-export MB_DB_TYPE&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;mysql
-export MB_DB_DBNAME&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;metabase
-export MB_DB_PORT&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;3306&lt;/span&gt;
-export MB_DB_USER&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;metabase
-export MB_DB_PASS&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;metabase
-export MB_DB_HOST&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;172.31.0.100
-
-kinit -kt hive.xh-hd2-peggy-dost000003.keytab hive/xh-hd2-peggy-dost000003@PEGGY.LING
-
-mkdir -p logs
-
-nohup java -Djavax.security.auth.useSubjectCredsOnly&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;false -jar metabase.jar  &amp;gt;&amp;gt; logs/metabase.log 2&amp;gt;&amp;amp;&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt; &amp;amp;
-
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;停止脚本 stop.sh。&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;#!/usr/bin/bash
-&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;
-ps -ef | grep &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;metabase.jar&amp;#39;&lt;/span&gt; | grep -v &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;grep&amp;#39;&lt;/span&gt; | awk &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;{print $2}&amp;#39;&lt;/span&gt; | xargs kill -9
-
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;文件夹结构如下。&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;webapp@xh-hd2-peggy-dost000003 metabase&lt;span style=&#34;color:#f92672&#34;&gt;]&lt;/span&gt;$ tree
-├── hive.xh-hd2-peggy-dost000003.keytab
-├── logs
-│   └── metabase.log
-├── metabase.jar
-├── plugins
-│   ├── metabase-sparksql-deps-1.2.1.spark2-standalone.jar
-│   ├── sparksql.metabase-driver.jar
-│   ├── ...
-├── start.sh
-└── stop.sh
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;参考：&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;Metabase搭建手册：使用SparkSQL连接Hive &lt;a href=&#34;https://webcache.googleusercontent.com/search?q=cache:DcmHXWOc9woJ:https://immm.in/archives/24.html+&amp;amp;cd=5&amp;amp;hl=zh-CN&amp;amp;ct=clnk&amp;amp;gl=hk&#34;&gt;https://webcache.googleusercontent.com/search?q=cache:DcmHXWOc9woJ:https://immm.in/archives/24.html+&amp;amp;cd=5&amp;amp;hl=zh-CN&amp;amp;ct=clnk&amp;amp;gl=hk&lt;/a&gt;&lt;/li&gt;
-&lt;/ol&gt;
-&lt;h4 id=&#34;配置-spark-sql-连接&#34;&gt;配置 Spark SQL 连接&lt;/h4&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image-20200410180255501.png&#34; alt=&#34;image-20200410180255501&#34;&gt;&lt;/p&gt;
-&lt;p&gt;保存没有报错，就是成功了。&lt;/p&gt;
-&lt;h4 id=&#34;常见问题-1&#34;&gt;常见问题&lt;/h4&gt;
-&lt;ol&gt;
-&lt;li&gt;使用内置的驱动报错：Unrecognized Hadoop major version number: 3.1.1&lt;/li&gt;
-&lt;li&gt;使用metabase-sparksql-deps-1.2.1.spark2-standalone.jar这个驱动报错，然而beeline连接是没问题的： transport.TSaslTransport :: SASL negotiation failure
-javax.security.sasl.SaslException: GSS initiate failed [Caused by GSSException: No valid credentials provided (Mechanism level: Failed to find any Kerberos tgt)]&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;第一个问题，暂时忽略，使用其他驱动。&lt;/p&gt;
-&lt;p&gt;按理说，https://github.com/metabase/sparksql-deps 已经合并到 &lt;a href=&#34;https://github.com/metabase/metabase/tree/v0.35.1/modules/drivers/sparksql&#34;&gt;https://github.com/metabase/metabase/tree/v0.35.1/modules/drivers/sparksql&lt;/a&gt; 了。内置驱动就能用才对。&lt;/p&gt;
-&lt;p&gt;能看到依赖hadoop-common包的版本差异。TODO: 还得细看。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image-20200411071918161.png&#34; alt=&#34;image-20200411071918161&#34;&gt;&lt;/p&gt;
-&lt;p&gt;依赖的hadoop版本是3.1.0。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image-20200411072135265.png&#34; alt=&#34;image-20200411072135265&#34;&gt;&lt;/p&gt;
-&lt;p&gt;内置Driver依赖3.1.1。报错信息也是包含3.1.1，是否切到3.1.0，重新打包就可以了？&lt;/p&gt;
-&lt;p&gt;第二个问题需要设置Java参数 &lt;code&gt;-Djavax.security.auth.useSubjectCredsOnly=false&lt;/code&gt;。&lt;/p&gt;
-&lt;p&gt;通过底层机制获取凭证信息，而不是通过应用执行认证操作。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image-20200410173734177.png&#34; alt=&#34;image-20200410173734177&#34;&gt;&lt;/p&gt;
-&lt;p&gt;参考：&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;How to connnect sparksql in Kerberos enviroment &lt;a href=&#34;https://discourse.metabase.com/t/how-to-connnect-sparksql-in-kerberos-enviroment/8290/2&#34;&gt;https://discourse.metabase.com/t/how-to-connnect-sparksql-in-kerberos-enviroment/8290/2&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;javax.security.sasl.SaslException: GSS initiate failed [Caused by GSSException: No valid credentials provided https://stackoverflow.com/questions/32205087/javax-security-sasl-saslexception-gss-initiate-failed-caused-by-gssexception&lt;/li&gt;
-&lt;li&gt;Below are listed some problems that may occur when attempting a login, and suggestions for solving them. &lt;a href=&#34;https://docs.oracle.com/javase/7/docs/technotes/guides/security/jgss/tutorials/Troubleshooting.html&#34;&gt;https://docs.oracle.com/javase/7/docs/technotes/guides/security/jgss/tutorials/Troubleshooting.html&lt;/a&gt;&lt;/li&gt;
-&lt;/ol&gt;
-&lt;h2 id=&#34;与-superset-比较&#34;&gt;与 Superset 比较&lt;/h2&gt;
-&lt;p&gt;Superset是另外一个开源的BI工具。但是使用过程中体验不佳：&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;不支持多表JOIN。这个不能忍。&lt;/li&gt;
-&lt;li&gt;直接写SQL，数据没法可视化。效率有点低下。&lt;/li&gt;
-&lt;li&gt;外观丑陋。FlaskAppbuilder生成的前后端架子。&lt;/li&gt;
-&lt;li&gt;Table源如果改了，建议删掉再添加，不然会有各种意外。&lt;/li&gt;
-&lt;li&gt;交互体验差。自定义SELECT COUNT(cookie) as pv，死活搞不定。正确的使用方式是设置label，体验不直观。&lt;/li&gt;
-&lt;li&gt;小bug多。用起来太容易烦躁了。对身心健康不好。&lt;/li&gt;
-&lt;/ol&gt;
-- https://xujiahua.github.io/posts/20200410-metabase-spark-sql/ - </description>
         </item>
     
     

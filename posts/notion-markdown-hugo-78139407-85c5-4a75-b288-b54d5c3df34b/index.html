@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html><head>
+<title>从 Notion 导出 markdown 到 hugo 项目</title>
+
+<meta charset="utf-8">
+<meta name="X-UA-Compatible" content="IE=edge">
+<meta name="google-site-verification" content="">
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport">
+<meta content="telephone=no" name="format-detection">
+<meta name="description" content="">
+<meta name="renderer" content="webkit">
+<meta name="theme-color" content="#ffffff">
+
+
+
+
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+	ga('create', 'UA-162706610-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+
+
+<script src="/vendor/js/jquery.min.js" ></script>
+<script src="/vendor/js/popper.min.js" ></script>
+<script src="/vendor/js/bootstrap.min.js" ></script>
+<script src="/vendor/js/smooth-scroll.polyfills.min.js" ></script>
+<link type="text/css" rel="stylesheet" href="/vendor/css/bootstrap.min.css">
+<script src="/vendor/js/vue.min.js" ></script>
+
+
+
+
+<link rel="stylesheet" href="https://xujiahua.github.io/scss/journal.min.5d0fd093a264465a2c30c56fbe9eb8cdb0764ecf3eb96e8c64de3cf6c081cc40.css" integrity="sha256-XQ/Qk6JkRlosMMVvvp64zbB2Ts8&#43;uW6MZN489sCBzEA=" media="screen">
+
+<script src="https://xujiahua.github.io//js/loadCSS.js"></script>
+<script src="https://xujiahua.github.io//js/table.js"></script>
+
+
+<script src="https://xujiahua.github.io//js/toc.js"></script>
+
+
+<script>
+    loadCSS("https://fonts.googleapis.com/css?family=Lora|Montserrat|Fira+Mono|Noto+Serif+SC|Material+Icons");
+</script>
+
+
+
+
+
+
+</head><body>
+    	<div id="app"><div ref="sideContainer" class="side-container">
+    
+    <a class="a-block nav-head false" href="https://xujiahua.github.io/">
+    
+        <div class="nav-title">
+            许嘉华的笔记
+        </div>
+        
+    </a>
+
+    <div class="nav-link-list">
+        
+        
+            
+            
+            
+                
+            
+            
+            
+            <a class="a-block nav-link-item active" href="/posts">
+                Archive
+            </a>
+            
+        
+            
+            
+            
+            
+            
+            <a class="a-block nav-link-item false" href="/categories">
+                Categories
+            </a>
+            
+        
+            
+            
+            
+            
+            
+            <a class="a-block nav-link-item false" href="/tags">
+                Tags
+            </a>
+            
+        
+            
+            
+            
+            
+            
+            <a class="a-block nav-link-item false" href="/index.xml">
+                RSS Feed
+            </a>
+            
+        
+    </div>
+
+    
+
+    <div class="nav-footer">
+        
+Hugo Theme <a href="https://github.com/amazingrise/hugo-theme-diary">Diary</a> by <a href="https://amazingrise.net">Rise</a>
+<br>
+Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopener">Makito</a>'s <a href="https://github.com/SumiMakito/hexo-theme-journal/" target="_blank" rel="noreferrer noopener">Journal.</a> <br>
+<br>
+
+&copy;
+	
+	2021 许嘉华的笔记
+	
+    </div>
+    
+</div><div ref="extraContainer" class="extra-container">
+    
+    <div class="toc animated-visibility" :class="{ invisible: scrollY <= 140 }">
+
+
+	<div class="toc-content">
+	
+		
+		
+		
+		<center>- CATALOG -</center>
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e7%9b%ae%e7%9a%84" v-on:click="closeDrawer" id="目的-nav">
+										 目的
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#wip" v-on:click="closeDrawer" id="wip-nav">
+										 WIP
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e5%8a%9f%e8%83%bd" v-on:click="closeDrawer" id="功能-nav">
+										 功能
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e4%bd%bf%e7%94%a8" v-on:click="closeDrawer" id="使用-nav">
+										 使用
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#ci" v-on:click="closeDrawer" id="ci-nav">
+										 CI
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e5%8f%82%e8%80%83%e8%b5%84%e6%96%99" v-on:click="closeDrawer" id="参考资料-nav">
+										 参考资料
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#sdk" v-on:click="closeDrawer" id="sdk-nav">
+										 SDK
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e5%8f%82%e8%80%83%e6%95%99%e7%a8%8b" v-on:click="closeDrawer" id="参考教程-nav">
+										 参考教程
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+	</div>
+
+</div>
+    
+    <div class="pagination">
+        <a id="globalBackToTop" class="pagination-action animated-visibility" href="#top" :class="{ invisible: scrollY == 0 }">
+            <i class="material-icons pagination-action-icon">
+                keyboard_arrow_up
+            </i>
+        </a>
+        
+    </div>
+</div><div class="single-column-drawer-container" ref="drawer"
+     v-bind:class="{ 'single-column-drawer-container-active': isDrawerOpen }">
+    <div class="drawer-content">
+        <div class="drawer-menu">
+            
+            
+                
+                
+                
+                    
+                
+                
+                
+                <a class="a-block drawer-menu-item active" href="/posts">
+                    Archive
+                </a>
+                
+            
+                
+                
+                
+                
+                
+                <a class="a-block drawer-menu-item false" href="/categories">
+                    Categories
+                </a>
+                
+            
+                
+                
+                
+                
+                
+                <a class="a-block drawer-menu-item false" href="/tags">
+                    Tags
+                </a>
+                
+            
+                
+                
+                
+                
+                
+                <a class="a-block drawer-menu-item false" href="/index.xml">
+                    RSS Feed
+                </a>
+                
+            
+            
+            <div class="toc">
+
+
+	<div class="toc-content">
+	
+		
+		
+		
+		<center>- CATALOG -</center>
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e7%9b%ae%e7%9a%84" v-on:click="closeDrawer" id="目的-nav">
+										 目的
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#wip" v-on:click="closeDrawer" id="wip-nav">
+										 WIP
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e5%8a%9f%e8%83%bd" v-on:click="closeDrawer" id="功能-nav">
+										 功能
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e4%bd%bf%e7%94%a8" v-on:click="closeDrawer" id="使用-nav">
+										 使用
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#ci" v-on:click="closeDrawer" id="ci-nav">
+										 CI
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e5%8f%82%e8%80%83%e8%b5%84%e6%96%99" v-on:click="closeDrawer" id="参考资料-nav">
+										 参考资料
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#sdk" v-on:click="closeDrawer" id="sdk-nav">
+										 SDK
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e5%8f%82%e8%80%83%e6%95%99%e7%a8%8b" v-on:click="closeDrawer" id="参考教程-nav">
+										 参考教程
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+	</div>
+
+</div>
+            
+        </div>
+    </div>
+</div>
+<transition name="fade">
+    <div v-bind:class="{ 'single-column-drawer-mask': mounted }" v-if="isDrawerOpen" v-on:click="toggleDrawer"></div>
+</transition>
+<nav ref="navBar" class="navbar sticky-top navbar-light single-column-nav-container">
+    <div ref="navBackground" class="nav-background"></div>
+    <div class="container container-narrow nav-content">
+        <button id="nav_dropdown_btn" class="nav-dropdown-toggle" type="button" v-on:click="toggleDrawer">
+            <i class="material-icons">
+                menu
+            </i>
+        </button>
+        <a ref="navTitle" class="navbar-brand" href="https://xujiahua.github.io/">
+            许嘉华的笔记
+        </a>
+    </div>
+</nav>
+<div class="single-column-header-container" ref="pageHead"
+     v-bind:style="{ transform: 'translateZ(0px) translateY('+.3*scrollY+'px)', opacity: 1-navOpacity }">
+    <a href="https://xujiahua.github.io/">
+        <div class="single-column-header-title">许嘉华的笔记</div>
+        
+
+    </a>
+</div>
+            <div id="content">
+<div ref="streamContainer" class="stream-container">
+    <div class="post-list-container post-list-container-shadow">
+        <div class="post">
+            
+            
+            
+
+            <div class="post-head-wrapper-text-only"
+                 style="background-image: url('/')">
+                <div class="post-title">
+                    从 Notion 导出 markdown 到 hugo 项目
+                    
+                    <div class="post-meta">
+                        
+                        <time itemprop="datePublished">
+                            2021-04-12 17:25
+                        </time>
+                        
+
+                        
+                            <i class="material-icons" style="">folder</i>
+                                <a href="/categories/">[博客]</a>
+                                &nbsp;
+                        
+
+                        
+                            <i class="material-icons" style="">label</i>
+                            
+                                <a href="/tags/notion">notion</a>
+                                &nbsp;
+                            
+                                <a href="/tags/markdown">markdown</a>
+                                &nbsp;
+                            
+                                <a href="/tags/hugo">hugo</a>
+                                &nbsp;
+                            
+                        
+                    </div>
+                </div>
+            </div>
+            
+            <div class="post-body-wrapper">
+                <div class="post-body">
+                    <h2 id="目的">目的</h2>
+<p>好久没更新博客了，最近半年使用 Notion，体验很棒。</p>
+<p>之前写博客的过程：使用 Typora 编辑 markdown，使用 Hugo 生成静态页面，上传到 github 使用 github pages serving。参考：</p>
+<p><a href="https://xujiahua.github.io/posts/20200310-github-pages-restart/">Github pages重新开始：使用Hugo、Typora</a></p>
+<p>怎么把我 Notion 中的文章同步到我的博客呢。这是本文目的。</p>
+<p>主要是写了一个 notion-mk 的程序将 notion 文章导出到 hugo 工作目录。后面的工作与之前保持一致。</p>
+<pre><code>notion -- notion-mk(todo) --&gt; hugo directory 
+                                                                        -- hugo generate --&gt; static html/js/css
+</code></pre>
+<h2 id="wip">WIP</h2>
+<p>代码如下：</p>
+<p><a href="https://github.com/XUJiahua/notion-md">XUJiahua/notion-md</a></p>
+<h3 id="功能">功能</h3>
+<ul>
+<li><input checked="" disabled="" type="checkbox"> Download images</li>
+<li><input checked="" disabled="" type="checkbox"> Notion extract to markdown</li>
+<li><input checked="" disabled="" type="checkbox"> markdown hugo compatiable</li>
+<li><input checked="" disabled="" type="checkbox"> image location?</li>
+<li><input checked="" disabled="" type="checkbox"> remove title from markdown, now #&hellip;</li>
+<li><input checked="" disabled="" type="checkbox"> support category</li>
+<li><input checked="" disabled="" type="checkbox"> support tag</li>
+<li><input disabled="" type="checkbox"> table of content at the beginning</li>
+</ul>
+<h3 id="使用">使用</h3>
+<p>将要发布的文档添加到这个 list 页面</p>
+<p><img src="../../images/Untitled-02741d53-086d-436b-aac8-87e41738754d.png" alt=""></p>
+<p>触发命令</p>
+<pre><code>notion-md -i cab2ea6d530341769e5dc9a269a1097e -t ${TOKEN} -o /Users/jiahua/hugo-blogger/content/posts -p ../../images/ -v
+</code></pre>
+<p>其中 TOKEN 获取位置如下：</p>
+<p><img src="../../images/Untitled-eb9ff680-4294-4e6f-9e98-9874bb0b7498.png" alt=""></p>
+<p>生成 markdown 和图像文件到对应的目录：</p>
+<pre><code>$ git status
+On branch master
+Your branch is ahead of 'origin/master' by 1 commit.
+  (use &quot;git push&quot; to publish your local commits)
+
+Untracked files:
+  (use &quot;git add &lt;file&gt;...&quot; to include in what will be committed)
+	content/posts/Notion-markdown-hugo-78139407-85c5-4a75-b288-b54d5c3df34b.md
+	content/posts/redis-benchmark-kv-a3e78900-612a-4d04-b2aa-fc6f0908b431.md
+	static/images/Untitled-02741d53-086d-436b-aac8-87e41738754d.png
+	static/images/Untitled-eb9ff680-4294-4e6f-9e98-9874bb0b7498.png
+
+nothing added to commit but untracked files present (use &quot;git add&quot; to track)
+</code></pre>
+<h3 id="ci">CI</h3>
+<ul>
+<li><input disabled="" type="checkbox"> Github Action (notion to hugo markdown)</li>
+<li><input disabled="" type="checkbox"> Github Action (hugo to static page)</li>
+</ul>
+<h2 id="参考资料">参考资料</h2>
+<h3 id="sdk">SDK</h3>
+<p>Notion 官方还未提供 API，有好事者逆向抓包后，准备了非官方 API 库。</p>
+<p>我不需要从抓包开始做了。站在前人的肩膀上。</p>
+<p>Go</p>
+<p><a href="https://github.com/kjk/notionapi">kjk/notionapi</a></p>
+<p>Python</p>
+<p><a href="https://github.com/jamalex/notion-py">jamalex/notion-py</a></p>
+<h3 id="参考教程">参考教程</h3>
+<p><a href="https://arnaudvalensi.github.io/blog/making-a-blog-using-notion-gatsby-and-github-pages/">Making a Blog Using Notion, Gatsby, and Github Pages | Arnaud Valensi</a></p>
+<p><a href="https://presstige.io/p/Using-Notion-API-Go-client-2567fcfa8f7a4ed4bdf6f6ec9298d34a">Using Notion API Go client</a></p>
+
+                    
+                    <HR width="100%" id="EOF">
+                    <p style="color:#777;">Last modified on 2021-04-12</p>
+                    
+                </div>
+            </div>
+            
+            
+            <nav class="post-pagination">
+
+                
+                <a class="newer-posts" href="https://xujiahua.github.io/posts/redis-benchmark-kv-a3e78900-612a-4d04-b2aa-fc6f0908b431/">
+                    Next<br>使用 redis-benchmark 压测自建的 kv 存储引擎
+                </a>
+                
+                
+                
+                <a class="older-posts" href="https://xujiahua.github.io/posts/20200916-pandas-sql/">
+                    Previous<br>pandasql库解析
+                </a>
+                
+            </nav>
+            <div class="post-comment-wrapper">
+                
+
+
+
+
+
+
+            </div>
+        </div>
+    </div>
+</div>
+
+            </div><div id="single-column-footer">
+Hugo Theme <a href="https://github.com/amazingrise/hugo-theme-diary">Diary</a> by <a href="https://amazingrise.net">Rise</a>
+<br>
+Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopener">Makito</a>'s <a href="https://github.com/SumiMakito/hexo-theme-journal/" target="_blank" rel="noreferrer noopener">Journal.</a> <br>
+<br>
+
+&copy;
+	
+	2021 许嘉华的笔记
+	</div>
+    	</div>
+    <script src="https://xujiahua.github.io//js/journal.js"></script>
+    </body>
+</html>

@@ -6,10 +6,51 @@
     <description>Recent content in Tags on 许嘉华的笔记</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Wed, 16 Sep 2020 10:48:11 +0800</lastBuildDate>
+    <lastBuildDate>Mon, 19 Apr 2021 10:24:00 +0800</lastBuildDate><atom:link href="https://xujiahua.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>kv</title>
+      <link>https://xujiahua.github.io/tags/kv/</link>
+      <pubDate>Mon, 19 Apr 2021 10:24:00 +0800</pubDate>
+      
+      <guid>https://xujiahua.github.io/tags/kv/</guid>
+      <description></description>
+    </item>
     
-	<atom:link href="https://xujiahua.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>redis</title>
+      <link>https://xujiahua.github.io/tags/redis/</link>
+      <pubDate>Mon, 19 Apr 2021 10:24:00 +0800</pubDate>
+      
+      <guid>https://xujiahua.github.io/tags/redis/</guid>
+      <description></description>
+    </item>
     
+    <item>
+      <title>Hugo</title>
+      <link>https://xujiahua.github.io/tags/hugo/</link>
+      <pubDate>Mon, 12 Apr 2021 17:25:00 +0800</pubDate>
+      
+      <guid>https://xujiahua.github.io/tags/hugo/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>markdown</title>
+      <link>https://xujiahua.github.io/tags/markdown/</link>
+      <pubDate>Mon, 12 Apr 2021 17:25:00 +0800</pubDate>
+      
+      <guid>https://xujiahua.github.io/tags/markdown/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>notion</title>
+      <link>https://xujiahua.github.io/tags/notion/</link>
+      <pubDate>Mon, 12 Apr 2021 17:25:00 +0800</pubDate>
+      
+      <guid>https://xujiahua.github.io/tags/notion/</guid>
+      <description></description>
+    </item>
     
     <item>
       <title>readcode</title>
@@ -278,15 +319,6 @@
       <pubDate>Tue, 10 Mar 2020 11:24:49 +0800</pubDate>
       
       <guid>https://xujiahua.github.io/tags/github-pages/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Hugo</title>
-      <link>https://xujiahua.github.io/tags/hugo/</link>
-      <pubDate>Tue, 10 Mar 2020 11:24:49 +0800</pubDate>
-      
-      <guid>https://xujiahua.github.io/tags/hugo/</guid>
       <description></description>
     </item>
     

@@ -6,11 +6,7 @@
     <description>Recent content in logging on 许嘉华的笔记</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Tue, 14 Apr 2020 09:53:35 +0800</lastBuildDate>
-    
-	<atom:link href="https://xujiahua.github.io/tags/logging/index.xml" rel="self" type="application/rss+xml" />
-    
-    
+    <lastBuildDate>Tue, 14 Apr 2020 09:53:35 +0800</lastBuildDate><atom:link href="https://xujiahua.github.io/tags/logging/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>k8s 应用日志收集</title>
       <link>https://xujiahua.github.io/posts/20200414-k8s-logging/</link>

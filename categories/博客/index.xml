@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>博客 on 许嘉华的笔记</title>
+    <link>https://xujiahua.github.io/categories/%E5%8D%9A%E5%AE%A2/</link>
+    <description>Recent content in 博客 on 许嘉华的笔记</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Mon, 12 Apr 2021 17:25:00 +0800</lastBuildDate><atom:link href="https://xujiahua.github.io/categories/%E5%8D%9A%E5%AE%A2/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>从 Notion 导出 markdown 到 hugo 项目</title>
+      <link>https://xujiahua.github.io/posts/notion-markdown-hugo-78139407-85c5-4a75-b288-b54d5c3df34b/</link>
+      <pubDate>Mon, 12 Apr 2021 17:25:00 +0800</pubDate>
+      
+      <guid>https://xujiahua.github.io/posts/notion-markdown-hugo-78139407-85c5-4a75-b288-b54d5c3df34b/</guid>
+      <description>目的 好久没更新博客了，最近半年使用 Notion，体验很棒。
+之前写博客的过程：使用 Typora 编辑 markdown，使用 Hugo 生成静态页面，上传到 github 使用 github pages serving。参考：
+Github pages重新开始：使用Hugo、Typora
+怎么把我 Notion 中的文章同步到我的博客呢。这是本文目的。
+主要是写了一个 notion-mk 的程序将 notion 文章导出到 hugo 工作目录。后面的工作与之前保持一致。
+notion -- notion-mk(todo) --&amp;gt; hugo directory -- hugo generate --&amp;gt; static html/js/css  WIP 代码如下：
+XUJiahua/notion-md
+功能  Download images Notion extract to markdown markdown hugo compatiable image location? remove title from markdown, now #&amp;hellip; support category support tag table of content at the beginning  使用 将要发布的文档添加到这个 list 页面</description>
+    </item>
+    
+  </channel>
+</rss>

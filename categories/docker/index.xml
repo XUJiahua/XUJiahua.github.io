@@ -6,11 +6,7 @@
     <description>Recent content in Docker on 许嘉华的笔记</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Mon, 07 Sep 2020 11:35:39 +0800</lastBuildDate>
-    
-	<atom:link href="https://xujiahua.github.io/categories/docker/index.xml" rel="self" type="application/rss+xml" />
-    
-    
+    <lastBuildDate>Mon, 07 Sep 2020 11:35:39 +0800</lastBuildDate><atom:link href="https://xujiahua.github.io/categories/docker/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>使用 ip/iptables 命令模拟 Docker bridge 网络</title>
       <link>https://xujiahua.github.io/posts/20200907-docker-bridge-net-sim/</link>

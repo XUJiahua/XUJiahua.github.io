@@ -6,11 +6,7 @@
     <description>Recent content in tunnel on 许嘉华的笔记</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Thu, 03 Sep 2020 17:02:18 +0800</lastBuildDate>
-    
-	<atom:link href="https://xujiahua.github.io/tags/tunnel/index.xml" rel="self" type="application/rss+xml" />
-    
-    
+    <lastBuildDate>Thu, 03 Sep 2020 17:02:18 +0800</lastBuildDate><atom:link href="https://xujiahua.github.io/tags/tunnel/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>瘦终端指北 —— ICMP tunnel</title>
       <link>https://xujiahua.github.io/posts/20200903-fuck-thin-client/</link>

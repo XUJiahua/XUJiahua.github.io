@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>redis on 许嘉华的笔记</title>
+    <link>https://xujiahua.github.io/tags/redis/</link>
+    <description>Recent content in redis on 许嘉华的笔记</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Mon, 19 Apr 2021 10:24:00 +0800</lastBuildDate><atom:link href="https://xujiahua.github.io/tags/redis/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>使用 redis-benchmark 压测自建的 kv 存储引擎</title>
+      <link>https://xujiahua.github.io/posts/redis-benchmark-kv-a3e78900-612a-4d04-b2aa-fc6f0908b431/</link>
+      <pubDate>Mon, 19 Apr 2021 10:24:00 +0800</pubDate>
+      
+      <guid>https://xujiahua.github.io/posts/redis-benchmark-kv-a3e78900-612a-4d04-b2aa-fc6f0908b431/</guid>
+      <description>给自建 kv 存储引擎做性能测试不难，使用 redis-benchmark 压测的目的是，测试结果能与 redis-server 的结果做横向对比。
+redis-benchmark redis-benchmark 支持如下指令的 benchmark。其中 GET/SET 指令可用于 kv 存储引擎的压测。
+redis-benchmark -q PING_INLINE: 102669.41 requests per second, p50=0.247 msec PING_MBULK: 102880.66 requests per second, p50=0.231 msec SET: 101936.80 requests per second, p50=0.239 msec GET: 101626.02 requests per second, p50=0.239 msec INCR: 102249.49 requests per second, p50=0.239 msec LPUSH: 100603.62 requests per second, p50=0.255 msec RPUSH: 101626.02 requests per second, p50=0.255 msec LPOP: 102354.15 requests per second, p50=0.</description>
+    </item>
+    
+  </channel>
+</rss>

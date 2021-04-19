@@ -6,10 +6,24 @@
     <description>Recent content in Categories on 许嘉华的笔记</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Mon, 07 Sep 2020 11:35:39 +0800</lastBuildDate>
+    <lastBuildDate>Mon, 19 Apr 2021 10:24:00 +0800</lastBuildDate><atom:link href="https://xujiahua.github.io/categories/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>存储</title>
+      <link>https://xujiahua.github.io/categories/%E5%AD%98%E5%82%A8/</link>
+      <pubDate>Mon, 19 Apr 2021 10:24:00 +0800</pubDate>
+      
+      <guid>https://xujiahua.github.io/categories/%E5%AD%98%E5%82%A8/</guid>
+      <description></description>
+    </item>
     
-	<atom:link href="https://xujiahua.github.io/categories/index.xml" rel="self" type="application/rss+xml" />
-    
+    <item>
+      <title>博客</title>
+      <link>https://xujiahua.github.io/categories/%E5%8D%9A%E5%AE%A2/</link>
+      <pubDate>Mon, 12 Apr 2021 17:25:00 +0800</pubDate>
+      
+      <guid>https://xujiahua.github.io/categories/%E5%8D%9A%E5%AE%A2/</guid>
+      <description></description>
+    </item>
     
     <item>
       <title>Docker</title>

@@ -6,11 +6,7 @@
     <description>Recent content in Golang on 许嘉华的笔记</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Fri, 20 Mar 2020 15:24:22 +0800</lastBuildDate>
-    
-	<atom:link href="https://xujiahua.github.io/tags/golang/index.xml" rel="self" type="application/rss+xml" />
-    
-    
+    <lastBuildDate>Fri, 20 Mar 2020 15:24:22 +0800</lastBuildDate><atom:link href="https://xujiahua.github.io/tags/golang/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Go Web 项目框架</title>
       <link>https://xujiahua.github.io/posts/20200320-go-web-project/</link>

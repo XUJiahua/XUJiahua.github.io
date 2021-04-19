@@ -1,0 +1,797 @@
+<!DOCTYPE html>
+<html><head>
+<title>使用 redis-benchmark 压测自建的 kv 存储引擎</title>
+
+<meta charset="utf-8">
+<meta name="X-UA-Compatible" content="IE=edge">
+<meta name="google-site-verification" content="">
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport">
+<meta content="telephone=no" name="format-detection">
+<meta name="description" content="">
+<meta name="renderer" content="webkit">
+<meta name="theme-color" content="#ffffff">
+
+
+
+
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+	ga('create', 'UA-162706610-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+
+
+<script src="/vendor/js/jquery.min.js" ></script>
+<script src="/vendor/js/popper.min.js" ></script>
+<script src="/vendor/js/bootstrap.min.js" ></script>
+<script src="/vendor/js/smooth-scroll.polyfills.min.js" ></script>
+<link type="text/css" rel="stylesheet" href="/vendor/css/bootstrap.min.css">
+<script src="/vendor/js/vue.min.js" ></script>
+
+
+
+
+<link rel="stylesheet" href="https://xujiahua.github.io/scss/journal.min.5d0fd093a264465a2c30c56fbe9eb8cdb0764ecf3eb96e8c64de3cf6c081cc40.css" integrity="sha256-XQ/Qk6JkRlosMMVvvp64zbB2Ts8&#43;uW6MZN489sCBzEA=" media="screen">
+
+<script src="https://xujiahua.github.io//js/loadCSS.js"></script>
+<script src="https://xujiahua.github.io//js/table.js"></script>
+
+
+<script src="https://xujiahua.github.io//js/toc.js"></script>
+
+
+<script>
+    loadCSS("https://fonts.googleapis.com/css?family=Lora|Montserrat|Fira+Mono|Noto+Serif+SC|Material+Icons");
+</script>
+
+
+
+
+
+
+</head><body>
+    	<div id="app"><div ref="sideContainer" class="side-container">
+    
+    <a class="a-block nav-head false" href="https://xujiahua.github.io/">
+    
+        <div class="nav-title">
+            许嘉华的笔记
+        </div>
+        
+    </a>
+
+    <div class="nav-link-list">
+        
+        
+            
+            
+            
+                
+            
+            
+            
+            <a class="a-block nav-link-item active" href="/posts">
+                Archive
+            </a>
+            
+        
+            
+            
+            
+            
+            
+            <a class="a-block nav-link-item false" href="/categories">
+                Categories
+            </a>
+            
+        
+            
+            
+            
+            
+            
+            <a class="a-block nav-link-item false" href="/tags">
+                Tags
+            </a>
+            
+        
+            
+            
+            
+            
+            
+            <a class="a-block nav-link-item false" href="/index.xml">
+                RSS Feed
+            </a>
+            
+        
+    </div>
+
+    
+
+    <div class="nav-footer">
+        
+Hugo Theme <a href="https://github.com/amazingrise/hugo-theme-diary">Diary</a> by <a href="https://amazingrise.net">Rise</a>
+<br>
+Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopener">Makito</a>'s <a href="https://github.com/SumiMakito/hexo-theme-journal/" target="_blank" rel="noreferrer noopener">Journal.</a> <br>
+<br>
+
+&copy;
+	
+	2021 许嘉华的笔记
+	
+    </div>
+    
+</div><div ref="extraContainer" class="extra-container">
+    
+    <div class="toc animated-visibility" :class="{ invisible: scrollY <= 140 }">
+
+
+	<div class="toc-content">
+	
+		
+		
+		
+		<center>- CATALOG -</center>
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#redis-benchmark" v-on:click="closeDrawer" id="redis-benchmark-nav">
+										 redis-benchmark
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#redcon" v-on:click="closeDrawer" id="redcon-nav">
+										 redcon
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e6%b5%8b%e8%af%95%e7%bb%93%e6%9e%9c" v-on:click="closeDrawer" id="测试结果-nav">
+										 测试结果
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#redis-server" v-on:click="closeDrawer" id="redis-server-nav">
+										 redis-server
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#go-hashmap" v-on:click="closeDrawer" id="go-hashmap-nav">
+										 go hashmap
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#goleveldb" v-on:click="closeDrawer" id="goleveldb-nav">
+										 goleveldb
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#bitcask%e8%87%aa%e5%88%b6%e5%9c%9f%e7%82%ae%e7%89%88" v-on:click="closeDrawer" id="bitcask自制土炮版-nav">
+										 bitcask（自制土炮版）
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e6%80%bb%e7%bb%93" v-on:click="closeDrawer" id="总结-nav">
+										 总结
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+	</div>
+
+</div>
+    
+    <div class="pagination">
+        <a id="globalBackToTop" class="pagination-action animated-visibility" href="#top" :class="{ invisible: scrollY == 0 }">
+            <i class="material-icons pagination-action-icon">
+                keyboard_arrow_up
+            </i>
+        </a>
+        
+    </div>
+</div><div class="single-column-drawer-container" ref="drawer"
+     v-bind:class="{ 'single-column-drawer-container-active': isDrawerOpen }">
+    <div class="drawer-content">
+        <div class="drawer-menu">
+            
+            
+                
+                
+                
+                    
+                
+                
+                
+                <a class="a-block drawer-menu-item active" href="/posts">
+                    Archive
+                </a>
+                
+            
+                
+                
+                
+                
+                
+                <a class="a-block drawer-menu-item false" href="/categories">
+                    Categories
+                </a>
+                
+            
+                
+                
+                
+                
+                
+                <a class="a-block drawer-menu-item false" href="/tags">
+                    Tags
+                </a>
+                
+            
+                
+                
+                
+                
+                
+                <a class="a-block drawer-menu-item false" href="/index.xml">
+                    RSS Feed
+                </a>
+                
+            
+            
+            <div class="toc">
+
+
+	<div class="toc-content">
+	
+		
+		
+		
+		<center>- CATALOG -</center>
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#redis-benchmark" v-on:click="closeDrawer" id="redis-benchmark-nav">
+										 redis-benchmark
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#redcon" v-on:click="closeDrawer" id="redcon-nav">
+										 redcon
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e6%b5%8b%e8%af%95%e7%bb%93%e6%9e%9c" v-on:click="closeDrawer" id="测试结果-nav">
+										 测试结果
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#redis-server" v-on:click="closeDrawer" id="redis-server-nav">
+										 redis-server
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#go-hashmap" v-on:click="closeDrawer" id="go-hashmap-nav">
+										 go hashmap
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#goleveldb" v-on:click="closeDrawer" id="goleveldb-nav">
+										 goleveldb
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#bitcask%e8%87%aa%e5%88%b6%e5%9c%9f%e7%82%ae%e7%89%88" v-on:click="closeDrawer" id="bitcask自制土炮版-nav">
+										 bitcask（自制土炮版）
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e6%80%bb%e7%bb%93" v-on:click="closeDrawer" id="总结-nav">
+										 总结
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+	</div>
+
+</div>
+            
+        </div>
+    </div>
+</div>
+<transition name="fade">
+    <div v-bind:class="{ 'single-column-drawer-mask': mounted }" v-if="isDrawerOpen" v-on:click="toggleDrawer"></div>
+</transition>
+<nav ref="navBar" class="navbar sticky-top navbar-light single-column-nav-container">
+    <div ref="navBackground" class="nav-background"></div>
+    <div class="container container-narrow nav-content">
+        <button id="nav_dropdown_btn" class="nav-dropdown-toggle" type="button" v-on:click="toggleDrawer">
+            <i class="material-icons">
+                menu
+            </i>
+        </button>
+        <a ref="navTitle" class="navbar-brand" href="https://xujiahua.github.io/">
+            许嘉华的笔记
+        </a>
+    </div>
+</nav>
+<div class="single-column-header-container" ref="pageHead"
+     v-bind:style="{ transform: 'translateZ(0px) translateY('+.3*scrollY+'px)', opacity: 1-navOpacity }">
+    <a href="https://xujiahua.github.io/">
+        <div class="single-column-header-title">许嘉华的笔记</div>
+        
+
+    </a>
+</div>
+            <div id="content">
+<div ref="streamContainer" class="stream-container">
+    <div class="post-list-container post-list-container-shadow">
+        <div class="post">
+            
+            
+            
+
+            <div class="post-head-wrapper-text-only"
+                 style="background-image: url('/')">
+                <div class="post-title">
+                    使用 redis-benchmark 压测自建的 kv 存储引擎
+                    
+                    <div class="post-meta">
+                        
+                        <time itemprop="datePublished">
+                            2021-04-19 10:24
+                        </time>
+                        
+
+                        
+                            <i class="material-icons" style="">folder</i>
+                                <a href="/categories/">[存储]</a>
+                                &nbsp;
+                        
+
+                        
+                            <i class="material-icons" style="">label</i>
+                            
+                                <a href="/tags/redis">redis</a>
+                                &nbsp;
+                            
+                                <a href="/tags/kv">kv</a>
+                                &nbsp;
+                            
+                        
+                    </div>
+                </div>
+            </div>
+            
+            <div class="post-body-wrapper">
+                <div class="post-body">
+                    <p>给自建 kv 存储引擎做性能测试不难，使用 redis-benchmark 压测的目的是，测试结果能与 redis-server 的结果做横向对比。</p>
+<h2 id="redis-benchmark">redis-benchmark</h2>
+<p>redis-benchmark 支持如下指令的 benchmark。其中 GET/SET 指令可用于 kv 存储引擎的压测。</p>
+<pre><code>redis-benchmark -q
+PING_INLINE: 102669.41 requests per second, p50=0.247 msec
+PING_MBULK: 102880.66 requests per second, p50=0.231 msec
+SET: 101936.80 requests per second, p50=0.239 msec
+GET: 101626.02 requests per second, p50=0.239 msec
+INCR: 102249.49 requests per second, p50=0.239 msec
+LPUSH: 100603.62 requests per second, p50=0.255 msec
+RPUSH: 101626.02 requests per second, p50=0.255 msec
+LPOP: 102354.15 requests per second, p50=0.255 msec
+RPOP: 102249.49 requests per second, p50=0.255 msec
+SADD: 101522.84 requests per second, p50=0.247 msec
+HSET: 100603.62 requests per second, p50=0.255 msec
+SPOP: 102249.49 requests per second, p50=0.247 msec
+ZADD: 102564.10 requests per second, p50=0.255 msec
+ZPOPMIN: 103412.62 requests per second, p50=0.247 msec
+LPUSH (needed to benchmark LRANGE): 94607.38 requests per second, p50=0.263 msec
+LRANGE_100 (first 100 elements): 27964.21 requests per second, p50=0.855 msec
+LRANGE_300 (first 300 elements): 11193.19 requests per second, p50=2.135 msec
+LRANGE_500 (first 450 elements): 7649.94 requests per second, p50=3.159 msec
+LRANGE_600 (first 600 elements): 5884.78 requests per second, p50=4.103 msec
+MSET (10 keys): 93283.58 requests per second, p50=0.423 msec
+</code></pre>
+<h2 id="redcon">redcon</h2>
+<p>Redis compatible server framework for <strong>Go</strong>.</p>
+<p><a href="https://github.com/tidwall/redcon">tidwall/redcon</a></p>
+<p>这个库兼容了 redis-server 的协议。个人要做的是封装下对存储引擎的调用。</p>
+<p>只要兼容了服务端协议，就可以使用 redis-benchmark, redis-cli 等工具去连接了。</p>
+<h2 id="测试结果">测试结果</h2>
+<h3 id="redis-server">redis-server</h3>
+<pre><code>$ redis-benchmark -t set,get --csv
+&quot;test&quot;,&quot;rps&quot;,&quot;avg_latency_ms&quot;,&quot;min_latency_ms&quot;,&quot;p50_latency_ms&quot;,&quot;p95_latency_ms&quot;,&quot;p99_latency_ms&quot;,&quot;max_latency_ms&quot;
+&quot;SET&quot;,&quot;82850.04&quot;,&quot;0.322&quot;,&quot;0.144&quot;,&quot;0.295&quot;,&quot;0.455&quot;,&quot;0.655&quot;,&quot;1.999&quot;
+&quot;GET&quot;,&quot;82236.84&quot;,&quot;0.321&quot;,&quot;0.160&quot;,&quot;0.295&quot;,&quot;0.495&quot;,&quot;0.655&quot;,&quot;2.007&quot;
+</code></pre>
+<h3 id="go-hashmap">go hashmap</h3>
+<p>内置的 map。</p>
+<pre><code>$ redis-benchmark -t set,get --csv
+&quot;test&quot;,&quot;rps&quot;,&quot;avg_latency_ms&quot;,&quot;min_latency_ms&quot;,&quot;p50_latency_ms&quot;,&quot;p95_latency_ms&quot;,&quot;p99_latency_ms&quot;,&quot;max_latency_ms&quot;
+&quot;SET&quot;,&quot;73421.44&quot;,&quot;0.356&quot;,&quot;0.144&quot;,&quot;0.311&quot;,&quot;0.535&quot;,&quot;1.111&quot;,&quot;2.511&quot;
+&quot;GET&quot;,&quot;79681.27&quot;,&quot;0.329&quot;,&quot;0.152&quot;,&quot;0.303&quot;,&quot;0.463&quot;,&quot;0.575&quot;,&quot;0.935&quot;
+</code></pre>
+<h3 id="goleveldb">goleveldb</h3>
+<p><a href="https://github.com/syndtr/goleveldb">syndtr/goleveldb</a></p>
+<pre><code>$ redis-benchmark -t set,get --csv
+&quot;test&quot;,&quot;rps&quot;,&quot;avg_latency_ms&quot;,&quot;min_latency_ms&quot;,&quot;p50_latency_ms&quot;,&quot;p95_latency_ms&quot;,&quot;p99_latency_ms&quot;,&quot;max_latency_ms&quot;
+&quot;SET&quot;,&quot;57636.89&quot;,&quot;0.475&quot;,&quot;0.096&quot;,&quot;0.439&quot;,&quot;0.679&quot;,&quot;1.007&quot;,&quot;3.687&quot;
+&quot;GET&quot;,&quot;79302.14&quot;,&quot;0.333&quot;,&quot;0.152&quot;,&quot;0.303&quot;,&quot;0.471&quot;,&quot;0.687&quot;,”2.711&quot;
+</code></pre>
+<h3 id="bitcask自制土炮版">bitcask（自制土炮版）</h3>
+<p>性能差了一大截。</p>
+<pre><code>$ redis-benchmark -t set,get --csv
+&quot;test&quot;,&quot;rps&quot;,&quot;avg_latency_ms&quot;,&quot;min_latency_ms&quot;,&quot;p50_latency_ms&quot;,&quot;p95_latency_ms&quot;,&quot;p99_latency_ms&quot;,&quot;max_latency_ms&quot;
+&quot;SET&quot;,&quot;44662.79&quot;,&quot;1.033&quot;,&quot;0.040&quot;,&quot;1.167&quot;,&quot;1.535&quot;,&quot;2.367&quot;,&quot;36.095&quot;
+&quot;GET&quot;,&quot;52137.64&quot;,&quot;0.523&quot;,&quot;0.088&quot;,&quot;0.503&quot;,&quot;0.687&quot;,&quot;1.199&quot;,&quot;6.327&quot;
+</code></pre>
+<h2 id="总结">总结</h2>
+<p>使用 redis-benchmark 作为性能测试框架。在相同的测试用例下，通过对照比较其他存储引擎的测试结果，了解自己需要进步的空间。</p>
+
+                    
+                    <HR width="100%" id="EOF">
+                    <p style="color:#777;">Last modified on 2021-04-19</p>
+                    
+                </div>
+            </div>
+            
+            
+            <nav class="post-pagination">
+
+                
+                <a class="newer-posts">
+                    Next<br>No newer posts.
+                </a>
+                
+                
+                
+                <a class="older-posts" href="https://xujiahua.github.io/posts/notion-markdown-hugo-78139407-85c5-4a75-b288-b54d5c3df34b/">
+                    Previous<br>从 Notion 导出 markdown 到 hugo 项目
+                </a>
+                
+            </nav>
+            <div class="post-comment-wrapper">
+                
+
+
+
+
+
+
+            </div>
+        </div>
+    </div>
+</div>
+
+            </div><div id="single-column-footer">
+Hugo Theme <a href="https://github.com/amazingrise/hugo-theme-diary">Diary</a> by <a href="https://amazingrise.net">Rise</a>
+<br>
+Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopener">Makito</a>'s <a href="https://github.com/SumiMakito/hexo-theme-journal/" target="_blank" rel="noreferrer noopener">Journal.</a> <br>
+<br>
+
+&copy;
+	
+	2021 许嘉华的笔记
+	</div>
+    	</div>
+    <script src="https://xujiahua.github.io//js/journal.js"></script>
+    </body>
+</html>

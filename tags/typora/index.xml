@@ -6,11 +6,7 @@
     <description>Recent content in Typora on 许嘉华的笔记</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Tue, 10 Mar 2020 11:24:49 +0800</lastBuildDate>
-    
-	<atom:link href="https://xujiahua.github.io/tags/typora/index.xml" rel="self" type="application/rss+xml" />
-    
-    
+    <lastBuildDate>Tue, 10 Mar 2020 11:24:49 +0800</lastBuildDate><atom:link href="https://xujiahua.github.io/tags/typora/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Github pages重新开始：使用Hugo、Typora</title>
       <link>https://xujiahua.github.io/posts/20200310-github-pages-restart/</link>

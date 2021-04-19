@@ -6,11 +6,7 @@
     <description>Recent content in Android on 许嘉华的笔记</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Sat, 08 Apr 2017 11:45:49 +0800</lastBuildDate>
-    
-	<atom:link href="https://xujiahua.github.io/tags/android/index.xml" rel="self" type="application/rss+xml" />
-    
-    
+    <lastBuildDate>Sat, 08 Apr 2017 11:45:49 +0800</lastBuildDate><atom:link href="https://xujiahua.github.io/tags/android/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Android热更新框架的使用</title>
       <link>https://xujiahua.github.io/posts/20170408-android-hot-update/</link>

@@ -6,11 +6,7 @@
     <description>Recent content in 性能测试 on 许嘉华的笔记</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Wed, 17 Oct 2018 07:42:56 +0800</lastBuildDate>
-    
-	<atom:link href="https://xujiahua.github.io/tags/%E6%80%A7%E8%83%BD%E6%B5%8B%E8%AF%95/index.xml" rel="self" type="application/rss+xml" />
-    
-    
+    <lastBuildDate>Wed, 17 Oct 2018 07:42:56 +0800</lastBuildDate><atom:link href="https://xujiahua.github.io/tags/%E6%80%A7%E8%83%BD%E6%B5%8B%E8%AF%95/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>一点压力测试的经验</title>
       <link>https://xujiahua.github.io/posts/20181017-perf-testing/</link>

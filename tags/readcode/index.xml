@@ -6,11 +6,7 @@
     <description>Recent content in readcode on 许嘉华的笔记</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Wed, 16 Sep 2020 10:48:11 +0800</lastBuildDate>
-    
-	<atom:link href="https://xujiahua.github.io/tags/readcode/index.xml" rel="self" type="application/rss+xml" />
-    
-    
+    <lastBuildDate>Wed, 16 Sep 2020 10:48:11 +0800</lastBuildDate><atom:link href="https://xujiahua.github.io/tags/readcode/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>pandasql库解析</title>
       <link>https://xujiahua.github.io/posts/20200916-pandas-sql/</link>

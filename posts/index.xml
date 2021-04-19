@@ -6,10 +6,33 @@
     <description>Recent content in Posts on 许嘉华的笔记</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Wed, 16 Sep 2020 10:48:11 +0800</lastBuildDate>
+    <lastBuildDate>Mon, 19 Apr 2021 10:24:00 +0800</lastBuildDate><atom:link href="https://xujiahua.github.io/posts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>使用 redis-benchmark 压测自建的 kv 存储引擎</title>
+      <link>https://xujiahua.github.io/posts/redis-benchmark-kv-a3e78900-612a-4d04-b2aa-fc6f0908b431/</link>
+      <pubDate>Mon, 19 Apr 2021 10:24:00 +0800</pubDate>
+      
+      <guid>https://xujiahua.github.io/posts/redis-benchmark-kv-a3e78900-612a-4d04-b2aa-fc6f0908b431/</guid>
+      <description>给自建 kv 存储引擎做性能测试不难，使用 redis-benchmark 压测的目的是，测试结果能与 redis-server 的结果做横向对比。
+redis-benchmark redis-benchmark 支持如下指令的 benchmark。其中 GET/SET 指令可用于 kv 存储引擎的压测。
+redis-benchmark -q PING_INLINE: 102669.41 requests per second, p50=0.247 msec PING_MBULK: 102880.66 requests per second, p50=0.231 msec SET: 101936.80 requests per second, p50=0.239 msec GET: 101626.02 requests per second, p50=0.239 msec INCR: 102249.49 requests per second, p50=0.239 msec LPUSH: 100603.62 requests per second, p50=0.255 msec RPUSH: 101626.02 requests per second, p50=0.255 msec LPOP: 102354.15 requests per second, p50=0.</description>
+    </item>
     
-	<atom:link href="https://xujiahua.github.io/posts/index.xml" rel="self" type="application/rss+xml" />
-    
+    <item>
+      <title>从 Notion 导出 markdown 到 hugo 项目</title>
+      <link>https://xujiahua.github.io/posts/notion-markdown-hugo-78139407-85c5-4a75-b288-b54d5c3df34b/</link>
+      <pubDate>Mon, 12 Apr 2021 17:25:00 +0800</pubDate>
+      
+      <guid>https://xujiahua.github.io/posts/notion-markdown-hugo-78139407-85c5-4a75-b288-b54d5c3df34b/</guid>
+      <description>目的 好久没更新博客了，最近半年使用 Notion，体验很棒。
+之前写博客的过程：使用 Typora 编辑 markdown，使用 Hugo 生成静态页面，上传到 github 使用 github pages serving。参考：
+Github pages重新开始：使用Hugo、Typora
+怎么把我 Notion 中的文章同步到我的博客呢。这是本文目的。
+主要是写了一个 notion-mk 的程序将 notion 文章导出到 hugo 工作目录。后面的工作与之前保持一致。
+notion -- notion-mk(todo) --&amp;gt; hugo directory -- hugo generate --&amp;gt; static html/js/css  WIP 代码如下：
+XUJiahua/notion-md
+功能  Download images Notion extract to markdown markdown hugo compatiable image location? remove title from markdown, now #&amp;hellip; support category support tag table of content at the beginning  使用 将要发布的文档添加到这个 list 页面</description>
+    </item>
     
     <item>
       <title>pandasql库解析</title>
@@ -805,7 +828,7 @@ Go 1.8 起也提供了动态链接库的功能。
 一、使用流程 这里有个demo可以参考下：https://github.com/vladimirvivien/go-plugin-example
 作者写作时，Go 1.8，plugin特性尚不支持MacOS。目前（Go 1.11.4），是支持Linux/MacOS的。
 1. 编译模块（module, .so） go build -buildmode=plugin -o path/to/shared/object/file.so path/to/source/code.go 注意-buildmode=plugin这个编译Flag。
-2. 引入&amp;quot;plugin&amp;rdquo; import &amp;quot;plugin&amp;quot; 3. 加载module plug, err := plugin.Open(&amp;quot;path/to/shared/object/file.so&amp;quot;) 4. 查找symbol，比如exported function/variable symGreeter, err := plug.Lookup(&amp;quot;Greeter&amp;quot;) plug.Lookup的返回类型是Symbol，其实就是interface{}，为了正常使用，需要做类型转换。
+2. 引入&amp;quot;plugin&amp;quot; import &amp;quot;plugin&amp;quot; 3. 加载module plug, err := plugin.Open(&amp;quot;path/to/shared/object/file.so&amp;quot;) 4. 查找symbol，比如exported function/variable symGreeter, err := plug.Lookup(&amp;quot;Greeter&amp;quot;) plug.Lookup的返回类型是Symbol，其实就是interface{}，为了正常使用，需要做类型转换。
 type Symbol interface{} 5. 类型转换 type assertion var greeter Greeter greeter, ok := symGreeter.(Greeter) 很重要，不然没法使用。
 6. 正常使用 greeter.Greet() 二、已知问题 无法debug 分别在MacOS和Ubuntu尝试debug使用plugin包的应用，报错如下（Go 1.</description>
     </item>

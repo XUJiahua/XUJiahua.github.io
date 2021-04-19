@@ -6,11 +6,7 @@
     <description>Recent content in BI on 许嘉华的笔记</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Fri, 10 Apr 2020 16:41:53 +0800</lastBuildDate>
-    
-	<atom:link href="https://xujiahua.github.io/tags/bi/index.xml" rel="self" type="application/rss+xml" />
-    
-    
+    <lastBuildDate>Fri, 10 Apr 2020 16:41:53 +0800</lastBuildDate><atom:link href="https://xujiahua.github.io/tags/bi/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Metabase &#43; Spark SQL</title>
       <link>https://xujiahua.github.io/posts/20200410-metabase-spark-sql/</link>
