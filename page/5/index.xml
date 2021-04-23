@@ -5,9 +5,90 @@
     <description>Recent content on 许嘉华的笔记</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Mon, 19 Apr 2021 10:24:00 +0800</lastBuildDate>
+    <lastBuildDate>Wed, 21 Apr 2021 18:03:00 +0800</lastBuildDate>
     
         <atom:link href="https://xujiahua.github.io/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    
+        <item>
+        <title>Go库对URL Path中%2F的处理</title>
+        <link>https://xujiahua.github.io/posts/20200312-slash-in-url-path/</link>
+        <pubDate>Thu, 12 Mar 2020 15:17:36 +0800</pubDate>
+        
+        <guid>https://xujiahua.github.io/posts/20200312-slash-in-url-path/</guid>
+        <description>许嘉华的笔记 https://xujiahua.github.io/posts/20200312-slash-in-url-path/ -&lt;h2 id=&#34;问题描述&#34;&gt;问题描述&lt;/h2&gt;
+&lt;ol&gt;
+&lt;li&gt;有同事反馈Go项目的接口404了。看了下nginx日志，只有部分请求404了，404请求的显著特征是URL里有&lt;code&gt;%2F&lt;/code&gt;，也就是&lt;code&gt;/&lt;/code&gt;的转义。&lt;/li&gt;
+&lt;li&gt;接口定义是这样的：&lt;code&gt;/api/xxx/{mid}/{uid}&lt;/code&gt;。mid、uid是URL path的一部分。从现象来看，程序没处理好转义字符，因为多了一个path部分，路由不匹配了，404。&lt;/li&gt;
+&lt;li&gt;nginx的URL记录是&lt;code&gt;%2F&lt;/code&gt;，其实调用方传的是微信ID，比如&lt;code&gt;IEd5W/jqsdF9qpuagQscEg==&lt;/code&gt;。调用方在发请求之前对ID已经做好了转义。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2 id=&#34;go内置库不区分2f和&#34;&gt;Go内置库：不区分&lt;code&gt;%2F&lt;/code&gt;和&lt;code&gt;/&lt;/code&gt;&lt;/h2&gt;
+&lt;p&gt;An application cannot distinguish between &amp;ldquo;/&amp;rdquo; used as a path segment delimiter and &amp;ldquo;/&amp;rdquo; encoded in a path segment.&lt;/p&gt;
+&lt;p&gt;这个问题由来已久了，看着官方也不打算解决了，见这个issue：https://github.com/golang/go/issues/3659&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;If your app needs to assign special meaning, the
+server can reprocess req.RequestURI as it sees fit, and the client can
+issue requests using &amp;amp;url.URL{Opaque: rawURI}.
+&lt;/code&gt;&lt;/pre&gt;&lt;ol&gt;
+&lt;li&gt;reprocess req.RequestURI 就是让你别用内置路由库了。&lt;/li&gt;
+&lt;li&gt;issue requests using &amp;amp;url.URL{Opaque: rawURI}. 试了，问题没解决。客户端不管怎么做，最终都是以HTTP协议输出的。&lt;code&gt;GET http://www.google.com/index.html HTTP/1.1&lt;/code&gt; 服务端代码最终解析的还是中间的那段URL文本。照理就不通啊。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3 id=&#34;源码角度&#34;&gt;源码角度&lt;/h3&gt;
+&lt;p&gt;&lt;code&gt;url.URL&lt;/code&gt;的定义，明确指出Path字段存储的是decode之后的数据，所以&lt;code&gt;%2F&lt;/code&gt;在这里已经被转义成了&lt;code&gt;/&lt;/code&gt;，跟之前的Path意义完全不同了。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200312154454662.png&#34; alt=&#34;image-20200312154454662&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;http.ServeMux&lt;/code&gt;也是依赖Path进行路由的。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200312155554309.png&#34; alt=&#34;image-20200312155554309&#34;&gt;&lt;/p&gt;
+&lt;p&gt;而http.Request中的URL字段是怎么从HTTP协议中解析出来的呢，从http.ListenAndServe顺藤摸瓜。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200312163138455.png&#34; alt=&#34;image-20200312163138455&#34;&gt;&lt;/p&gt;
+&lt;p&gt;最后还是在parse rawurl字符串，红框里会做path的转义操作，坑之所在。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200312164058458.png&#34; alt=&#34;image-20200312164058458&#34;&gt;&lt;/p&gt;
+&lt;p&gt;使用Go内置的http路由，代码都写死了：URL解析代码中，Path一定是decode后的数据；路由代码中使用Path来路由。问题得不到解决。&lt;/p&gt;
+&lt;h2 id=&#34;gorillamux-useencodedpath&#34;&gt;gorilla/mux: UseEncodedPath()&lt;/h2&gt;
+&lt;p&gt;&lt;a href=&#34;http://www.gorillatoolkit.org/pkg/mux&#34;&gt;http://www.gorillatoolkit.org/pkg/mux&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200312170420310.png&#34; alt=&#34;image-20200312170420310&#34;&gt;&lt;/p&gt;
+&lt;p&gt;使用这个方法就可以基于encoded Path进行路由了。例子如下：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;package main
+
+import (
+	&amp;quot;fmt&amp;quot;
+	&amp;quot;io/ioutil&amp;quot;
+	&amp;quot;log&amp;quot;
+	&amp;quot;net/http&amp;quot;
+	&amp;quot;net/http/httptest&amp;quot;
+
+	&amp;quot;github.com/gorilla/mux&amp;quot;
+)
+
+func main() {
+	router := mux.NewRouter().UseEncodedPath() # 创建router的时候设置
+	router.NewRoute().Name(&amp;quot;test&amp;quot;).Methods(&amp;quot;GET&amp;quot;).Path(&amp;quot;/test/{name}&amp;quot;).HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprint(w, mux.Vars(r))
+	})
+	server := httptest.NewServer(router)
+	defer server.Close()
+
+	res, err := http.Get(server.URL + &amp;quot;/test/bob%2Fvanderlen&amp;quot;)
+	if err != nil {
+		log.Fatal(err)
+	}
+	greeting, err := ioutil.ReadAll(res.Body)
+	res.Body.Close()
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Printf(&amp;quot;%s&amp;quot;, greeting)
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;h3 id=&#34;源码角度-1&#34;&gt;源码角度&lt;/h3&gt;
+&lt;p&gt;通过flag来控制是否用encode过的还是decode过的Path。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200312171317394.png&#34; alt=&#34;image-20200312171317394&#34;&gt;&lt;/p&gt;
+&lt;h2 id=&#34;还不完美&#34;&gt;还不完美&lt;/h2&gt;
+&lt;p&gt;期望取到的数据是&lt;code&gt; IEd5W/jqsdF9qpuagQscEg==&lt;/code&gt;。然而，Path变量的取值仍然是根据标志位来的。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200312173633090.png&#34; alt=&#34;image-20200312173633090&#34;&gt;&lt;/p&gt;
+&lt;p&gt;也就是说，即使让请求找到了路由，还是取不到真正的值。还得对URL Path进行手动decode才能用其中的值。让人崩溃，好多地方要改。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200312174326015.png&#34; alt=&#34;image-20200312174326015&#34;&gt;&lt;/p&gt;
+&lt;p&gt;不完美，但至少不需要让调用者改代码了。以后接口设计还是把请求参数放Body里，稳一点。&lt;/p&gt;
+- https://xujiahua.github.io/posts/20200312-slash-in-url-path/ - </description>
+        </item>
     
     
     
@@ -550,22 +631,6 @@ export GOPROXY=https://goproxy.io
 &lt;li&gt;（IT上能）提升效率：一份数据在各个系统流转，那么这份数据就存在区块链数据库上就可以了。&lt;/li&gt;
 &lt;/ol&gt;
 - https://xujiahua.github.io/posts/20191030-dcep-libra/ - </description>
-        </item>
-    
-    
-    
-        <item>
-        <title>rm docker image interactively</title>
-        <link>https://xujiahua.github.io/posts/20190429-docker-rmi/</link>
-        <pubDate>Mon, 29 Apr 2019 12:25:54 +0800</pubDate>
-        
-        <guid>https://xujiahua.github.io/posts/20190429-docker-rmi/</guid>
-        <description>许嘉华的笔记 https://xujiahua.github.io/posts/20190429-docker-rmi/ -&lt;p&gt;&lt;a href=&#34;https://github.com/XUJiahua/dockerrmi&#34;&gt;写了个工具&lt;/a&gt;交互式删除 docker image。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/show.gif&#34; alt=&#34;demo&#34;&gt;&lt;/p&gt;
-&lt;p&gt;实在无法忍受先&lt;code&gt;docker images&lt;/code&gt;，然后&lt;code&gt;docker rmi&lt;/code&gt;的重复操作。
-还比较原始，刚好够自己目前所需。&lt;/p&gt;
-&lt;p&gt;想到交互式，是受&lt;code&gt;ncdu&lt;/code&gt;的启发。&lt;code&gt;ncdu&lt;/code&gt;命令是&lt;code&gt;du&lt;/code&gt;命令的交互式版本。&lt;/p&gt;
-- https://xujiahua.github.io/posts/20190429-docker-rmi/ - </description>
         </item>
     
     

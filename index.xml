@@ -5,9 +5,93 @@
     <description>Recent content on 许嘉华的笔记</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Mon, 19 Apr 2021 10:24:00 +0800</lastBuildDate>
+    <lastBuildDate>Wed, 21 Apr 2021 18:03:00 +0800</lastBuildDate>
     
         <atom:link href="https://xujiahua.github.io/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    
+        <item>
+        <title>metabase-quick 小结</title>
+        <link>https://xujiahua.github.io/posts/metabase-quick-71d491f9-972e-4305-9f93-1af388b5ca9b/</link>
+        <pubDate>Wed, 21 Apr 2021 18:03:00 +0800</pubDate>
+        
+        <guid>https://xujiahua.github.io/posts/metabase-quick-71d491f9-972e-4305-9f93-1af388b5ca9b/</guid>
+        <description>许嘉华的笔记 https://xujiahua.github.io/posts/metabase-quick-71d491f9-972e-4305-9f93-1af388b5ca9b/ -&lt;p&gt;对 metabase-quick 这个工具进行简单小结。&lt;/p&gt;
+&lt;p&gt;简单来说，metabase-quick 是个命令行工具，使用 Metabase 的 UI，写 SQL分析本地的 csv 文件，并进行可视化。功能与 Metabase 一样，设置上简化了。&lt;/p&gt;
+&lt;p&gt;肝了几天，熬了几个晚上，终于有了 v0.1 MVP 版本。&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://github.com/XUJiahua/metabase-quick&#34;&gt;XUJiahua/metabase-quick&lt;/a&gt;&lt;/p&gt;
+&lt;h2 id=&#34;使用&#34;&gt;使用&lt;/h2&gt;
+&lt;p&gt;Releases 页面下载自己平台的二进制文件。&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://github.com/XUJiahua/metabase-quick/releases&#34;&gt;Releases · XUJiahua/metabase-quick&lt;/a&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;$ ./metabase-quick-darwin dataset/iris.csv
+INFO: load file dataset/iris.csv in 0.00393911 seconds
+You can visit database engine via below command:
+mysql --host=127.0.0.1 --port=53045 default -u root
+
+INFO: NewConnection: client 1
+open http://localhost:53046
+
+incoming query: select * from iris
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;会自动打开网页，点击 Native query。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/Untitled-7e93bf42-098c-414a-bf8f-18fc6c03da11.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;p&gt;写SQL，可视化，都是 Metabase 的能力。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/Untitled-5062e806-329c-453f-a500-9da997fb3eaf.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;h2 id=&#34;源起&#34;&gt;源起&lt;/h2&gt;
+&lt;p&gt;当时手头正好有份指标数据需要做对比分析，觉得可以用 Metabase 试试。但是 Metabase 还得安装到本地，进行一系列的设置：创建用户、加入一个数据源、导入数据。然后才是我想要做的数据分析！&lt;/p&gt;
+&lt;p&gt;我只是要分析一份没多大的 CSV 文件而已啊。我需要一个“用完就走”的工具。&lt;/p&gt;
+&lt;p&gt;惦记着 Metabase 的简洁美观，也没找到适合的分析 CSV 的工具，那就自己做一个吧。（可能 Excel 更合适，但一直没习惯使用。。。）&lt;/p&gt;
+&lt;h2 id=&#34;工作量分析&#34;&gt;工作量分析&lt;/h2&gt;
+&lt;p&gt;大体思路如下：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;不需要考虑用户认证与权限体系。&lt;/li&gt;
+&lt;li&gt;复用部分前端。&lt;strong&gt;至于是哪部分，需要根据工作量及产出来权衡。&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;使用 Go 重写部分后端 API。至于是哪些 API 重写，由前端复用程度决定。因为是命令行工具以及跨平台，使用 Go 语言。&lt;/li&gt;
+&lt;li&gt;Go 程序内置一个 SQL 引擎，比如 sqlite。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;因为之前有过对 Metabase 魔改的经历，对 Metabase 代码是有一定熟悉度的。其实现最复杂也是对用户最有用的功能是 MBQL，在二维表格界面上交互式设置 filter、group by、新增字段等操作。简洁，交互性好。但是把这部分后端重写，特别是看到 Clojure 一团乱麻样的代码，有点头大。光看代码就得花很久。&lt;/p&gt;
+&lt;p&gt;经过调研，SQL editor 需要的后端 API 比较简单。因为是前端由用户直接写好 SQL，就没有必要在后端根据 MBQL 生成 SQL 了。SQL 直接发给 SQL 存储引擎，将数据结果交给前端即可。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/Untitled-5062e806-329c-453f-a500-9da997fb3eaf.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;p&gt;修改过的前端代码使用以下 branch 维护。&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://github.com/xujiahua/metabase/tree/metabase-quick&#34;&gt;XUJiahua/metabase&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;是基于 v0.38.4 这个 tag，进行了部分微调，主要是禁用了一些 API 的请求，更换了首页入口。&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://github.com/metabase/metabase/compare/v0.38.4...XUJiahua:metabase-quick?expand=1&#34;&gt;metabase/metabase&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;React/Clojure 我不常用，但是通过查看前后端代码的 routes 和 middleware 代码，基本能找到关键之处。&lt;/p&gt;
+&lt;h2 id=&#34;优化空间&#34;&gt;优化空间&lt;/h2&gt;
+&lt;h3 id=&#34;支持更多的-metabase-api&#34;&gt;支持更多的 Metabase API&lt;/h3&gt;
+&lt;p&gt;这样可以更大范围地复用 Metabase 前端代码。可以使用到与原版 Metabase 一样的功能。&lt;/p&gt;
+&lt;h3 id=&#34;更多的存储引擎支持&#34;&gt;更多的存储引擎支持&lt;/h3&gt;
+&lt;p&gt;目前使用的是开源库的内存数据库。考虑到如果有大尺寸的 CSV 文件进行聚合操作，列式存储引擎的效果会更好。&lt;/p&gt;
+&lt;h3 id=&#34;缩小前端产物大小&#34;&gt;缩小前端产物大小&lt;/h3&gt;
+&lt;p&gt;可执行文件大小为 68M，其中 44M 是前端产物。&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;$ du -h frontend_client
+12K	frontend_client/inline_js
+ 41M	frontend_client/app/dist
+792K	frontend_client/app/img
+656K	frontend_client/app/fonts/lato-v16-latin
+656K	frontend_client/app/fonts
+180K	frontend_client/app/assets/geojson
+136K	frontend_client/app/assets/img/alerts
+860K	frontend_client/app/assets/img
+1.0M	frontend_client/app/assets
+ 43M	frontend_client/app
+ 44M	frontend_client
+
+
+$ ls -lhS frontend_client/app/dist | head
+total 83960
+-rw-r--r--  1 jiahua  staff    11M Apr 23 22:54 vendor.bundle.js.map
+-rw-r--r--  1 jiahua  staff    10M Apr 23 22:54 vendor.bundle.js
+-rw-r--r--  1 jiahua  staff   7.0M Apr 23 22:54 app-main.bundle.js
+-rw-r--r--  1 jiahua  staff   4.4M Apr 23 22:54 app-main.bundle.js.map
+-rw-r--r--  1 jiahua  staff   4.1M Apr 23 22:54 0.bundle.js.map
+-rw-r--r--  1 jiahua  staff   3.4M Apr 23 22:54 0.bundle.js
+-rw-r--r--  1 jiahua  staff   135K Apr 23 22:54 2.bundle.js.map
+-rw-r--r--  1 jiahua  staff   110K Apr 23 22:54 2.bundle.js
+-rw-r--r--  1 jiahua  staff   108K Apr 23 22:54 styles.bundle.css&lt;/code&gt;&lt;/pre&gt;
+- https://xujiahua.github.io/posts/metabase-quick-71d491f9-972e-4305-9f93-1af388b5ca9b/ - </description>
+        </item>
     
     
     
@@ -1390,88 +1474,6 @@ c &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; Counter&lt;span style
 &lt;/ul&gt;
 &lt;/blockquote&gt;
 - https://xujiahua.github.io/posts/20200807-ray-grpc-arrow/ - </description>
-        </item>
-    
-    
-    
-        <item>
-        <title>【阅读】Machine Learning Serving Broken</title>
-        <link>https://xujiahua.github.io/posts/20200806-machine-learning-serving-broken/</link>
-        <pubDate>Thu, 06 Aug 2020 09:49:47 +0800</pubDate>
-        
-        <guid>https://xujiahua.github.io/posts/20200806-machine-learning-serving-broken/</guid>
-        <description>许嘉华的笔记 https://xujiahua.github.io/posts/20200806-machine-learning-serving-broken/ -&lt;p&gt;原文 &lt;a href=&#34;https://medium.com/distributed-computing-with-ray/machine-learning-serving-is-broken-f59aff2d607f&#34;&gt;Machine Learning Serving is Broken&lt;/a&gt; 是 &lt;a href=&#34;https://medium.com/distributed-computing-with-ray?source=post_page-----f59aff2d607f----------------------&#34;&gt;Distributed Computing with Ray&lt;/a&gt; 专栏文章，聊了机器学习模型的 Serving 问题，记录一二。&lt;/p&gt;
-&lt;p&gt;设立好机器学习目标后，从模型角度，机器学习整体可分这么2个阶段：&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;模型的创建。模型训练 Training。包括训练数据准备，选择最好的模型（超参数调优）。&lt;/li&gt;
-&lt;li&gt;模型的使用。模型推理 Inference。也包括输入数据的准备。&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;模型被使用，才是机器学习落地的开始。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/1*P_eJtjAZjntemqvLreZ8EA.jpeg&#34; alt=&#34;Image for post&#34;&gt;&lt;/p&gt;
-&lt;h3 id=&#34;wrap-your-model-in-flask&#34;&gt;Wrap Your Model in Flask&lt;/h3&gt;
-&lt;p&gt;机器学习模型一般使用 Python 开发，所以使用 Flask 是很自然就能想到的方案。&lt;/p&gt;
-&lt;p&gt;从 coding 角度，与传统的Web应用开发区别不大。把模型、数据库当做黑盒，开发只关心输入输出。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/1*boWvKC0jg5hrVv53icMwIg.png&#34; alt=&#34;Image for post&#34;&gt;&lt;/p&gt;
-&lt;p&gt;使用 Flask 进行 Serving，给了模型的开发者很大的便利，同样的 Python 技术栈，Flask 学习成本又低，从模型开发到模型API化可以一人搞定。不同的机器学习模型的格式差异（ScikitLearn与TensorFlow的模型格式就迥异）统一使用HTTP协议抹平。这是优点。&lt;/p&gt;
-&lt;p&gt;表面上是美好的。但是，机器学习 Serving 需要大内存加载模型，并且执行计算密集型任务。响应时间秒级，QPS 100+是常见的。下图比较的是单机与传统Web Serving的不同。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/1*TOFL3owzto7bD0o5K1AopQ.png&#34; alt=&#34;Image for post&#34;&gt;&lt;/p&gt;
-&lt;p&gt;解决方法也是有的，因为Model Serving本身是无状态的，很容易进行水平扩展。&lt;/p&gt;
-&lt;p&gt;&lt;del&gt;性能问题也能通过水平扩展来解决。目前为止，Flask 方案表现良好。&lt;/del&gt;&lt;/p&gt;
-&lt;p&gt;Flask的问题：因为 Model Serving 是计算密集型任务，提高 Flask 服务并发的手段只有多进程（规避 Python GIL 问题） ，使用 &lt;a href=&#34;https://flask.palletsprojects.com/en/1.1.x/deploying/wsgi-standalone/#gunicorn&#34;&gt;gunicorn&lt;/a&gt;。也就意味着，启动N个worker进程，Model 会加载N次，内存浪费问题很严重。参考：&lt;a href=&#34;https://www.slideshare.net/SimonMo7/ray-serve-a-new-scalable-machine-learning-model-serving-library-on-ray&#34;&gt;Ray Serve: A new scalable machine learning model serving library on Ray&lt;/a&gt;。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image-20200808162654801.png&#34; alt=&#34;image-20200808162654801&#34;&gt;&lt;/p&gt;
-&lt;p&gt;原文指出如果 Model 扩展到了数百个，那就是数百个 * N的微服务，没有专职运维团队，开发团队是处理不过来的。&lt;del&gt;个人认为这个问题应该是业务发展的技术阵痛，而不是Flask的问题呀。&lt;/del&gt;&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;In the model serving scenario, each microservice only corresponds to one single model. A typical development team can manage tens of microservices but not hundreds of them without a large dedicated ops team.&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;h3 id=&#34;the-rise-of-specialized-systems&#34;&gt;The Rise of Specialized Systems&lt;/h3&gt;
-&lt;p&gt;模型Serving专用系统的崛起。比如 TensorFlow Serving，不过只能用于 TensorFlow 模型。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/1*MhAjfO4Wh5T8z-ex_oacOQ.png&#34; alt=&#34;Image for post&#34;&gt;&lt;/p&gt;
-&lt;p&gt;将计算转移到专用系统后，Flask coding 的逻辑就跟 Web 开发真没两样了，瓶颈问题都转移到专用系统了。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/1*VuHnQMYC-DCaGC4nG2g8CQ.png&#34; alt=&#34;Image for post&#34;&gt;&lt;/p&gt;
-&lt;p&gt;比起 Flask 包装模型的做法，Flask 应用对接 Model Serving 专用系统，需要适配专用系统的输入输出。比如对接TensorFlow Serving，其输入是一个多维数组，需要把原始请求做转换，第一次就做对是挺难的。没法复用模型训练用的数据预处理逻辑。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/1*0kaOHR4XK5qkJIBrvqA1gA.png&#34; alt=&#34;Image for post&#34;&gt;&lt;/p&gt;
-&lt;p&gt;模型开发者现在需要维护两个server：&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;model server：部署模型的专用系统。&lt;/li&gt;
-&lt;li&gt;web server：输入数据准备，调用model server（不同接口做不同的适配）。（其中输入数据准备，要到什么程度呢，是调用方把数据都准备好，还是模型开发者去调用一些特征数据服务。这些模糊地带，每个公司可能都不一样。）&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;架构中多引入一层 Model Server，模型开发者的工作内容也发生了变化。原文指出这会给模型开发者带来 cognitive load（认知压力），引入了新的工作流程，还不顺手的那种。&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;Additionally, by adopting model servers, data scientists now have two problems: managing the model servers, and managing a web server that handles all the business logic. Even though the model servers might be managed by an infrastructure team, the data scientists still need to think about the featurization in the web server and the model logic in the model servers. This is a lot of cognitive load for the data scientists.&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;p&gt;也总结了一些Model Server的不足。TensorFlow Serving 只是 TensorFlow 模型的专用系统，不够通用。转化成统一的模型格式比如ONNX，可能会带来未知bug。&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;ul&gt;
-&lt;li&gt;Framework lock-in: &lt;a href=&#34;https://www.tensorflow.org/tfx/guide/serving&#34;&gt;Tensorflow Serving&lt;/a&gt; and &lt;a href=&#34;https://pytorch.org/serve/&#34;&gt;TorchServe&lt;/a&gt; are specialized systems for each framework. Modern data science teams use the best tool at hand; this can mean a mix of &lt;a href=&#34;https://xgboost.readthedocs.io/en/latest/&#34;&gt;XGBoost&lt;/a&gt;, &lt;a href=&#34;https://scikit-learn.org/stable/&#34;&gt;scikit-learn&lt;/a&gt;, and deep learning frameworks. &lt;strong&gt;We need a system that can serve arbitrary python models.&lt;/strong&gt;&lt;/li&gt;
-&lt;li&gt;Vendor lock-in: AWS SageMaker and the other cloud providers offer hosted ML serving solutions that wrap your models and deploy them for you. In addition, these hosted solutions don’t have a unified API. &lt;strong&gt;We need vendor neutral solutions that avoid cloud vendor lock-in&lt;/strong&gt;.&lt;/li&gt;
-&lt;li&gt;Training &amp;amp; serving divergence: There are other solutions that take a trained model and convert it to another format for serving, like ONNX, PMML, and NVIDIA TensorRT. But &lt;strong&gt;we want to&lt;/strong&gt; &lt;strong&gt;serve their models in the same framework that was used for training to avoid unknown bugs.&lt;/strong&gt;&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/blockquote&gt;
-&lt;h3 id=&#34;ray-serve&#34;&gt;Ray Serve&lt;/h3&gt;
-&lt;p&gt;总结前文中方案的不足。&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;Wrap Your Model in Flask 模型太多不好维护（指的是开发团队自己维护）。希望部署、运维能简单。&lt;/li&gt;
-&lt;li&gt;Specialized Systems 引入了新系统，不单单是原来那套顺手的Python脚本了，给模型开发者带来了额外的工作量。希望沿用老的技术栈。&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;两个希望就是 &lt;a href=&#34;https://docs.ray.io/en/master/serve/&#34;&gt;Ray Serve&lt;/a&gt; 的目标，遵从模型开发者的习惯，给模型开发者顺手的工具，衔接好训练和上线两个阶段，提高生产效率。&lt;/p&gt;
-&lt;p&gt;原文中的案例，iterating quickly without an ops team 说出了其精髓。&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;ul&gt;
-&lt;li&gt;A computer vision startup is using Ray Serve to serve deep learning based computer vision models. The teams of data scientists are iterating quickly without an ops team. Ray Serve helps them to quickly deploy and scale their predictions.&lt;/li&gt;
-&lt;li&gt;The data science team at an E-commerce site is using Ray Serve to gain full control of the models from development to deployment. Ray Serve helps them gain visibility into the serving process as well as reducing costs by batching on GPUs. Additionally, machine learning models are typically not deployed individuality. Ray Serve enables them to easily &lt;a href=&#34;https://docs.ray.io/en/master/serve/advanced.html#composing-multiple-models&#34;&gt;compose models&lt;/a&gt; together.&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/blockquote&gt;
-&lt;p&gt;&lt;a href=&#34;https://medium.com/distributed-computing-with-ray/the-simplest-way-to-serve-your-nlp-model-in-production-with-pure-python-d42b6a97ad55&#34;&gt;The Simplest Way to Serve your NLP Model in Production with Pure Python&lt;/a&gt; 提到的 general-purpose ML serving infrastructure 的关键特质。&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;We’ve concluded that there are several key properties for general-purpose ML serving infrastructure:&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;&lt;strong&gt;Framework Agnostic&lt;/strong&gt; — Model serving frameworks must be able to serve &lt;a href=&#34;https://www.tensorflow.org/&#34;&gt;TensorFlow&lt;/a&gt;, &lt;a href=&#34;https://pytorch.org/&#34;&gt;PyTorch&lt;/a&gt;, &lt;a href=&#34;https://scikit-learn.org/stable/&#34;&gt;scikit-learn&lt;/a&gt;, or even arbitrary Python functions. Why? People use many different machine learning frameworks, and machine learning models are typically surrounded by lots of application logic. Limiting serving to a simple forward pass through a TensorFlow model is too restrictive. 支持各种框架，对框架没要求。&lt;/li&gt;
-&lt;li&gt;&lt;strong&gt;Pure Python&lt;/strong&gt; — Model serving should be intuitive for developers and dead simple to run. That means pure Python and no verbose configurations or yaml files. Developers use Python to develop their machine learning models, so they should also be able to use Python to deploy their machine learning applications. This is growing more critical as online learning applications combine training and serving in the same applications. 纯 Python 一把梭。&lt;/li&gt;
-&lt;li&gt;&lt;strong&gt;Simple &amp;amp; Scalable&lt;/strong&gt; — Model serving must be simple to scale out of the box across many machines along with simple ways of upgrading models over time. Achieving production uptime and performance requirements are essential for success. 非常容易可伸缩。&lt;/li&gt;
-&lt;/ol&gt;
-&lt;/blockquote&gt;
-&lt;p&gt;关于 Ray Serve 的介绍，可以参考这个 Silde，与本文观点类似：&lt;a href=&#34;https://www.slideshare.net/SimonMo7/ray-serve-a-new-scalable-machine-learning-model-serving-library-on-ray&#34;&gt;Ray Serve: A new scalable machine learning model serving library on Ray&lt;/a&gt;。&lt;/p&gt;
-- https://xujiahua.github.io/posts/20200806-machine-learning-serving-broken/ - </description>
         </item>
     
     

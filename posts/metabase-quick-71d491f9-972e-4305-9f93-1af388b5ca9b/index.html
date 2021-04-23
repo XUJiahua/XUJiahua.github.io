@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html><head>
-<title>使用 redis-benchmark 压测自建的 kv 存储引擎</title>
+<title>metabase-quick 小结</title>
 
 <meta charset="utf-8">
 <meta name="X-UA-Compatible" content="IE=edge">
@@ -152,8 +152,8 @@ Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopene
 						
 						
 								<li>
-				 					<a href="#redis-benchmark" v-on:click="closeDrawer" id="redis-benchmark-nav">
-										 redis-benchmark
+				 					<a href="#%e4%bd%bf%e7%94%a8" v-on:click="closeDrawer" id="使用-nav">
+										 使用
 									</a>
 								</li>
 						
@@ -175,8 +175,8 @@ Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopene
 						
 						
 								<li>
-				 					<a href="#redcon" v-on:click="closeDrawer" id="redcon-nav">
-										 redcon
+				 					<a href="#%e6%ba%90%e8%b5%b7" v-on:click="closeDrawer" id="源起-nav">
+										 源起
 									</a>
 								</li>
 						
@@ -198,8 +198,31 @@ Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopene
 						
 						
 								<li>
-				 					<a href="#%e6%b5%8b%e8%af%95%e7%bb%93%e6%9e%9c" v-on:click="closeDrawer" id="测试结果-nav">
-										 测试结果
+				 					<a href="#%e5%b7%a5%e4%bd%9c%e9%87%8f%e5%88%86%e6%9e%90" v-on:click="closeDrawer" id="工作量分析-nav">
+										 工作量分析
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e4%bc%98%e5%8c%96%e7%a9%ba%e9%97%b4" v-on:click="closeDrawer" id="优化空间-nav">
+										 优化空间
 									</a>
 								</li>
 						
@@ -223,62 +246,8 @@ Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopene
 						
 						
 								<li>
-				 					<a href="#redis-server" v-on:click="closeDrawer" id="redis-server-nav">
-										 redis-server
-									</a>
-								</li>
-						
-							</ul>
-						
-							</ul>
-						
-							</ul>
-						
-					
-				
-			
-				
-				
-					
-						
-						
-							<ul>
-						
-							<ul>
-						
-							<ul>
-						
-						
-								<li>
-				 					<a href="#go-hashmap" v-on:click="closeDrawer" id="go-hashmap-nav">
-										 go hashmap
-									</a>
-								</li>
-						
-							</ul>
-						
-							</ul>
-						
-							</ul>
-						
-					
-				
-			
-				
-				
-					
-						
-						
-							<ul>
-						
-							<ul>
-						
-							<ul>
-						
-						
-								<li>
-				 					<a href="#goleveldb" v-on:click="closeDrawer" id="goleveldb-nav">
-										 goleveldb
+				 					<a href="#%e6%94%af%e6%8c%81%e6%9b%b4%e5%a4%9a%e7%9a%84-metabase-api" v-on:click="closeDrawer" id="支持更多的-metabase-api-nav">
+										 支持更多的 Metabase API
 									</a>
 								</li>
 						
@@ -304,8 +273,8 @@ Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopene
 						
 						
 								<li>
-				 					<a href="#bitcask%e8%87%aa%e5%88%b6%e5%9c%9f%e7%82%ae%e7%89%88" v-on:click="closeDrawer" id="bitcask自制土炮版-nav">
-										 bitcask（自制土炮版）
+				 					<a href="#%e6%9b%b4%e5%a4%9a%e7%9a%84%e5%ad%98%e5%82%a8%e5%bc%95%e6%93%8e%e6%94%af%e6%8c%81" v-on:click="closeDrawer" id="更多的存储引擎支持-nav">
+										 更多的存储引擎支持
 									</a>
 								</li>
 						
@@ -327,12 +296,16 @@ Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopene
 						
 							<ul>
 						
+							<ul>
+						
 						
 								<li>
-				 					<a href="#%e6%80%bb%e7%bb%93" v-on:click="closeDrawer" id="总结-nav">
-										 总结
+				 					<a href="#%e7%bc%a9%e5%b0%8f%e5%89%8d%e7%ab%af%e4%ba%a7%e7%89%a9%e5%a4%a7%e5%b0%8f" v-on:click="closeDrawer" id="缩小前端产物大小-nav">
+										 缩小前端产物大小
 									</a>
 								</li>
+						
+							</ul>
 						
 							</ul>
 						
@@ -423,8 +396,8 @@ Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopene
 						
 						
 								<li>
-				 					<a href="#redis-benchmark" v-on:click="closeDrawer" id="redis-benchmark-nav">
-										 redis-benchmark
+				 					<a href="#%e4%bd%bf%e7%94%a8" v-on:click="closeDrawer" id="使用-nav">
+										 使用
 									</a>
 								</li>
 						
@@ -446,8 +419,8 @@ Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopene
 						
 						
 								<li>
-				 					<a href="#redcon" v-on:click="closeDrawer" id="redcon-nav">
-										 redcon
+				 					<a href="#%e6%ba%90%e8%b5%b7" v-on:click="closeDrawer" id="源起-nav">
+										 源起
 									</a>
 								</li>
 						
@@ -469,8 +442,31 @@ Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopene
 						
 						
 								<li>
-				 					<a href="#%e6%b5%8b%e8%af%95%e7%bb%93%e6%9e%9c" v-on:click="closeDrawer" id="测试结果-nav">
-										 测试结果
+				 					<a href="#%e5%b7%a5%e4%bd%9c%e9%87%8f%e5%88%86%e6%9e%90" v-on:click="closeDrawer" id="工作量分析-nav">
+										 工作量分析
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e4%bc%98%e5%8c%96%e7%a9%ba%e9%97%b4" v-on:click="closeDrawer" id="优化空间-nav">
+										 优化空间
 									</a>
 								</li>
 						
@@ -494,62 +490,8 @@ Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopene
 						
 						
 								<li>
-				 					<a href="#redis-server" v-on:click="closeDrawer" id="redis-server-nav">
-										 redis-server
-									</a>
-								</li>
-						
-							</ul>
-						
-							</ul>
-						
-							</ul>
-						
-					
-				
-			
-				
-				
-					
-						
-						
-							<ul>
-						
-							<ul>
-						
-							<ul>
-						
-						
-								<li>
-				 					<a href="#go-hashmap" v-on:click="closeDrawer" id="go-hashmap-nav">
-										 go hashmap
-									</a>
-								</li>
-						
-							</ul>
-						
-							</ul>
-						
-							</ul>
-						
-					
-				
-			
-				
-				
-					
-						
-						
-							<ul>
-						
-							<ul>
-						
-							<ul>
-						
-						
-								<li>
-				 					<a href="#goleveldb" v-on:click="closeDrawer" id="goleveldb-nav">
-										 goleveldb
+				 					<a href="#%e6%94%af%e6%8c%81%e6%9b%b4%e5%a4%9a%e7%9a%84-metabase-api" v-on:click="closeDrawer" id="支持更多的-metabase-api-nav">
+										 支持更多的 Metabase API
 									</a>
 								</li>
 						
@@ -575,8 +517,8 @@ Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopene
 						
 						
 								<li>
-				 					<a href="#bitcask%e8%87%aa%e5%88%b6%e5%9c%9f%e7%82%ae%e7%89%88" v-on:click="closeDrawer" id="bitcask自制土炮版-nav">
-										 bitcask（自制土炮版）
+				 					<a href="#%e6%9b%b4%e5%a4%9a%e7%9a%84%e5%ad%98%e5%82%a8%e5%bc%95%e6%93%8e%e6%94%af%e6%8c%81" v-on:click="closeDrawer" id="更多的存储引擎支持-nav">
+										 更多的存储引擎支持
 									</a>
 								</li>
 						
@@ -598,12 +540,16 @@ Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopene
 						
 							<ul>
 						
+							<ul>
+						
 						
 								<li>
-				 					<a href="#%e6%80%bb%e7%bb%93" v-on:click="closeDrawer" id="总结-nav">
-										 总结
+				 					<a href="#%e7%bc%a9%e5%b0%8f%e5%89%8d%e7%ab%af%e4%ba%a7%e7%89%a9%e5%a4%a7%e5%b0%8f" v-on:click="closeDrawer" id="缩小前端产物大小-nav">
+										 缩小前端产物大小
 									</a>
 								</li>
+						
+							</ul>
 						
 							</ul>
 						
@@ -654,28 +600,28 @@ Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopene
             <div class="post-head-wrapper-text-only"
                  style="background-image: url('/')">
                 <div class="post-title">
-                    使用 redis-benchmark 压测自建的 kv 存储引擎
+                    metabase-quick 小结
                     
                     <div class="post-meta">
                         
                         <time itemprop="datePublished">
-                            2021-04-19 10:24
+                            2021-04-21 18:03
                         </time>
                         
 
                         
                             <i class="material-icons" style="">folder</i>
-                                <a href="/categories/">[存储]</a>
+                                <a href="/categories/">[小工具]</a>
                                 &nbsp;
                         
 
                         
                             <i class="material-icons" style="">label</i>
                             
-                                <a href="/tags/redis">redis</a>
+                                <a href="/tags/metabase">metabase</a>
                                 &nbsp;
                             
-                                <a href="/tags/kv">kv</a>
+                                <a href="/tags/go">go</a>
                                 &nbsp;
                             
                         
@@ -685,70 +631,83 @@ Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopene
             
             <div class="post-body-wrapper">
                 <div class="post-body">
-                    <p>给自建 kv 存储引擎做性能测试不难，使用 redis-benchmark 压测的目的是，测试结果能与 redis-server 的结果做横向对比。</p>
-<h2 id="redis-benchmark">redis-benchmark</h2>
-<p>redis-benchmark 支持如下指令的 benchmark。其中 GET/SET 指令可用于 kv 存储引擎的压测。</p>
-<pre><code>redis-benchmark -q
-PING_INLINE: 102669.41 requests per second, p50=0.247 msec
-PING_MBULK: 102880.66 requests per second, p50=0.231 msec
-SET: 101936.80 requests per second, p50=0.239 msec
-GET: 101626.02 requests per second, p50=0.239 msec
-INCR: 102249.49 requests per second, p50=0.239 msec
-LPUSH: 100603.62 requests per second, p50=0.255 msec
-RPUSH: 101626.02 requests per second, p50=0.255 msec
-LPOP: 102354.15 requests per second, p50=0.255 msec
-RPOP: 102249.49 requests per second, p50=0.255 msec
-SADD: 101522.84 requests per second, p50=0.247 msec
-HSET: 100603.62 requests per second, p50=0.255 msec
-SPOP: 102249.49 requests per second, p50=0.247 msec
-ZADD: 102564.10 requests per second, p50=0.255 msec
-ZPOPMIN: 103412.62 requests per second, p50=0.247 msec
-LPUSH (needed to benchmark LRANGE): 94607.38 requests per second, p50=0.263 msec
-LRANGE_100 (first 100 elements): 27964.21 requests per second, p50=0.855 msec
-LRANGE_300 (first 300 elements): 11193.19 requests per second, p50=2.135 msec
-LRANGE_500 (first 450 elements): 7649.94 requests per second, p50=3.159 msec
-LRANGE_600 (first 600 elements): 5884.78 requests per second, p50=4.103 msec
-MSET (10 keys): 93283.58 requests per second, p50=0.423 msec
+                    <p>对 metabase-quick 这个工具进行简单小结。</p>
+<p>简单来说，metabase-quick 是个命令行工具，使用 Metabase 的 UI，写 SQL分析本地的 csv 文件，并进行可视化。功能与 Metabase 一样，设置上简化了。</p>
+<p>肝了几天，熬了几个晚上，终于有了 v0.1 MVP 版本。</p>
+<p><a href="https://github.com/XUJiahua/metabase-quick">XUJiahua/metabase-quick</a></p>
+<h2 id="使用">使用</h2>
+<p>Releases 页面下载自己平台的二进制文件。</p>
+<p><a href="https://github.com/XUJiahua/metabase-quick/releases">Releases · XUJiahua/metabase-quick</a></p>
+<pre><code>$ ./metabase-quick-darwin dataset/iris.csv
+INFO: load file dataset/iris.csv in 0.00393911 seconds
+You can visit database engine via below command:
+mysql --host=127.0.0.1 --port=53045 default -u root
+
+INFO: NewConnection: client 1
+open http://localhost:53046
+
+incoming query: select * from iris
 </code></pre>
-<h2 id="redcon">redcon</h2>
-<p>Redis compatible server framework for <strong>Go</strong>.</p>
-<p><a href="https://github.com/tidwall/redcon">tidwall/redcon</a></p>
-<p>这个库兼容了 redis-server 的协议。个人要做的是封装下对存储引擎的调用。</p>
-<p>只要兼容了服务端协议，就可以使用 redis-benchmark, redis-cli 等工具去连接了。</p>
-<h2 id="测试结果">测试结果</h2>
-<h3 id="redis-server">redis-server</h3>
-<pre><code>$ redis-benchmark -t set,get --csv
-&quot;test&quot;,&quot;rps&quot;,&quot;avg_latency_ms&quot;,&quot;min_latency_ms&quot;,&quot;p50_latency_ms&quot;,&quot;p95_latency_ms&quot;,&quot;p99_latency_ms&quot;,&quot;max_latency_ms&quot;
-&quot;SET&quot;,&quot;82850.04&quot;,&quot;0.322&quot;,&quot;0.144&quot;,&quot;0.295&quot;,&quot;0.455&quot;,&quot;0.655&quot;,&quot;1.999&quot;
-&quot;GET&quot;,&quot;82236.84&quot;,&quot;0.321&quot;,&quot;0.160&quot;,&quot;0.295&quot;,&quot;0.495&quot;,&quot;0.655&quot;,&quot;2.007&quot;
-</code></pre>
-<h3 id="go-hashmap">go hashmap</h3>
-<p>内置的 map。</p>
-<pre><code>$ redis-benchmark -t set,get --csv
-&quot;test&quot;,&quot;rps&quot;,&quot;avg_latency_ms&quot;,&quot;min_latency_ms&quot;,&quot;p50_latency_ms&quot;,&quot;p95_latency_ms&quot;,&quot;p99_latency_ms&quot;,&quot;max_latency_ms&quot;
-&quot;SET&quot;,&quot;73421.44&quot;,&quot;0.356&quot;,&quot;0.144&quot;,&quot;0.311&quot;,&quot;0.535&quot;,&quot;1.111&quot;,&quot;2.511&quot;
-&quot;GET&quot;,&quot;79681.27&quot;,&quot;0.329&quot;,&quot;0.152&quot;,&quot;0.303&quot;,&quot;0.463&quot;,&quot;0.575&quot;,&quot;0.935&quot;
-</code></pre>
-<h3 id="goleveldb">goleveldb</h3>
-<p><a href="https://github.com/syndtr/goleveldb">syndtr/goleveldb</a></p>
-<pre><code>$ redis-benchmark -t set,get --csv
-&quot;test&quot;,&quot;rps&quot;,&quot;avg_latency_ms&quot;,&quot;min_latency_ms&quot;,&quot;p50_latency_ms&quot;,&quot;p95_latency_ms&quot;,&quot;p99_latency_ms&quot;,&quot;max_latency_ms&quot;
-&quot;SET&quot;,&quot;57636.89&quot;,&quot;0.475&quot;,&quot;0.096&quot;,&quot;0.439&quot;,&quot;0.679&quot;,&quot;1.007&quot;,&quot;3.687&quot;
-&quot;GET&quot;,&quot;79302.14&quot;,&quot;0.333&quot;,&quot;0.152&quot;,&quot;0.303&quot;,&quot;0.471&quot;,&quot;0.687&quot;,”2.711&quot;
-</code></pre>
-<h3 id="bitcask自制土炮版">bitcask（自制土炮版）</h3>
-<p>性能差了一大截。</p>
-<pre><code>$ redis-benchmark -t set,get --csv
-&quot;test&quot;,&quot;rps&quot;,&quot;avg_latency_ms&quot;,&quot;min_latency_ms&quot;,&quot;p50_latency_ms&quot;,&quot;p95_latency_ms&quot;,&quot;p99_latency_ms&quot;,&quot;max_latency_ms&quot;
-&quot;SET&quot;,&quot;44662.79&quot;,&quot;1.033&quot;,&quot;0.040&quot;,&quot;1.167&quot;,&quot;1.535&quot;,&quot;2.367&quot;,&quot;36.095&quot;
-&quot;GET&quot;,&quot;52137.64&quot;,&quot;0.523&quot;,&quot;0.088&quot;,&quot;0.503&quot;,&quot;0.687&quot;,&quot;1.199&quot;,&quot;6.327&quot;
-</code></pre>
-<h2 id="总结">总结</h2>
-<p>使用 redis-benchmark 作为性能测试框架。在相同的测试用例下，通过对照比较其他存储引擎的测试结果，了解自己需要进步的空间。</p>
+<p>会自动打开网页，点击 Native query。</p>
+<p><img src="../../images/Untitled-7e93bf42-098c-414a-bf8f-18fc6c03da11.png" alt=""></p>
+<p>写SQL，可视化，都是 Metabase 的能力。</p>
+<p><img src="../../images/Untitled-5062e806-329c-453f-a500-9da997fb3eaf.png" alt=""></p>
+<h2 id="源起">源起</h2>
+<p>当时手头正好有份指标数据需要做对比分析，觉得可以用 Metabase 试试。但是 Metabase 还得安装到本地，进行一系列的设置：创建用户、加入一个数据源、导入数据。然后才是我想要做的数据分析！</p>
+<p>我只是要分析一份没多大的 CSV 文件而已啊。我需要一个“用完就走”的工具。</p>
+<p>惦记着 Metabase 的简洁美观，也没找到适合的分析 CSV 的工具，那就自己做一个吧。（可能 Excel 更合适，但一直没习惯使用。。。）</p>
+<h2 id="工作量分析">工作量分析</h2>
+<p>大体思路如下：</p>
+<ol>
+<li>不需要考虑用户认证与权限体系。</li>
+<li>复用部分前端。<strong>至于是哪部分，需要根据工作量及产出来权衡。</strong></li>
+<li>使用 Go 重写部分后端 API。至于是哪些 API 重写，由前端复用程度决定。因为是命令行工具以及跨平台，使用 Go 语言。</li>
+<li>Go 程序内置一个 SQL 引擎，比如 sqlite。</li>
+</ol>
+<p>因为之前有过对 Metabase 魔改的经历，对 Metabase 代码是有一定熟悉度的。其实现最复杂也是对用户最有用的功能是 MBQL，在二维表格界面上交互式设置 filter、group by、新增字段等操作。简洁，交互性好。但是把这部分后端重写，特别是看到 Clojure 一团乱麻样的代码，有点头大。光看代码就得花很久。</p>
+<p>经过调研，SQL editor 需要的后端 API 比较简单。因为是前端由用户直接写好 SQL，就没有必要在后端根据 MBQL 生成 SQL 了。SQL 直接发给 SQL 存储引擎，将数据结果交给前端即可。</p>
+<p><img src="../../images/Untitled-5062e806-329c-453f-a500-9da997fb3eaf.png" alt=""></p>
+<p>修改过的前端代码使用以下 branch 维护。</p>
+<p><a href="https://github.com/xujiahua/metabase/tree/metabase-quick">XUJiahua/metabase</a></p>
+<p>是基于 v0.38.4 这个 tag，进行了部分微调，主要是禁用了一些 API 的请求，更换了首页入口。</p>
+<p><a href="https://github.com/metabase/metabase/compare/v0.38.4...XUJiahua:metabase-quick?expand=1">metabase/metabase</a></p>
+<p>React/Clojure 我不常用，但是通过查看前后端代码的 routes 和 middleware 代码，基本能找到关键之处。</p>
+<h2 id="优化空间">优化空间</h2>
+<h3 id="支持更多的-metabase-api">支持更多的 Metabase API</h3>
+<p>这样可以更大范围地复用 Metabase 前端代码。可以使用到与原版 Metabase 一样的功能。</p>
+<h3 id="更多的存储引擎支持">更多的存储引擎支持</h3>
+<p>目前使用的是开源库的内存数据库。考虑到如果有大尺寸的 CSV 文件进行聚合操作，列式存储引擎的效果会更好。</p>
+<h3 id="缩小前端产物大小">缩小前端产物大小</h3>
+<p>可执行文件大小为 68M，其中 44M 是前端产物。</p>
+<pre><code>$ du -h frontend_client
+12K	frontend_client/inline_js
+ 41M	frontend_client/app/dist
+792K	frontend_client/app/img
+656K	frontend_client/app/fonts/lato-v16-latin
+656K	frontend_client/app/fonts
+180K	frontend_client/app/assets/geojson
+136K	frontend_client/app/assets/img/alerts
+860K	frontend_client/app/assets/img
+1.0M	frontend_client/app/assets
+ 43M	frontend_client/app
+ 44M	frontend_client
+
+
+$ ls -lhS frontend_client/app/dist | head
+total 83960
+-rw-r--r--  1 jiahua  staff    11M Apr 23 22:54 vendor.bundle.js.map
+-rw-r--r--  1 jiahua  staff    10M Apr 23 22:54 vendor.bundle.js
+-rw-r--r--  1 jiahua  staff   7.0M Apr 23 22:54 app-main.bundle.js
+-rw-r--r--  1 jiahua  staff   4.4M Apr 23 22:54 app-main.bundle.js.map
+-rw-r--r--  1 jiahua  staff   4.1M Apr 23 22:54 0.bundle.js.map
+-rw-r--r--  1 jiahua  staff   3.4M Apr 23 22:54 0.bundle.js
+-rw-r--r--  1 jiahua  staff   135K Apr 23 22:54 2.bundle.js.map
+-rw-r--r--  1 jiahua  staff   110K Apr 23 22:54 2.bundle.js
+-rw-r--r--  1 jiahua  staff   108K Apr 23 22:54 styles.bundle.css</code></pre>
 
                     
                     <HR width="100%" id="EOF">
-                    <p style="color:#777;">Last modified on 2021-04-19</p>
+                    <p style="color:#777;">Last modified on 2021-04-21</p>
                     
                 </div>
             </div>
@@ -757,14 +716,14 @@ MSET (10 keys): 93283.58 requests per second, p50=0.423 msec
             <nav class="post-pagination">
 
                 
-                <a class="newer-posts" href="https://xujiahua.github.io/posts/metabase-quick-71d491f9-972e-4305-9f93-1af388b5ca9b/">
-                    Next<br>metabase-quick 小结
+                <a class="newer-posts">
+                    Next<br>No newer posts.
                 </a>
                 
                 
                 
-                <a class="older-posts" href="https://xujiahua.github.io/posts/notion-markdown-hugo-78139407-85c5-4a75-b288-b54d5c3df34b/">
-                    Previous<br>从 Notion 导出 markdown 到 hugo 项目
+                <a class="older-posts" href="https://xujiahua.github.io/posts/redis-benchmark-kv-a3e78900-612a-4d04-b2aa-fc6f0908b431/">
+                    Previous<br>使用 redis-benchmark 压测自建的 kv 存储引擎
                 </a>
                 
             </nav>
