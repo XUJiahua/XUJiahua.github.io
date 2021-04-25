@@ -5,9 +5,57 @@
     <description>Recent content on 许嘉华的笔记</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Wed, 21 Apr 2021 18:03:00 +0800</lastBuildDate>
+    <lastBuildDate>Sun, 25 Apr 2021 13:18:00 +0800</lastBuildDate>
     
         <atom:link href="https://xujiahua.github.io/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    
+        <item>
+        <title>eksctl: NodeCreationFailure: Instances failed to join the kubernetes cluster</title>
+        <link>https://xujiahua.github.io/posts/eksctl-nodecreationfailure-instances-failed-to-join-the-kubernetes-cluster-0393476e-6e53-42f7-8222-842ffd0e8358/</link>
+        <pubDate>Sun, 25 Apr 2021 13:18:00 +0800</pubDate>
+        
+        <guid>https://xujiahua.github.io/posts/eksctl-nodecreationfailure-instances-failed-to-join-the-kubernetes-cluster-0393476e-6e53-42f7-8222-842ffd0e8358/</guid>
+        <description>许嘉华的笔记 https://xujiahua.github.io/posts/eksctl-nodecreationfailure-instances-failed-to-join-the-kubernetes-cluster-0393476e-6e53-42f7-8222-842ffd0e8358/ -&lt;p&gt;eksctl 创建集群失败了。第一次遇到这个错。&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;2021-04-25 01:59:24 [ℹ]  waiting for CloudFormation stack &amp;quot;eksctl-eks-prod-evocloud-tyo-nodegroup-mng-1&amp;quot;
+2021-04-25 01:59:25 [✖]  unexpected status &amp;quot;ROLLBACK_IN_PROGRESS&amp;quot; while waiting for CloudFormation stack &amp;quot;eksctl-eks-prod-evocloud-tyo-nodegroup-mng-1&amp;quot;
+2021-04-25 01:59:25 [ℹ]  fetching stack events in attempt to troubleshoot the root cause of the failure
+2021-04-25 01:59:25 [✖]  AWS::EKS::Nodegroup/ManagedNodeGroup: CREATE_FAILED – &amp;quot;Nodegroup mng-1 failed to stabilize: [{Code: NodeCreationFailure,Message: Instances failed to join the kubernetes cluster,ResourceIds: [i-09df0fc7408f36801]}]&amp;quot;
+2021-04-25 01:59:25 [!]  1 error(s) occurred and cluster hasn&#39;t been created properly, you may wish to check CloudFormation console
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id=&#34;分析&#34;&gt;分析&lt;/h2&gt;
+&lt;p&gt;在 CloudFormation 控制台查看详细日志。无法加入到 K8s 集群。然后没有进一步的信息了。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Nodegroup mng-1 failed to stabilize: [{Code: NodeCreationFailure,Message: Instances failed to join the kubernetes cluster,ResourceIds: [i-0c4e4c2a6dd9457b1]}]
+&lt;img src=&#34;../../images/Untitled-4b60f8d2-6792-46a8-95ab-b315de21ada4.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;定位到这份文档。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;NodeCreationFailure: Your launched instances are unable to register with your Amazon EKS cluster. Common causes of this failure are insufficient node IAM role permissions or lack of outbound internet access for the nodes. Your nodes must be able to access the internet using a public IP address to function properly. For more information, see VPC IP addressing. Your nodes must also have ports open to the internet. For more information, see Amazon EKS security group considerations.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;&lt;a href=&#34;https://docs.aws.amazon.com/eks/latest/userguide/troubleshooting.html#troubleshoot-managed-node-groups&#34;&gt;Amazon EKS troubleshooting&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;K8s 的主机是设置为分配在 Private 子网段的，而且数据中心也给配置了 NAT 网关。我的猜测是安全组没开放或是哪边配置出错了。&lt;/p&gt;
+&lt;h2 id=&#34;验证&#34;&gt;验证&lt;/h2&gt;
+&lt;p&gt;在 Private 子网段创建了一个实例。&lt;/p&gt;
+&lt;p&gt;为了访问这个实例，我又在 Public 子网段创建了一个实例。&lt;/p&gt;
+&lt;p&gt;两个实例都配置了公钥登录的方式。&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;$ sftp -i test_network_access.pem.txt ubuntu@18.179.136.90
+Connected to ubuntu@18.179.136.90.
+sftp&amp;gt; put test_network_access.pem.txt
+Uploading test_network_access.pem.txt to /home/ubuntu/test_network_access.pem.txt
+test_network_access.pem.txt                                                                                                                                                                                                                 100% 1704    20.0KB/s   00:00
+
+$ ssh -i test_network_access.pem.txt ubuntu@18.179.136.90
+
+$ ssh -i test_network_access.pem.txt ubuntu@10.105.24.215
+
+$ curl ip.sb
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;果然是无法访问外网。&lt;/p&gt;
+&lt;p&gt;后面数据中心同事反馈，NAT 的可用区路由表有点问题。&lt;/p&gt;
+- https://xujiahua.github.io/posts/eksctl-nodecreationfailure-instances-failed-to-join-the-kubernetes-cluster-0393476e-6e53-42f7-8222-842ffd0e8358/ - </description>
+        </item>
     
     
     
@@ -1357,128 +1405,6 @@ $ java -jar impala-jdbc-sql-rewrite-1.0-SNAPSHOT.jar 2.sql
 &lt;h3 id=&#34;临时解决方案&#34;&gt;临时解决方案&lt;/h3&gt;
 &lt;p&gt;驱动的问题暂时无法解决，Workaround是有的。只要保证日期比较的时候，条件表达式左右之一至少是TIMESTAMP类型。&lt;/p&gt;
 - https://xujiahua.github.io/posts/20200807-impala/ - </description>
-        </item>
-    
-    
-    
-        <item>
-        <title>【阅读】How Ray Uses gRPC (and Arrow) to Outperform gRPC</title>
-        <link>https://xujiahua.github.io/posts/20200807-ray-grpc-arrow/</link>
-        <pubDate>Fri, 07 Aug 2020 10:34:23 +0800</pubDate>
-        
-        <guid>https://xujiahua.github.io/posts/20200807-ray-grpc-arrow/</guid>
-        <description>许嘉华的笔记 https://xujiahua.github.io/posts/20200807-ray-grpc-arrow/ -&lt;p&gt;原文：&lt;a href=&#34;https://medium.com/distributed-computing-with-ray/how-ray-uses-grpc-and-arrow-to-outperform-grpc-43ec368cb385&#34;&gt;How Ray Uses gRPC (and Arrow) to Outperform gRPC&lt;/a&gt;&lt;/p&gt;
-&lt;p&gt;对理解 Ray 的底层逻辑有帮助。文中描述的Ray版本为0.8。&lt;/p&gt;
-&lt;h2 id=&#34;overview-of-ray&#34;&gt;Overview of Ray&lt;/h2&gt;
-&lt;p&gt;Ray 的计算任务分为两类，无状态计算任务 Task，有状态计算任务 Actor。&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;a href=&#34;https://ray.readthedocs.io/en/latest/walkthrough.html#remote-functions-tasks&#34;&gt;&lt;strong&gt;Tasks&lt;/strong&gt;&lt;/a&gt; (remote functions): these let you run a function remotely in a cluster. Tasks are for &lt;em&gt;stateless&lt;/em&gt; computation.&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;https://ray.readthedocs.io/en/latest/walkthrough.html#remote-classes-actors&#34;&gt;&lt;strong&gt;Actors&lt;/strong&gt;&lt;/a&gt; (remote classes): these are instances of Python classes running remotely in worker processes in a cluster. Actors are for &lt;em&gt;stateful&lt;/em&gt; computation, where evolving state needs to be managed.&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/blockquote&gt;
-&lt;p&gt;原文讲的是Ray核心逻辑，如何使用gRPC和Arrow的。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/0*HMxWNgryNrCZXM8d.png&#34; alt=&#34;Image for post&#34;&gt;&lt;/p&gt;
-&lt;h2 id=&#34;how-ray-calls-translate-into-grpc-operations&#34;&gt;How Ray calls translate into gRPC operations&lt;/h2&gt;
-&lt;p&gt;从几个例子可以了解到：&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;Ray 如何调度 task（python function）/actor（python class）。&lt;/li&gt;
-&lt;li&gt;Ray 如何对调度工作进行优化的。&lt;/li&gt;
-&lt;/ol&gt;
-&lt;h3 id=&#34;basic-ray-task-call&#34;&gt;Basic Ray Task Call&lt;/h3&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;@ray.remote&lt;/span&gt;
-&lt;span style=&#34;color:#66d9ef&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;double&lt;/span&gt;(x):
-    &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; x &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;
-fut1 &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; double&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;remote(&lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;)
-&lt;span style=&#34;color:#66d9ef&#34;&gt;assert&lt;/span&gt; ray&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;get(fut1) &lt;span style=&#34;color:#f92672&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;4&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;工作进程调用 double.remote，触发如下两次 gRPC请求：&lt;/p&gt;
-&lt;p&gt;第一次 gRPC 请求：GetWorkerLease RPC&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;Raylet：Ray 调度后台进程，每个节点一个。&lt;/li&gt;
-&lt;li&gt;向 Raylet 申请需要运行 double 的资源，ask for a lease on a worker to execute double(2)。&lt;/li&gt;
-&lt;li&gt;Raylet 的调度器检查 task（也就是double方法）需要的资源（@ray.remote里可以指定需要的资源）或是依赖，根据上述信息，找到一个合适的worker。&lt;/li&gt;
-&lt;li&gt;这次 gPRC 请求申请资源成功，相当于在 worker 上加了一把排他锁。其他任务无法使用worker。While it holds the lease, no other worker process can schedule tasks on the leased worker.&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;第二次 gRPC 请求：ExecuteTask RPC&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;向申请到的worker发送任务，并获取结果。&lt;/li&gt;
-&lt;li&gt;因为参数和返回结果足够小，都是包含在gPRC请求里。&lt;/li&gt;
-&lt;li&gt;传输大数据，后面会讲。&lt;/li&gt;
-&lt;li&gt;上述gRPC请求中间出现意外，都会进行重试，直到重试上限。&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/0*xvg9YttgxX17HbVT.png&#34; alt=&#34;Image for post&#34;&gt;&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;上图是在单机上运行的Ray逻辑结构。Ray 使用 gPRC 作为统一的通信层。&lt;/li&gt;
-&lt;li&gt;绿框中的是Python代码。&lt;/li&gt;
-&lt;li&gt;白框中的是C++代码，Ray common runtime。&lt;/li&gt;
-&lt;li&gt;Python Driver进程包括Python Driver + Ray Core Worker，Python Worker进程包括Python Worker + Ray Core Worker。可以理解Python是胶水层。&lt;/li&gt;
-&lt;/ol&gt;
-&lt;h3 id=&#34;caching-scheduling-decisions&#34;&gt;Caching Scheduling Decisions&lt;/h3&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;futures &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; [double&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;remote(i) &lt;span style=&#34;color:#66d9ef&#34;&gt;for&lt;/span&gt; i &lt;span style=&#34;color:#f92672&#34;&gt;in&lt;/span&gt; range(&lt;span style=&#34;color:#ae81ff&#34;&gt;1000&lt;/span&gt;)]
-ray&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;get(futures) &lt;span style=&#34;color:#75715e&#34;&gt;# [0, 2, 4, 6, …]&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;以上代码触发了1000次double.remote，因为是同一块代码，它们使用相同的worker配置，这就是优化点所在。&lt;/p&gt;
-&lt;p&gt;上文得知，执行任务两步走，一是申请资源，二是实际执行任务。因为task要求的资源配置相同，可以缓存并复用资源，&lt;em&gt;caches&lt;/em&gt; scheduling decisions，大量减少 GetWorkerLease RPC的请求次数。有限次（任务的并行数）的 GetWorkerLease RPC 均摊到大量的Task上，损耗可忽略不计，可以理解为执行多少个Task，只需要执行同等数量的 ExecuteTask RPC。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/0*HdroniGtqcZVVWv8.png&#34; alt=&#34;Image for post&#34;&gt;&lt;/p&gt;
-&lt;h3 id=&#34;scaling-to-multiple-nodes&#34;&gt;Scaling to Multiple Nodes&lt;/h3&gt;
-&lt;p&gt;double.remote(2)的例子扩展到多节点的场景，假设本地机器没有空闲的worker了。&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;driver程序向raylet1，也就是本地raylet申请资源，GetWorkerLease RPC&lt;/li&gt;
-&lt;li&gt;raylet1知道本节点没有资源了，但是知道raylet2（其他节点的raylet）有worker资源，将请求转发到raylet2&lt;/li&gt;
-&lt;li&gt;资源就这样申请成功。暂时还没解释raylet1怎么知道raylet2有资源的。&lt;/li&gt;
-&lt;li&gt;driver程序向node2上的worker发起 ExecuteTask RPC，执行任务。&lt;/li&gt;
-&lt;li&gt;多节点上&lt;em&gt;caches&lt;/em&gt; scheduling decisions的策略同样有效。&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/0*VTYUxv2HQpudSvSd.png&#34; alt=&#34;Image for post&#34;&gt;&lt;/p&gt;
-&lt;h3 id=&#34;creating-and-using-actors&#34;&gt;Creating and Using Actors&lt;/h3&gt;
-&lt;p&gt;Actor 是有状态的 Task。调度逻辑大体相同。&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;@ray.remote&lt;/span&gt;
-&lt;span style=&#34;color:#66d9ef&#34;&gt;class&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;Counter&lt;/span&gt;:
-    &lt;span style=&#34;color:#66d9ef&#34;&gt;def&lt;/span&gt; __init__(self):
-        self&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;value &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;
-    &lt;span style=&#34;color:#66d9ef&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;increment&lt;/span&gt;(self):
-        self&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;value &lt;span style=&#34;color:#f92672&#34;&gt;+=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;
-        &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; self&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;value
-c &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; Counter&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;remote()
-&lt;span style=&#34;color:#66d9ef&#34;&gt;assert&lt;/span&gt; ray&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;get(c&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;increment&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;remote()) &lt;span style=&#34;color:#f92672&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;
-
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;ol&gt;
-&lt;li&gt;调用 Counter.remote()，触发资源申请，GetWorkerLease RPC，申请Worker&lt;/li&gt;
-&lt;li&gt;对于Actor，构造函数&lt;code&gt;__init__&lt;/code&gt;作为Task发送到 Worker 去。触发任务执行，ExecuteTask RPC。&lt;/li&gt;
-&lt;li&gt;Actor是有状态的，Actor 实例与 申请的Worker 会绑定，直到Actor实例消亡。&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/0*pAecaetsZKkxW80Q.png&#34; alt=&#34;Image for post&#34;&gt;&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;因为有了绑定关系，Actor实例方法的执行，直接与Worker直接通信。ExecuteTask RPC。&lt;/li&gt;
-&lt;li&gt;不需要再次任务调度。&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/0*v9I-UWS61qK2UrkZ.png&#34; alt=&#34;Image for post&#34;&gt;&lt;/p&gt;
-&lt;h2 id=&#34;sending-and-sharing-large-objects-with-arrow&#34;&gt;Sending and Sharing Large Objects with Arrow&lt;/h2&gt;
-&lt;p&gt;大对象（一般指的是超过100KB）通过gRPC传输不够高效。Ray 使用  shared memory object store provided by Apache Arrow 来存储大对象。&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;相同节点上，两个Task之间大对象的传输，实际使用的是共享内存。减少了使用gRPC带来的大对象copy。&lt;/li&gt;
-&lt;li&gt;针对不同节点上的两个Task之间的大对象传输，就会涉及到两块共享内存的数据传输了，这块还是用的gRPC。&lt;/li&gt;
-&lt;li&gt;driver程序执行double.remote(array)，因为array太大，首先会存储到共享内存，然后触发ExecuteTask RPC。&lt;/li&gt;
-&lt;li&gt;worker上，array需要从本机的共享内存取，而共享内存按需从其他节点共享内存取。&lt;/li&gt;
-&lt;li&gt;worker 的工作结果，因为也比较大，存储到共享内存。&lt;/li&gt;
-&lt;li&gt;driver通过ray.get获取结果，结果才从node2的共享内存同步到node1的共享内存。懒加载。&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/0*dw1oBwtWnESKmQUR.png&#34; alt=&#34;Image for post&#34;&gt;&lt;/p&gt;
-&lt;h2 id=&#34;ray-08-performance&#34;&gt;Ray 0.8 Performance&lt;/h2&gt;
-&lt;p&gt;通过上述优化，0.8版本比老版本在请求延迟和对象传输吞吐量方面有了提高。但不是文中吸引我的地方。&lt;/p&gt;
-&lt;p&gt;请求延迟，C++ gRPC 比 Python gRPC有更低的响应时间。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/0*XVY-HbhmlIkt34_N.png&#34; alt=&#34;Image for post&#34;&gt;&lt;/p&gt;
-&lt;p&gt;对象传输吞吐量，因为采用了多条 C++ gRPC 轮询线程，对象传输快了很多。使用Python gRPC就差很多。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/0*5RPiO3Cimua5iIX1.png&#34; alt=&#34;Image for post&#34;&gt;&lt;/p&gt;
-&lt;p&gt;总结起来，用C++榨干机器性能，Python有太多overhead。Ray 公司也计划着C++/Rust的语言接口。也是为了性能考虑吧。&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;At &lt;a href=&#34;http://anyscale.io/&#34;&gt;Anyscale&lt;/a&gt;, we’re working on a number of enhancements for Ray 1.0, including:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;Support for tasks/actors written in C++ and Rust (in addition to Python and Java today).&lt;/li&gt;
-&lt;li&gt;Distributed reference counting for shared memory objects.&lt;/li&gt;
-&lt;li&gt;Accelerated point-to-point GPU transfers.&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/blockquote&gt;
-- https://xujiahua.github.io/posts/20200807-ray-grpc-arrow/ - </description>
         </item>
     
     

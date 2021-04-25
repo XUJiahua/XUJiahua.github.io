@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>eksctl on 许嘉华的笔记</title>
+    <link>https://xujiahua.github.io/tags/eksctl/</link>
+    <description>Recent content in eksctl on 许嘉华的笔记</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Sun, 25 Apr 2021 13:18:00 +0800</lastBuildDate><atom:link href="https://xujiahua.github.io/tags/eksctl/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>eksctl: NodeCreationFailure: Instances failed to join the kubernetes cluster</title>
+      <link>https://xujiahua.github.io/posts/eksctl-nodecreationfailure-instances-failed-to-join-the-kubernetes-cluster-0393476e-6e53-42f7-8222-842ffd0e8358/</link>
+      <pubDate>Sun, 25 Apr 2021 13:18:00 +0800</pubDate>
+      
+      <guid>https://xujiahua.github.io/posts/eksctl-nodecreationfailure-instances-failed-to-join-the-kubernetes-cluster-0393476e-6e53-42f7-8222-842ffd0e8358/</guid>
+      <description>eksctl 创建集群失败了。第一次遇到这个错。
+2021-04-25 01:59:24 [ℹ] waiting for CloudFormation stack &amp;quot;eksctl-eks-prod-evocloud-tyo-nodegroup-mng-1&amp;quot; 2021-04-25 01:59:25 [✖] unexpected status &amp;quot;ROLLBACK_IN_PROGRESS&amp;quot; while waiting for CloudFormation stack &amp;quot;eksctl-eks-prod-evocloud-tyo-nodegroup-mng-1&amp;quot; 2021-04-25 01:59:25 [ℹ] fetching stack events in attempt to troubleshoot the root cause of the failure 2021-04-25 01:59:25 [✖] AWS::EKS::Nodegroup/ManagedNodeGroup: CREATE_FAILED – &amp;quot;Nodegroup mng-1 failed to stabilize: [{Code: NodeCreationFailure,Message: Instances failed to join the kubernetes cluster,ResourceIds: [i-09df0fc7408f36801]}]&amp;quot; 2021-04-25 01:59:25 [!] 1 error(s) occurred and cluster hasn&#39;t been created properly, you may wish to check CloudFormation console  分析 在 CloudFormation 控制台查看详细日志。无法加入到 K8s 集群。然后没有进一步的信息了。</description>
+    </item>
+    
+  </channel>
+</rss>
