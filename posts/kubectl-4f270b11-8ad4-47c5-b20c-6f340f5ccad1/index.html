@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html><head>
-<title>pandasql库解析</title>
+<title>kubectl 怎么念</title>
 
 <meta charset="utf-8">
 <meta name="X-UA-Compatible" content="IE=edge">
@@ -236,21 +236,25 @@ Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopene
             <div class="post-head-wrapper-text-only"
                  style="background-image: url('/')">
                 <div class="post-title">
-                    pandasql库解析
+                    kubectl 怎么念
                     
                     <div class="post-meta">
                         
                         <time itemprop="datePublished">
-                            2020-09-16 10:48
+                            2021-03-09 19:41
                         </time>
                         
 
+                        
+                            <i class="material-icons" style="">folder</i>
+                                <a href="/categories/">[K8s]</a>
+                                &nbsp;
                         
 
                         
                             <i class="material-icons" style="">label</i>
                             
-                                <a href="/tags/readcode">readcode</a>
+                                <a href="/tags/kubectl">kubectl</a>
                                 &nbsp;
                             
                         
@@ -260,28 +264,12 @@ Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopene
             
             <div class="post-body-wrapper">
                 <div class="post-body">
-                    <p>对 Pandas 库没有原生 SQL 支持表示遗憾，今天看到这么一个库 <a href="https://github.com/yhat/pandasql">https://github.com/yhat/pandasql</a> 。</p>
-<p>它的思路比较简单粗暴，先把 pandas Dataframe 存储到一个关系型数据库（sqlite/postgresql），最后 SQL query 的结果其实是查询关系型数据库返回的结果，封装成 Dataframe 来呈现。其中数据库操作使用 sqlalchemy 这个库。</p>
-<p>学到的知识点：locals()，globals() 这两个方法。</p>
-<blockquote>
-<p>The globals() method returns the dictionary of the current global symbol table. <a href="https://www.programiz.com/python-programming/methods/built-in/globals">https://www.programiz.com/python-programming/methods/built-in/globals</a></p>
-<p>The locals() method updates and returns a dictionary of the current local symbol table. <a href="https://www.programiz.com/python-programming/methods/built-in/locals">https://www.programiz.com/python-programming/methods/built-in/locals</a></p>
-</blockquote>
-<p>如下代码，meat 是一个 Dataframe 变量，为何 SQL query 里能直接引用这个变量。</p>
-<pre><code>$ python
-&gt;&gt;&gt; from pandasql import sqldf, load_meat, load_births
-&gt;&gt;&gt; pysqldf = lambda q: sqldf(q, globals())
-&gt;&gt;&gt; meat = load_meat()
-&gt;&gt;&gt; print pysqldf(&quot;SELECT * FROM meat LIMIT 10;&quot;).head()
-</code></pre><p>因为可以从 globals() 里通过符号 meat 拿到这个变量。</p>
-<pre><code>$ python
-&gt;&gt;&gt; a=4
-&gt;&gt;&gt; globals()['a']
-4
-</code></pre>
+                    <p>念法很多。就选这个吧。我也一直这么念的。</p>
+<p><img src="../../images/20210309_194055-35576ceb-cf98-47bb-9cf1-e18f61826b22.jpg" alt=""></p>
+
                     
                     <HR width="100%" id="EOF">
-                    <p style="color:#777;">Last modified on 2020-09-16</p>
+                    <p style="color:#777;">Last modified on 2021-03-09</p>
                     
                 </div>
             </div>
@@ -290,14 +278,14 @@ Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopene
             <nav class="post-pagination">
 
                 
-                <a class="newer-posts" href="https://xujiahua.github.io/posts/kubectl-4f270b11-8ad4-47c5-b20c-6f340f5ccad1/">
-                    Next<br>kubectl 怎么念
+                <a class="newer-posts" href="https://xujiahua.github.io/posts/notion-markdown-hugo-78139407-85c5-4a75-b288-b54d5c3df34b/">
+                    Next<br>从 Notion 导出 markdown 到 hugo 项目
                 </a>
                 
                 
                 
-                <a class="older-posts" href="https://xujiahua.github.io/posts/20200909-docker-series/">
-                    Previous<br>Docker/Kubernetes 系列目录
+                <a class="older-posts" href="https://xujiahua.github.io/posts/20200916-pandas-sql/">
+                    Previous<br>pandasql库解析
                 </a>
                 
             </nav>

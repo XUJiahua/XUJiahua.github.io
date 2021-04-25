@@ -36,5 +36,14 @@ Authentication 不管是通过 kubectl，还是直接访问 kubernetes-apiserver
 2021-04-25 01:59:24 [ℹ] waiting for CloudFormation stack &amp;quot;eksctl-eks-prod-evocloud-tyo-nodegroup-mng-1&amp;quot; 2021-04-25 01:59:25 [✖] unexpected status &amp;quot;ROLLBACK_IN_PROGRESS&amp;quot; while waiting for CloudFormation stack &amp;quot;eksctl-eks-prod-evocloud-tyo-nodegroup-mng-1&amp;quot; 2021-04-25 01:59:25 [ℹ] fetching stack events in attempt to troubleshoot the root cause of the failure 2021-04-25 01:59:25 [✖] AWS::EKS::Nodegroup/ManagedNodeGroup: CREATE_FAILED – &amp;quot;Nodegroup mng-1 failed to stabilize: [{Code: NodeCreationFailure,Message: Instances failed to join the kubernetes cluster,ResourceIds: [i-09df0fc7408f36801]}]&amp;quot; 2021-04-25 01:59:25 [!] 1 error(s) occurred and cluster hasn&#39;t been created properly, you may wish to check CloudFormation console 分析 在 CloudFormation 控制台查看详细日志。无法加入到 K8s 集群。然后没有进一步的信息了。</description>
     </item>
     
+    <item>
+      <title>kubectl 怎么念</title>
+      <link>https://xujiahua.github.io/posts/kubectl-4f270b11-8ad4-47c5-b20c-6f340f5ccad1/</link>
+      <pubDate>Tue, 09 Mar 2021 19:41:00 +0800</pubDate>
+      
+      <guid>https://xujiahua.github.io/posts/kubectl-4f270b11-8ad4-47c5-b20c-6f340f5ccad1/</guid>
+      <description>念法很多。就选这个吧。我也一直这么念的。</description>
+    </item>
+    
   </channel>
 </rss>
