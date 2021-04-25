@@ -1,13 +1,54 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>许嘉华的笔记</title>
+    <title>Happy Coding</title>
     <link>https://xujiahua.github.io/</link>
-    <description>Recent content on 许嘉华的笔记</description>
+    <description>Recent content on Happy Coding</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Sun, 25 Apr 2021 13:18:00 +0800</lastBuildDate>
+    <lastBuildDate>Sun, 25 Apr 2021 16:35:55 +0800</lastBuildDate>
     
         <atom:link href="https://xujiahua.github.io/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    
+        <item>
+        <title>量子计算——读「古今密码学趣谈」展望未来的密码学</title>
+        <link>https://xujiahua.github.io/posts/20191031-quantum-computer/</link>
+        <pubDate>Thu, 31 Oct 2019 15:22:33 +0800</pubDate>
+        
+        <guid>https://xujiahua.github.io/posts/20191031-quantum-computer/</guid>
+        <description>Happy Coding https://xujiahua.github.io/posts/20191031-quantum-computer/ -&lt;p&gt;（笔记迁移 @ 2020年）&lt;/p&gt;
+&lt;p&gt;主要讲了密码学怎么来应对量子计算。量子计算的并行性（N个量子位，能&lt;strong&gt;同时&lt;/strong&gt;表示2^N个数字，而同样的比特位，同时只能表示一个2^N以内的数字。太神奇了），将以前指数级别的破解难度降低为了线性级别。RSA、ECC等现代密码学技术都会被轻易攻破。&lt;/p&gt;
+&lt;p&gt;量子计算机的历史：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;在美国电话电报公司贝尔实验室工作的数学家肖尔（Peter W.Shor，1959）于1994年发现了快速分解大整数的量子算法！他因此于1998年获得了由国际数学联盟颁发的奈望林纳应用数学奖。&lt;/li&gt;
+&lt;li&gt;2001年，美国IBM公司率先研制成功7个量子位的示例型量子计算机。&lt;/li&gt;
+&lt;li&gt;2007年2月，加拿大D-Wave System公司宣布研制成功世界上第一台商用16量子位的量子计算机。&lt;/li&gt;
+&lt;li&gt;2011年5月30日，D-Wave System公司宣布研制成功128量子位的量子计算机，并且出人意料地以每台 1000万美元的价格公开出售，还提供与传统计算机软件接口的软件工具包。&lt;/li&gt;
+&lt;li&gt;2011年9月2日，美国加州大学圣芭芭拉分校的科学家宣布，已通过量子电路成功实现了冯·诺依曼计算机结构，证实了未来量子大规模集成电路指日可待。&lt;/li&gt;
+&lt;li&gt;2012 年3月1日，美国IBM公司宣布，找到一种可以提升量子计算机规模的关键技术，从而使大规模量子计算机的实现成为可能&lt;/li&gt;
+&lt;li&gt;In 2015, D-Wave&amp;rsquo;s 2X Quantum Computer with more than &lt;strong&gt;1000 qubits&lt;/strong&gt; was installed at the Quantum Artificial Intelligence Lab at NASA Ames Research Center.&lt;/li&gt;
+&lt;li&gt;January 2017 &lt;strong&gt;2048 qubits&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;In 2019, D-Wave announced a &lt;strong&gt;5000 qubit&lt;/strong&gt; system available &lt;strong&gt;mid-2020&lt;/strong&gt;, using their new Pegasus chip with 15 connections per qubit.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;关于Dwave，客观看待，以下是引用：&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20191031151535708.png&#34; alt=&#34;image-20191031151535708&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;使用Dwave的量子退火提速找机器学习中的最优解，这是个很实用的功能。&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;量子计算机中的算法需要特殊设计的。&lt;/p&gt;
+&lt;p&gt;现代密码学是基于一些数学难题的，比如大整数分解、椭圆曲线。为了对抗量子计算破解，如果继续走基于数学路线，就需要找新的数学难题，比如基于格的难题（虽然接触过，但还是无法理解）。&lt;/p&gt;
+&lt;p&gt;非数学难题思路的应对方式（看的一知半解）：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;量子密码。思路起源：1969 年，美国哥伦比亚大学的一位名叫威斯纳（Stephen Wiesner，1942）的研究生完成了一篇题为“共轭编码”（Conjugate Coding）的论文，其中提出了“量子钱”（Quantum Money）的概念。根据量子力学原理，任何对量子的观察必然都会干扰其原来的状态，从而导致钱币失效。| 所以，使用量子密码达到安全通信的根本就是一旦观察会干扰其原来的状态。（现代密码学是对通信内容进行加密。）&lt;/li&gt;
+&lt;li&gt;生物密码，指的是DNA密码，DNA的形成是一个分子生物过程。一条DNA链由数百万个的基本单位按不同的顺序排列而成，所以其中包含了惊人的信息量。从数学的角度来看，一条DNA链是由4种不同的符号A,G,C,T组成的长串，类似于计算机所处理的以0,1组成的符号串。但DNA的形成是一个分子生物过程，并非数学计算的结果。于是科学家们突发奇想：能否利用形成DNA的分子生物过程来解决数学问题呢？| 将信息隐藏在DNA微点（微点的定义？）&lt;/li&gt;
+&lt;li&gt;混沌密码。实践更少了。不做赘述。混沌，蝴蝶效应源于此。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;参考：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;D-Wave Systems &lt;a href=&#34;https://en.wikipedia.org/wiki/D-Wave_Systems&#34;&gt;https://en.wikipedia.org/wiki/D-Wave_Systems&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;如何用 IT 业者能听懂的话介绍量子计算的原理？ &lt;a href=&#34;https://www.zhihu.com/question/26933442/answer/34598726&#34;&gt;https://www.zhihu.com/question/26933442/answer/34598726&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+- https://xujiahua.github.io/posts/20191031-quantum-computer/ - </description>
+        </item>
     
     
     
@@ -17,7 +58,7 @@
         <pubDate>Wed, 30 Oct 2019 15:31:21 +0800</pubDate>
         
         <guid>https://xujiahua.github.io/posts/20191030-dcep-libra/</guid>
-        <description>许嘉华的笔记 https://xujiahua.github.io/posts/20191030-dcep-libra/ -&lt;p&gt;（笔记迁移 @ 2020年）&lt;/p&gt;
+        <description>Happy Coding https://xujiahua.github.io/posts/20191030-dcep-libra/ -&lt;p&gt;（笔记迁移 @ 2020年）&lt;/p&gt;
 &lt;p&gt;资料：&lt;/p&gt;
 &lt;ol&gt;
 &lt;li&gt;「区块链到底能干嘛」，赏味不足，梁杰ggtalk博客&lt;/li&gt;
@@ -70,7 +111,7 @@
         <pubDate>Mon, 29 Apr 2019 12:25:54 +0800</pubDate>
         
         <guid>https://xujiahua.github.io/posts/20190429-docker-rmi/</guid>
-        <description>许嘉华的笔记 https://xujiahua.github.io/posts/20190429-docker-rmi/ -&lt;p&gt;&lt;a href=&#34;https://github.com/XUJiahua/dockerrmi&#34;&gt;写了个工具&lt;/a&gt;交互式删除 docker image。&lt;/p&gt;
+        <description>Happy Coding https://xujiahua.github.io/posts/20190429-docker-rmi/ -&lt;p&gt;&lt;a href=&#34;https://github.com/XUJiahua/dockerrmi&#34;&gt;写了个工具&lt;/a&gt;交互式删除 docker image。&lt;/p&gt;
 &lt;p&gt;&lt;img src=&#34;../../images/show.gif&#34; alt=&#34;demo&#34;&gt;&lt;/p&gt;
 &lt;p&gt;实在无法忍受先&lt;code&gt;docker images&lt;/code&gt;，然后&lt;code&gt;docker rmi&lt;/code&gt;的重复操作。
 还比较原始，刚好够自己目前所需。&lt;/p&gt;
@@ -86,7 +127,7 @@
         <pubDate>Mon, 25 Mar 2019 10:45:59 +0800</pubDate>
         
         <guid>https://xujiahua.github.io/posts/20190325-blockchain-hackathon/</guid>
-        <description>许嘉华的笔记 https://xujiahua.github.io/posts/20190325-blockchain-hackathon/ -&lt;h2 id=&#34;过程&#34;&gt;过程&lt;/h2&gt;
+        <description>Happy Coding https://xujiahua.github.io/posts/20190325-blockchain-hackathon/ -&lt;h2 id=&#34;过程&#34;&gt;过程&lt;/h2&gt;
 &lt;p&gt;比赛背景见 &lt;a href=&#34;https://www.tuoniaox.com/news/p-327352.html&#34;&gt;https://www.tuoniaox.com/news/p-327352.html&lt;/a&gt; 。
 打算从几个角度来讲下这个比赛过程。&lt;/p&gt;
 &lt;h3 id=&#34;关于团队&#34;&gt;关于团队&lt;/h3&gt;
@@ -157,7 +198,7 @@
         <pubDate>Mon, 04 Mar 2019 08:27:31 +0800</pubDate>
         
         <guid>https://xujiahua.github.io/posts/20190304-go-plugin/</guid>
-        <description>许嘉华的笔记 https://xujiahua.github.io/posts/20190304-go-plugin/ -&lt;p&gt;（笔记迁移 @ 2020年）&lt;/p&gt;
+        <description>Happy Coding https://xujiahua.github.io/posts/20190304-go-plugin/ -&lt;p&gt;（笔记迁移 @ 2020年）&lt;/p&gt;
 &lt;p&gt;早已忘记 C/C++ 中常用的动态链接库了。日常开发中，使用 Go 引入一个组件，常常是&lt;code&gt;go get&lt;/code&gt;引入其源码，放在一起编译。&lt;/p&gt;
 &lt;p&gt;Go 1.8 起也提供了动态链接库的功能。&lt;/p&gt;
 &lt;p&gt;因为看 HyperLedger Fabric 源码的关系，接触到这块，稍微记录下。&lt;/p&gt;
@@ -262,7 +303,7 @@ func main() {}
         <pubDate>Mon, 29 Oct 2018 08:37:44 +0800</pubDate>
         
         <guid>https://xujiahua.github.io/posts/20181029-mastering-ethereum/</guid>
-        <description>许嘉华的笔记 https://xujiahua.github.io/posts/20181029-mastering-ethereum/ -&lt;p&gt;（笔记迁移 @ 2020年）&lt;/p&gt;
+        <description>Happy Coding https://xujiahua.github.io/posts/20181029-mastering-ethereum/ -&lt;p&gt;（笔记迁移 @ 2020年）&lt;/p&gt;
 &lt;p&gt;区块链上不应该只有数字货币。&lt;/p&gt;
 &lt;blockquote&gt;
 &lt;p&gt;Ethereum was conceived at a time when people recognized the power of the Bitcoin model, and were trying to move beyond cryptocurrency applications.&lt;/p&gt;
@@ -362,7 +403,7 @@ web3.eth.sendTransaction({from: src, to: 0, data: faucet_code, gas: 113558, gasP
         <pubDate>Wed, 17 Oct 2018 07:42:56 +0800</pubDate>
         
         <guid>https://xujiahua.github.io/posts/20181017-perf-testing/</guid>
-        <description>许嘉华的笔记 https://xujiahua.github.io/posts/20181017-perf-testing/ -&lt;p&gt;（笔记迁移 @ 2020年）&lt;/p&gt;
+        <description>Happy Coding https://xujiahua.github.io/posts/20181017-perf-testing/ -&lt;p&gt;（笔记迁移 @ 2020年）&lt;/p&gt;
 &lt;h2 id=&#34;一概念最基础最重要&#34;&gt;一、概念，最基础最重要&lt;/h2&gt;
 &lt;h3 id=&#34;1-响应时间-tp99-tp90是什么&#34;&gt;1. 响应时间 TP99, TP90是什么&lt;/h3&gt;
 &lt;p&gt;除了要看TPS，也要看请求的响应时间是否在合理的范围内。太离谱，压测该停了。&lt;/p&gt;
@@ -503,7 +544,7 @@ $GOPATH/bin/pprof -http=:9000 coupon http://localhost:8000/debug/pprof/profile
         <pubDate>Thu, 13 Apr 2017 11:37:09 +0800</pubDate>
         
         <guid>https://xujiahua.github.io/posts/20170413-jenkins&#43;ansible/</guid>
-        <description>许嘉华的笔记 https://xujiahua.github.io/posts/20170413-jenkins&#43;ansible/ -&lt;h2 id=&#34;ansible&#34;&gt;Ansible&lt;/h2&gt;
+        <description>Happy Coding https://xujiahua.github.io/posts/20170413-jenkins&#43;ansible/ -&lt;h2 id=&#34;ansible&#34;&gt;Ansible&lt;/h2&gt;
 &lt;p&gt;工作需要，接盘又做后端开发，本着不做重复劳动的理念，加上前人留下来的脚本不够优秀，需要重搞一套一键部署的脚本。&lt;/p&gt;
 &lt;p&gt;之前在Windows平台开发的时候，使用cmd、 powershell也写过一套部署脚本，还算凑合着用。&lt;/p&gt;
 &lt;p&gt;这次是在Linux平台上，在重整之前，我也调研了下业界经验。最后选择了&lt;a href=&#34;https://www.ansible.com/how-ansible-works&#34;&gt;Ansible&lt;/a&gt;。Ansible比起bash简单很多，而且不怕重复执行相同命令有副作用，Ansible内置操作都是幂等的。同样的功能，用bash都能写。但是站在巨人肩膀上，效率更高。&lt;/p&gt;
@@ -551,7 +592,7 @@ $GOPATH/bin/pprof -http=:9000 coupon http://localhost:8000/debug/pprof/profile
         <pubDate>Sat, 08 Apr 2017 11:45:49 +0800</pubDate>
         
         <guid>https://xujiahua.github.io/posts/20170408-android-hot-update/</guid>
-        <description>许嘉华的笔记 https://xujiahua.github.io/posts/20170408-android-hot-update/ -&lt;h2 id=&#34;一个伪需求&#34;&gt;一个伪需求&lt;/h2&gt;
+        <description>Happy Coding https://xujiahua.github.io/posts/20170408-android-hot-update/ -&lt;h2 id=&#34;一个伪需求&#34;&gt;一个伪需求&lt;/h2&gt;
 &lt;p&gt;Android热更新框架听的多了，真正开始用是因为组织突发奇想，说能否在智能POS上做个应用／插件，让开发者不改一行代码就能支持做扫码交易了。&lt;/p&gt;
 &lt;p&gt;智能POS其实就是带刷卡槽，芯片插卡槽，NFC读卡器的Android系统。&lt;/p&gt;
 &lt;p&gt;看完需求后，感觉意义不大啊，都是Android系统了，加个扫码模块很难么，对一个Android程序员，分分钟集成一个这是基本素养了。有点伪需求的味道。&lt;/p&gt;

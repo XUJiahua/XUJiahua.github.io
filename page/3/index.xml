@@ -1,13 +1,151 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>许嘉华的笔记</title>
+    <title>Happy Coding</title>
     <link>https://xujiahua.github.io/</link>
-    <description>Recent content on 许嘉华的笔记</description>
+    <description>Recent content on Happy Coding</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Sun, 25 Apr 2021 13:18:00 +0800</lastBuildDate>
+    <lastBuildDate>Sun, 25 Apr 2021 16:35:55 +0800</lastBuildDate>
     
         <atom:link href="https://xujiahua.github.io/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    
+        <item>
+        <title>Metabase SSO 登录</title>
+        <link>https://xujiahua.github.io/posts/20200609-metabase-sso-login/</link>
+        <pubDate>Tue, 09 Jun 2020 10:37:09 +0800</pubDate>
+        
+        <guid>https://xujiahua.github.io/posts/20200609-metabase-sso-login/</guid>
+        <description>Happy Coding https://xujiahua.github.io/posts/20200609-metabase-sso-login/ -&lt;p&gt;探讨如何将 Metabase 融入业务系统（SaaS 服务）。&lt;/p&gt;
+&lt;p&gt;为何需要集成 Metabase 到业务系统中呢？一般，通用的数据需求都做到SaaS服务中了。而现实情况是，客户是有很多定制化数据需求的。使用 Metabase 制作报表，直接跳过前后端开发，快速满足客户需求。&lt;/p&gt;
+&lt;p&gt;（最终极地，进一步提高生产效率，把 Metabase 的组件化能力内化到 SaaS 服务中才是正道。）&lt;/p&gt;
+&lt;p&gt;试分析下 Metabase 提供的方案，以及适配我们的场景，分析该怎么改。&lt;/p&gt;
+&lt;h2 id=&#34;分析现存方案&#34;&gt;分析现存方案&lt;/h2&gt;
+&lt;p&gt;开源版本的 Metabase 支持两种第三方登录：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;LDAP: Allows users within your LDAP directory to log in to Metabase with their LDAP credentials, and allows automatic mapping of LDAP groups to Metabase groups.&lt;/li&gt;
+&lt;li&gt;Sign in with Google: Allows users with &lt;strong&gt;existing Metabase accounts&lt;/strong&gt; to login with a Google account that &lt;strong&gt;matches their email address&lt;/strong&gt; in addition to their Metabase username and password.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;企业版本：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;SAML&lt;/li&gt;
+&lt;li&gt;JWT&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;参考：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Authenticating with Google Sign-In or LDAP &lt;a href=&#34;https://www.metabase.com/docs/latest/administration-guide/10-single-sign-on.html&#34;&gt;https://www.metabase.com/docs/latest/administration-guide/10-single-sign-on.html&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;Authenticating with SAML &lt;a href=&#34;https://www.metabase.com/docs/latest/enterprise-guide/authenticating-with-saml.html&#34;&gt;https://www.metabase.com/docs/latest/enterprise-guide/authenticating-with-saml.html&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;JWT-based Authentication &lt;a href=&#34;https://www.metabase.com/docs/latest/enterprise-guide/authenticating-with-jwt.html&#34;&gt;https://www.metabase.com/docs/latest/enterprise-guide/authenticating-with-jwt.html&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3 id=&#34;sign-in-with-google&#34;&gt;Sign in with Google&lt;/h3&gt;
+&lt;p&gt;其底层对接的是Google的Sign-In for Website &lt;a href=&#34;https://developers.google.com/identity/sign-in/web&#34;&gt;https://developers.google.com/identity/sign-in/web&lt;/a&gt; 。并假设 Google 返回的数据是完全可信的。&lt;/p&gt;
+&lt;p&gt;根据文档配置获取 clientID。本地测试，Authorized JavaScript origins 设置成本地路径。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200609164603642.png&#34; alt=&#34;image-20200609164603642&#34;&gt;&lt;/p&gt;
+&lt;p&gt;管理员角色下 Metabase 配置 clientID。第二项，满足条件：email是@gmail.com结尾的，自动创建账户。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200609170932819.png&#34; alt=&#34;image-20200609170932819&#34;&gt;&lt;/p&gt;
+&lt;p&gt;不然，需先创建Metabase账户，其email等于Google登录返回的邮箱地址。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200609171443922.png&#34; alt=&#34;image-20200609171443922&#34;&gt;&lt;/p&gt;
+&lt;p&gt;Google登录的client-id由后端提供给前端。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200609160327997.png&#34; alt=&#34;image-20200609160327997&#34;&gt;&lt;/p&gt;
+&lt;p&gt;用户登录界面有了Google登录按钮。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200609104044953.png&#34; alt=&#34;image-20200609104044953&#34;&gt;&lt;/p&gt;
+&lt;p&gt;点击Google登录按钮，会唤起Google登录页面。登录成功，获取到Google返回结果。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200609163652367.png&#34; alt=&#34;image-20200609163652367&#34;&gt;&lt;/p&gt;
+&lt;p&gt;将Google返回里的token提交给Metabase服务器。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200609155729926.png&#34; alt=&#34;image-20200609155729926&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;google_auth&lt;/code&gt;这个接口。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200609155759738.png&#34; alt=&#34;image-20200609155759738&#34;&gt;&lt;/p&gt;
+&lt;p&gt;通过token请求用户信息。参考：Calling the tokeninfo endpoint &lt;a href=&#34;https://developers.google.com/identity/sign-in/web/backend-auth#calling-the-tokeninfo-endpoint&#34;&gt;https://developers.google.com/identity/sign-in/web/backend-auth#calling-the-tokeninfo-endpoint&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200609171805849.png&#34; alt=&#34;image-20200609171805849&#34;&gt;&lt;/p&gt;
+&lt;p&gt;整体流程如图：&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200609180555022.png&#34; alt=&#34;image-20200609180555022&#34;&gt;&lt;/p&gt;
+&lt;h3 id=&#34;ldap&#34;&gt;LDAP&lt;/h3&gt;
+&lt;p&gt;LDAP 可以理解为一个用户数据库、服务，常见用途就是单点登录，用户只需要记住一个密码就可以登录多个服务。了解更多参考：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;轻型目录访问协议 &lt;a href=&#34;https://zh.wikipedia.org/wiki/%E8%BD%BB%E5%9E%8B%E7%9B%AE%E5%BD%95%E8%AE%BF%E9%97%AE%E5%8D%8F%E8%AE%AE&#34;&gt;https://zh.wikipedia.org/wiki/%E8%BD%BB%E5%9E%8B%E7%9B%AE%E5%BD%95%E8%AE%BF%E9%97%AE%E5%8D%8F%E8%AE%AE&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;What are CN, OU, DC in an LDAP search? &lt;a href=&#34;https://stackoverflow.com/questions/18756688/what-are-cn-ou-dc-in-an-ldap-search&#34;&gt;https://stackoverflow.com/questions/18756688/what-are-cn-ou-dc-in-an-ldap-search&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;参考文档搭建一个LDAP环境。&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;How to install OpenLDAP on Ubuntu 18.04 &lt;a href=&#34;https://www.techrepublic.com/article/how-to-install-openldap-on-ubuntu-18-04/&#34;&gt;https://www.techrepublic.com/article/how-to-install-openldap-on-ubuntu-18-04/&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;其中：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;DNS domain name 使用 metabase.com，我们会使用metabase的测试配置。&lt;/li&gt;
+&lt;li&gt;测试配置使用 &lt;a href=&#34;https://github.com/metabase/metabase/blob/master/test_resources/ldap.ldif&#34;&gt;https://github.com/metabase/metabase/blob/master/test_resources/ldap.ldif&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;ldapadd -x -D cn&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;admin,dc&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;metabase,dc&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;com -W -f test_resources/ldap.ldif
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;用一个LDAP可视化管理工具（用的 Apache Directory Studio）可以看到这样的树状结构。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200609105314696.png&#34; alt=&#34;image-20200609105314696&#34;&gt;&lt;/p&gt;
+&lt;p&gt;Metabase 管理界面配置如下：&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200609104528576.png&#34; alt=&#34;image-20200609104528576&#34;&gt;&lt;/p&gt;
+&lt;p&gt;LDAP用户还是使用邮箱密码登录。优先使用LDAP登录。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200609110920538.png&#34; alt=&#34;image-20200609110920538&#34;&gt;&lt;/p&gt;
+&lt;p&gt;LDAP用户、密码验证。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200609111803290.png&#34; alt=&#34;image-20200609111803290&#34;&gt;&lt;/p&gt;
+&lt;p&gt;验证通过，LDAP用户会映射为本地用户，但是不存密码。并同步group信息（LDAP group 与 metabase group 之间映射可配置）。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200609112238354.png&#34; alt=&#34;image-20200609112238354&#34;&gt;&lt;/p&gt;
+&lt;p&gt;LDAP 用户信息的字段映射到本地用户的email/first_name/last_name，可以配置。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200609114531757.png&#34; alt=&#34;image-20200609114531757&#34;&gt;&lt;/p&gt;
+&lt;h3 id=&#34;saml&#34;&gt;SAML&lt;/h3&gt;
+&lt;p&gt;SAML是实现单点登录（SSO）的一种开放标准。仍然是服务方引导用户到认证中心认证，认证成功后，服务方从认证中心获取用户信息的逻辑。整体逻辑与Google Signin没两样。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;There three main roles in this communication:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;End User&lt;/li&gt;
+&lt;li&gt;Identity Provider (IdP)&lt;/li&gt;
+&lt;li&gt;Service Provider (SP)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;The end-user initiates the login process at the SP. The SP will redirect the user to the IdP with a SAML Request (AuthnRequest). The SAML Request will contain the necessary information for the IdP to authenticate the end-user and reply to the SP with the correct SAML Assertion (SAMLResponse).&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://www.secureauth.com/blog/introduction-to-saml&#34;&gt;https://www.secureauth.com/blog/introduction-to-saml&lt;/a&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/1127182513244158.Xyqs8g4zWlwULTRe33zB_height640.png&#34; alt=&#34;SAML SP Initiated SSO Flow&#34;&gt;&lt;/p&gt;
+&lt;p&gt;GitHub找了个例子，了解下SAML的流程，可以有一个更具象的认识。 &lt;a href=&#34;https://github.com/crewjam/saml&#34;&gt;https://github.com/crewjam/saml&lt;/a&gt;&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;SP 需要知道 IDP 的认证地址。需要知道 SAML Request 往哪发。&lt;/li&gt;
+&lt;li&gt;IDP 需要知道 SP 的接收地址，需要知道 SAML Response 往哪发。&lt;/li&gt;
+&lt;li&gt;IDP 与 SP之间是通过公私钥认证的。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;参考：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Security Assertion Markup Language &lt;a href=&#34;https://en.wikipedia.org/wiki/Security_Assertion_Markup_Language&#34;&gt;https://en.wikipedia.org/wiki/Security_Assertion_Markup_Language&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;An Introduction to SAML (Security Assertion Markup Language) &lt;a href=&#34;https://www.secureauth.com/blog/introduction-to-saml&#34;&gt;https://www.secureauth.com/blog/introduction-to-saml&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;SAML library for go &lt;a href=&#34;https://github.com/crewjam/saml&#34;&gt;https://github.com/crewjam/saml&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2 id=&#34;适配-saas-服务&#34;&gt;适配 SaaS 服务&lt;/h2&gt;
+&lt;p&gt;企业内部使用，使用LDAP挺方便的。而 SaaS 服务怎么利用上Metabase呢？而且Metabase本身没有多租户（企业）的概念。&lt;/p&gt;
+&lt;p&gt;大概分析如下：&lt;/p&gt;
+&lt;h3 id=&#34;基于分组的数据隔离&#34;&gt;基于分组的数据隔离&lt;/h3&gt;
+&lt;p&gt;SaaS 系统，多租户系统，最基本的要求是保证数据隔离。客户只能看到自己的数据（报表）。&lt;/p&gt;
+&lt;p&gt;Metabase 数据隔离的手段只有分组。基于分组隔离客户，一个客户一个分组。因为少部分客户才会用到 Metabase 功能，所以分组不会非常多。&lt;/p&gt;
+&lt;h3 id=&#34;报表功能复用&#34;&gt;报表功能复用？&lt;/h3&gt;
+&lt;p&gt;&lt;del&gt;这个有点难。只能一个个客户（对应每个分组）做报表。通用的功能，copy -&amp;gt; SQL里修改客户隔离标识 -&amp;gt; paste。&lt;/del&gt;&lt;/p&gt;
+&lt;p&gt;参考：&lt;a href=&#34;https://xujiahua.github.io/posts/20200615-metabase-customer-isolation/&#34;&gt;Metabase 客户隔离&lt;/a&gt;&lt;/p&gt;
+&lt;h3 id=&#34;定制-sso-系统&#34;&gt;定制 SSO 系统&lt;/h3&gt;
+&lt;p&gt;认证页、获取用户信息，每个SSO系统都是有的。这里需要考虑的是用户字段与Metabase的映射。&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Metabase中用户信息有：&lt;code&gt;email&lt;/code&gt;/&lt;code&gt;first name&lt;/code&gt;/&lt;code&gt;last name&lt;/code&gt;。SSO系统需要有对应的字段。&lt;/li&gt;
+&lt;li&gt;不是每个SaaS客户都能使用Metabase。SSO用户信息加入用户标识&lt;code&gt;metabase_enabled&lt;/code&gt;。没有标识，禁止进入 Metabase，Metabase 进行提示。&lt;/li&gt;
+&lt;li&gt;用户信息中有客户隔离标识 &lt;code&gt;mid&lt;/code&gt;。对应 Metabase 分组。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3 id=&#34;metabase&#34;&gt;Metabase&lt;/h3&gt;
+&lt;p&gt;前端，Auth Provider 配置页：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;配置SSO认证页地址。（不能写死，生产、测试环境地址不同）&lt;/li&gt;
+&lt;li&gt;配置SSO Token API地址。&lt;/li&gt;
+&lt;li&gt;客户隔离标识与Metabase group映射。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;前端，登录页：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;提供一个点击登录按钮。跳转到SSO认证页面。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;后端：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;对接 SSO 用户接口。&lt;/li&gt;
+&lt;/ol&gt;
+- https://xujiahua.github.io/posts/20200609-metabase-sso-login/ - </description>
+        </item>
     
     
     
@@ -17,7 +155,7 @@
         <pubDate>Fri, 05 Jun 2020 14:41:44 +0800</pubDate>
         
         <guid>https://xujiahua.github.io/posts/20200605-metabase-field-filter/</guid>
-        <description>许嘉华的笔记 https://xujiahua.github.io/posts/20200605-metabase-field-filter/ -&lt;p&gt;Metabase Dashboard 可以是动态的，常用的是指定时间范围筛选，查看这个时间段的指标。&lt;/p&gt;
+        <description>Happy Coding https://xujiahua.github.io/posts/20200605-metabase-field-filter/ -&lt;p&gt;Metabase Dashboard 可以是动态的，常用的是指定时间范围筛选，查看这个时间段的指标。&lt;/p&gt;
 &lt;h2 id=&#34;简单示范&#34;&gt;简单示范&lt;/h2&gt;
 &lt;p&gt;使用 SAMPLE DATASET 数据库。定义一个Question：在某一时间段，订单数是多少。使用以下 SQL模板。&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sql&#34; data-lang=&#34;sql&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;select&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;count&lt;/span&gt;(&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;) &lt;span style=&#34;color:#66d9ef&#34;&gt;FROM&lt;/span&gt; ORDERS
@@ -98,7 +236,7 @@
         <pubDate>Thu, 04 Jun 2020 16:13:27 +0800</pubDate>
         
         <guid>https://xujiahua.github.io/posts/20200604-clojure-repl-debug/</guid>
-        <description>许嘉华的笔记 https://xujiahua.github.io/posts/20200604-clojure-repl-debug/ -&lt;h2 id=&#34;开发工具&#34;&gt;开发工具&lt;/h2&gt;
+        <description>Happy Coding https://xujiahua.github.io/posts/20200604-clojure-repl-debug/ -&lt;h2 id=&#34;开发工具&#34;&gt;开发工具&lt;/h2&gt;
 &lt;h3 id=&#34;intellij-idea--cursive&#34;&gt;Intellij IDEA + Cursive&lt;/h3&gt;
 &lt;p&gt;安装 IDEA 社区版即可，并安装插件 Cursive。&lt;/p&gt;
 &lt;p&gt;&lt;img src=&#34;../../images/image-20200604161831382.png&#34; alt=&#34;image-20200604161831382&#34;&gt;&lt;/p&gt;
@@ -284,7 +422,7 @@
         <pubDate>Fri, 29 May 2020 11:00:23 +0800</pubDate>
         
         <guid>https://xujiahua.github.io/posts/20200529-bi_project/</guid>
-        <description>许嘉华的笔记 https://xujiahua.github.io/posts/20200529-bi_project/ -&lt;p&gt;分享下 4月、5月（特别是5月，5/1假期后基本上全身心投入）在忙的这个数据项目经历，工作面覆盖陪同拜访客户、开会、需求分析、提供方案、数据清洗、数据分析、数据基础设施的搭建开发、帮甲方IT调试代码等环节，累到头秃。&lt;/p&gt;
+        <description>Happy Coding https://xujiahua.github.io/posts/20200529-bi_project/ -&lt;p&gt;分享下 4月、5月（特别是5月，5/1假期后基本上全身心投入）在忙的这个数据项目经历，工作面覆盖陪同拜访客户、开会、需求分析、提供方案、数据清洗、数据分析、数据基础设施的搭建开发、帮甲方IT调试代码等环节，累到头秃。&lt;/p&gt;
 &lt;p&gt;（本文刻意隐去客户信息。）&lt;/p&gt;
 &lt;h2 id=&#34;需求背景&#34;&gt;需求背景&lt;/h2&gt;
 &lt;p&gt;客户需求是做一个聚合小程序（此处脑补下麦当劳的微信小程序「i麦当劳」），用于广告投放，比如微信系APP的弹屏广告。应用本身不复杂，只是罗列客户其他小程序、H5应用和一些广告链接，让用户选择。&lt;/p&gt;
@@ -404,7 +542,7 @@
         <pubDate>Thu, 28 May 2020 09:30:09 +0800</pubDate>
         
         <guid>https://xujiahua.github.io/posts/20200528-metabase-impala-type/</guid>
-        <description>许嘉华的笔记 https://xujiahua.github.io/posts/20200528-metabase-impala-type/ -&lt;p&gt;体验过程中还是碰到不少问题。&lt;/p&gt;
+        <description>Happy Coding https://xujiahua.github.io/posts/20200528-metabase-impala-type/ -&lt;p&gt;体验过程中还是碰到不少问题。&lt;/p&gt;
 &lt;h2 id=&#34;1-timestamp-类型没有过滤器样式&#34;&gt;1. TIMESTAMP 类型没有过滤器样式&lt;/h2&gt;
 &lt;h3 id=&#34;现象&#34;&gt;现象&lt;/h3&gt;
 &lt;p&gt;&lt;img src=&#34;../../images/image-20200528173609294.png&#34; alt=&#34;image-20200528173609294&#34;&gt;&lt;/p&gt;
@@ -642,7 +780,7 @@
         <pubDate>Wed, 27 May 2020 12:16:36 +0800</pubDate>
         
         <guid>https://xujiahua.github.io/posts/20200527-metabase-impala-driver/</guid>
-        <description>许嘉华的笔记 https://xujiahua.github.io/posts/20200527-metabase-impala-driver/ -&lt;p&gt;更新日志&lt;/p&gt;
+        <description>Happy Coding https://xujiahua.github.io/posts/20200527-metabase-impala-driver/ -&lt;p&gt;更新日志&lt;/p&gt;
 &lt;ol&gt;
 &lt;li&gt;&lt;a href=&#34;https://xujiahua.github.io/posts/20200528-metabase-impala-type/&#34;&gt;Metabase Impala Driver 0528更新日志&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;&lt;a href=&#34;https://xujiahua.github.io/posts/20200710-metabase-impala-driver/&#34;&gt;Metabase Impala Driver 0710更新日志&lt;/a&gt;&lt;/li&gt;
@@ -839,7 +977,7 @@ org.apache.hive/hive-jdbc &amp;quot;1.2.1&amp;quot;
         <pubDate>Thu, 14 May 2020 13:38:12 +0800</pubDate>
         
         <guid>https://xujiahua.github.io/posts/20200514-wx-avatar/</guid>
-        <description>许嘉华的笔记 https://xujiahua.github.io/posts/20200514-wx-avatar/ -&lt;p&gt;项目需要基于头像、昵称对不同实体账号下的微信用户进行匹配。基于这个思路，打算先下载微信头像的图像，后计算其MD5，“单元测试”了下这个简单方法，结果惊人。&lt;/p&gt;
+        <description>Happy Coding https://xujiahua.github.io/posts/20200514-wx-avatar/ -&lt;p&gt;项目需要基于头像、昵称对不同实体账号下的微信用户进行匹配。基于这个思路，打算先下载微信头像的图像，后计算其MD5，“单元测试”了下这个简单方法，结果惊人。&lt;/p&gt;
 &lt;p&gt;同一个人的同一个头像链接返回的图像内容都不一样。内容不一样，MD5值也就不一样。&lt;/p&gt;
 &lt;p&gt;看来微信对我们这些拙劣的手段早有防备。&lt;/p&gt;
 &lt;h2 id=&#34;微信头像内容分析&#34;&gt;微信头像内容分析&lt;/h2&gt;
@@ -950,7 +1088,7 @@ size_options &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; [
         <pubDate>Mon, 04 May 2020 13:11:09 +0800</pubDate>
         
         <guid>https://xujiahua.github.io/posts/20200504-hackintosh/</guid>
-        <description>许嘉华的笔记 https://xujiahua.github.io/posts/20200504-hackintosh/ -&lt;p&gt;买了个 NUC8i5BEH 当玩具，不怎么折腾的方式体验下黑苹果。&lt;/p&gt;
+        <description>Happy Coding https://xujiahua.github.io/posts/20200504-hackintosh/ -&lt;p&gt;买了个 NUC8i5BEH 当玩具，不怎么折腾的方式体验下黑苹果。&lt;/p&gt;
 &lt;p&gt;&lt;img src=&#34;../../images/image-20200504145011481.png&#34; alt=&#34;image-20200504145011481&#34;&gt;&lt;/p&gt;
 &lt;h2 id=&#34;效果&#34;&gt;效果&lt;/h2&gt;
 &lt;p&gt;&lt;img src=&#34;../../images/image-20200504132303349.png&#34; alt=&#34;image-20200504132303349&#34;&gt;&lt;/p&gt;
@@ -1045,7 +1183,7 @@ size_options &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; [
         <pubDate>Tue, 21 Apr 2020 09:01:38 +0800</pubDate>
         
         <guid>https://xujiahua.github.io/posts/20200421-use-consul/</guid>
-        <description>许嘉华的笔记 https://xujiahua.github.io/posts/20200421-use-consul/ -&lt;h2 id=&#34;简单介绍&#34;&gt;简单介绍&lt;/h2&gt;
+        <description>Happy Coding https://xujiahua.github.io/posts/20200421-use-consul/ -&lt;h2 id=&#34;简单介绍&#34;&gt;简单介绍&lt;/h2&gt;
 &lt;p&gt;hashicorp 对 Consul 的定位是服务间网络方案。&lt;/p&gt;
 &lt;blockquote&gt;
 &lt;p&gt;Consul is a service networking solution to connect and secure services across any runtime platform and public or private cloud. &lt;a href=&#34;https://www.consul.io/&#34;&gt;https://www.consul.io/&lt;/a&gt;&lt;/p&gt;
@@ -1235,7 +1373,7 @@ size_options &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; [
         <pubDate>Mon, 20 Apr 2020 14:12:38 +0800</pubDate>
         
         <guid>https://xujiahua.github.io/posts/20200420-use_etcd/</guid>
-        <description>许嘉华的笔记 https://xujiahua.github.io/posts/20200420-use_etcd/ -&lt;h2 id=&#34;简介&#34;&gt;简介&lt;/h2&gt;
+        <description>Happy Coding https://xujiahua.github.io/posts/20200420-use_etcd/ -&lt;h2 id=&#34;简介&#34;&gt;简介&lt;/h2&gt;
 &lt;p&gt;取名有意思。Linux下的/etc目录放的是配置文件。etcd，etc代表配置，d代表distributed，代表分布式配置。&lt;/p&gt;
 &lt;p&gt;特点：&lt;/p&gt;
 &lt;ol&gt;
@@ -1304,39 +1442,6 @@ size_options &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; [
 &lt;li&gt;&lt;code&gt;--user=root:root put foo bar&lt;/code&gt; 操作时指定用户密码&lt;/li&gt;
 &lt;/ol&gt;
 - https://xujiahua.github.io/posts/20200420-use_etcd/ - </description>
-        </item>
-    
-    
-    
-        <item>
-        <title>k8s configmap 与热更新</title>
-        <link>https://xujiahua.github.io/posts/20200417-kubernetes-configmap/</link>
-        <pubDate>Fri, 17 Apr 2020 16:09:28 +0800</pubDate>
-        
-        <guid>https://xujiahua.github.io/posts/20200417-kubernetes-configmap/</guid>
-        <description>许嘉华的笔记 https://xujiahua.github.io/posts/20200417-kubernetes-configmap/ -&lt;h2 id=&#34;configmap-简介&#34;&gt;configmap 简介&lt;/h2&gt;
-&lt;p&gt;官方介绍：使用 ConfigMap 配置 Pod  &lt;a href=&#34;https://kubernetes.io/zh/docs/tasks/configure-pod-container/configure-pod-configmap/&#34;&gt;https://kubernetes.io/zh/docs/tasks/configure-pod-container/configure-pod-configmap/&lt;/a&gt;&lt;/p&gt;
-&lt;p&gt;他人总结：ConfigMap &lt;a href=&#34;https://jimmysong.io/kubernetes-handbook/concepts/configmap.html&#34;&gt;https://jimmysong.io/kubernetes-handbook/concepts/configmap.html&lt;/a&gt;&lt;/p&gt;
-&lt;p&gt;稍微总结下：&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;每个configmap都有一个名字，名字全局唯一（命名空间内），重复创建会报错。&lt;/li&gt;
-&lt;li&gt;每个configmap本身是键值对。&lt;/li&gt;
-&lt;li&gt;configmap可以通过环境变量的方式让Pod内容器读取。&lt;/li&gt;
-&lt;li&gt;configmap可以通过挂载文件的方式让Pod内容器读取。k8s每隔一段时间同步configmap，如果有更新的话。当然，应用本身是不知道的。这个定时更新感觉有点鸡肋。&lt;/li&gt;
-&lt;li&gt;configmap更新，不会自动重启应用。只能人工方式，滚动重启应用。&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;把配置更新也当作一次应用变更看待，心情就好很多了。&lt;/p&gt;
-&lt;p&gt;官方不支持热更新，所以有了各种技巧，提高效率。&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;create a new ConfigMap with the changes you want to make, and point your deployment at the new ConfigMap &lt;a href=&#34;https://stackoverflow.com/a/40624029/820682&#34;&gt;https://stackoverflow.com/a/40624029/820682&lt;/a&gt; 因为 deployment 文件变化了，触发滚动重启。&lt;/li&gt;
-&lt;li&gt;还有deployment 文件中配置 configmap hash值的。配置变化，hash值变化，deployment变化，滚动重启，一级级联动。 &lt;a href=&#34;https://blog.questionable.services/article/kubernetes-deployments-configmap-change/&#34;&gt;https://blog.questionable.services/article/kubernetes-deployments-configmap-change/&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;还有使用sidecar的方式做热更新的，太复杂了 &lt;a href=&#34;https://zhuanlan.zhihu.com/p/57570231&#34;&gt;https://zhuanlan.zhihu.com/p/57570231&lt;/a&gt;&lt;/li&gt;
-&lt;/ol&gt;
-&lt;h2 id=&#34;关于热更新&#34;&gt;关于热更新&lt;/h2&gt;
-&lt;p&gt;configmap的更新，容器化应用是无感知的。configmap这种方式没有推送更新到应用内的机制，要实现热更新过于复杂。&lt;/p&gt;
-&lt;p&gt;k8s最核心的功能还是自动部署、伸缩、容器管理以及资源分配。微服务架构还是得需要其他框架来辅助的。&lt;/p&gt;
-&lt;p&gt;配置热更新应用，就选择 etcd, consul 吧，有 watch 功能。&lt;/p&gt;
-- https://xujiahua.github.io/posts/20200417-kubernetes-configmap/ - </description>
         </item>
     
     

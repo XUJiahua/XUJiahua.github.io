@@ -1,13 +1,92 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>许嘉华的笔记</title>
+    <title>Happy Coding</title>
     <link>https://xujiahua.github.io/</link>
-    <description>Recent content on 许嘉华的笔记</description>
+    <description>Recent content on Happy Coding</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Sun, 25 Apr 2021 13:18:00 +0800</lastBuildDate>
+    <lastBuildDate>Sun, 25 Apr 2021 16:35:55 +0800</lastBuildDate>
     
         <atom:link href="https://xujiahua.github.io/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    
+        <item>
+        <title>记录一个 Impala JDBC 驱动问题</title>
+        <link>https://xujiahua.github.io/posts/20200807-impala/</link>
+        <pubDate>Fri, 07 Aug 2020 15:06:49 +0800</pubDate>
+        
+        <guid>https://xujiahua.github.io/posts/20200807-impala/</guid>
+        <description>Happy Coding https://xujiahua.github.io/posts/20200807-impala/ -&lt;h3 id=&#34;现象&#34;&gt;现象&lt;/h3&gt;
+&lt;p&gt;洪敏在用 Metabase 写报表过程中，使用 Metabase 的日期变量，发现的诡异问题。两条语句仅有部分差异，返回的结果却差了一天。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200807173209949.png&#34; alt=&#34;image-20200807173209949&#34;&gt;&lt;/p&gt;
+&lt;p&gt;期望结果。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200807173143617.png&#34; alt=&#34;image-20200807173143617&#34;&gt;&lt;/p&gt;
+&lt;p&gt;与期望结果差了一天。&lt;/p&gt;
+&lt;p&gt;在 CDH 中查看 impala 服务器接收到的请求。&lt;/p&gt;
+&lt;p&gt;得到期望结果的SQL：&lt;/p&gt;
+&lt;p&gt;dt 是字符串，内容是日期，参数是TIMESTAMP，SQL引擎会自动转为两个 TIMESTAMP比较。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sql&#34; data-lang=&#34;sql&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;SELECT&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;a&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;.&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;dt&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;, (&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;a&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;.&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;x&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;-&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;b&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;.&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;x&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;) &lt;span style=&#34;color:#66d9ef&#34;&gt;as&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;&lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;净增人数&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;FROM&lt;/span&gt; (&lt;span style=&#34;color:#66d9ef&#34;&gt;SELECT&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;f_ods_wx_subscribe_di&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;.&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;dt&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;, &lt;span style=&#34;color:#66d9ef&#34;&gt;COUNT&lt;/span&gt;(&lt;span style=&#34;color:#66d9ef&#34;&gt;DISTINCT&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;f_ods_wx_subscribe_di&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;.&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;userinfo_openid&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;) &lt;span style=&#34;color:#66d9ef&#34;&gt;as&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;x&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;FROM&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;product&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;.&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;f_ods_wx_subscribe_di&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;WHERE&lt;/span&gt; ((&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;f_ods_wx_subscribe_di&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;.&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;dt&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;CAST&lt;/span&gt;( &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;2020-08-05 00:00:00.0&amp;#39;&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;AS&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;TIMESTAMP&lt;/span&gt;)) &lt;span style=&#34;color:#66d9ef&#34;&gt;AND&lt;/span&gt; ((&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;f_ods_wx_subscribe_di&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;.&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;mid&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;jt20191017175015910985&amp;#39;&lt;/span&gt;) &lt;span style=&#34;color:#66d9ef&#34;&gt;AND&lt;/span&gt; (&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;f_ods_wx_subscribe_di&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;.&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;dt&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;=&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;CAST&lt;/span&gt;( &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;2020-08-01 00:00:00.0&amp;#39;&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;AS&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;TIMESTAMP&lt;/span&gt;)))) &lt;span style=&#34;color:#66d9ef&#34;&gt;GROUP&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;BY&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;f_ods_wx_subscribe_di&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;.&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;dt&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;) &lt;span style=&#34;color:#66d9ef&#34;&gt;AS&lt;/span&gt; a &lt;span style=&#34;color:#66d9ef&#34;&gt;LEFT&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;JOIN&lt;/span&gt; (&lt;span style=&#34;color:#66d9ef&#34;&gt;SELECT&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;f_ods_wx_unsubscribe_di&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;.&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;dt&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;, &lt;span style=&#34;color:#66d9ef&#34;&gt;COUNT&lt;/span&gt;(&lt;span style=&#34;color:#66d9ef&#34;&gt;DISTINCT&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;f_ods_wx_unsubscribe_di&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;.&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;userinfo_openid&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;) &lt;span style=&#34;color:#66d9ef&#34;&gt;as&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;x&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;FROM&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;product&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;.&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;f_ods_wx_unsubscribe_di&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;WHERE&lt;/span&gt; ((&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;f_ods_wx_unsubscribe_di&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;.&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;dt&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;CAST&lt;/span&gt;( &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;2020-08-05 00:00:00.0&amp;#39;&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;AS&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;TIMESTAMP&lt;/span&gt;)) &lt;span style=&#34;color:#66d9ef&#34;&gt;AND&lt;/span&gt; ((&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;f_ods_wx_unsubscribe_di&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;.&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;mid&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;jt20191017175015910985&amp;#39;&lt;/span&gt;) &lt;span style=&#34;color:#66d9ef&#34;&gt;AND&lt;/span&gt; (&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;f_ods_wx_unsubscribe_di&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;.&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;dt&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;=&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;CAST&lt;/span&gt;( &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;2020-08-01 00:00:00.0&amp;#39;&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;AS&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;TIMESTAMP&lt;/span&gt;)))) &lt;span style=&#34;color:#66d9ef&#34;&gt;GROUP&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;BY&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;f_ods_wx_unsubscribe_di&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;.&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;dt&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;) &lt;span style=&#34;color:#66d9ef&#34;&gt;AS&lt;/span&gt; b &lt;span style=&#34;color:#66d9ef&#34;&gt;ON&lt;/span&gt; (&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;a&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;.&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;dt&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;b&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;.&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;dt&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;得到错误结果的SQL：&lt;/p&gt;
+&lt;p&gt;dt 本身是字符串，参数也是字符串。变成两个字符串比较，结果确实差一天。只是在select里使用了一个函数，就造成SQL巨大差异，很神奇。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sql&#34; data-lang=&#34;sql&#34;&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;select&lt;/span&gt; a.dt ,(a.x &lt;span style=&#34;color:#f92672&#34;&gt;-&lt;/span&gt; nvl(b.x,&lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;)) &lt;span style=&#34;color:#66d9ef&#34;&gt;as&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;&lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;净增人数&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;from&lt;/span&gt; ( &lt;span style=&#34;color:#66d9ef&#34;&gt;SELECT&lt;/span&gt; dt, &lt;span style=&#34;color:#66d9ef&#34;&gt;count&lt;/span&gt;(&lt;span style=&#34;color:#66d9ef&#34;&gt;distinct&lt;/span&gt; userinfo_openid) &lt;span style=&#34;color:#66d9ef&#34;&gt;as&lt;/span&gt; x &lt;span style=&#34;color:#66d9ef&#34;&gt;FROM&lt;/span&gt; f_ods_wx_subscribe_di &lt;span style=&#34;color:#66d9ef&#34;&gt;WHERE&lt;/span&gt; mid &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;jt20191017175015910985&amp;#39;&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;AND&lt;/span&gt; dt &lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;2020-08-01 00:00:00.0&amp;#39;&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;and&lt;/span&gt; dt &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;2020-08-05 00:00:00.0&amp;#39;&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;group&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;by&lt;/span&gt; dt ) a &lt;span style=&#34;color:#66d9ef&#34;&gt;left&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;join&lt;/span&gt; ( &lt;span style=&#34;color:#66d9ef&#34;&gt;SELECT&lt;/span&gt; dt, &lt;span style=&#34;color:#66d9ef&#34;&gt;count&lt;/span&gt;(&lt;span style=&#34;color:#66d9ef&#34;&gt;distinct&lt;/span&gt; userinfo_openid) &lt;span style=&#34;color:#66d9ef&#34;&gt;as&lt;/span&gt; x &lt;span style=&#34;color:#66d9ef&#34;&gt;FROM&lt;/span&gt; f_ods_wx_unsubscribe_di &lt;span style=&#34;color:#66d9ef&#34;&gt;WHERE&lt;/span&gt; mid &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;jt20191017175015910985&amp;#39;&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;AND&lt;/span&gt; dt &lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;2020-08-01 00:00:00.0&amp;#39;&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;and&lt;/span&gt; dt &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;2020-08-05 00:00:00.0&amp;#39;&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;group&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;by&lt;/span&gt; dt ) b &lt;span style=&#34;color:#66d9ef&#34;&gt;on&lt;/span&gt; a.dt &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; b.dt
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;metabase，metabase impala driver，impala JDBC driver都会有问题。&lt;/p&gt;
+&lt;h3 id=&#34;metabase-打印日志-query-param&#34;&gt;Metabase 打印日志 query, param&lt;/h3&gt;
+&lt;p&gt;native_form/query 构造完成后，会执行 executef，底层是driver/execute-reducible-query，就是JDBC prepareStatement构造与执行。&lt;/p&gt;
+&lt;p&gt;在executef方法记录日志。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200807174516355.png&#34; alt=&#34;image-20200807174516355&#34;&gt;&lt;/p&gt;
+&lt;p&gt;query的区别如之前、params是完全一致的。所以，不是Metabase的问题。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200807175049064.png&#34; alt=&#34;image-20200807175049064&#34;&gt;&lt;/p&gt;
+&lt;p&gt;而 metabase impala driver 也没有重载 driver/execute-reducible-query 方法。也基本排除了嫌疑。&lt;/p&gt;
+&lt;h3 id=&#34;复现问题&#34;&gt;复现问题&lt;/h3&gt;
+&lt;p&gt;目标锁定在 impala JDBC driver。写一个Java程序复现。&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;使用相同的 Impala JDBC 驱动。&lt;/li&gt;
+&lt;li&gt;同样是参数化提交 SQL。&lt;/li&gt;
+&lt;li&gt;准备类似的SQL Statement。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200807172918590.png&#34; alt=&#34;image-20200807172918590&#34;&gt;&lt;/p&gt;
+&lt;p&gt;核心逻辑。&lt;a href=&#34;https://github.com/XUJiahua/impala-jdbc-sql-rewrite&#34;&gt;代码在此&lt;/a&gt;。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-java&#34; data-lang=&#34;java&#34;&gt;                    connection &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; DriverManager&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;getConnection&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;CONNECTION_URL&lt;span style=&#34;color:#f92672&#34;&gt;);&lt;/span&gt;
+                    ps &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; connection&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;prepareStatement&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;sql&lt;span style=&#34;color:#f92672&#34;&gt;);&lt;/span&gt;
+                    ps&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;setString&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;1&lt;span style=&#34;color:#f92672&#34;&gt;,&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;jt20191017175015910985&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;);&lt;/span&gt;
+                    ps&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;setTimestamp&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;2&lt;span style=&#34;color:#f92672&#34;&gt;,&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;new&lt;/span&gt; Timestamp&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;2020 &lt;span style=&#34;color:#f92672&#34;&gt;-&lt;/span&gt; 1900&lt;span style=&#34;color:#f92672&#34;&gt;,&lt;/span&gt; 8 &lt;span style=&#34;color:#f92672&#34;&gt;-&lt;/span&gt; 1&lt;span style=&#34;color:#f92672&#34;&gt;,&lt;/span&gt; 1&lt;span style=&#34;color:#f92672&#34;&gt;,&lt;/span&gt; 0&lt;span style=&#34;color:#f92672&#34;&gt;,&lt;/span&gt; 0&lt;span style=&#34;color:#f92672&#34;&gt;,&lt;/span&gt; 0&lt;span style=&#34;color:#f92672&#34;&gt;,&lt;/span&gt; 0&lt;span style=&#34;color:#f92672&#34;&gt;));&lt;/span&gt;
+                    ps&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;setTimestamp&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;3&lt;span style=&#34;color:#f92672&#34;&gt;,&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;new&lt;/span&gt; Timestamp&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;2020 &lt;span style=&#34;color:#f92672&#34;&gt;-&lt;/span&gt; 1900&lt;span style=&#34;color:#f92672&#34;&gt;,&lt;/span&gt; 8 &lt;span style=&#34;color:#f92672&#34;&gt;-&lt;/span&gt; 1&lt;span style=&#34;color:#f92672&#34;&gt;,&lt;/span&gt; 5&lt;span style=&#34;color:#f92672&#34;&gt;,&lt;/span&gt; 0&lt;span style=&#34;color:#f92672&#34;&gt;,&lt;/span&gt; 0&lt;span style=&#34;color:#f92672&#34;&gt;,&lt;/span&gt; 0&lt;span style=&#34;color:#f92672&#34;&gt;,&lt;/span&gt; 0&lt;span style=&#34;color:#f92672&#34;&gt;));&lt;/span&gt;
+                    ps&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;setString&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;4&lt;span style=&#34;color:#f92672&#34;&gt;,&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;jt20191017175015910985&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;);&lt;/span&gt;
+                    ps&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;setTimestamp&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;5&lt;span style=&#34;color:#f92672&#34;&gt;,&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;new&lt;/span&gt; Timestamp&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;2020 &lt;span style=&#34;color:#f92672&#34;&gt;-&lt;/span&gt; 1900&lt;span style=&#34;color:#f92672&#34;&gt;,&lt;/span&gt; 8 &lt;span style=&#34;color:#f92672&#34;&gt;-&lt;/span&gt; 1&lt;span style=&#34;color:#f92672&#34;&gt;,&lt;/span&gt; 1&lt;span style=&#34;color:#f92672&#34;&gt;,&lt;/span&gt; 0&lt;span style=&#34;color:#f92672&#34;&gt;,&lt;/span&gt; 0&lt;span style=&#34;color:#f92672&#34;&gt;,&lt;/span&gt; 0&lt;span style=&#34;color:#f92672&#34;&gt;,&lt;/span&gt; 0&lt;span style=&#34;color:#f92672&#34;&gt;));&lt;/span&gt;
+                    ps&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;setTimestamp&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;6&lt;span style=&#34;color:#f92672&#34;&gt;,&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;new&lt;/span&gt; Timestamp&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;2020 &lt;span style=&#34;color:#f92672&#34;&gt;-&lt;/span&gt; 1900&lt;span style=&#34;color:#f92672&#34;&gt;,&lt;/span&gt; 8 &lt;span style=&#34;color:#f92672&#34;&gt;-&lt;/span&gt; 1&lt;span style=&#34;color:#f92672&#34;&gt;,&lt;/span&gt; 5&lt;span style=&#34;color:#f92672&#34;&gt;,&lt;/span&gt; 0&lt;span style=&#34;color:#f92672&#34;&gt;,&lt;/span&gt; 0&lt;span style=&#34;color:#f92672&#34;&gt;,&lt;/span&gt; 0&lt;span style=&#34;color:#f92672&#34;&gt;,&lt;/span&gt; 0&lt;span style=&#34;color:#f92672&#34;&gt;));&lt;/span&gt;
+                    resultSet &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; ps&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;executeQuery&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;();&lt;/span&gt;
+                    ResultSetMetaData rsmd &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; resultSet&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;getMetaData&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;();&lt;/span&gt;
+                    &lt;span style=&#34;color:#66d9ef&#34;&gt;int&lt;/span&gt; columnsNumber &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; rsmd&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;getColumnCount&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;();&lt;/span&gt;
+                    &lt;span style=&#34;color:#66d9ef&#34;&gt;while&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;resultSet&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;next&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;())&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;{&lt;/span&gt;
+                        &lt;span style=&#34;color:#66d9ef&#34;&gt;for&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;int&lt;/span&gt; i &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; 1&lt;span style=&#34;color:#f92672&#34;&gt;;&lt;/span&gt; i &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;=&lt;/span&gt; columnsNumber&lt;span style=&#34;color:#f92672&#34;&gt;;&lt;/span&gt; i&lt;span style=&#34;color:#f92672&#34;&gt;++)&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;{&lt;/span&gt;
+                            &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;i &lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt; 1&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt; System&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;out&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;print&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;,  &amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;);&lt;/span&gt;
+                            String columnValue &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; resultSet&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;getString&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;i&lt;span style=&#34;color:#f92672&#34;&gt;);&lt;/span&gt;
+                            System&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;out&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;print&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;columnValue &lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34; &amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt; rsmd&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;getColumnName&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;i&lt;span style=&#34;color:#f92672&#34;&gt;));&lt;/span&gt;
+                        &lt;span style=&#34;color:#f92672&#34;&gt;}&lt;/span&gt;
+                        System&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;out&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;println&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;);&lt;/span&gt;
+                    &lt;span style=&#34;color:#f92672&#34;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;服务器上执行，结果复现。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;$ java -jar impala-jdbc-sql-rewrite-1.0-SNAPSHOT.jar 1.sql
+2020-08-05 dt,  &lt;span style=&#34;color:#ae81ff&#34;&gt;29257&lt;/span&gt; 净增人数
+2020-08-02 dt,  &lt;span style=&#34;color:#ae81ff&#34;&gt;37285&lt;/span&gt; 净增人数
+2020-08-04 dt,  &lt;span style=&#34;color:#ae81ff&#34;&gt;24640&lt;/span&gt; 净增人数
+2020-08-03 dt,  &lt;span style=&#34;color:#ae81ff&#34;&gt;29253&lt;/span&gt; 净增人数
+
+$ java -jar impala-jdbc-sql-rewrite-1.0-SNAPSHOT.jar 2.sql
+2020-08-02 dt,  &lt;span style=&#34;color:#ae81ff&#34;&gt;37285&lt;/span&gt; 净增人数
+2020-08-04 dt,  &lt;span style=&#34;color:#ae81ff&#34;&gt;24640&lt;/span&gt; 净增人数
+2020-08-03 dt,  &lt;span style=&#34;color:#ae81ff&#34;&gt;29253&lt;/span&gt; 净增人数
+2020-08-01 dt,  &lt;span style=&#34;color:#ae81ff&#34;&gt;37235&lt;/span&gt; 净增人数
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;排查过程中的误区&#34;&gt;排查过程中的误区&lt;/h3&gt;
+&lt;p&gt;一直以为Metabase服务返回的native_form/query是实际提交给JDBC驱动的sql。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200807171929947.png&#34; alt=&#34;image-20200807171929947&#34;&gt;&lt;/p&gt;
+&lt;p&gt;其实并不然。native_form/query是拼接好的SQL，参数已经填充进了SQL语句中。而实际执行SQL，使用的是参数化提交。源码表示返回的native_form/query是query实际执行后的产物。所以对排查问题有误导作用。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image-20200807172259322.png&#34; alt=&#34;image-20200807172259322&#34;&gt;&lt;/p&gt;
+&lt;h3 id=&#34;临时解决方案&#34;&gt;临时解决方案&lt;/h3&gt;
+&lt;p&gt;驱动的问题暂时无法解决，Workaround是有的。只要保证日期比较的时候，条件表达式左右之一至少是TIMESTAMP类型。&lt;/p&gt;
+- https://xujiahua.github.io/posts/20200807-impala/ - </description>
+        </item>
     
     
     
@@ -17,7 +96,7 @@
         <pubDate>Fri, 07 Aug 2020 10:34:23 +0800</pubDate>
         
         <guid>https://xujiahua.github.io/posts/20200807-ray-grpc-arrow/</guid>
-        <description>许嘉华的笔记 https://xujiahua.github.io/posts/20200807-ray-grpc-arrow/ -&lt;p&gt;原文：&lt;a href=&#34;https://medium.com/distributed-computing-with-ray/how-ray-uses-grpc-and-arrow-to-outperform-grpc-43ec368cb385&#34;&gt;How Ray Uses gRPC (and Arrow) to Outperform gRPC&lt;/a&gt;&lt;/p&gt;
+        <description>Happy Coding https://xujiahua.github.io/posts/20200807-ray-grpc-arrow/ -&lt;p&gt;原文：&lt;a href=&#34;https://medium.com/distributed-computing-with-ray/how-ray-uses-grpc-and-arrow-to-outperform-grpc-43ec368cb385&#34;&gt;How Ray Uses gRPC (and Arrow) to Outperform gRPC&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt;对理解 Ray 的底层逻辑有帮助。文中描述的Ray版本为0.8。&lt;/p&gt;
 &lt;h2 id=&#34;overview-of-ray&#34;&gt;Overview of Ray&lt;/h2&gt;
 &lt;p&gt;Ray 的计算任务分为两类，无状态计算任务 Task，有状态计算任务 Actor。&lt;/p&gt;
@@ -139,7 +218,7 @@ c &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; Counter&lt;span style
         <pubDate>Thu, 06 Aug 2020 09:49:47 +0800</pubDate>
         
         <guid>https://xujiahua.github.io/posts/20200806-machine-learning-serving-broken/</guid>
-        <description>许嘉华的笔记 https://xujiahua.github.io/posts/20200806-machine-learning-serving-broken/ -&lt;p&gt;原文 &lt;a href=&#34;https://medium.com/distributed-computing-with-ray/machine-learning-serving-is-broken-f59aff2d607f&#34;&gt;Machine Learning Serving is Broken&lt;/a&gt; 是 &lt;a href=&#34;https://medium.com/distributed-computing-with-ray?source=post_page-----f59aff2d607f----------------------&#34;&gt;Distributed Computing with Ray&lt;/a&gt; 专栏文章，聊了机器学习模型的 Serving 问题，记录一二。&lt;/p&gt;
+        <description>Happy Coding https://xujiahua.github.io/posts/20200806-machine-learning-serving-broken/ -&lt;p&gt;原文 &lt;a href=&#34;https://medium.com/distributed-computing-with-ray/machine-learning-serving-is-broken-f59aff2d607f&#34;&gt;Machine Learning Serving is Broken&lt;/a&gt; 是 &lt;a href=&#34;https://medium.com/distributed-computing-with-ray?source=post_page-----f59aff2d607f----------------------&#34;&gt;Distributed Computing with Ray&lt;/a&gt; 专栏文章，聊了机器学习模型的 Serving 问题，记录一二。&lt;/p&gt;
 &lt;p&gt;设立好机器学习目标后，从模型角度，机器学习整体可分这么2个阶段：&lt;/p&gt;
 &lt;ol&gt;
 &lt;li&gt;模型的创建。模型训练 Training。包括训练数据准备，选择最好的模型（超参数调优）。&lt;/li&gt;
@@ -221,7 +300,7 @@ c &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; Counter&lt;span style
         <pubDate>Fri, 24 Jul 2020 16:36:01 +0800</pubDate>
         
         <guid>https://xujiahua.github.io/posts/20200724-bizapp-data/</guid>
-        <description>许嘉华的笔记 https://xujiahua.github.io/posts/20200724-bizapp-data/ -&lt;p&gt;一个发券系统为例，该怎么发券。用 &lt;a href=&#34;https://zh.wikipedia.org/wiki/%E5%85%AD%E4%BD%95%E6%B3%95&#34;&gt;5W1H&lt;/a&gt; 分析法尝试提问：&lt;/p&gt;
+        <description>Happy Coding https://xujiahua.github.io/posts/20200724-bizapp-data/ -&lt;p&gt;一个发券系统为例，该怎么发券。用 &lt;a href=&#34;https://zh.wikipedia.org/wiki/%E5%85%AD%E4%BD%95%E6%B3%95&#34;&gt;5W1H&lt;/a&gt; 分析法尝试提问：&lt;/p&gt;
 &lt;ol&gt;
 &lt;li&gt;Why 理由：为什么发券，为了获益。比如激活沉睡用户来消费，比如无脑群发拉一波流量，用户来了就是赚了。为什么用这个系统发券，因为这个系统能问答如下的问题。&lt;/li&gt;
 &lt;li&gt;What 物品：优惠券，应该发放什么类型的优惠券。&lt;/li&gt;
@@ -290,7 +369,7 @@ c &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; Counter&lt;span style
         <pubDate>Thu, 23 Jul 2020 16:12:51 +0800</pubDate>
         
         <guid>https://xujiahua.github.io/posts/20200723-golang-http-reuse/</guid>
-        <description>许嘉华的笔记 https://xujiahua.github.io/posts/20200723-golang-http-reuse/ -&lt;p&gt;连接相对于其他对象，创建成本较高，资源也有限。如果没有连接池，在高并发场景下，连接关闭又新建，很快就会因为过多的TIME_WAIT（连接主动关闭方）导致无法创建更多连接了，程序被压死。&lt;/p&gt;
+        <description>Happy Coding https://xujiahua.github.io/posts/20200723-golang-http-reuse/ -&lt;p&gt;连接相对于其他对象，创建成本较高，资源也有限。如果没有连接池，在高并发场景下，连接关闭又新建，很快就会因为过多的TIME_WAIT（连接主动关闭方）导致无法创建更多连接了，程序被压死。&lt;/p&gt;
 &lt;h2 id=&#34;nethttp-连接池参数&#34;&gt;net/http 连接池参数&lt;/h2&gt;
 &lt;p&gt;Go （测试版本 go 1.14）的net/http包是有连接池功能的，具体地，是 &lt;a href=&#34;https://golang.org/pkg/net/http/#Transport&#34;&gt;Transport&lt;/a&gt; 用于连接池化。&lt;/p&gt;
 &lt;blockquote&gt;
@@ -640,7 +719,7 @@ python3 -m http.server &lt;span style=&#34;color:#ae81ff&#34;&gt;8088&lt;/span&g
         <pubDate>Tue, 14 Jul 2020 10:14:14 +0800</pubDate>
         
         <guid>https://xujiahua.github.io/posts/20200714-metabase-timezone/</guid>
-        <description>许嘉华的笔记 https://xujiahua.github.io/posts/20200714-metabase-timezone/ -&lt;h2 id=&#34;问题&#34;&gt;问题&lt;/h2&gt;
+        <description>Happy Coding https://xujiahua.github.io/posts/20200714-metabase-timezone/ -&lt;h2 id=&#34;问题&#34;&gt;问题&lt;/h2&gt;
 &lt;p&gt;实际日期是上午11点，而&lt;code&gt;Metabase&lt;/code&gt;显示是下午7点。差8小时。&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sql&#34; data-lang=&#34;sql&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;select&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;CURRENT_TIMESTAMP&lt;/span&gt;(),hour(&lt;span style=&#34;color:#66d9ef&#34;&gt;CURRENT_TIMESTAMP&lt;/span&gt;())
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;img src=&#34;../../images/image-20200714113556806.png&#34; alt=&#34;image-20200714113556806&#34;&gt;&lt;/p&gt;
@@ -675,7 +754,7 @@ python3 -m http.server &lt;span style=&#34;color:#ae81ff&#34;&gt;8088&lt;/span&g
         <pubDate>Mon, 13 Jul 2020 16:16:27 +0800</pubDate>
         
         <guid>https://xujiahua.github.io/posts/20200713-impala-timezone/</guid>
-        <description>许嘉华的笔记 https://xujiahua.github.io/posts/20200713-impala-timezone/ -&lt;h2 id=&#34;现象&#34;&gt;现象&lt;/h2&gt;
+        <description>Happy Coding https://xujiahua.github.io/posts/20200713-impala-timezone/ -&lt;h2 id=&#34;现象&#34;&gt;现象&lt;/h2&gt;
 &lt;p&gt;&lt;code&gt;Hive&lt;/code&gt; 以&lt;code&gt;Parquet&lt;/code&gt;数据存储格式写入的 &lt;code&gt;TIMESTAMP&lt;/code&gt;字段内容，&lt;code&gt;Impala&lt;/code&gt;读取，时间差8小时。&lt;/p&gt;
 &lt;p&gt;&lt;img src=&#34;../../images/image-20200713162929821.png&#34; alt=&#34;image-20200713162929821&#34;&gt;&lt;/p&gt;
 &lt;p&gt;&lt;code&gt;Hive&lt;/code&gt;写入&lt;/p&gt;
@@ -705,7 +784,7 @@ python3 -m http.server &lt;span style=&#34;color:#ae81ff&#34;&gt;8088&lt;/span&g
         <pubDate>Fri, 10 Jul 2020 10:35:08 +0800</pubDate>
         
         <guid>https://xujiahua.github.io/posts/20200710-metabase-impala-driver/</guid>
-        <description>许嘉华的笔记 https://xujiahua.github.io/posts/20200710-metabase-impala-driver/ -&lt;p&gt;基于 Metabase 0.35.4 版本和Cloudera的Impala JDBC驱动，重构了一份独立的 &lt;a href=&#34;https://github.com/XUJiahua/metabase-impala-driver&#34;&gt;Metabase Impala Driver&lt;/a&gt;。&lt;/p&gt;
+        <description>Happy Coding https://xujiahua.github.io/posts/20200710-metabase-impala-driver/ -&lt;p&gt;基于 Metabase 0.35.4 版本和Cloudera的Impala JDBC驱动，重构了一份独立的 &lt;a href=&#34;https://github.com/XUJiahua/metabase-impala-driver&#34;&gt;Metabase Impala Driver&lt;/a&gt;。&lt;/p&gt;
 &lt;p&gt;整体思路参考 &lt;a href=&#34;https://github.com/metabase/metabase/wiki/Writing-a-Driver&#34;&gt;Writing A Driver&lt;/a&gt; ，更多时间是参考其他驱动的代码和根据实际用例调试。还有不少待完善的地方：&lt;/p&gt;
 &lt;ol&gt;
 &lt;li&gt;单元测试缺乏。&lt;/li&gt;
@@ -722,7 +801,7 @@ python3 -m http.server &lt;span style=&#34;color:#ae81ff&#34;&gt;8088&lt;/span&g
         <pubDate>Mon, 15 Jun 2020 17:19:50 +0800</pubDate>
         
         <guid>https://xujiahua.github.io/posts/20200615-metabase-customer-isolation/</guid>
-        <description>许嘉华的笔记 https://xujiahua.github.io/posts/20200615-metabase-customer-isolation/ -&lt;p&gt;之前有讨论，在不改动代码的情况下，可以使用分组功能来做客户隔离。但是该方案面临的问题是，每个客户一套模板，模板可维护性低。&lt;/p&gt;
+        <description>Happy Coding https://xujiahua.github.io/posts/20200615-metabase-customer-isolation/ -&lt;p&gt;之前有讨论，在不改动代码的情况下，可以使用分组功能来做客户隔离。但是该方案面临的问题是，每个客户一套模板，模板可维护性低。&lt;/p&gt;
 &lt;p&gt;问题的关键就是如何共享SQL模板并客户隔离。需要改动源代码。&lt;/p&gt;
 &lt;h3 id=&#34;目标&#34;&gt;目标&lt;/h3&gt;
 &lt;ol&gt;
@@ -756,7 +835,7 @@ python3 -m http.server &lt;span style=&#34;color:#ae81ff&#34;&gt;8088&lt;/span&g
         <pubDate>Thu, 11 Jun 2020 11:38:55 +0800</pubDate>
         
         <guid>https://xujiahua.github.io/posts/20200611-phash/</guid>
-        <description>许嘉华的笔记 https://xujiahua.github.io/posts/20200611-phash/ -&lt;p&gt;本文是&lt;a href=&#34;https://xujiahua.github.io/posts/20200514-wx-avatar/&#34;&gt;「微信用户授权头像内容带随机干扰的问题」&lt;/a&gt;的延续。本文对效果进行量化，并找到一个phash库，达到了更好的效果。&lt;/p&gt;
+        <description>Happy Coding https://xujiahua.github.io/posts/20200611-phash/ -&lt;p&gt;本文是&lt;a href=&#34;https://xujiahua.github.io/posts/20200514-wx-avatar/&#34;&gt;「微信用户授权头像内容带随机干扰的问题」&lt;/a&gt;的延续。本文对效果进行量化，并找到一个phash库，达到了更好的效果。&lt;/p&gt;
 &lt;h2 id=&#34;实验框架&#34;&gt;实验框架&lt;/h2&gt;
 &lt;p&gt;相关脚本&lt;a href=&#34;https://github.com/XUJiahua/phash_test&#34;&gt;点此&lt;/a&gt;。&lt;/p&gt;
 &lt;h3 id=&#34;实验数据&#34;&gt;实验数据&lt;/h3&gt;
@@ -834,144 +913,6 @@ expect1
 &lt;h2 id=&#34;总结&#34;&gt;总结&lt;/h2&gt;
 &lt;p&gt;虽然对 phash 算法还是有点陌生，但是其效果基本满足了业务需求。至少比自己分析出的规则好很多。&lt;/p&gt;
 - https://xujiahua.github.io/posts/20200611-phash/ - </description>
-        </item>
-    
-    
-    
-        <item>
-        <title>Metabase SSO 登录</title>
-        <link>https://xujiahua.github.io/posts/20200609-metabase-sso-login/</link>
-        <pubDate>Tue, 09 Jun 2020 10:37:09 +0800</pubDate>
-        
-        <guid>https://xujiahua.github.io/posts/20200609-metabase-sso-login/</guid>
-        <description>许嘉华的笔记 https://xujiahua.github.io/posts/20200609-metabase-sso-login/ -&lt;p&gt;探讨如何将 Metabase 融入业务系统（SaaS 服务）。&lt;/p&gt;
-&lt;p&gt;为何需要集成 Metabase 到业务系统中呢？一般，通用的数据需求都做到SaaS服务中了。而现实情况是，客户是有很多定制化数据需求的。使用 Metabase 制作报表，直接跳过前后端开发，快速满足客户需求。&lt;/p&gt;
-&lt;p&gt;（最终极地，进一步提高生产效率，把 Metabase 的组件化能力内化到 SaaS 服务中才是正道。）&lt;/p&gt;
-&lt;p&gt;试分析下 Metabase 提供的方案，以及适配我们的场景，分析该怎么改。&lt;/p&gt;
-&lt;h2 id=&#34;分析现存方案&#34;&gt;分析现存方案&lt;/h2&gt;
-&lt;p&gt;开源版本的 Metabase 支持两种第三方登录：&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;LDAP: Allows users within your LDAP directory to log in to Metabase with their LDAP credentials, and allows automatic mapping of LDAP groups to Metabase groups.&lt;/li&gt;
-&lt;li&gt;Sign in with Google: Allows users with &lt;strong&gt;existing Metabase accounts&lt;/strong&gt; to login with a Google account that &lt;strong&gt;matches their email address&lt;/strong&gt; in addition to their Metabase username and password.&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;企业版本：&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;SAML&lt;/li&gt;
-&lt;li&gt;JWT&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;参考：&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;Authenticating with Google Sign-In or LDAP &lt;a href=&#34;https://www.metabase.com/docs/latest/administration-guide/10-single-sign-on.html&#34;&gt;https://www.metabase.com/docs/latest/administration-guide/10-single-sign-on.html&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;Authenticating with SAML &lt;a href=&#34;https://www.metabase.com/docs/latest/enterprise-guide/authenticating-with-saml.html&#34;&gt;https://www.metabase.com/docs/latest/enterprise-guide/authenticating-with-saml.html&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;JWT-based Authentication &lt;a href=&#34;https://www.metabase.com/docs/latest/enterprise-guide/authenticating-with-jwt.html&#34;&gt;https://www.metabase.com/docs/latest/enterprise-guide/authenticating-with-jwt.html&lt;/a&gt;&lt;/li&gt;
-&lt;/ol&gt;
-&lt;h3 id=&#34;sign-in-with-google&#34;&gt;Sign in with Google&lt;/h3&gt;
-&lt;p&gt;其底层对接的是Google的Sign-In for Website &lt;a href=&#34;https://developers.google.com/identity/sign-in/web&#34;&gt;https://developers.google.com/identity/sign-in/web&lt;/a&gt; 。并假设 Google 返回的数据是完全可信的。&lt;/p&gt;
-&lt;p&gt;根据文档配置获取 clientID。本地测试，Authorized JavaScript origins 设置成本地路径。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image-20200609164603642.png&#34; alt=&#34;image-20200609164603642&#34;&gt;&lt;/p&gt;
-&lt;p&gt;管理员角色下 Metabase 配置 clientID。第二项，满足条件：email是@gmail.com结尾的，自动创建账户。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image-20200609170932819.png&#34; alt=&#34;image-20200609170932819&#34;&gt;&lt;/p&gt;
-&lt;p&gt;不然，需先创建Metabase账户，其email等于Google登录返回的邮箱地址。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image-20200609171443922.png&#34; alt=&#34;image-20200609171443922&#34;&gt;&lt;/p&gt;
-&lt;p&gt;Google登录的client-id由后端提供给前端。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image-20200609160327997.png&#34; alt=&#34;image-20200609160327997&#34;&gt;&lt;/p&gt;
-&lt;p&gt;用户登录界面有了Google登录按钮。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image-20200609104044953.png&#34; alt=&#34;image-20200609104044953&#34;&gt;&lt;/p&gt;
-&lt;p&gt;点击Google登录按钮，会唤起Google登录页面。登录成功，获取到Google返回结果。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image-20200609163652367.png&#34; alt=&#34;image-20200609163652367&#34;&gt;&lt;/p&gt;
-&lt;p&gt;将Google返回里的token提交给Metabase服务器。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image-20200609155729926.png&#34; alt=&#34;image-20200609155729926&#34;&gt;&lt;/p&gt;
-&lt;p&gt;&lt;code&gt;google_auth&lt;/code&gt;这个接口。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image-20200609155759738.png&#34; alt=&#34;image-20200609155759738&#34;&gt;&lt;/p&gt;
-&lt;p&gt;通过token请求用户信息。参考：Calling the tokeninfo endpoint &lt;a href=&#34;https://developers.google.com/identity/sign-in/web/backend-auth#calling-the-tokeninfo-endpoint&#34;&gt;https://developers.google.com/identity/sign-in/web/backend-auth#calling-the-tokeninfo-endpoint&lt;/a&gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image-20200609171805849.png&#34; alt=&#34;image-20200609171805849&#34;&gt;&lt;/p&gt;
-&lt;p&gt;整体流程如图：&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image-20200609180555022.png&#34; alt=&#34;image-20200609180555022&#34;&gt;&lt;/p&gt;
-&lt;h3 id=&#34;ldap&#34;&gt;LDAP&lt;/h3&gt;
-&lt;p&gt;LDAP 可以理解为一个用户数据库、服务，常见用途就是单点登录，用户只需要记住一个密码就可以登录多个服务。了解更多参考：&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;轻型目录访问协议 &lt;a href=&#34;https://zh.wikipedia.org/wiki/%E8%BD%BB%E5%9E%8B%E7%9B%AE%E5%BD%95%E8%AE%BF%E9%97%AE%E5%8D%8F%E8%AE%AE&#34;&gt;https://zh.wikipedia.org/wiki/%E8%BD%BB%E5%9E%8B%E7%9B%AE%E5%BD%95%E8%AE%BF%E9%97%AE%E5%8D%8F%E8%AE%AE&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;What are CN, OU, DC in an LDAP search? &lt;a href=&#34;https://stackoverflow.com/questions/18756688/what-are-cn-ou-dc-in-an-ldap-search&#34;&gt;https://stackoverflow.com/questions/18756688/what-are-cn-ou-dc-in-an-ldap-search&lt;/a&gt;&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;参考文档搭建一个LDAP环境。&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;How to install OpenLDAP on Ubuntu 18.04 &lt;a href=&#34;https://www.techrepublic.com/article/how-to-install-openldap-on-ubuntu-18-04/&#34;&gt;https://www.techrepublic.com/article/how-to-install-openldap-on-ubuntu-18-04/&lt;/a&gt;&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;其中：&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;DNS domain name 使用 metabase.com，我们会使用metabase的测试配置。&lt;/li&gt;
-&lt;li&gt;测试配置使用 &lt;a href=&#34;https://github.com/metabase/metabase/blob/master/test_resources/ldap.ldif&#34;&gt;https://github.com/metabase/metabase/blob/master/test_resources/ldap.ldif&lt;/a&gt;&lt;/li&gt;
-&lt;/ol&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;ldapadd -x -D cn&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;admin,dc&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;metabase,dc&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;com -W -f test_resources/ldap.ldif
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;用一个LDAP可视化管理工具（用的 Apache Directory Studio）可以看到这样的树状结构。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image-20200609105314696.png&#34; alt=&#34;image-20200609105314696&#34;&gt;&lt;/p&gt;
-&lt;p&gt;Metabase 管理界面配置如下：&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image-20200609104528576.png&#34; alt=&#34;image-20200609104528576&#34;&gt;&lt;/p&gt;
-&lt;p&gt;LDAP用户还是使用邮箱密码登录。优先使用LDAP登录。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image-20200609110920538.png&#34; alt=&#34;image-20200609110920538&#34;&gt;&lt;/p&gt;
-&lt;p&gt;LDAP用户、密码验证。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image-20200609111803290.png&#34; alt=&#34;image-20200609111803290&#34;&gt;&lt;/p&gt;
-&lt;p&gt;验证通过，LDAP用户会映射为本地用户，但是不存密码。并同步group信息（LDAP group 与 metabase group 之间映射可配置）。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image-20200609112238354.png&#34; alt=&#34;image-20200609112238354&#34;&gt;&lt;/p&gt;
-&lt;p&gt;LDAP 用户信息的字段映射到本地用户的email/first_name/last_name，可以配置。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image-20200609114531757.png&#34; alt=&#34;image-20200609114531757&#34;&gt;&lt;/p&gt;
-&lt;h3 id=&#34;saml&#34;&gt;SAML&lt;/h3&gt;
-&lt;p&gt;SAML是实现单点登录（SSO）的一种开放标准。仍然是服务方引导用户到认证中心认证，认证成功后，服务方从认证中心获取用户信息的逻辑。整体逻辑与Google Signin没两样。&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;There three main roles in this communication:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;End User&lt;/li&gt;
-&lt;li&gt;Identity Provider (IdP)&lt;/li&gt;
-&lt;li&gt;Service Provider (SP)&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;The end-user initiates the login process at the SP. The SP will redirect the user to the IdP with a SAML Request (AuthnRequest). The SAML Request will contain the necessary information for the IdP to authenticate the end-user and reply to the SP with the correct SAML Assertion (SAMLResponse).&lt;/p&gt;
-&lt;p&gt;&lt;a href=&#34;https://www.secureauth.com/blog/introduction-to-saml&#34;&gt;https://www.secureauth.com/blog/introduction-to-saml&lt;/a&gt;&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/1127182513244158.Xyqs8g4zWlwULTRe33zB_height640.png&#34; alt=&#34;SAML SP Initiated SSO Flow&#34;&gt;&lt;/p&gt;
-&lt;p&gt;GitHub找了个例子，了解下SAML的流程，可以有一个更具象的认识。 &lt;a href=&#34;https://github.com/crewjam/saml&#34;&gt;https://github.com/crewjam/saml&lt;/a&gt;&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;SP 需要知道 IDP 的认证地址。需要知道 SAML Request 往哪发。&lt;/li&gt;
-&lt;li&gt;IDP 需要知道 SP 的接收地址，需要知道 SAML Response 往哪发。&lt;/li&gt;
-&lt;li&gt;IDP 与 SP之间是通过公私钥认证的。&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;参考：&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;Security Assertion Markup Language &lt;a href=&#34;https://en.wikipedia.org/wiki/Security_Assertion_Markup_Language&#34;&gt;https://en.wikipedia.org/wiki/Security_Assertion_Markup_Language&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;An Introduction to SAML (Security Assertion Markup Language) &lt;a href=&#34;https://www.secureauth.com/blog/introduction-to-saml&#34;&gt;https://www.secureauth.com/blog/introduction-to-saml&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;SAML library for go &lt;a href=&#34;https://github.com/crewjam/saml&#34;&gt;https://github.com/crewjam/saml&lt;/a&gt;&lt;/li&gt;
-&lt;/ol&gt;
-&lt;h2 id=&#34;适配-saas-服务&#34;&gt;适配 SaaS 服务&lt;/h2&gt;
-&lt;p&gt;企业内部使用，使用LDAP挺方便的。而 SaaS 服务怎么利用上Metabase呢？而且Metabase本身没有多租户（企业）的概念。&lt;/p&gt;
-&lt;p&gt;大概分析如下：&lt;/p&gt;
-&lt;h3 id=&#34;基于分组的数据隔离&#34;&gt;基于分组的数据隔离&lt;/h3&gt;
-&lt;p&gt;SaaS 系统，多租户系统，最基本的要求是保证数据隔离。客户只能看到自己的数据（报表）。&lt;/p&gt;
-&lt;p&gt;Metabase 数据隔离的手段只有分组。基于分组隔离客户，一个客户一个分组。因为少部分客户才会用到 Metabase 功能，所以分组不会非常多。&lt;/p&gt;
-&lt;h3 id=&#34;报表功能复用&#34;&gt;报表功能复用？&lt;/h3&gt;
-&lt;p&gt;&lt;del&gt;这个有点难。只能一个个客户（对应每个分组）做报表。通用的功能，copy -&amp;gt; SQL里修改客户隔离标识 -&amp;gt; paste。&lt;/del&gt;&lt;/p&gt;
-&lt;p&gt;参考：&lt;a href=&#34;https://xujiahua.github.io/posts/20200615-metabase-customer-isolation/&#34;&gt;Metabase 客户隔离&lt;/a&gt;&lt;/p&gt;
-&lt;h3 id=&#34;定制-sso-系统&#34;&gt;定制 SSO 系统&lt;/h3&gt;
-&lt;p&gt;认证页、获取用户信息，每个SSO系统都是有的。这里需要考虑的是用户字段与Metabase的映射。&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;Metabase中用户信息有：&lt;code&gt;email&lt;/code&gt;/&lt;code&gt;first name&lt;/code&gt;/&lt;code&gt;last name&lt;/code&gt;。SSO系统需要有对应的字段。&lt;/li&gt;
-&lt;li&gt;不是每个SaaS客户都能使用Metabase。SSO用户信息加入用户标识&lt;code&gt;metabase_enabled&lt;/code&gt;。没有标识，禁止进入 Metabase，Metabase 进行提示。&lt;/li&gt;
-&lt;li&gt;用户信息中有客户隔离标识 &lt;code&gt;mid&lt;/code&gt;。对应 Metabase 分组。&lt;/li&gt;
-&lt;/ol&gt;
-&lt;h3 id=&#34;metabase&#34;&gt;Metabase&lt;/h3&gt;
-&lt;p&gt;前端，Auth Provider 配置页：&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;配置SSO认证页地址。（不能写死，生产、测试环境地址不同）&lt;/li&gt;
-&lt;li&gt;配置SSO Token API地址。&lt;/li&gt;
-&lt;li&gt;客户隔离标识与Metabase group映射。&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;前端，登录页：&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;提供一个点击登录按钮。跳转到SSO认证页面。&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;后端：&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;对接 SSO 用户接口。&lt;/li&gt;
-&lt;/ol&gt;
-- https://xujiahua.github.io/posts/20200609-metabase-sso-login/ - </description>
         </item>
     
     

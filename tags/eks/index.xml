@@ -1,12 +1,31 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>eks on 许嘉华的笔记</title>
+    <title>eks on Happy Coding</title>
     <link>https://xujiahua.github.io/tags/eks/</link>
-    <description>Recent content in eks on 许嘉华的笔记</description>
+    <description>Recent content in eks on Happy Coding</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Sun, 25 Apr 2021 13:18:00 +0800</lastBuildDate><atom:link href="https://xujiahua.github.io/tags/eks/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sun, 25 Apr 2021 16:35:55 +0800</lastBuildDate><atom:link href="https://xujiahua.github.io/tags/eks/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>K8s 认证授权流程及 EKS 用户管理</title>
+      <link>https://xujiahua.github.io/posts/k8s-eks-ea3b5d29-0425-494e-8d9e-149f1654a41f/</link>
+      <pubDate>Sun, 25 Apr 2021 16:35:55 +0800</pubDate>
+      
+      <guid>https://xujiahua.github.io/posts/k8s-eks-ea3b5d29-0425-494e-8d9e-149f1654a41f/</guid>
+      <description>编辑于2020年12月，Google Docs 导入。
+目前使用 Rancher 管理集群及结合 LDAP 用户管理。支持多云的场景。
+本文只做知识记录。
+Kubernetes Authentication &amp;amp; Authorization Kubernetes 背景知识 整体架构，来源：Components of Kubernetes Architecture | by Gaurav Gupta
+比较典型的 Master-Slave 架构。而 apiserver 是核心中的核心。
+apiserver 架构，来源：？？？
+单单 apiserver 本身，可以理解为一个后端连接 etcd 作为数据库的，仅仅执行 CRUD 操作的 API 服务。CRUD 的对象，就是我们说的 API Resource，比如 Pod, Service 等内置资源，还有开发者自定义的资源。
+具体的工作由各种 controllers （包括 kubelet ）来执行。这些 controllers 通过 watch apiserver，其本质是 etcd 的 watch 功能，能及时获得新的指令。
+这个机制，形成了 Kubernetes 可以声明式地进行部署应用的能力。也叫做控制器模式。
+Authentication 不管是通过 kubectl，还是直接访问 kubernetes-apiserver，对 kubernetes-apiserver 的 API 的访问都是受保护的，也就是，访问首先需要认证请求方。
+一个“用户”从集群获取 API Resource，需要经过 Authentication/ Authorization/ AdmissionControl 这三大步骤。Authentication/ Authorization/ AdmissionControl 是高度模块化的，可以按需自定义开发。（如图，Authentication 模块使用积木拼图表示）</description>
+    </item>
+    
     <item>
       <title>eksctl: NodeCreationFailure: Instances failed to join the kubernetes cluster</title>
       <link>https://xujiahua.github.io/posts/eksctl-nodecreationfailure-instances-failed-to-join-the-kubernetes-cluster-0393476e-6e53-42f7-8222-842ffd0e8358/</link>
@@ -14,7 +33,7 @@
       
       <guid>https://xujiahua.github.io/posts/eksctl-nodecreationfailure-instances-failed-to-join-the-kubernetes-cluster-0393476e-6e53-42f7-8222-842ffd0e8358/</guid>
       <description>eksctl 创建集群失败了。第一次遇到这个错。
-2021-04-25 01:59:24 [ℹ] waiting for CloudFormation stack &amp;quot;eksctl-eks-prod-evocloud-tyo-nodegroup-mng-1&amp;quot; 2021-04-25 01:59:25 [✖] unexpected status &amp;quot;ROLLBACK_IN_PROGRESS&amp;quot; while waiting for CloudFormation stack &amp;quot;eksctl-eks-prod-evocloud-tyo-nodegroup-mng-1&amp;quot; 2021-04-25 01:59:25 [ℹ] fetching stack events in attempt to troubleshoot the root cause of the failure 2021-04-25 01:59:25 [✖] AWS::EKS::Nodegroup/ManagedNodeGroup: CREATE_FAILED – &amp;quot;Nodegroup mng-1 failed to stabilize: [{Code: NodeCreationFailure,Message: Instances failed to join the kubernetes cluster,ResourceIds: [i-09df0fc7408f36801]}]&amp;quot; 2021-04-25 01:59:25 [!] 1 error(s) occurred and cluster hasn&#39;t been created properly, you may wish to check CloudFormation console  分析 在 CloudFormation 控制台查看详细日志。无法加入到 K8s 集群。然后没有进一步的信息了。</description>
+2021-04-25 01:59:24 [ℹ] waiting for CloudFormation stack &amp;quot;eksctl-eks-prod-evocloud-tyo-nodegroup-mng-1&amp;quot; 2021-04-25 01:59:25 [✖] unexpected status &amp;quot;ROLLBACK_IN_PROGRESS&amp;quot; while waiting for CloudFormation stack &amp;quot;eksctl-eks-prod-evocloud-tyo-nodegroup-mng-1&amp;quot; 2021-04-25 01:59:25 [ℹ] fetching stack events in attempt to troubleshoot the root cause of the failure 2021-04-25 01:59:25 [✖] AWS::EKS::Nodegroup/ManagedNodeGroup: CREATE_FAILED – &amp;quot;Nodegroup mng-1 failed to stabilize: [{Code: NodeCreationFailure,Message: Instances failed to join the kubernetes cluster,ResourceIds: [i-09df0fc7408f36801]}]&amp;quot; 2021-04-25 01:59:25 [!] 1 error(s) occurred and cluster hasn&#39;t been created properly, you may wish to check CloudFormation console 分析 在 CloudFormation 控制台查看详细日志。无法加入到 K8s 集群。然后没有进一步的信息了。</description>
     </item>
     
   </channel>

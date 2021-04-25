@@ -1,13 +1,365 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>许嘉华的笔记</title>
+    <title>Happy Coding</title>
     <link>https://xujiahua.github.io/</link>
-    <description>Recent content on 许嘉华的笔记</description>
+    <description>Recent content on Happy Coding</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Sun, 25 Apr 2021 13:18:00 +0800</lastBuildDate>
+    <lastBuildDate>Sun, 25 Apr 2021 16:35:55 +0800</lastBuildDate>
     
         <atom:link href="https://xujiahua.github.io/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    
+        <item>
+        <title>K8s 认证授权流程及 EKS 用户管理</title>
+        <link>https://xujiahua.github.io/posts/k8s-eks-ea3b5d29-0425-494e-8d9e-149f1654a41f/</link>
+        <pubDate>Sun, 25 Apr 2021 16:35:55 +0800</pubDate>
+        
+        <guid>https://xujiahua.github.io/posts/k8s-eks-ea3b5d29-0425-494e-8d9e-149f1654a41f/</guid>
+        <description>Happy Coding https://xujiahua.github.io/posts/k8s-eks-ea3b5d29-0425-494e-8d9e-149f1654a41f/ -&lt;p&gt;编辑于2020年12月，Google Docs 导入。&lt;/p&gt;
+&lt;p&gt;目前使用 Rancher 管理集群及结合 LDAP 用户管理。支持多云的场景。&lt;/p&gt;
+&lt;p&gt;本文只做知识记录。&lt;/p&gt;
+&lt;h1 id=&#34;kubernetes-authentication--authorization&#34;&gt;Kubernetes Authentication &amp;amp; Authorization&lt;/h1&gt;
+&lt;h2 id=&#34;kubernetes-背景知识&#34;&gt;Kubernetes 背景知识&lt;/h2&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image2-372a0c63-083e-4dc5-bc10-7160ff72595a.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;p&gt;整体架构，来源：&lt;a href=&#34;https://medium.com/@kumargaurav1247/components-of-kubernetes-architecture-6feea4d5c712&#34;&gt;Components of Kubernetes Architecture | by Gaurav Gupta&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;比较典型的 Master-Slave 架构。而 apiserver 是核心中的核心。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image7-75649d28-a26a-491c-8162-939f91a7a311.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;p&gt;apiserver 架构，来源：？？？&lt;/p&gt;
+&lt;p&gt;单单 apiserver 本身，可以理解为一个后端连接 etcd 作为数据库的，仅仅执行 CRUD 操作的 API 服务。CRUD 的对象，就是我们说的 API Resource，比如 Pod, Service 等内置资源，还有开发者自定义的资源。&lt;/p&gt;
+&lt;p&gt;具体的工作由各种 controllers （包括 kubelet ）来执行。这些 controllers 通过 watch apiserver，其本质是 etcd 的 watch 功能，能及时获得新的指令。&lt;/p&gt;
+&lt;p&gt;这个机制，形成了 Kubernetes 可以声明式地进行部署应用的能力。也叫做控制器模式。&lt;/p&gt;
+&lt;h2 id=&#34;authentication&#34;&gt;Authentication&lt;/h2&gt;
+&lt;p&gt;不管是通过 kubectl，还是直接访问 kubernetes-apiserver，对 kubernetes-apiserver 的 API 的访问都是受保护的，也就是，访问首先需要认证请求方。&lt;/p&gt;
+&lt;p&gt;一个“用户”从集群获取 API Resource，需要经过 Authentication/ Authorization/ AdmissionControl 这三大步骤。Authentication/ Authorization/ AdmissionControl 是高度模块化的，可以按需自定义开发。（如图，Authentication 模块使用积木拼图表示）&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image3-65a5f382-ee6c-4219-a2c3-806ab07d6c6a.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;h3 id=&#34;定义用户&#34;&gt;定义“用户”&lt;/h3&gt;
+&lt;p&gt;在 Kubernetes 下有两类“用户”：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;human user：比如使用 kubectl/helm 等命令操作集群的用户。&lt;/li&gt;
+&lt;li&gt;service account：其他非人用户。Kubernetes 中 Pod 访问 kubernetes-apiserver 也是需要认证的。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;值得注意的是，Kubernetes 有 ServiceAccount API Resource，ServiceAccount 由 Kubernetes 自己管理。ServiceAccount 是 namespaced（单个 namespace 范围内可见），其包含 Secret API Resource，Secret 包含了用于认证 apiserver 的 Token。&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;Service accounts are users managed by the Kubernetes API. They are bound to specific namespaces, and created automatically by the API server or manually through API calls.&lt;/em&gt; &lt;em&gt;&lt;strong&gt;Service accounts are tied to a set of credentials stored as Secrets, which are mounted into pods allowing in-cluster processes to talk to the Kubernetes API.&lt;/strong&gt;&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;使用命令查看 serviceaccount 及 secret。&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;$ kubectl describe serviceaccounts default
+Name:                default
+Namespace:           default
+Labels:              &amp;lt;none&amp;gt;
+Annotations:         &amp;lt;none&amp;gt;
+Image pull secrets:  &amp;lt;none&amp;gt;
+Mountable secrets:   default-token-5j9r6
+Tokens:              default-token-5j9r6
+Events:              &amp;lt;none&amp;gt;
+
+$ kubectl describe secret default-token-5j9r6
+Name:         default-token-5j9r6
+Namespace:    default
+Labels:       &amp;lt;none&amp;gt;
+Annotations:  kubernetes.io/service-account.name: default
+              kubernetes.io/service-account.uid: 2825782d-7d3d-4090-a4f9-014c5c137ede
+
+Type:  kubernetes.io/service-account-token
+
+Data
+====
+ca.crt:     1025 bytes
+namespace:  7 bytes
+token:      eyJhbGciOiJSUzI1NiIsImtpZCI6ImNONzV6eWFBSm50NkIxV3BSWGtsMG1OYk5jTVJoX1dxS083a0g3LU9JcVkifQ.eyJpc3MiOiJrdWJlcm5ldGVzL3NlcnZpY2VhY2NvdWIiwi[MASKED]
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;而没有 User API Resource（没法直接通过 kubectl 创建），Kubernetes 假设有一个与集群独立的第三方维护用户信息。&lt;strong&gt;比较特殊的是，使用集群 CA 签发的证书也可以进行用户认证，username 就是证书中的 common name。&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;Even though a normal user cannot be added via an API call, any user that presents a valid certificate signed by the cluster&amp;rsquo;s certificate authority (CA) is considered authenticated. In this configuration, Kubernetes determines the username from the common name field in the &amp;lsquo;subject&amp;rsquo; of the cert (e.g., &amp;ldquo;/CN=bob&amp;rdquo;). From there, the role based access control (RBAC) sub-system would determine whether the user is authorized to perform a specific operation on a resource. For more details, refer to the normal users topic in certificate request for more details about this.&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;虽然没有 user API Resource，但 apiserver 内部是有 user/group 的概念的。以下是从代码中找到的内置 user/group。在 system:masters 这个组内的用户，具有整个集群管理员的权限。&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;// well-known user and group names
+const (
+	SystemPrivilegedGroup = &amp;quot;system:masters&amp;quot;
+	NodesGroup            = &amp;quot;system:nodes&amp;quot;
+	AllUnauthenticated    = &amp;quot;system:unauthenticated&amp;quot;
+	AllAuthenticated      = &amp;quot;system:authenticated&amp;quot;
+
+	Anonymous     = &amp;quot;system:anonymous&amp;quot;
+	APIServerUser = &amp;quot;system:apiserver&amp;quot;
+
+	// core kubernetes process identities
+	KubeProxy             = &amp;quot;system:kube-proxy&amp;quot;
+	KubeControllerManager = &amp;quot;system:kube-controller-manager&amp;quot;
+	KubeScheduler         = &amp;quot;system:kube-scheduler&amp;quot;
+)
+&lt;/code&gt;&lt;/pre&gt;&lt;h3 id=&#34;认证策略&#34;&gt;认证策略&lt;/h3&gt;
+&lt;p&gt;对于 ServiceAccount 的认证，使用 Service Account Token 方式认证。&lt;/p&gt;
+&lt;p&gt;对于 normal user，有如下多种方式，选择一种即可（选择多种，apiserver 会尝试多种认证方式，直到有一种方式认证成功，即结束）：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;X509 Client Certs：上文有涉及。阿里云的托管集群，默认使用这种方式。&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;Static Token File：静态文件，revoke 不方便，不建议使用。Currently, tokens last indefinitely, and the token list cannot be changed without restarting API server.&lt;/li&gt;
+&lt;li&gt;Bearer Token：怎么生成的不清楚。举例：Authorization: Bearer 31ada4fd-adec-460c-809a-9e56ceb75269&lt;/li&gt;
+&lt;li&gt;Bootstrap Tokens：存储在 kube-system namespace 下的 secret，一定程度手动维护。a dynamically-managed Bearer token type called a Bootstrap Token. These tokens are stored as Secrets in the kube-system namespace, where they can be dynamically managed and created. Controller Manager contains a TokenCleaner controller that deletes bootstrap tokens as they expire.&lt;/li&gt;
+&lt;li&gt;OpenID Connect Tokens：需要选择 OAuth2 providers，比如使用 Google Auth。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Webhook Token Authentication：EKS 使用这种，后文重点讲解。&lt;/strong&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Authentication 如果失败，返回 401。如果成功，其重要输出就是 username。&lt;/strong&gt;&lt;/p&gt;
+&lt;h2 id=&#34;kubernetes-authorization-rbac&#34;&gt;Kubernetes Authorization (RBAC)&lt;/h2&gt;
+&lt;p&gt;我们就以 RBAC 举例讲 Kubernetes Authorization。集群一般会通过配置 RBAC 来控制权限。&lt;/p&gt;
+&lt;p&gt;接上一步 Kubernetes Authentication 的成功结果，得到了 username。在 Authorization 阶段，就是与 RBAC 权限对照，检查 username 是否有权限访问资源。&lt;/p&gt;
+&lt;h3 id=&#34;default-clusterrolerole&#34;&gt;Default ClusterRole/Role&lt;/h3&gt;
+&lt;p&gt;Kubernetes 内置了4 种面向用户的 ClusterRole。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image6-ad33efd6-773a-4881-aec7-7cd28b19da81.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;p&gt;来源：&lt;a href=&#34;https://kubernetes.io/docs/reference/access-authn-authz/rbac/#user-facing-roles&#34;&gt;https://kubernetes.io/docs/reference/access-authn-authz/rbac/#user-facing-roles&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;示例，将 edit 这个 ClusterRole，赋予用户 integ-user。&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1beta1
+metadata:
+  name: integ-role-binding
+  namespace: argo
+subjects:
+- kind: User
+  name: integ-user
+roleRef:
+  kind: ClusterRole
+  name: edit
+  apiGroup: rbac.authorization.k8s.io
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;更精细的权限管理，需要自定义 ClusterRole/Role。&lt;/p&gt;
+&lt;p&gt;示例，定义一个 ClusterRole，其有对 workflows 这个资源的所有权限。其中 workflows 是定义自 argoproj.io 的资源。&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1beta1
+metadata:
+  name: workflow-edit-role
+  labels:
+    rbac.authorization.k8s.io/aggregate-to-edit: &amp;quot;true&amp;quot;
+rules:
+  - apiGroups:
+      - &amp;quot;argoproj.io&amp;quot;
+    resources:
+      - &amp;quot;workflows&amp;quot;
+    verbs:
+      - &amp;quot;create&amp;quot;
+      - &amp;quot;delete&amp;quot;
+      - &amp;quot;describe&amp;quot;
+      - &amp;quot;get&amp;quot;
+      - &amp;quot;list&amp;quot;
+      - &amp;quot;patch&amp;quot;
+      - &amp;quot;update&amp;quot;
+      - &amp;quot;watch&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;&lt;h2 id=&#34;admission-control&#34;&gt;Admission Control&lt;/h2&gt;
+&lt;p&gt;Authentication &amp;amp; Authorization 通过后，request 进入 Admission Control 流程。&lt;/p&gt;
+&lt;p&gt;Admission Control 主要是两个功能：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;改写 request&lt;/li&gt;
+&lt;li&gt;验证 request&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;Admission Control 默认有如下功能：&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;NamespaceLifecycle, LimitRanger, ServiceAccount, TaintNodesByCondition, Priority, DefaultTolerationSeconds, DefaultStorageClass, StorageObjectInUseProtection, PersistentVolumeClaimResize, RuntimeClass, CertificateApproval, CertificateSigning, CertificateSubjectRestriction, DefaultIngressClass, MutatingAdmissionWebhook, ValidatingAdmissionWebhook, &lt;strong&gt;ResourceQuota&lt;/strong&gt;, &amp;hellip;&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;以 ResourceQuota 为例，用于检查 request 中的申请的资源没有超过 namespace 的限额，这是验证 request 的例子：&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;This admission controller will observe the incoming request and ensure that it does not violate any of the constraints enumerated in the ResourceQuota object in a Namespace. If you are using ResourceQuota objects in your Kubernetes deployment, you MUST use this admission controller to enforce quota constraints.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;以 DefaultStorageClass 为例，创建 PVC 对象的 request 不指定 StorageClass，如果有默认的 StorageClass，改写 request，添加 StorageClass。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;This admission controller observes creation of PersistentVolumeClaim objects that do not request any specific storage class and automatically adds a default storage class to them. This way, users that do not request any special storage class do not need to care about them at all and they will get the default one.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;Admission Control 也提供了接口，方便开发者自定义开发组件。这里不再详细展开。&lt;/p&gt;
+&lt;p&gt;参考：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://kubernetes.io/docs/reference/access-authn-authz/admission-controllers/&#34;&gt;Using Admission Controllers&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://kubernetes.io/docs/reference/access-authn-authz/extensible-admission-controllers/&#34;&gt;Dynamic Admission Control&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h1 id=&#34;eks-authentication&#34;&gt;EKS Authentication&lt;/h1&gt;
+&lt;p&gt;AWS EKS 是 AWS 提供的 Kubernetes 托管服务。在认证这块，EKS 结合了 AWS IAM，可以复用 IAM 的用户体系。&lt;/p&gt;
+&lt;h2 id=&#34;iam-简介&#34;&gt;IAM 简介&lt;/h2&gt;
+&lt;p&gt;&lt;em&gt;AWS Identity and Access Management (IAM) enables you to manage access to AWS services and resources securely. Using IAM, you can create and manage AWS users and groups, and use permissions to allow and deny their access to AWS resources.&lt;/em&gt; &lt;em&gt;&lt;a href=&#34;https://aws.amazon.com/iam/&#34;&gt;https://aws.amazon.com/iam/&lt;/a&gt;&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image11-9df8ca2d-74ed-4795-b43f-382c62bdbce9.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;p&gt;IAM 用于管理 IAM 用户访问 AWS 资源的权限控制。所谓 AWS 资源，就是 AWS 中的各种服务能力。&lt;/p&gt;
+&lt;p&gt;为什么是 IAM 用户，而不是账号。一般地，一个组织或是公司，AWS 主账号（AWS account root user）注册后，会创建 IAM user/group 并分配权限来进行日常管理工作。而不是直接使用 AWS 主账号，这样安全风险是比较大的，一个组织内全用一个账号是不合理的。&lt;/p&gt;
+&lt;h3 id=&#34;iam-重要概念&#34;&gt;IAM 重要概念&lt;/h3&gt;
+&lt;ol&gt;
+&lt;li&gt;IAM policy：访问权限规则，也就是对 AWS 资源的操作权限。可以赋予给 user/group/role。&lt;/li&gt;
+&lt;li&gt;IAM user：用户。可以加入 group 间接得到 policy（建议，便于管理），也可以直接配置得到 policy。&lt;/li&gt;
+&lt;li&gt;IAM group：用户组。可以把相同职能属性的 user 分为一个 group。&lt;/li&gt;
+&lt;li&gt;IAM role：role 被直接赋予 user 或是通过 group 间接赋予 user，只代表 user 可以承担（assume）这个 role。user 使用 role 上的权限，需要有 assume role 的操作。
+&lt;img src=&#34;../../images/image5-fffffd86-35f2-4b41-aa95-ebe5d042b334.png&#34; alt=&#34;&#34;&gt;
+&lt;img src=&#34;../../images/image13-1a221b8f-1fdb-457b-89ca-209ceb5f3094.png&#34; alt=&#34;&#34;&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;如果把 IAM group 比作是 role 的话，IAM 也是 RBAC 模型。&lt;/p&gt;
+&lt;p&gt;一个 role 的例子。一个 IAM user 被赋予了对 S3 受限的权限，比如说只能读。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image9-d49a7b78-ba93-4465-903e-2e36da2f7055.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;p&gt;一个受限制的用户，被赋予了IAM Admin Role （Role本身被赋予了有 Admin 权限的 policy）之后，就有了不受限制的权限了。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image10-8bc32a68-80e8-4286-8bd7-a47fd73517a7.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;h2 id=&#34;aws-iam-authenticator-模块&#34;&gt;aws-iam-authenticator 模块&lt;/h2&gt;
+&lt;p&gt;EKS 默认安装。&lt;/p&gt;
+&lt;p&gt;通过 aws-iam-authenticator 这个模块，我们可以使用 IAM user 或是 assume IAM role 来登录 EKS 集群。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image4-3e2db7a2-da2e-47b6-b2ef-6d4578e5533e.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;p&gt;以 kubectl get pods 为例细细梳理整个流程：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;kubectl 调用 aws 或是 aws-iam-authenticator 命令行获取 IAM Identity Token。这个在图中没有体现，大体是 aws cmd &amp;lt;&amp;ndash; aws access key/secret &amp;ndash;&amp;gt; IAM。&lt;/li&gt;
+&lt;li&gt;kubectl 带着 token 和 get pods 这个 action 请求 apiserver。这就是 Client -&amp;gt; EKS API Server 部分。&lt;/li&gt;
+&lt;li&gt;apiserver 使用 token 进行 &lt;strong&gt;Authentication&lt;/strong&gt;。EKS API Server 是配置了 webhook 的方式调用 aws-iam-authenticator server。&lt;/li&gt;
+&lt;li&gt;aws-iam-authenticator server 连接 IAM 服务进行 token 验证。验证通过后，得到 IAM Identity，也就是 IAM user/role。&lt;/li&gt;
+&lt;li&gt;aws-iam-authenticator server 获取 IAM Identity 对应的 Kubernetes user。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Authentication&lt;/strong&gt; 环节结束，得到 Kubernetes user。&lt;/li&gt;
+&lt;li&gt;其中，aws-iam-authenticator server 使用 &lt;strong&gt;aws-auth&lt;/strong&gt; 这个 ConfigMap 存储 IAM Identity 与 Kubernetes user 的映射关系。&lt;/li&gt;
+&lt;li&gt;其中，aws-iam-authenticator server 是安装在 master node 上。&lt;/li&gt;
+&lt;li&gt;apiserver 使用 &lt;strong&gt;Authentication&lt;/strong&gt; 环节得到的 Kubernetes user 和请求中的 action，也就是 get pods 进入 &lt;strong&gt;Authorization&lt;/strong&gt; 环节。&lt;/li&gt;
+&lt;li&gt;具体地说，get pods，pods 是 API Resource，get 是 action。&lt;/li&gt;
+&lt;li&gt;获取与 Kubernetes user 绑定的 Role，检查用户是否有权限操作 get pods。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Authorization&lt;/strong&gt; 环节通过，也就是权限验证通过，笼统地说，apiserver 就会把 pods 资源返回给客户端了。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;我们已经知道了 configmap/aws-auth 维护了 Kubernetes user 与 IAM user/role 的映射关系。一个一个用户添加不是个好办法，建议直接映射 IAM role。使用 mapRoles，而不是 mapUsers。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;em&gt;The Advantage of using Role to access the cluster instead of specifying directly IAM users is that it will be easier to manage: we won’t have to update the ConfigMap each time we want to add or remove users, we will just need to add or remove users from the IAM Group and we just configure the ConfigMap to allow the IAM Role associated to the IAM Group.&lt;/em&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;值得说明，创建 EKS cluster 的 IAM 实体，自动被赋予 system:masters 的权限，也就是集群管理员的权限。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;When you create an Amazon EKS cluster, the IAM entity user or role, such as a federated user that creates the cluster, is automatically granted system:masters permissions in the cluster&amp;rsquo;s RBAC configuration in the control plane. This IAM entity does not appear in the ConfigMap, or any other visible configuration, so make sure to keep track of which IAM entity originally created the cluster. To grant additional AWS users or roles the ability to interact with your cluster, you must edit the aws-auth ConfigMap within Kubernetes.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h1 id=&#34;实战&#34;&gt;实战&lt;/h1&gt;
+&lt;p&gt;我们分三个组：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;admin 管理员权限。&lt;/li&gt;
+&lt;li&gt;integration 一个或多个 namespace 的写权限，用于例行变更部署。&lt;/li&gt;
+&lt;li&gt;developer 一个或多个 namespace 的读权限，用于查看 dashboard，查看容器日志，排查一般问题。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2 id=&#34;改动效果&#34;&gt;改动效果&lt;/h2&gt;
+&lt;p&gt;需要操作修改的地方有：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;IAM 下创建三个 group，每个 group 对应一个 role。user 可以按需创建，加入合适的 group 中。&lt;/li&gt;
+&lt;li&gt;aws-auth 这个 configmap 更新。&lt;/li&gt;
+&lt;li&gt;RBAC 配置。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3 id=&#34;iam&#34;&gt;IAM&lt;/h3&gt;
+&lt;p&gt;IAM 控制台可见：&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image1-bfb7e86d-dcdd-4de9-b539-ebca0978a76c.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;p&gt;group 与 role 关联。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image8-132e0e54-827c-4c16-8056-fda664e0224b.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;p&gt;每个 group 都有对应的 role。这个 role 用于映射到 Kubernetes user。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image12-5770a022-a78e-45c5-a902-779a171e000d.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;h3 id=&#34;aws-auth&#34;&gt;aws-auth&lt;/h3&gt;
+&lt;p&gt;aws-auth 应该有如下三项：rolearn 从 IAM 获取，username 自定义，与后面的 RBAC 权限控制保持一致即可。&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;$ kubectl get cm -n kube-system aws-auth -o yaml
+
+apiVersion: v1
+data:
+  mapRoles: |
+...
+    - rolearn: arn:aws:iam::xxxxxx:role/k8sDev
+      username: dev-user
+    - rolearn: arn:aws:iam::xxxxxx:role/k8sInteg
+      username: integ-user
+    - groups:
+      - system:masters
+      rolearn: arn:aws:iam::xxxxxx:role/k8sAdmin
+      username: admin
+...
+  mapUsers: |
+    []
+kind: ConfigMap
+...
+&lt;/code&gt;&lt;/pre&gt;&lt;h3 id=&#34;rbac&#34;&gt;RBAC&lt;/h3&gt;
+&lt;pre&gt;&lt;code&gt;kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1beta1
+metadata:
+  name: dev-role-binding
+  namespace: evonet
+subjects:
+- kind: User
+  name: dev-user
+roleRef:
+  kind: ClusterRole
+  name: view
+  apiGroup: rbac.authorization.k8s.io
+&lt;/code&gt;&lt;/pre&gt;&lt;pre&gt;&lt;code&gt;kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1beta1
+metadata:
+  name: integ-role-binding
+  namespace: evonet
+subjects:
+- kind: User
+  name: integ-user
+roleRef:
+  kind: ClusterRole
+  name: edit
+  apiGroup: rbac.authorization.k8s.io
+&lt;/code&gt;&lt;/pre&gt;&lt;h2 id=&#34;过程&#34;&gt;过程&lt;/h2&gt;
+&lt;p&gt;参考：&lt;a href=&#34;https://www.eksworkshop.com/beginner/091_iam-groups/&#34;&gt;Using IAM Groups to manage Kubernetes access&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;按需，略有改动。&lt;/p&gt;
+&lt;h2 id=&#34;本地配置使用&#34;&gt;本地配置使用&lt;/h2&gt;
+&lt;p&gt;主要是创建或是修改几个文件：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;~/.aws/config&lt;/li&gt;
+&lt;li&gt;~/.aws/credentials&lt;/li&gt;
+&lt;li&gt;~/.kube/config （使用 export KUBECONFIG=&amp;lt;/your/path/to/kubeconfig&amp;gt; 暴露环境变量可使用任意位置）&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;注意：以上都是软件默认配置路径。&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;替换以下的 &amp;lt;aws_access_key_id&amp;gt; &amp;lt;aws_secret_access_key&amp;gt;。&lt;/li&gt;
+&lt;li&gt;如果是 admin role：role_arn替换为 arn:aws:iam::xxxxxx:role/k8sAdmin&lt;/li&gt;
+&lt;li&gt;如果是 integ role：role_arn=arn:aws:iam::xxxxxx:role/k8sInteg&lt;/li&gt;
+&lt;/ol&gt;
+&lt;pre&gt;&lt;code&gt;$ cat ~/.aws/config
+[default]
+role_arn=arn:aws:iam::101606529841:role/k8sDev
+# role_arn=arn:aws:iam::101606529841:role/k8sInteg
+source_profile=default
+
+$ cat ~/.aws/credentials
+[default]
+aws_access_key_id = &amp;lt;aws_access_key_id&amp;gt;
+aws_secret_access_key = &amp;lt;aws_secret_access_key&amp;gt;
+
+$ cat ~/.kube/config
+apiVersion: v1
+clusters:
+- cluster:
+    certificate-authority-data: xxxxxx
+    server: xxxxxx
+  name: xxxxxx
+contexts:
+- context:
+    cluster: xxxxxx
+    user: xxxxxx
+  name: xxxxxx
+current-context: xxxxxx
+kind: Config
+preferences: {}
+users:
+- name: xxxxxx
+  user:
+    exec:
+      apiVersion: client.authentication.k8s.io/v1alpha1
+      args:
+      - --region
+      - ap-northeast-1
+      - eks
+      - get-token
+      - --cluster-name
+      - eks-try-2020-2
+      command: aws
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;aws 配置是关键。&lt;/p&gt;
+&lt;p&gt;role_arn 一定要指定，然后 role_arn 也是需要 source_profile 的，两者都指定下即可。&lt;/p&gt;
+&lt;p&gt;也就是说，role 的使用一定要显式地使用。如果不显式，默认就是没有role，没有权限，非 cluster 创建者，就没有权限去访问了。&lt;/p&gt;
+&lt;p&gt;aws cli 的配置文件，得参考如下。&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;a href=&#34;https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-quickstart.html&#34;&gt;Configuration basics - AWS Command Line Interface&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;查看下配置 &lt;a href=&#34;https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-files.html&#34;&gt;Configuration and credential file settings - AWS Command Line Interface&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;named profile，这里我们使用 default profile 即可，不需要指定 profile。 &lt;a href=&#34;https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-profiles.html&#34;&gt;https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-profiles.html&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;使用 IAM role &lt;a href=&#34;https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-role.html&#34;&gt;https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-role.html&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;kubeconfig 使用默认生成的即可。credentials 也可以使用 aws configure 来设置认证信息。只要新增 role_arn 即可。应该是最简设置了。&lt;/p&gt;
+&lt;h1 id=&#34;参考&#34;&gt;参考&lt;/h1&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://kubernetes.io/docs/concepts/security/controlling-access/&#34;&gt;Controlling Access to the Kubernetes API&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://kubernetes.io/docs/reference/access-authn-authz/authentication/&#34;&gt;Authenticating&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/kubernetes-sigs/aws-iam-authenticator&#34;&gt;kubernetes-sigs/aws-iam-authenticator: A tool to use AWS IAM credentials to authenticate to a Kubernetes cluster&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://programmer.group/how-to-deeply-understand-the-implementation-mechanism-of-eks-iam-authenticator.html&#34;&gt;How to Deeply Understand the Implementation Mechanism of EKS IAM Authenticator&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;IAM user 映射为 Kubernetes user &lt;a href=&#34;https://www.eksworkshop.com/beginner/090_rbac/&#34;&gt;Intro to RBAC&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;IAM group/role 映射为 Kubernetes user &lt;a href=&#34;https://www.eksworkshop.com/beginner/091_iam-groups/&#34;&gt;Using IAM Groups to manage Kubernetes access&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;Create a kubeconfig for Amazon EKS &lt;a href=&#34;https://docs.aws.amazon.com/eks/latest/userguide/create-kubeconfig.html#create-kubeconfig-automatically&#34;&gt;https://docs.aws.amazon.com/eks/latest/userguide/create-kubeconfig.html#create-kubeconfig-automatically&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://www.eksworkshop.com/beginner/091_iam-groups/&#34;&gt;Using IAM Groups to manage Kubernetes access&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://docs.aws.amazon.com/eks/latest/userguide/add-user-role.html&#34;&gt;Managing users or IAM roles for your cluster - Amazon EKS&lt;/a&gt; 是上面那个 tutorial 的浓缩版&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://docs.aws.amazon.com/IAM/latest/UserGuide/introduction.html&#34;&gt;https://docs.aws.amazon.com/IAM/latest/UserGuide/introduction.html&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+- https://xujiahua.github.io/posts/k8s-eks-ea3b5d29-0425-494e-8d9e-149f1654a41f/ - </description>
+        </item>
     
     
     
@@ -17,14 +369,13 @@
         <pubDate>Sun, 25 Apr 2021 13:18:00 +0800</pubDate>
         
         <guid>https://xujiahua.github.io/posts/eksctl-nodecreationfailure-instances-failed-to-join-the-kubernetes-cluster-0393476e-6e53-42f7-8222-842ffd0e8358/</guid>
-        <description>许嘉华的笔记 https://xujiahua.github.io/posts/eksctl-nodecreationfailure-instances-failed-to-join-the-kubernetes-cluster-0393476e-6e53-42f7-8222-842ffd0e8358/ -&lt;p&gt;eksctl 创建集群失败了。第一次遇到这个错。&lt;/p&gt;
+        <description>Happy Coding https://xujiahua.github.io/posts/eksctl-nodecreationfailure-instances-failed-to-join-the-kubernetes-cluster-0393476e-6e53-42f7-8222-842ffd0e8358/ -&lt;p&gt;eksctl 创建集群失败了。第一次遇到这个错。&lt;/p&gt;
 &lt;pre&gt;&lt;code&gt;2021-04-25 01:59:24 [ℹ]  waiting for CloudFormation stack &amp;quot;eksctl-eks-prod-evocloud-tyo-nodegroup-mng-1&amp;quot;
 2021-04-25 01:59:25 [✖]  unexpected status &amp;quot;ROLLBACK_IN_PROGRESS&amp;quot; while waiting for CloudFormation stack &amp;quot;eksctl-eks-prod-evocloud-tyo-nodegroup-mng-1&amp;quot;
 2021-04-25 01:59:25 [ℹ]  fetching stack events in attempt to troubleshoot the root cause of the failure
 2021-04-25 01:59:25 [✖]  AWS::EKS::Nodegroup/ManagedNodeGroup: CREATE_FAILED – &amp;quot;Nodegroup mng-1 failed to stabilize: [{Code: NodeCreationFailure,Message: Instances failed to join the kubernetes cluster,ResourceIds: [i-09df0fc7408f36801]}]&amp;quot;
 2021-04-25 01:59:25 [!]  1 error(s) occurred and cluster hasn&#39;t been created properly, you may wish to check CloudFormation console
-&lt;/code&gt;&lt;/pre&gt;
-&lt;h2 id=&#34;分析&#34;&gt;分析&lt;/h2&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;h2 id=&#34;分析&#34;&gt;分析&lt;/h2&gt;
 &lt;p&gt;在 CloudFormation 控制台查看详细日志。无法加入到 K8s 集群。然后没有进一步的信息了。&lt;/p&gt;
 &lt;blockquote&gt;
 &lt;p&gt;Nodegroup mng-1 failed to stabilize: [{Code: NodeCreationFailure,Message: Instances failed to join the kubernetes cluster,ResourceIds: [i-0c4e4c2a6dd9457b1]}]
@@ -51,8 +402,7 @@ $ ssh -i test_network_access.pem.txt ubuntu@18.179.136.90
 $ ssh -i test_network_access.pem.txt ubuntu@10.105.24.215
 
 $ curl ip.sb
-&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;果然是无法访问外网。&lt;/p&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;果然是无法访问外网。&lt;/p&gt;
 &lt;p&gt;后面数据中心同事反馈，NAT 的可用区路由表有点问题。&lt;/p&gt;
 - https://xujiahua.github.io/posts/eksctl-nodecreationfailure-instances-failed-to-join-the-kubernetes-cluster-0393476e-6e53-42f7-8222-842ffd0e8358/ - </description>
         </item>
@@ -65,7 +415,7 @@ $ curl ip.sb
         <pubDate>Wed, 21 Apr 2021 18:03:00 +0800</pubDate>
         
         <guid>https://xujiahua.github.io/posts/metabase-quick-71d491f9-972e-4305-9f93-1af388b5ca9b/</guid>
-        <description>许嘉华的笔记 https://xujiahua.github.io/posts/metabase-quick-71d491f9-972e-4305-9f93-1af388b5ca9b/ -&lt;p&gt;对 metabase-quick 这个工具进行简单小结。&lt;/p&gt;
+        <description>Happy Coding https://xujiahua.github.io/posts/metabase-quick-71d491f9-972e-4305-9f93-1af388b5ca9b/ -&lt;p&gt;对 metabase-quick 这个工具进行简单小结。&lt;/p&gt;
 &lt;p&gt;简单来说，metabase-quick 是个命令行工具，使用 Metabase 的 UI，写 SQL分析本地的 csv 文件，并进行可视化。功能与 Metabase 一样，设置上简化了。&lt;/p&gt;
 &lt;p&gt;肝了几天，熬了几个晚上，终于有了 v0.1 MVP 版本。&lt;/p&gt;
 &lt;p&gt;&lt;a href=&#34;https://github.com/XUJiahua/metabase-quick&#34;&gt;XUJiahua/metabase-quick&lt;/a&gt;&lt;/p&gt;
@@ -81,8 +431,7 @@ INFO: NewConnection: client 1
 open http://localhost:53046
 
 incoming query: select * from iris
-&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;会自动打开网页，点击 Native query。&lt;/p&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;会自动打开网页，点击 Native query。&lt;/p&gt;
 &lt;p&gt;&lt;img src=&#34;../../images/Untitled-7e93bf42-098c-414a-bf8f-18fc6c03da11.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
 &lt;p&gt;写SQL，可视化，都是 Metabase 的能力。&lt;/p&gt;
 &lt;p&gt;&lt;img src=&#34;../../images/Untitled-5062e806-329c-453f-a500-9da997fb3eaf.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
@@ -140,8 +489,8 @@ total 83960
 -rw-r--r--  1 jiahua  staff   3.4M Apr 23 22:54 0.bundle.js
 -rw-r--r--  1 jiahua  staff   135K Apr 23 22:54 2.bundle.js.map
 -rw-r--r--  1 jiahua  staff   110K Apr 23 22:54 2.bundle.js
--rw-r--r--  1 jiahua  staff   108K Apr 23 22:54 styles.bundle.css&lt;/code&gt;&lt;/pre&gt;
-- https://xujiahua.github.io/posts/metabase-quick-71d491f9-972e-4305-9f93-1af388b5ca9b/ - </description>
+-rw-r--r--  1 jiahua  staff   108K Apr 23 22:54 styles.bundle.css
+&lt;/code&gt;&lt;/pre&gt;- https://xujiahua.github.io/posts/metabase-quick-71d491f9-972e-4305-9f93-1af388b5ca9b/ - </description>
         </item>
     
     
@@ -152,7 +501,7 @@ total 83960
         <pubDate>Mon, 19 Apr 2021 10:24:00 +0800</pubDate>
         
         <guid>https://xujiahua.github.io/posts/redis-benchmark-kv-a3e78900-612a-4d04-b2aa-fc6f0908b431/</guid>
-        <description>许嘉华的笔记 https://xujiahua.github.io/posts/redis-benchmark-kv-a3e78900-612a-4d04-b2aa-fc6f0908b431/ -&lt;p&gt;给自建 kv 存储引擎做性能测试不难，使用 redis-benchmark 压测的目的是，测试结果能与 redis-server 的结果做横向对比。&lt;/p&gt;
+        <description>Happy Coding https://xujiahua.github.io/posts/redis-benchmark-kv-a3e78900-612a-4d04-b2aa-fc6f0908b431/ -&lt;p&gt;给自建 kv 存储引擎做性能测试不难，使用 redis-benchmark 压测的目的是，测试结果能与 redis-server 的结果做横向对比。&lt;/p&gt;
 &lt;h2 id=&#34;redis-benchmark&#34;&gt;redis-benchmark&lt;/h2&gt;
 &lt;p&gt;redis-benchmark 支持如下指令的 benchmark。其中 GET/SET 指令可用于 kv 存储引擎的压测。&lt;/p&gt;
 &lt;pre&gt;&lt;code&gt;redis-benchmark -q
@@ -176,8 +525,7 @@ LRANGE_300 (first 300 elements): 11193.19 requests per second, p50=2.135 msec
 LRANGE_500 (first 450 elements): 7649.94 requests per second, p50=3.159 msec
 LRANGE_600 (first 600 elements): 5884.78 requests per second, p50=4.103 msec
 MSET (10 keys): 93283.58 requests per second, p50=0.423 msec
-&lt;/code&gt;&lt;/pre&gt;
-&lt;h2 id=&#34;redcon&#34;&gt;redcon&lt;/h2&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;h2 id=&#34;redcon&#34;&gt;redcon&lt;/h2&gt;
 &lt;p&gt;Redis compatible server framework for &lt;strong&gt;Go&lt;/strong&gt;.&lt;/p&gt;
 &lt;p&gt;&lt;a href=&#34;https://github.com/tidwall/redcon&#34;&gt;tidwall/redcon&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt;这个库兼容了 redis-server 的协议。个人要做的是封装下对存储引擎的调用。&lt;/p&gt;
@@ -188,29 +536,25 @@ MSET (10 keys): 93283.58 requests per second, p50=0.423 msec
 &amp;quot;test&amp;quot;,&amp;quot;rps&amp;quot;,&amp;quot;avg_latency_ms&amp;quot;,&amp;quot;min_latency_ms&amp;quot;,&amp;quot;p50_latency_ms&amp;quot;,&amp;quot;p95_latency_ms&amp;quot;,&amp;quot;p99_latency_ms&amp;quot;,&amp;quot;max_latency_ms&amp;quot;
 &amp;quot;SET&amp;quot;,&amp;quot;82850.04&amp;quot;,&amp;quot;0.322&amp;quot;,&amp;quot;0.144&amp;quot;,&amp;quot;0.295&amp;quot;,&amp;quot;0.455&amp;quot;,&amp;quot;0.655&amp;quot;,&amp;quot;1.999&amp;quot;
 &amp;quot;GET&amp;quot;,&amp;quot;82236.84&amp;quot;,&amp;quot;0.321&amp;quot;,&amp;quot;0.160&amp;quot;,&amp;quot;0.295&amp;quot;,&amp;quot;0.495&amp;quot;,&amp;quot;0.655&amp;quot;,&amp;quot;2.007&amp;quot;
-&lt;/code&gt;&lt;/pre&gt;
-&lt;h3 id=&#34;go-hashmap&#34;&gt;go hashmap&lt;/h3&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;h3 id=&#34;go-hashmap&#34;&gt;go hashmap&lt;/h3&gt;
 &lt;p&gt;内置的 map。&lt;/p&gt;
 &lt;pre&gt;&lt;code&gt;$ redis-benchmark -t set,get --csv
 &amp;quot;test&amp;quot;,&amp;quot;rps&amp;quot;,&amp;quot;avg_latency_ms&amp;quot;,&amp;quot;min_latency_ms&amp;quot;,&amp;quot;p50_latency_ms&amp;quot;,&amp;quot;p95_latency_ms&amp;quot;,&amp;quot;p99_latency_ms&amp;quot;,&amp;quot;max_latency_ms&amp;quot;
 &amp;quot;SET&amp;quot;,&amp;quot;73421.44&amp;quot;,&amp;quot;0.356&amp;quot;,&amp;quot;0.144&amp;quot;,&amp;quot;0.311&amp;quot;,&amp;quot;0.535&amp;quot;,&amp;quot;1.111&amp;quot;,&amp;quot;2.511&amp;quot;
 &amp;quot;GET&amp;quot;,&amp;quot;79681.27&amp;quot;,&amp;quot;0.329&amp;quot;,&amp;quot;0.152&amp;quot;,&amp;quot;0.303&amp;quot;,&amp;quot;0.463&amp;quot;,&amp;quot;0.575&amp;quot;,&amp;quot;0.935&amp;quot;
-&lt;/code&gt;&lt;/pre&gt;
-&lt;h3 id=&#34;goleveldb&#34;&gt;goleveldb&lt;/h3&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;h3 id=&#34;goleveldb&#34;&gt;goleveldb&lt;/h3&gt;
 &lt;p&gt;&lt;a href=&#34;https://github.com/syndtr/goleveldb&#34;&gt;syndtr/goleveldb&lt;/a&gt;&lt;/p&gt;
 &lt;pre&gt;&lt;code&gt;$ redis-benchmark -t set,get --csv
 &amp;quot;test&amp;quot;,&amp;quot;rps&amp;quot;,&amp;quot;avg_latency_ms&amp;quot;,&amp;quot;min_latency_ms&amp;quot;,&amp;quot;p50_latency_ms&amp;quot;,&amp;quot;p95_latency_ms&amp;quot;,&amp;quot;p99_latency_ms&amp;quot;,&amp;quot;max_latency_ms&amp;quot;
 &amp;quot;SET&amp;quot;,&amp;quot;57636.89&amp;quot;,&amp;quot;0.475&amp;quot;,&amp;quot;0.096&amp;quot;,&amp;quot;0.439&amp;quot;,&amp;quot;0.679&amp;quot;,&amp;quot;1.007&amp;quot;,&amp;quot;3.687&amp;quot;
 &amp;quot;GET&amp;quot;,&amp;quot;79302.14&amp;quot;,&amp;quot;0.333&amp;quot;,&amp;quot;0.152&amp;quot;,&amp;quot;0.303&amp;quot;,&amp;quot;0.471&amp;quot;,&amp;quot;0.687&amp;quot;,”2.711&amp;quot;
-&lt;/code&gt;&lt;/pre&gt;
-&lt;h3 id=&#34;bitcask自制土炮版&#34;&gt;bitcask（自制土炮版）&lt;/h3&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;h3 id=&#34;bitcask自制土炮版&#34;&gt;bitcask（自制土炮版）&lt;/h3&gt;
 &lt;p&gt;性能差了一大截。&lt;/p&gt;
 &lt;pre&gt;&lt;code&gt;$ redis-benchmark -t set,get --csv
 &amp;quot;test&amp;quot;,&amp;quot;rps&amp;quot;,&amp;quot;avg_latency_ms&amp;quot;,&amp;quot;min_latency_ms&amp;quot;,&amp;quot;p50_latency_ms&amp;quot;,&amp;quot;p95_latency_ms&amp;quot;,&amp;quot;p99_latency_ms&amp;quot;,&amp;quot;max_latency_ms&amp;quot;
 &amp;quot;SET&amp;quot;,&amp;quot;44662.79&amp;quot;,&amp;quot;1.033&amp;quot;,&amp;quot;0.040&amp;quot;,&amp;quot;1.167&amp;quot;,&amp;quot;1.535&amp;quot;,&amp;quot;2.367&amp;quot;,&amp;quot;36.095&amp;quot;
 &amp;quot;GET&amp;quot;,&amp;quot;52137.64&amp;quot;,&amp;quot;0.523&amp;quot;,&amp;quot;0.088&amp;quot;,&amp;quot;0.503&amp;quot;,&amp;quot;0.687&amp;quot;,&amp;quot;1.199&amp;quot;,&amp;quot;6.327&amp;quot;
-&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;可视化对比 p99_latency_ms 这个指标：&lt;/p&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;可视化对比 p99_latency_ms 这个指标：&lt;/p&gt;
 &lt;p&gt;&lt;img src=&#34;../../images/Untitled-47e16126-1acc-4d64-ab5a-b5ee281fa1cb.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
 &lt;h2 id=&#34;总结&#34;&gt;总结&lt;/h2&gt;
 &lt;p&gt;使用 redis-benchmark 作为性能测试框架。在相同的测试用例下，通过对照比较其他存储引擎的测试结果，了解自己需要进步的空间。&lt;/p&gt;
@@ -225,16 +569,15 @@ MSET (10 keys): 93283.58 requests per second, p50=0.423 msec
         <pubDate>Mon, 12 Apr 2021 17:25:00 +0800</pubDate>
         
         <guid>https://xujiahua.github.io/posts/notion-markdown-hugo-78139407-85c5-4a75-b288-b54d5c3df34b/</guid>
-        <description>许嘉华的笔记 https://xujiahua.github.io/posts/notion-markdown-hugo-78139407-85c5-4a75-b288-b54d5c3df34b/ -&lt;h2 id=&#34;目的&#34;&gt;目的&lt;/h2&gt;
+        <description>Happy Coding https://xujiahua.github.io/posts/notion-markdown-hugo-78139407-85c5-4a75-b288-b54d5c3df34b/ -&lt;h2 id=&#34;目的&#34;&gt;目的&lt;/h2&gt;
 &lt;p&gt;好久没更新博客了，最近半年使用 Notion，体验很棒。&lt;/p&gt;
 &lt;p&gt;之前写博客的过程：使用 Typora 编辑 markdown，使用 Hugo 生成静态页面，上传到 github 使用 github pages serving。参考：&lt;/p&gt;
 &lt;p&gt;&lt;a href=&#34;https://xujiahua.github.io/posts/20200310-github-pages-restart/&#34;&gt;Github pages重新开始：使用Hugo、Typora&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt;怎么把我 Notion 中的文章同步到我的博客呢。这是本文目的。&lt;/p&gt;
 &lt;p&gt;主要是写了一个 notion-mk 的程序将 notion 文章导出到 hugo 工作目录。后面的工作与之前保持一致。&lt;/p&gt;
 &lt;pre&gt;&lt;code&gt;notion -- notion-mk(todo) --&amp;gt; hugo directory 
-                                                                        -- hugo generate --&amp;gt; static html/js/css
-&lt;/code&gt;&lt;/pre&gt;
-&lt;h2 id=&#34;wip&#34;&gt;WIP&lt;/h2&gt;
+																		-- hugo generate --&amp;gt; static html/js/css
+&lt;/code&gt;&lt;/pre&gt;&lt;h2 id=&#34;wip&#34;&gt;WIP&lt;/h2&gt;
 &lt;p&gt;代码如下：&lt;/p&gt;
 &lt;p&gt;&lt;a href=&#34;https://github.com/XUJiahua/notion-md&#34;&gt;XUJiahua/notion-md&lt;/a&gt;&lt;/p&gt;
 &lt;h3 id=&#34;功能&#34;&gt;功能&lt;/h3&gt;
@@ -253,8 +596,7 @@ MSET (10 keys): 93283.58 requests per second, p50=0.423 msec
 &lt;p&gt;&lt;img src=&#34;../../images/Untitled-02741d53-086d-436b-aac8-87e41738754d.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
 &lt;p&gt;触发命令&lt;/p&gt;
 &lt;pre&gt;&lt;code&gt;notion-md -i cab2ea6d530341769e5dc9a269a1097e -t ${TOKEN} -o /Users/jiahua/hugo-blogger/content/posts -p ../../images/ -v
-&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;其中 TOKEN 获取位置如下：&lt;/p&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;其中 TOKEN 获取位置如下：&lt;/p&gt;
 &lt;p&gt;&lt;img src=&#34;../../images/Untitled-eb9ff680-4294-4e6f-9e98-9874bb0b7498.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
 &lt;p&gt;生成 markdown 和图像文件到对应的目录：&lt;/p&gt;
 &lt;pre&gt;&lt;code&gt;$ git status
@@ -270,8 +612,7 @@ Untracked files:
 	static/images/Untitled-eb9ff680-4294-4e6f-9e98-9874bb0b7498.png
 
 nothing added to commit but untracked files present (use &amp;quot;git add&amp;quot; to track)
-&lt;/code&gt;&lt;/pre&gt;
-&lt;h3 id=&#34;ci&#34;&gt;CI&lt;/h3&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;h3 id=&#34;ci&#34;&gt;CI&lt;/h3&gt;
 &lt;ul&gt;
 &lt;li&gt;&lt;input disabled=&#34;&#34; type=&#34;checkbox&#34;&gt; Github Action (notion to hugo markdown)&lt;/li&gt;
 &lt;li&gt;&lt;input disabled=&#34;&#34; type=&#34;checkbox&#34;&gt; Github Action (hugo to static page)&lt;/li&gt;
@@ -298,7 +639,7 @@ nothing added to commit but untracked files present (use &amp;quot;git add&amp;q
         <pubDate>Wed, 16 Sep 2020 10:48:11 +0800</pubDate>
         
         <guid>https://xujiahua.github.io/posts/20200916-pandas-sql/</guid>
-        <description>许嘉华的笔记 https://xujiahua.github.io/posts/20200916-pandas-sql/ -&lt;p&gt;对 Pandas 库没有原生 SQL 支持表示遗憾，今天看到这么一个库 &lt;a href=&#34;https://github.com/yhat/pandasql&#34;&gt;https://github.com/yhat/pandasql&lt;/a&gt; 。&lt;/p&gt;
+        <description>Happy Coding https://xujiahua.github.io/posts/20200916-pandas-sql/ -&lt;p&gt;对 Pandas 库没有原生 SQL 支持表示遗憾，今天看到这么一个库 &lt;a href=&#34;https://github.com/yhat/pandasql&#34;&gt;https://github.com/yhat/pandasql&lt;/a&gt; 。&lt;/p&gt;
 &lt;p&gt;它的思路比较简单粗暴，先把 pandas Dataframe 存储到一个关系型数据库（sqlite/postgresql），最后 SQL query 的结果其实是查询关系型数据库返回的结果，封装成 Dataframe 来呈现。其中数据库操作使用 sqlalchemy 这个库。&lt;/p&gt;
 &lt;p&gt;学到的知识点：locals()，globals() 这两个方法。&lt;/p&gt;
 &lt;blockquote&gt;
@@ -327,7 +668,7 @@ nothing added to commit but untracked files present (use &amp;quot;git add&amp;q
         <pubDate>Wed, 09 Sep 2020 09:52:37 +0800</pubDate>
         
         <guid>https://xujiahua.github.io/posts/20200909-docker-series/</guid>
-        <description>许嘉华的笔记 https://xujiahua.github.io/posts/20200909-docker-series/ -&lt;p&gt;不定时更新中。&lt;/p&gt;
+        <description>Happy Coding https://xujiahua.github.io/posts/20200909-docker-series/ -&lt;p&gt;不定时更新中。&lt;/p&gt;
 &lt;h2 id=&#34;docker&#34;&gt;Docker&lt;/h2&gt;
 &lt;h3 id=&#34;基础&#34;&gt;基础&lt;/h3&gt;
 &lt;ol&gt;
@@ -379,7 +720,7 @@ nothing added to commit but untracked files present (use &amp;quot;git add&amp;q
         <pubDate>Mon, 07 Sep 2020 11:35:39 +0800</pubDate>
         
         <guid>https://xujiahua.github.io/posts/20200907-docker-bridge-net-sim/</guid>
-        <description>许嘉华的笔记 https://xujiahua.github.io/posts/20200907-docker-bridge-net-sim/ -&lt;p&gt;如&lt;a href=&#34;https://xujiahua.github.io/posts/20200901-linux-namespace/&#34;&gt;前文&lt;/a&gt;介绍，Linux Network namespace 用于给进程创建一个新的网络栈，路由、防火墙规则、网络设备。&lt;code&gt;man ip-netns&lt;/code&gt;：&lt;/p&gt;
+        <description>Happy Coding https://xujiahua.github.io/posts/20200907-docker-bridge-net-sim/ -&lt;p&gt;如&lt;a href=&#34;https://xujiahua.github.io/posts/20200901-linux-namespace/&#34;&gt;前文&lt;/a&gt;介绍，Linux Network namespace 用于给进程创建一个新的网络栈，路由、防火墙规则、网络设备。&lt;code&gt;man ip-netns&lt;/code&gt;：&lt;/p&gt;
 &lt;blockquote&gt;
 &lt;p&gt;A network namespace is logically another copy of the network stack, with its own routes, firewall rules, and network devices.&lt;/p&gt;
 &lt;/blockquote&gt;
@@ -638,7 +979,7 @@ PING baidu.com (220.181.38.148) 56(84) bytes of data.
         <pubDate>Thu, 03 Sep 2020 17:02:18 +0800</pubDate>
         
         <guid>https://xujiahua.github.io/posts/20200903-fuck-thin-client/</guid>
-        <description>许嘉华的笔记 https://xujiahua.github.io/posts/20200903-fuck-thin-client/ -&lt;p&gt;因为公司有开发泄露源码在 Github，对公司声誉造成一定影响，公司层面推广起瘦终端，所有开发一起背锅 :( 。在瘦终端里，网络严格管控，vscode 下载插件都难，需要申请 IP 白名单。开发只允许在瘦终端里接触 git 仓库，只能向瘦终端拷贝文件，反之不能。这样就能防住代码泄露么？&lt;/p&gt;
+        <description>Happy Coding https://xujiahua.github.io/posts/20200903-fuck-thin-client/ -&lt;p&gt;因为公司有开发泄露源码在 Github，对公司声誉造成一定影响，公司层面推广起瘦终端，所有开发一起背锅 :( 。在瘦终端里，网络严格管控，vscode 下载插件都难，需要申请 IP 白名单。开发只允许在瘦终端里接触 git 仓库，只能向瘦终端拷贝文件，反之不能。这样就能防住代码泄露么？&lt;/p&gt;
 &lt;p&gt;搞笑的办法，瘦终端生成二维码，主机扫描，数据传输问题搞定。&lt;/p&gt;
 &lt;p&gt;从网络角度，怎么解决呢。我们来严肃看待这个技术问题。&lt;/p&gt;
 &lt;h2 id=&#34;icmp&#34;&gt;ICMP&lt;/h2&gt;
@@ -832,7 +1173,7 @@ tun0: flags&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;4305&amp;lt;U
         <pubDate>Tue, 01 Sep 2020 12:03:13 +0800</pubDate>
         
         <guid>https://xujiahua.github.io/posts/20200901-linux-namespace/</guid>
-        <description>许嘉华的笔记 https://xujiahua.github.io/posts/20200901-linux-namespace/ -&lt;h2 id=&#34;linux-namespace&#34;&gt;Linux Namespace&lt;/h2&gt;
+        <description>Happy Coding https://xujiahua.github.io/posts/20200901-linux-namespace/ -&lt;h2 id=&#34;linux-namespace&#34;&gt;Linux Namespace&lt;/h2&gt;
 &lt;p&gt;namespace 在编程语言中是一种常见的概念，C++/Clojure 中就使用 namespace 关键字来模块化组织代码。模块与模块之间互不污染，模块A有个 helloworld 的方法，模块B也可以有一个 helloworld 的方法。Java/Go 中的 package 也是同样的意义。&lt;/p&gt;
 &lt;p&gt;Linux namespaces 是 Linux 内核用于隔离内核资源的手段，进程使用隔离的内核资源保证了与其他进程之间的独立。也是 Docker 容器的底层技术（Docker 主要开发语言是 Go，container 的创建使用 C）。&lt;/p&gt;
 &lt;blockquote&gt;
@@ -1326,85 +1667,6 @@ lo: flags&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;73&amp;lt;UP,LO
 &lt;/ol&gt;
 &lt;p&gt;参考 coolshell 查看更多示例的实践，就不重复了。&lt;/p&gt;
 - https://xujiahua.github.io/posts/20200901-linux-namespace/ - </description>
-        </item>
-    
-    
-    
-        <item>
-        <title>记录一个 Impala JDBC 驱动问题</title>
-        <link>https://xujiahua.github.io/posts/20200807-impala/</link>
-        <pubDate>Fri, 07 Aug 2020 15:06:49 +0800</pubDate>
-        
-        <guid>https://xujiahua.github.io/posts/20200807-impala/</guid>
-        <description>许嘉华的笔记 https://xujiahua.github.io/posts/20200807-impala/ -&lt;h3 id=&#34;现象&#34;&gt;现象&lt;/h3&gt;
-&lt;p&gt;洪敏在用 Metabase 写报表过程中，使用 Metabase 的日期变量，发现的诡异问题。两条语句仅有部分差异，返回的结果却差了一天。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image-20200807173209949.png&#34; alt=&#34;image-20200807173209949&#34;&gt;&lt;/p&gt;
-&lt;p&gt;期望结果。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image-20200807173143617.png&#34; alt=&#34;image-20200807173143617&#34;&gt;&lt;/p&gt;
-&lt;p&gt;与期望结果差了一天。&lt;/p&gt;
-&lt;p&gt;在 CDH 中查看 impala 服务器接收到的请求。&lt;/p&gt;
-&lt;p&gt;得到期望结果的SQL：&lt;/p&gt;
-&lt;p&gt;dt 是字符串，内容是日期，参数是TIMESTAMP，SQL引擎会自动转为两个 TIMESTAMP比较。&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sql&#34; data-lang=&#34;sql&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;SELECT&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;a&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;.&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;dt&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;, (&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;a&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;.&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;x&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;-&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;b&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;.&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;x&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;) &lt;span style=&#34;color:#66d9ef&#34;&gt;as&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;&lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;净增人数&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;FROM&lt;/span&gt; (&lt;span style=&#34;color:#66d9ef&#34;&gt;SELECT&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;f_ods_wx_subscribe_di&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;.&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;dt&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;, &lt;span style=&#34;color:#66d9ef&#34;&gt;COUNT&lt;/span&gt;(&lt;span style=&#34;color:#66d9ef&#34;&gt;DISTINCT&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;f_ods_wx_subscribe_di&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;.&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;userinfo_openid&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;) &lt;span style=&#34;color:#66d9ef&#34;&gt;as&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;x&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;FROM&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;product&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;.&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;f_ods_wx_subscribe_di&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;WHERE&lt;/span&gt; ((&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;f_ods_wx_subscribe_di&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;.&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;dt&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;CAST&lt;/span&gt;( &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;2020-08-05 00:00:00.0&amp;#39;&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;AS&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;TIMESTAMP&lt;/span&gt;)) &lt;span style=&#34;color:#66d9ef&#34;&gt;AND&lt;/span&gt; ((&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;f_ods_wx_subscribe_di&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;.&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;mid&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;jt20191017175015910985&amp;#39;&lt;/span&gt;) &lt;span style=&#34;color:#66d9ef&#34;&gt;AND&lt;/span&gt; (&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;f_ods_wx_subscribe_di&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;.&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;dt&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;=&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;CAST&lt;/span&gt;( &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;2020-08-01 00:00:00.0&amp;#39;&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;AS&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;TIMESTAMP&lt;/span&gt;)))) &lt;span style=&#34;color:#66d9ef&#34;&gt;GROUP&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;BY&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;f_ods_wx_subscribe_di&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;.&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;dt&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;) &lt;span style=&#34;color:#66d9ef&#34;&gt;AS&lt;/span&gt; a &lt;span style=&#34;color:#66d9ef&#34;&gt;LEFT&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;JOIN&lt;/span&gt; (&lt;span style=&#34;color:#66d9ef&#34;&gt;SELECT&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;f_ods_wx_unsubscribe_di&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;.&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;dt&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;, &lt;span style=&#34;color:#66d9ef&#34;&gt;COUNT&lt;/span&gt;(&lt;span style=&#34;color:#66d9ef&#34;&gt;DISTINCT&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;f_ods_wx_unsubscribe_di&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;.&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;userinfo_openid&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;) &lt;span style=&#34;color:#66d9ef&#34;&gt;as&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;x&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;FROM&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;product&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;.&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;f_ods_wx_unsubscribe_di&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;WHERE&lt;/span&gt; ((&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;f_ods_wx_unsubscribe_di&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;.&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;dt&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;CAST&lt;/span&gt;( &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;2020-08-05 00:00:00.0&amp;#39;&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;AS&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;TIMESTAMP&lt;/span&gt;)) &lt;span style=&#34;color:#66d9ef&#34;&gt;AND&lt;/span&gt; ((&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;f_ods_wx_unsubscribe_di&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;.&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;mid&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;jt20191017175015910985&amp;#39;&lt;/span&gt;) &lt;span style=&#34;color:#66d9ef&#34;&gt;AND&lt;/span&gt; (&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;f_ods_wx_unsubscribe_di&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;.&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;dt&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;=&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;CAST&lt;/span&gt;( &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;2020-08-01 00:00:00.0&amp;#39;&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;AS&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;TIMESTAMP&lt;/span&gt;)))) &lt;span style=&#34;color:#66d9ef&#34;&gt;GROUP&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;BY&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;f_ods_wx_unsubscribe_di&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;.&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;dt&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;) &lt;span style=&#34;color:#66d9ef&#34;&gt;AS&lt;/span&gt; b &lt;span style=&#34;color:#66d9ef&#34;&gt;ON&lt;/span&gt; (&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;a&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;.&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;dt&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;b&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;.&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;dt&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;)
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;得到错误结果的SQL：&lt;/p&gt;
-&lt;p&gt;dt 本身是字符串，参数也是字符串。变成两个字符串比较，结果确实差一天。只是在select里使用了一个函数，就造成SQL巨大差异，很神奇。&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sql&#34; data-lang=&#34;sql&#34;&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;select&lt;/span&gt; a.dt ,(a.x &lt;span style=&#34;color:#f92672&#34;&gt;-&lt;/span&gt; nvl(b.x,&lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;)) &lt;span style=&#34;color:#66d9ef&#34;&gt;as&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt;&lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;净增人数&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;`&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;from&lt;/span&gt; ( &lt;span style=&#34;color:#66d9ef&#34;&gt;SELECT&lt;/span&gt; dt, &lt;span style=&#34;color:#66d9ef&#34;&gt;count&lt;/span&gt;(&lt;span style=&#34;color:#66d9ef&#34;&gt;distinct&lt;/span&gt; userinfo_openid) &lt;span style=&#34;color:#66d9ef&#34;&gt;as&lt;/span&gt; x &lt;span style=&#34;color:#66d9ef&#34;&gt;FROM&lt;/span&gt; f_ods_wx_subscribe_di &lt;span style=&#34;color:#66d9ef&#34;&gt;WHERE&lt;/span&gt; mid &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;jt20191017175015910985&amp;#39;&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;AND&lt;/span&gt; dt &lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;2020-08-01 00:00:00.0&amp;#39;&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;and&lt;/span&gt; dt &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;2020-08-05 00:00:00.0&amp;#39;&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;group&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;by&lt;/span&gt; dt ) a &lt;span style=&#34;color:#66d9ef&#34;&gt;left&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;join&lt;/span&gt; ( &lt;span style=&#34;color:#66d9ef&#34;&gt;SELECT&lt;/span&gt; dt, &lt;span style=&#34;color:#66d9ef&#34;&gt;count&lt;/span&gt;(&lt;span style=&#34;color:#66d9ef&#34;&gt;distinct&lt;/span&gt; userinfo_openid) &lt;span style=&#34;color:#66d9ef&#34;&gt;as&lt;/span&gt; x &lt;span style=&#34;color:#66d9ef&#34;&gt;FROM&lt;/span&gt; f_ods_wx_unsubscribe_di &lt;span style=&#34;color:#66d9ef&#34;&gt;WHERE&lt;/span&gt; mid &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;jt20191017175015910985&amp;#39;&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;AND&lt;/span&gt; dt &lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;2020-08-01 00:00:00.0&amp;#39;&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;and&lt;/span&gt; dt &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;2020-08-05 00:00:00.0&amp;#39;&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;group&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;by&lt;/span&gt; dt ) b &lt;span style=&#34;color:#66d9ef&#34;&gt;on&lt;/span&gt; a.dt &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; b.dt
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;metabase，metabase impala driver，impala JDBC driver都会有问题。&lt;/p&gt;
-&lt;h3 id=&#34;metabase-打印日志-query-param&#34;&gt;Metabase 打印日志 query, param&lt;/h3&gt;
-&lt;p&gt;native_form/query 构造完成后，会执行 executef，底层是driver/execute-reducible-query，就是JDBC prepareStatement构造与执行。&lt;/p&gt;
-&lt;p&gt;在executef方法记录日志。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image-20200807174516355.png&#34; alt=&#34;image-20200807174516355&#34;&gt;&lt;/p&gt;
-&lt;p&gt;query的区别如之前、params是完全一致的。所以，不是Metabase的问题。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image-20200807175049064.png&#34; alt=&#34;image-20200807175049064&#34;&gt;&lt;/p&gt;
-&lt;p&gt;而 metabase impala driver 也没有重载 driver/execute-reducible-query 方法。也基本排除了嫌疑。&lt;/p&gt;
-&lt;h3 id=&#34;复现问题&#34;&gt;复现问题&lt;/h3&gt;
-&lt;p&gt;目标锁定在 impala JDBC driver。写一个Java程序复现。&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;使用相同的 Impala JDBC 驱动。&lt;/li&gt;
-&lt;li&gt;同样是参数化提交 SQL。&lt;/li&gt;
-&lt;li&gt;准备类似的SQL Statement。&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image-20200807172918590.png&#34; alt=&#34;image-20200807172918590&#34;&gt;&lt;/p&gt;
-&lt;p&gt;核心逻辑。&lt;a href=&#34;https://github.com/XUJiahua/impala-jdbc-sql-rewrite&#34;&gt;代码在此&lt;/a&gt;。&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-java&#34; data-lang=&#34;java&#34;&gt;                    connection &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; DriverManager&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;getConnection&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;CONNECTION_URL&lt;span style=&#34;color:#f92672&#34;&gt;);&lt;/span&gt;
-                    ps &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; connection&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;prepareStatement&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;sql&lt;span style=&#34;color:#f92672&#34;&gt;);&lt;/span&gt;
-                    ps&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;setString&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;1&lt;span style=&#34;color:#f92672&#34;&gt;,&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;jt20191017175015910985&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;);&lt;/span&gt;
-                    ps&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;setTimestamp&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;2&lt;span style=&#34;color:#f92672&#34;&gt;,&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;new&lt;/span&gt; Timestamp&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;2020 &lt;span style=&#34;color:#f92672&#34;&gt;-&lt;/span&gt; 1900&lt;span style=&#34;color:#f92672&#34;&gt;,&lt;/span&gt; 8 &lt;span style=&#34;color:#f92672&#34;&gt;-&lt;/span&gt; 1&lt;span style=&#34;color:#f92672&#34;&gt;,&lt;/span&gt; 1&lt;span style=&#34;color:#f92672&#34;&gt;,&lt;/span&gt; 0&lt;span style=&#34;color:#f92672&#34;&gt;,&lt;/span&gt; 0&lt;span style=&#34;color:#f92672&#34;&gt;,&lt;/span&gt; 0&lt;span style=&#34;color:#f92672&#34;&gt;,&lt;/span&gt; 0&lt;span style=&#34;color:#f92672&#34;&gt;));&lt;/span&gt;
-                    ps&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;setTimestamp&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;3&lt;span style=&#34;color:#f92672&#34;&gt;,&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;new&lt;/span&gt; Timestamp&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;2020 &lt;span style=&#34;color:#f92672&#34;&gt;-&lt;/span&gt; 1900&lt;span style=&#34;color:#f92672&#34;&gt;,&lt;/span&gt; 8 &lt;span style=&#34;color:#f92672&#34;&gt;-&lt;/span&gt; 1&lt;span style=&#34;color:#f92672&#34;&gt;,&lt;/span&gt; 5&lt;span style=&#34;color:#f92672&#34;&gt;,&lt;/span&gt; 0&lt;span style=&#34;color:#f92672&#34;&gt;,&lt;/span&gt; 0&lt;span style=&#34;color:#f92672&#34;&gt;,&lt;/span&gt; 0&lt;span style=&#34;color:#f92672&#34;&gt;,&lt;/span&gt; 0&lt;span style=&#34;color:#f92672&#34;&gt;));&lt;/span&gt;
-                    ps&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;setString&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;4&lt;span style=&#34;color:#f92672&#34;&gt;,&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;jt20191017175015910985&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;);&lt;/span&gt;
-                    ps&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;setTimestamp&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;5&lt;span style=&#34;color:#f92672&#34;&gt;,&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;new&lt;/span&gt; Timestamp&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;2020 &lt;span style=&#34;color:#f92672&#34;&gt;-&lt;/span&gt; 1900&lt;span style=&#34;color:#f92672&#34;&gt;,&lt;/span&gt; 8 &lt;span style=&#34;color:#f92672&#34;&gt;-&lt;/span&gt; 1&lt;span style=&#34;color:#f92672&#34;&gt;,&lt;/span&gt; 1&lt;span style=&#34;color:#f92672&#34;&gt;,&lt;/span&gt; 0&lt;span style=&#34;color:#f92672&#34;&gt;,&lt;/span&gt; 0&lt;span style=&#34;color:#f92672&#34;&gt;,&lt;/span&gt; 0&lt;span style=&#34;color:#f92672&#34;&gt;,&lt;/span&gt; 0&lt;span style=&#34;color:#f92672&#34;&gt;));&lt;/span&gt;
-                    ps&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;setTimestamp&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;6&lt;span style=&#34;color:#f92672&#34;&gt;,&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;new&lt;/span&gt; Timestamp&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;2020 &lt;span style=&#34;color:#f92672&#34;&gt;-&lt;/span&gt; 1900&lt;span style=&#34;color:#f92672&#34;&gt;,&lt;/span&gt; 8 &lt;span style=&#34;color:#f92672&#34;&gt;-&lt;/span&gt; 1&lt;span style=&#34;color:#f92672&#34;&gt;,&lt;/span&gt; 5&lt;span style=&#34;color:#f92672&#34;&gt;,&lt;/span&gt; 0&lt;span style=&#34;color:#f92672&#34;&gt;,&lt;/span&gt; 0&lt;span style=&#34;color:#f92672&#34;&gt;,&lt;/span&gt; 0&lt;span style=&#34;color:#f92672&#34;&gt;,&lt;/span&gt; 0&lt;span style=&#34;color:#f92672&#34;&gt;));&lt;/span&gt;
-                    resultSet &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; ps&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;executeQuery&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;();&lt;/span&gt;
-                    ResultSetMetaData rsmd &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; resultSet&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;getMetaData&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;();&lt;/span&gt;
-                    &lt;span style=&#34;color:#66d9ef&#34;&gt;int&lt;/span&gt; columnsNumber &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; rsmd&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;getColumnCount&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;();&lt;/span&gt;
-                    &lt;span style=&#34;color:#66d9ef&#34;&gt;while&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;resultSet&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;next&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;())&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;{&lt;/span&gt;
-                        &lt;span style=&#34;color:#66d9ef&#34;&gt;for&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;int&lt;/span&gt; i &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; 1&lt;span style=&#34;color:#f92672&#34;&gt;;&lt;/span&gt; i &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;=&lt;/span&gt; columnsNumber&lt;span style=&#34;color:#f92672&#34;&gt;;&lt;/span&gt; i&lt;span style=&#34;color:#f92672&#34;&gt;++)&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;{&lt;/span&gt;
-                            &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;i &lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt; 1&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt; System&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;out&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;print&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;,  &amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;);&lt;/span&gt;
-                            String columnValue &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; resultSet&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;getString&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;i&lt;span style=&#34;color:#f92672&#34;&gt;);&lt;/span&gt;
-                            System&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;out&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;print&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;columnValue &lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34; &amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt; rsmd&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;getColumnName&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;i&lt;span style=&#34;color:#f92672&#34;&gt;));&lt;/span&gt;
-                        &lt;span style=&#34;color:#f92672&#34;&gt;}&lt;/span&gt;
-                        System&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;out&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;println&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;);&lt;/span&gt;
-                    &lt;span style=&#34;color:#f92672&#34;&gt;}&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;服务器上执行，结果复现。&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;$ java -jar impala-jdbc-sql-rewrite-1.0-SNAPSHOT.jar 1.sql
-2020-08-05 dt,  &lt;span style=&#34;color:#ae81ff&#34;&gt;29257&lt;/span&gt; 净增人数
-2020-08-02 dt,  &lt;span style=&#34;color:#ae81ff&#34;&gt;37285&lt;/span&gt; 净增人数
-2020-08-04 dt,  &lt;span style=&#34;color:#ae81ff&#34;&gt;24640&lt;/span&gt; 净增人数
-2020-08-03 dt,  &lt;span style=&#34;color:#ae81ff&#34;&gt;29253&lt;/span&gt; 净增人数
-
-$ java -jar impala-jdbc-sql-rewrite-1.0-SNAPSHOT.jar 2.sql
-2020-08-02 dt,  &lt;span style=&#34;color:#ae81ff&#34;&gt;37285&lt;/span&gt; 净增人数
-2020-08-04 dt,  &lt;span style=&#34;color:#ae81ff&#34;&gt;24640&lt;/span&gt; 净增人数
-2020-08-03 dt,  &lt;span style=&#34;color:#ae81ff&#34;&gt;29253&lt;/span&gt; 净增人数
-2020-08-01 dt,  &lt;span style=&#34;color:#ae81ff&#34;&gt;37235&lt;/span&gt; 净增人数
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;排查过程中的误区&#34;&gt;排查过程中的误区&lt;/h3&gt;
-&lt;p&gt;一直以为Metabase服务返回的native_form/query是实际提交给JDBC驱动的sql。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image-20200807171929947.png&#34; alt=&#34;image-20200807171929947&#34;&gt;&lt;/p&gt;
-&lt;p&gt;其实并不然。native_form/query是拼接好的SQL，参数已经填充进了SQL语句中。而实际执行SQL，使用的是参数化提交。源码表示返回的native_form/query是query实际执行后的产物。所以对排查问题有误导作用。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image-20200807172259322.png&#34; alt=&#34;image-20200807172259322&#34;&gt;&lt;/p&gt;
-&lt;h3 id=&#34;临时解决方案&#34;&gt;临时解决方案&lt;/h3&gt;
-&lt;p&gt;驱动的问题暂时无法解决，Workaround是有的。只要保证日期比较的时候，条件表达式左右之一至少是TIMESTAMP类型。&lt;/p&gt;
-- https://xujiahua.github.io/posts/20200807-impala/ - </description>
         </item>
     
     

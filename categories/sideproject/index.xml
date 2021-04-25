@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>sideproject on Happy Coding</title>
+    <link>https://xujiahua.github.io/categories/sideproject/</link>
+    <description>Recent content in sideproject on Happy Coding</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Wed, 21 Apr 2021 18:03:00 +0800</lastBuildDate><atom:link href="https://xujiahua.github.io/categories/sideproject/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>metabase-quick 小结</title>
+      <link>https://xujiahua.github.io/posts/metabase-quick-71d491f9-972e-4305-9f93-1af388b5ca9b/</link>
+      <pubDate>Wed, 21 Apr 2021 18:03:00 +0800</pubDate>
+      
+      <guid>https://xujiahua.github.io/posts/metabase-quick-71d491f9-972e-4305-9f93-1af388b5ca9b/</guid>
+      <description>对 metabase-quick 这个工具进行简单小结。
+简单来说，metabase-quick 是个命令行工具，使用 Metabase 的 UI，写 SQL分析本地的 csv 文件，并进行可视化。功能与 Metabase 一样，设置上简化了。
+肝了几天，熬了几个晚上，终于有了 v0.1 MVP 版本。
+XUJiahua/metabase-quick
+使用 Releases 页面下载自己平台的二进制文件。
+Releases · XUJiahua/metabase-quick
+$ ./metabase-quick-darwin dataset/iris.csv INFO: load file dataset/iris.csv in 0.00393911 seconds You can visit database engine via below command: mysql --host=127.0.0.1 --port=53045 default -u root INFO: NewConnection: client 1 open http://localhost:53046 incoming query: select * from iris 会自动打开网页，点击 Native query。
+写SQL，可视化，都是 Metabase 的能力。
+源起 当时手头正好有份指标数据需要做对比分析，觉得可以用 Metabase 试试。但是 Metabase 还得安装到本地，进行一系列的设置：创建用户、加入一个数据源、导入数据。然后才是我想要做的数据分析！</description>
+    </item>
+    
+  </channel>
+</rss>

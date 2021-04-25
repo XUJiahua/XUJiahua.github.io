@@ -62,7 +62,7 @@ if (!doNotTrack) {
     <a class="a-block nav-head false" href="https://xujiahua.github.io/">
     
         <div class="nav-title">
-            许嘉华的笔记
+            Happy Coding
         </div>
         
     </a>
@@ -125,7 +125,7 @@ Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopene
 
 &copy;
 	
-	2021 许嘉华的笔记
+	2021 Happy Coding
 	
     </div>
     
@@ -631,14 +631,14 @@ Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopene
             </i>
         </button>
         <a ref="navTitle" class="navbar-brand" href="https://xujiahua.github.io/">
-            许嘉华的笔记
+            Happy Coding
         </a>
     </div>
 </nav>
 <div class="single-column-header-container" ref="pageHead"
      v-bind:style="{ transform: 'translateZ(0px) translateY('+.3*scrollY+'px)', opacity: 1-navOpacity }">
     <a href="https://xujiahua.github.io/">
-        <div class="single-column-header-title">许嘉华的笔记</div>
+        <div class="single-column-header-title">Happy Coding</div>
         
 
     </a>
@@ -709,8 +709,7 @@ LRANGE_300 (first 300 elements): 11193.19 requests per second, p50=2.135 msec
 LRANGE_500 (first 450 elements): 7649.94 requests per second, p50=3.159 msec
 LRANGE_600 (first 600 elements): 5884.78 requests per second, p50=4.103 msec
 MSET (10 keys): 93283.58 requests per second, p50=0.423 msec
-</code></pre>
-<h2 id="redcon">redcon</h2>
+</code></pre><h2 id="redcon">redcon</h2>
 <p>Redis compatible server framework for <strong>Go</strong>.</p>
 <p><a href="https://github.com/tidwall/redcon">tidwall/redcon</a></p>
 <p>这个库兼容了 redis-server 的协议。个人要做的是封装下对存储引擎的调用。</p>
@@ -721,29 +720,25 @@ MSET (10 keys): 93283.58 requests per second, p50=0.423 msec
 &quot;test&quot;,&quot;rps&quot;,&quot;avg_latency_ms&quot;,&quot;min_latency_ms&quot;,&quot;p50_latency_ms&quot;,&quot;p95_latency_ms&quot;,&quot;p99_latency_ms&quot;,&quot;max_latency_ms&quot;
 &quot;SET&quot;,&quot;82850.04&quot;,&quot;0.322&quot;,&quot;0.144&quot;,&quot;0.295&quot;,&quot;0.455&quot;,&quot;0.655&quot;,&quot;1.999&quot;
 &quot;GET&quot;,&quot;82236.84&quot;,&quot;0.321&quot;,&quot;0.160&quot;,&quot;0.295&quot;,&quot;0.495&quot;,&quot;0.655&quot;,&quot;2.007&quot;
-</code></pre>
-<h3 id="go-hashmap">go hashmap</h3>
+</code></pre><h3 id="go-hashmap">go hashmap</h3>
 <p>内置的 map。</p>
 <pre><code>$ redis-benchmark -t set,get --csv
 &quot;test&quot;,&quot;rps&quot;,&quot;avg_latency_ms&quot;,&quot;min_latency_ms&quot;,&quot;p50_latency_ms&quot;,&quot;p95_latency_ms&quot;,&quot;p99_latency_ms&quot;,&quot;max_latency_ms&quot;
 &quot;SET&quot;,&quot;73421.44&quot;,&quot;0.356&quot;,&quot;0.144&quot;,&quot;0.311&quot;,&quot;0.535&quot;,&quot;1.111&quot;,&quot;2.511&quot;
 &quot;GET&quot;,&quot;79681.27&quot;,&quot;0.329&quot;,&quot;0.152&quot;,&quot;0.303&quot;,&quot;0.463&quot;,&quot;0.575&quot;,&quot;0.935&quot;
-</code></pre>
-<h3 id="goleveldb">goleveldb</h3>
+</code></pre><h3 id="goleveldb">goleveldb</h3>
 <p><a href="https://github.com/syndtr/goleveldb">syndtr/goleveldb</a></p>
 <pre><code>$ redis-benchmark -t set,get --csv
 &quot;test&quot;,&quot;rps&quot;,&quot;avg_latency_ms&quot;,&quot;min_latency_ms&quot;,&quot;p50_latency_ms&quot;,&quot;p95_latency_ms&quot;,&quot;p99_latency_ms&quot;,&quot;max_latency_ms&quot;
 &quot;SET&quot;,&quot;57636.89&quot;,&quot;0.475&quot;,&quot;0.096&quot;,&quot;0.439&quot;,&quot;0.679&quot;,&quot;1.007&quot;,&quot;3.687&quot;
 &quot;GET&quot;,&quot;79302.14&quot;,&quot;0.333&quot;,&quot;0.152&quot;,&quot;0.303&quot;,&quot;0.471&quot;,&quot;0.687&quot;,”2.711&quot;
-</code></pre>
-<h3 id="bitcask自制土炮版">bitcask（自制土炮版）</h3>
+</code></pre><h3 id="bitcask自制土炮版">bitcask（自制土炮版）</h3>
 <p>性能差了一大截。</p>
 <pre><code>$ redis-benchmark -t set,get --csv
 &quot;test&quot;,&quot;rps&quot;,&quot;avg_latency_ms&quot;,&quot;min_latency_ms&quot;,&quot;p50_latency_ms&quot;,&quot;p95_latency_ms&quot;,&quot;p99_latency_ms&quot;,&quot;max_latency_ms&quot;
 &quot;SET&quot;,&quot;44662.79&quot;,&quot;1.033&quot;,&quot;0.040&quot;,&quot;1.167&quot;,&quot;1.535&quot;,&quot;2.367&quot;,&quot;36.095&quot;
 &quot;GET&quot;,&quot;52137.64&quot;,&quot;0.523&quot;,&quot;0.088&quot;,&quot;0.503&quot;,&quot;0.687&quot;,&quot;1.199&quot;,&quot;6.327&quot;
-</code></pre>
-<p>可视化对比 p99_latency_ms 这个指标：</p>
+</code></pre><p>可视化对比 p99_latency_ms 这个指标：</p>
 <p><img src="../../images/Untitled-47e16126-1acc-4d64-ab5a-b5ee281fa1cb.png" alt=""></p>
 <h2 id="总结">总结</h2>
 <p>使用 redis-benchmark 作为性能测试框架。在相同的测试用例下，通过对照比较其他存储引擎的测试结果，了解自己需要进步的空间。</p>
@@ -791,7 +786,7 @@ Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopene
 
 &copy;
 	
-	2021 许嘉华的笔记
+	2021 Happy Coding
 	</div>
     	</div>
     <script src="https://xujiahua.github.io//js/journal.js"></script>

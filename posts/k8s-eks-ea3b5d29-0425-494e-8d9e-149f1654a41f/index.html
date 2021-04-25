@@ -1,0 +1,1622 @@
+<!DOCTYPE html>
+<html><head>
+<title>K8s 认证授权流程及 EKS 用户管理</title>
+
+<meta charset="utf-8">
+<meta name="X-UA-Compatible" content="IE=edge">
+<meta name="google-site-verification" content="">
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport">
+<meta content="telephone=no" name="format-detection">
+<meta name="description" content="">
+<meta name="renderer" content="webkit">
+<meta name="theme-color" content="#ffffff">
+
+
+
+
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+	ga('create', 'UA-162706610-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+
+
+<script src="/vendor/js/jquery.min.js" ></script>
+<script src="/vendor/js/popper.min.js" ></script>
+<script src="/vendor/js/bootstrap.min.js" ></script>
+<script src="/vendor/js/smooth-scroll.polyfills.min.js" ></script>
+<link type="text/css" rel="stylesheet" href="/vendor/css/bootstrap.min.css">
+<script src="/vendor/js/vue.min.js" ></script>
+
+
+
+
+<link rel="stylesheet" href="https://xujiahua.github.io/scss/journal.min.5d0fd093a264465a2c30c56fbe9eb8cdb0764ecf3eb96e8c64de3cf6c081cc40.css" integrity="sha256-XQ/Qk6JkRlosMMVvvp64zbB2Ts8&#43;uW6MZN489sCBzEA=" media="screen">
+
+<script src="https://xujiahua.github.io//js/loadCSS.js"></script>
+<script src="https://xujiahua.github.io//js/table.js"></script>
+
+
+<script src="https://xujiahua.github.io//js/toc.js"></script>
+
+
+<script>
+    loadCSS("https://fonts.googleapis.com/css?family=Lora|Montserrat|Fira+Mono|Noto+Serif+SC|Material+Icons");
+</script>
+
+
+
+
+
+
+</head><body>
+    	<div id="app"><div ref="sideContainer" class="side-container">
+    
+    <a class="a-block nav-head false" href="https://xujiahua.github.io/">
+    
+        <div class="nav-title">
+            Happy Coding
+        </div>
+        
+    </a>
+
+    <div class="nav-link-list">
+        
+        
+            
+            
+            
+                
+            
+            
+            
+            <a class="a-block nav-link-item active" href="/posts">
+                Archive
+            </a>
+            
+        
+            
+            
+            
+            
+            
+            <a class="a-block nav-link-item false" href="/categories">
+                Categories
+            </a>
+            
+        
+            
+            
+            
+            
+            
+            <a class="a-block nav-link-item false" href="/tags">
+                Tags
+            </a>
+            
+        
+            
+            
+            
+            
+            
+            <a class="a-block nav-link-item false" href="/index.xml">
+                RSS Feed
+            </a>
+            
+        
+    </div>
+
+    
+
+    <div class="nav-footer">
+        
+Hugo Theme <a href="https://github.com/amazingrise/hugo-theme-diary">Diary</a> by <a href="https://amazingrise.net">Rise</a>
+<br>
+Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopener">Makito</a>'s <a href="https://github.com/SumiMakito/hexo-theme-journal/" target="_blank" rel="noreferrer noopener">Journal.</a> <br>
+<br>
+
+&copy;
+	
+	2021 Happy Coding
+	
+    </div>
+    
+</div><div ref="extraContainer" class="extra-container">
+    
+    <div class="toc animated-visibility" :class="{ invisible: scrollY <= 140 }">
+
+
+	<div class="toc-content">
+	
+		
+		
+		
+		<center>- CATALOG -</center>
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#kubernetes-authentication--authorization" v-on:click="closeDrawer" id="kubernetes-authentication--authorization-nav">
+										 Kubernetes Authentication &amp; Authorization
+									</a>
+								</li>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#kubernetes-%e8%83%8c%e6%99%af%e7%9f%a5%e8%af%86" v-on:click="closeDrawer" id="kubernetes-背景知识-nav">
+										 Kubernetes 背景知识
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#authentication" v-on:click="closeDrawer" id="authentication-nav">
+										 Authentication
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e5%ae%9a%e4%b9%89%e7%94%a8%e6%88%b7" v-on:click="closeDrawer" id="定义用户-nav">
+										 定义“用户”
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e8%ae%a4%e8%af%81%e7%ad%96%e7%95%a5" v-on:click="closeDrawer" id="认证策略-nav">
+										 认证策略
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#kubernetes-authorization-rbac" v-on:click="closeDrawer" id="kubernetes-authorization-rbac-nav">
+										 Kubernetes Authorization (RBAC)
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#default-clusterrolerole" v-on:click="closeDrawer" id="default-clusterrolerole-nav">
+										 Default ClusterRole/Role
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#admission-control" v-on:click="closeDrawer" id="admission-control-nav">
+										 Admission Control
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#eks-authentication" v-on:click="closeDrawer" id="eks-authentication-nav">
+										 EKS Authentication
+									</a>
+								</li>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#iam-%e7%ae%80%e4%bb%8b" v-on:click="closeDrawer" id="iam-简介-nav">
+										 IAM 简介
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#iam-%e9%87%8d%e8%a6%81%e6%a6%82%e5%bf%b5" v-on:click="closeDrawer" id="iam-重要概念-nav">
+										 IAM 重要概念
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#aws-iam-authenticator-%e6%a8%a1%e5%9d%97" v-on:click="closeDrawer" id="aws-iam-authenticator-模块-nav">
+										 aws-iam-authenticator 模块
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e5%ae%9e%e6%88%98" v-on:click="closeDrawer" id="实战-nav">
+										 实战
+									</a>
+								</li>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e6%94%b9%e5%8a%a8%e6%95%88%e6%9e%9c" v-on:click="closeDrawer" id="改动效果-nav">
+										 改动效果
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#iam" v-on:click="closeDrawer" id="iam-nav">
+										 IAM
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#aws-auth" v-on:click="closeDrawer" id="aws-auth-nav">
+										 aws-auth
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#rbac" v-on:click="closeDrawer" id="rbac-nav">
+										 RBAC
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e8%bf%87%e7%a8%8b" v-on:click="closeDrawer" id="过程-nav">
+										 过程
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e6%9c%ac%e5%9c%b0%e9%85%8d%e7%bd%ae%e4%bd%bf%e7%94%a8" v-on:click="closeDrawer" id="本地配置使用-nav">
+										 本地配置使用
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e5%8f%82%e8%80%83" v-on:click="closeDrawer" id="参考-nav">
+										 参考
+									</a>
+								</li>
+						
+							</ul>
+						
+					
+				
+			
+	</div>
+
+</div>
+    
+    <div class="pagination">
+        <a id="globalBackToTop" class="pagination-action animated-visibility" href="#top" :class="{ invisible: scrollY == 0 }">
+            <i class="material-icons pagination-action-icon">
+                keyboard_arrow_up
+            </i>
+        </a>
+        
+    </div>
+</div><div class="single-column-drawer-container" ref="drawer"
+     v-bind:class="{ 'single-column-drawer-container-active': isDrawerOpen }">
+    <div class="drawer-content">
+        <div class="drawer-menu">
+            
+            
+                
+                
+                
+                    
+                
+                
+                
+                <a class="a-block drawer-menu-item active" href="/posts">
+                    Archive
+                </a>
+                
+            
+                
+                
+                
+                
+                
+                <a class="a-block drawer-menu-item false" href="/categories">
+                    Categories
+                </a>
+                
+            
+                
+                
+                
+                
+                
+                <a class="a-block drawer-menu-item false" href="/tags">
+                    Tags
+                </a>
+                
+            
+                
+                
+                
+                
+                
+                <a class="a-block drawer-menu-item false" href="/index.xml">
+                    RSS Feed
+                </a>
+                
+            
+            
+            <div class="toc">
+
+
+	<div class="toc-content">
+	
+		
+		
+		
+		<center>- CATALOG -</center>
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#kubernetes-authentication--authorization" v-on:click="closeDrawer" id="kubernetes-authentication--authorization-nav">
+										 Kubernetes Authentication &amp; Authorization
+									</a>
+								</li>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#kubernetes-%e8%83%8c%e6%99%af%e7%9f%a5%e8%af%86" v-on:click="closeDrawer" id="kubernetes-背景知识-nav">
+										 Kubernetes 背景知识
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#authentication" v-on:click="closeDrawer" id="authentication-nav">
+										 Authentication
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e5%ae%9a%e4%b9%89%e7%94%a8%e6%88%b7" v-on:click="closeDrawer" id="定义用户-nav">
+										 定义“用户”
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e8%ae%a4%e8%af%81%e7%ad%96%e7%95%a5" v-on:click="closeDrawer" id="认证策略-nav">
+										 认证策略
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#kubernetes-authorization-rbac" v-on:click="closeDrawer" id="kubernetes-authorization-rbac-nav">
+										 Kubernetes Authorization (RBAC)
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#default-clusterrolerole" v-on:click="closeDrawer" id="default-clusterrolerole-nav">
+										 Default ClusterRole/Role
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#admission-control" v-on:click="closeDrawer" id="admission-control-nav">
+										 Admission Control
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#eks-authentication" v-on:click="closeDrawer" id="eks-authentication-nav">
+										 EKS Authentication
+									</a>
+								</li>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#iam-%e7%ae%80%e4%bb%8b" v-on:click="closeDrawer" id="iam-简介-nav">
+										 IAM 简介
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#iam-%e9%87%8d%e8%a6%81%e6%a6%82%e5%bf%b5" v-on:click="closeDrawer" id="iam-重要概念-nav">
+										 IAM 重要概念
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#aws-iam-authenticator-%e6%a8%a1%e5%9d%97" v-on:click="closeDrawer" id="aws-iam-authenticator-模块-nav">
+										 aws-iam-authenticator 模块
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e5%ae%9e%e6%88%98" v-on:click="closeDrawer" id="实战-nav">
+										 实战
+									</a>
+								</li>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e6%94%b9%e5%8a%a8%e6%95%88%e6%9e%9c" v-on:click="closeDrawer" id="改动效果-nav">
+										 改动效果
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#iam" v-on:click="closeDrawer" id="iam-nav">
+										 IAM
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#aws-auth" v-on:click="closeDrawer" id="aws-auth-nav">
+										 aws-auth
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#rbac" v-on:click="closeDrawer" id="rbac-nav">
+										 RBAC
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e8%bf%87%e7%a8%8b" v-on:click="closeDrawer" id="过程-nav">
+										 过程
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e6%9c%ac%e5%9c%b0%e9%85%8d%e7%bd%ae%e4%bd%bf%e7%94%a8" v-on:click="closeDrawer" id="本地配置使用-nav">
+										 本地配置使用
+									</a>
+								</li>
+						
+							</ul>
+						
+							</ul>
+						
+					
+				
+			
+				
+				
+					
+						
+						
+							<ul>
+						
+						
+								<li>
+				 					<a href="#%e5%8f%82%e8%80%83" v-on:click="closeDrawer" id="参考-nav">
+										 参考
+									</a>
+								</li>
+						
+							</ul>
+						
+					
+				
+			
+	</div>
+
+</div>
+            
+        </div>
+    </div>
+</div>
+<transition name="fade">
+    <div v-bind:class="{ 'single-column-drawer-mask': mounted }" v-if="isDrawerOpen" v-on:click="toggleDrawer"></div>
+</transition>
+<nav ref="navBar" class="navbar sticky-top navbar-light single-column-nav-container">
+    <div ref="navBackground" class="nav-background"></div>
+    <div class="container container-narrow nav-content">
+        <button id="nav_dropdown_btn" class="nav-dropdown-toggle" type="button" v-on:click="toggleDrawer">
+            <i class="material-icons">
+                menu
+            </i>
+        </button>
+        <a ref="navTitle" class="navbar-brand" href="https://xujiahua.github.io/">
+            Happy Coding
+        </a>
+    </div>
+</nav>
+<div class="single-column-header-container" ref="pageHead"
+     v-bind:style="{ transform: 'translateZ(0px) translateY('+.3*scrollY+'px)', opacity: 1-navOpacity }">
+    <a href="https://xujiahua.github.io/">
+        <div class="single-column-header-title">Happy Coding</div>
+        
+
+    </a>
+</div>
+            <div id="content">
+<div ref="streamContainer" class="stream-container">
+    <div class="post-list-container post-list-container-shadow">
+        <div class="post">
+            
+            
+            
+
+            <div class="post-head-wrapper-text-only"
+                 style="background-image: url('/')">
+                <div class="post-title">
+                    K8s 认证授权流程及 EKS 用户管理
+                    
+                    <div class="post-meta">
+                        
+                        <time itemprop="datePublished">
+                            2021-04-25 16:35
+                        </time>
+                        
+
+                        
+                            <i class="material-icons" style="">folder</i>
+                                <a href="/categories/">[K8s]</a>
+                                &nbsp;
+                        
+
+                        
+                            <i class="material-icons" style="">label</i>
+                            
+                                <a href="/tags/eks">eks</a>
+                                &nbsp;
+                            
+                                <a href="/tags/aws">aws</a>
+                                &nbsp;
+                            
+                        
+                    </div>
+                </div>
+            </div>
+            
+            <div class="post-body-wrapper">
+                <div class="post-body">
+                    <p>编辑于2020年12月，Google Docs 导入。</p>
+<p>目前使用 Rancher 管理集群及结合 LDAP 用户管理。支持多云的场景。</p>
+<p>本文只做知识记录。</p>
+<h1 id="kubernetes-authentication--authorization">Kubernetes Authentication &amp; Authorization</h1>
+<h2 id="kubernetes-背景知识">Kubernetes 背景知识</h2>
+<p><img src="../../images/image2-372a0c63-083e-4dc5-bc10-7160ff72595a.png" alt=""></p>
+<p>整体架构，来源：<a href="https://medium.com/@kumargaurav1247/components-of-kubernetes-architecture-6feea4d5c712">Components of Kubernetes Architecture | by Gaurav Gupta</a></p>
+<p>比较典型的 Master-Slave 架构。而 apiserver 是核心中的核心。</p>
+<p><img src="../../images/image7-75649d28-a26a-491c-8162-939f91a7a311.png" alt=""></p>
+<p>apiserver 架构，来源：？？？</p>
+<p>单单 apiserver 本身，可以理解为一个后端连接 etcd 作为数据库的，仅仅执行 CRUD 操作的 API 服务。CRUD 的对象，就是我们说的 API Resource，比如 Pod, Service 等内置资源，还有开发者自定义的资源。</p>
+<p>具体的工作由各种 controllers （包括 kubelet ）来执行。这些 controllers 通过 watch apiserver，其本质是 etcd 的 watch 功能，能及时获得新的指令。</p>
+<p>这个机制，形成了 Kubernetes 可以声明式地进行部署应用的能力。也叫做控制器模式。</p>
+<h2 id="authentication">Authentication</h2>
+<p>不管是通过 kubectl，还是直接访问 kubernetes-apiserver，对 kubernetes-apiserver 的 API 的访问都是受保护的，也就是，访问首先需要认证请求方。</p>
+<p>一个“用户”从集群获取 API Resource，需要经过 Authentication/ Authorization/ AdmissionControl 这三大步骤。Authentication/ Authorization/ AdmissionControl 是高度模块化的，可以按需自定义开发。（如图，Authentication 模块使用积木拼图表示）</p>
+<p><img src="../../images/image3-65a5f382-ee6c-4219-a2c3-806ab07d6c6a.png" alt=""></p>
+<h3 id="定义用户">定义“用户”</h3>
+<p>在 Kubernetes 下有两类“用户”：</p>
+<ol>
+<li>human user：比如使用 kubectl/helm 等命令操作集群的用户。</li>
+<li>service account：其他非人用户。Kubernetes 中 Pod 访问 kubernetes-apiserver 也是需要认证的。</li>
+</ol>
+<p>值得注意的是，Kubernetes 有 ServiceAccount API Resource，ServiceAccount 由 Kubernetes 自己管理。ServiceAccount 是 namespaced（单个 namespace 范围内可见），其包含 Secret API Resource，Secret 包含了用于认证 apiserver 的 Token。</p>
+<p><em>Service accounts are users managed by the Kubernetes API. They are bound to specific namespaces, and created automatically by the API server or manually through API calls.</em> <em><strong>Service accounts are tied to a set of credentials stored as Secrets, which are mounted into pods allowing in-cluster processes to talk to the Kubernetes API.</strong></em></p>
+<p>使用命令查看 serviceaccount 及 secret。</p>
+<pre><code>$ kubectl describe serviceaccounts default
+Name:                default
+Namespace:           default
+Labels:              &lt;none&gt;
+Annotations:         &lt;none&gt;
+Image pull secrets:  &lt;none&gt;
+Mountable secrets:   default-token-5j9r6
+Tokens:              default-token-5j9r6
+Events:              &lt;none&gt;
+
+$ kubectl describe secret default-token-5j9r6
+Name:         default-token-5j9r6
+Namespace:    default
+Labels:       &lt;none&gt;
+Annotations:  kubernetes.io/service-account.name: default
+              kubernetes.io/service-account.uid: 2825782d-7d3d-4090-a4f9-014c5c137ede
+
+Type:  kubernetes.io/service-account-token
+
+Data
+====
+ca.crt:     1025 bytes
+namespace:  7 bytes
+token:      eyJhbGciOiJSUzI1NiIsImtpZCI6ImNONzV6eWFBSm50NkIxV3BSWGtsMG1OYk5jTVJoX1dxS083a0g3LU9JcVkifQ.eyJpc3MiOiJrdWJlcm5ldGVzL3NlcnZpY2VhY2NvdWIiwi[MASKED]
+</code></pre><p>而没有 User API Resource（没法直接通过 kubectl 创建），Kubernetes 假设有一个与集群独立的第三方维护用户信息。<strong>比较特殊的是，使用集群 CA 签发的证书也可以进行用户认证，username 就是证书中的 common name。</strong></p>
+<p><em>Even though a normal user cannot be added via an API call, any user that presents a valid certificate signed by the cluster&rsquo;s certificate authority (CA) is considered authenticated. In this configuration, Kubernetes determines the username from the common name field in the &lsquo;subject&rsquo; of the cert (e.g., &ldquo;/CN=bob&rdquo;). From there, the role based access control (RBAC) sub-system would determine whether the user is authorized to perform a specific operation on a resource. For more details, refer to the normal users topic in certificate request for more details about this.</em></p>
+<p>虽然没有 user API Resource，但 apiserver 内部是有 user/group 的概念的。以下是从代码中找到的内置 user/group。在 system:masters 这个组内的用户，具有整个集群管理员的权限。</p>
+<pre><code>// well-known user and group names
+const (
+	SystemPrivilegedGroup = &quot;system:masters&quot;
+	NodesGroup            = &quot;system:nodes&quot;
+	AllUnauthenticated    = &quot;system:unauthenticated&quot;
+	AllAuthenticated      = &quot;system:authenticated&quot;
+
+	Anonymous     = &quot;system:anonymous&quot;
+	APIServerUser = &quot;system:apiserver&quot;
+
+	// core kubernetes process identities
+	KubeProxy             = &quot;system:kube-proxy&quot;
+	KubeControllerManager = &quot;system:kube-controller-manager&quot;
+	KubeScheduler         = &quot;system:kube-scheduler&quot;
+)
+</code></pre><h3 id="认证策略">认证策略</h3>
+<p>对于 ServiceAccount 的认证，使用 Service Account Token 方式认证。</p>
+<p>对于 normal user，有如下多种方式，选择一种即可（选择多种，apiserver 会尝试多种认证方式，直到有一种方式认证成功，即结束）：</p>
+<ul>
+<li><strong>X509 Client Certs：上文有涉及。阿里云的托管集群，默认使用这种方式。</strong></li>
+<li>Static Token File：静态文件，revoke 不方便，不建议使用。Currently, tokens last indefinitely, and the token list cannot be changed without restarting API server.</li>
+<li>Bearer Token：怎么生成的不清楚。举例：Authorization: Bearer 31ada4fd-adec-460c-809a-9e56ceb75269</li>
+<li>Bootstrap Tokens：存储在 kube-system namespace 下的 secret，一定程度手动维护。a dynamically-managed Bearer token type called a Bootstrap Token. These tokens are stored as Secrets in the kube-system namespace, where they can be dynamically managed and created. Controller Manager contains a TokenCleaner controller that deletes bootstrap tokens as they expire.</li>
+<li>OpenID Connect Tokens：需要选择 OAuth2 providers，比如使用 Google Auth。</li>
+<li><strong>Webhook Token Authentication：EKS 使用这种，后文重点讲解。</strong></li>
+</ul>
+<p><strong>Authentication 如果失败，返回 401。如果成功，其重要输出就是 username。</strong></p>
+<h2 id="kubernetes-authorization-rbac">Kubernetes Authorization (RBAC)</h2>
+<p>我们就以 RBAC 举例讲 Kubernetes Authorization。集群一般会通过配置 RBAC 来控制权限。</p>
+<p>接上一步 Kubernetes Authentication 的成功结果，得到了 username。在 Authorization 阶段，就是与 RBAC 权限对照，检查 username 是否有权限访问资源。</p>
+<h3 id="default-clusterrolerole">Default ClusterRole/Role</h3>
+<p>Kubernetes 内置了4 种面向用户的 ClusterRole。</p>
+<p><img src="../../images/image6-ad33efd6-773a-4881-aec7-7cd28b19da81.png" alt=""></p>
+<p>来源：<a href="https://kubernetes.io/docs/reference/access-authn-authz/rbac/#user-facing-roles">https://kubernetes.io/docs/reference/access-authn-authz/rbac/#user-facing-roles</a></p>
+<p>示例，将 edit 这个 ClusterRole，赋予用户 integ-user。</p>
+<pre><code>kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1beta1
+metadata:
+  name: integ-role-binding
+  namespace: argo
+subjects:
+- kind: User
+  name: integ-user
+roleRef:
+  kind: ClusterRole
+  name: edit
+  apiGroup: rbac.authorization.k8s.io
+</code></pre><p>更精细的权限管理，需要自定义 ClusterRole/Role。</p>
+<p>示例，定义一个 ClusterRole，其有对 workflows 这个资源的所有权限。其中 workflows 是定义自 argoproj.io 的资源。</p>
+<pre><code>kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1beta1
+metadata:
+  name: workflow-edit-role
+  labels:
+    rbac.authorization.k8s.io/aggregate-to-edit: &quot;true&quot;
+rules:
+  - apiGroups:
+      - &quot;argoproj.io&quot;
+    resources:
+      - &quot;workflows&quot;
+    verbs:
+      - &quot;create&quot;
+      - &quot;delete&quot;
+      - &quot;describe&quot;
+      - &quot;get&quot;
+      - &quot;list&quot;
+      - &quot;patch&quot;
+      - &quot;update&quot;
+      - &quot;watch&quot;
+</code></pre><h2 id="admission-control">Admission Control</h2>
+<p>Authentication &amp; Authorization 通过后，request 进入 Admission Control 流程。</p>
+<p>Admission Control 主要是两个功能：</p>
+<ol>
+<li>改写 request</li>
+<li>验证 request</li>
+</ol>
+<p>Admission Control 默认有如下功能：</p>
+<blockquote>
+<p>NamespaceLifecycle, LimitRanger, ServiceAccount, TaintNodesByCondition, Priority, DefaultTolerationSeconds, DefaultStorageClass, StorageObjectInUseProtection, PersistentVolumeClaimResize, RuntimeClass, CertificateApproval, CertificateSigning, CertificateSubjectRestriction, DefaultIngressClass, MutatingAdmissionWebhook, ValidatingAdmissionWebhook, <strong>ResourceQuota</strong>, &hellip;</p>
+</blockquote>
+<p>以 ResourceQuota 为例，用于检查 request 中的申请的资源没有超过 namespace 的限额，这是验证 request 的例子：</p>
+<blockquote>
+<p>This admission controller will observe the incoming request and ensure that it does not violate any of the constraints enumerated in the ResourceQuota object in a Namespace. If you are using ResourceQuota objects in your Kubernetes deployment, you MUST use this admission controller to enforce quota constraints.</p>
+</blockquote>
+<p>以 DefaultStorageClass 为例，创建 PVC 对象的 request 不指定 StorageClass，如果有默认的 StorageClass，改写 request，添加 StorageClass。</p>
+<blockquote>
+<p>This admission controller observes creation of PersistentVolumeClaim objects that do not request any specific storage class and automatically adds a default storage class to them. This way, users that do not request any special storage class do not need to care about them at all and they will get the default one.</p>
+</blockquote>
+<p>Admission Control 也提供了接口，方便开发者自定义开发组件。这里不再详细展开。</p>
+<p>参考：</p>
+<ul>
+<li><a href="https://kubernetes.io/docs/reference/access-authn-authz/admission-controllers/">Using Admission Controllers</a></li>
+<li><a href="https://kubernetes.io/docs/reference/access-authn-authz/extensible-admission-controllers/">Dynamic Admission Control</a></li>
+</ul>
+<h1 id="eks-authentication">EKS Authentication</h1>
+<p>AWS EKS 是 AWS 提供的 Kubernetes 托管服务。在认证这块，EKS 结合了 AWS IAM，可以复用 IAM 的用户体系。</p>
+<h2 id="iam-简介">IAM 简介</h2>
+<p><em>AWS Identity and Access Management (IAM) enables you to manage access to AWS services and resources securely. Using IAM, you can create and manage AWS users and groups, and use permissions to allow and deny their access to AWS resources.</em> <em><a href="https://aws.amazon.com/iam/">https://aws.amazon.com/iam/</a></em></p>
+<p><img src="../../images/image11-9df8ca2d-74ed-4795-b43f-382c62bdbce9.png" alt=""></p>
+<p>IAM 用于管理 IAM 用户访问 AWS 资源的权限控制。所谓 AWS 资源，就是 AWS 中的各种服务能力。</p>
+<p>为什么是 IAM 用户，而不是账号。一般地，一个组织或是公司，AWS 主账号（AWS account root user）注册后，会创建 IAM user/group 并分配权限来进行日常管理工作。而不是直接使用 AWS 主账号，这样安全风险是比较大的，一个组织内全用一个账号是不合理的。</p>
+<h3 id="iam-重要概念">IAM 重要概念</h3>
+<ol>
+<li>IAM policy：访问权限规则，也就是对 AWS 资源的操作权限。可以赋予给 user/group/role。</li>
+<li>IAM user：用户。可以加入 group 间接得到 policy（建议，便于管理），也可以直接配置得到 policy。</li>
+<li>IAM group：用户组。可以把相同职能属性的 user 分为一个 group。</li>
+<li>IAM role：role 被直接赋予 user 或是通过 group 间接赋予 user，只代表 user 可以承担（assume）这个 role。user 使用 role 上的权限，需要有 assume role 的操作。
+<img src="../../images/image5-fffffd86-35f2-4b41-aa95-ebe5d042b334.png" alt="">
+<img src="../../images/image13-1a221b8f-1fdb-457b-89ca-209ceb5f3094.png" alt=""></li>
+</ol>
+<p>如果把 IAM group 比作是 role 的话，IAM 也是 RBAC 模型。</p>
+<p>一个 role 的例子。一个 IAM user 被赋予了对 S3 受限的权限，比如说只能读。</p>
+<p><img src="../../images/image9-d49a7b78-ba93-4465-903e-2e36da2f7055.png" alt=""></p>
+<p>一个受限制的用户，被赋予了IAM Admin Role （Role本身被赋予了有 Admin 权限的 policy）之后，就有了不受限制的权限了。</p>
+<p><img src="../../images/image10-8bc32a68-80e8-4286-8bd7-a47fd73517a7.png" alt=""></p>
+<h2 id="aws-iam-authenticator-模块">aws-iam-authenticator 模块</h2>
+<p>EKS 默认安装。</p>
+<p>通过 aws-iam-authenticator 这个模块，我们可以使用 IAM user 或是 assume IAM role 来登录 EKS 集群。</p>
+<p><img src="../../images/image4-3e2db7a2-da2e-47b6-b2ef-6d4578e5533e.png" alt=""></p>
+<p>以 kubectl get pods 为例细细梳理整个流程：</p>
+<ol>
+<li>kubectl 调用 aws 或是 aws-iam-authenticator 命令行获取 IAM Identity Token。这个在图中没有体现，大体是 aws cmd &lt;&ndash; aws access key/secret &ndash;&gt; IAM。</li>
+<li>kubectl 带着 token 和 get pods 这个 action 请求 apiserver。这就是 Client -&gt; EKS API Server 部分。</li>
+<li>apiserver 使用 token 进行 <strong>Authentication</strong>。EKS API Server 是配置了 webhook 的方式调用 aws-iam-authenticator server。</li>
+<li>aws-iam-authenticator server 连接 IAM 服务进行 token 验证。验证通过后，得到 IAM Identity，也就是 IAM user/role。</li>
+<li>aws-iam-authenticator server 获取 IAM Identity 对应的 Kubernetes user。</li>
+<li><strong>Authentication</strong> 环节结束，得到 Kubernetes user。</li>
+<li>其中，aws-iam-authenticator server 使用 <strong>aws-auth</strong> 这个 ConfigMap 存储 IAM Identity 与 Kubernetes user 的映射关系。</li>
+<li>其中，aws-iam-authenticator server 是安装在 master node 上。</li>
+<li>apiserver 使用 <strong>Authentication</strong> 环节得到的 Kubernetes user 和请求中的 action，也就是 get pods 进入 <strong>Authorization</strong> 环节。</li>
+<li>具体地说，get pods，pods 是 API Resource，get 是 action。</li>
+<li>获取与 Kubernetes user 绑定的 Role，检查用户是否有权限操作 get pods。</li>
+<li><strong>Authorization</strong> 环节通过，也就是权限验证通过，笼统地说，apiserver 就会把 pods 资源返回给客户端了。</li>
+</ol>
+<p>我们已经知道了 configmap/aws-auth 维护了 Kubernetes user 与 IAM user/role 的映射关系。一个一个用户添加不是个好办法，建议直接映射 IAM role。使用 mapRoles，而不是 mapUsers。</p>
+<blockquote>
+<p><em>The Advantage of using Role to access the cluster instead of specifying directly IAM users is that it will be easier to manage: we won’t have to update the ConfigMap each time we want to add or remove users, we will just need to add or remove users from the IAM Group and we just configure the ConfigMap to allow the IAM Role associated to the IAM Group.</em></p>
+</blockquote>
+<p>值得说明，创建 EKS cluster 的 IAM 实体，自动被赋予 system:masters 的权限，也就是集群管理员的权限。</p>
+<blockquote>
+<p>When you create an Amazon EKS cluster, the IAM entity user or role, such as a federated user that creates the cluster, is automatically granted system:masters permissions in the cluster&rsquo;s RBAC configuration in the control plane. This IAM entity does not appear in the ConfigMap, or any other visible configuration, so make sure to keep track of which IAM entity originally created the cluster. To grant additional AWS users or roles the ability to interact with your cluster, you must edit the aws-auth ConfigMap within Kubernetes.</p>
+</blockquote>
+<h1 id="实战">实战</h1>
+<p>我们分三个组：</p>
+<ol>
+<li>admin 管理员权限。</li>
+<li>integration 一个或多个 namespace 的写权限，用于例行变更部署。</li>
+<li>developer 一个或多个 namespace 的读权限，用于查看 dashboard，查看容器日志，排查一般问题。</li>
+</ol>
+<h2 id="改动效果">改动效果</h2>
+<p>需要操作修改的地方有：</p>
+<ol>
+<li>IAM 下创建三个 group，每个 group 对应一个 role。user 可以按需创建，加入合适的 group 中。</li>
+<li>aws-auth 这个 configmap 更新。</li>
+<li>RBAC 配置。</li>
+</ol>
+<h3 id="iam">IAM</h3>
+<p>IAM 控制台可见：</p>
+<p><img src="../../images/image1-bfb7e86d-dcdd-4de9-b539-ebca0978a76c.png" alt=""></p>
+<p>group 与 role 关联。</p>
+<p><img src="../../images/image8-132e0e54-827c-4c16-8056-fda664e0224b.png" alt=""></p>
+<p>每个 group 都有对应的 role。这个 role 用于映射到 Kubernetes user。</p>
+<p><img src="../../images/image12-5770a022-a78e-45c5-a902-779a171e000d.png" alt=""></p>
+<h3 id="aws-auth">aws-auth</h3>
+<p>aws-auth 应该有如下三项：rolearn 从 IAM 获取，username 自定义，与后面的 RBAC 权限控制保持一致即可。</p>
+<pre><code>$ kubectl get cm -n kube-system aws-auth -o yaml
+
+apiVersion: v1
+data:
+  mapRoles: |
+...
+    - rolearn: arn:aws:iam::xxxxxx:role/k8sDev
+      username: dev-user
+    - rolearn: arn:aws:iam::xxxxxx:role/k8sInteg
+      username: integ-user
+    - groups:
+      - system:masters
+      rolearn: arn:aws:iam::xxxxxx:role/k8sAdmin
+      username: admin
+...
+  mapUsers: |
+    []
+kind: ConfigMap
+...
+</code></pre><h3 id="rbac">RBAC</h3>
+<pre><code>kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1beta1
+metadata:
+  name: dev-role-binding
+  namespace: evonet
+subjects:
+- kind: User
+  name: dev-user
+roleRef:
+  kind: ClusterRole
+  name: view
+  apiGroup: rbac.authorization.k8s.io
+</code></pre><pre><code>kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1beta1
+metadata:
+  name: integ-role-binding
+  namespace: evonet
+subjects:
+- kind: User
+  name: integ-user
+roleRef:
+  kind: ClusterRole
+  name: edit
+  apiGroup: rbac.authorization.k8s.io
+</code></pre><h2 id="过程">过程</h2>
+<p>参考：<a href="https://www.eksworkshop.com/beginner/091_iam-groups/">Using IAM Groups to manage Kubernetes access</a></p>
+<p>按需，略有改动。</p>
+<h2 id="本地配置使用">本地配置使用</h2>
+<p>主要是创建或是修改几个文件：</p>
+<ol>
+<li>~/.aws/config</li>
+<li>~/.aws/credentials</li>
+<li>~/.kube/config （使用 export KUBECONFIG=&lt;/your/path/to/kubeconfig&gt; 暴露环境变量可使用任意位置）</li>
+</ol>
+<p>注意：以上都是软件默认配置路径。</p>
+<ol>
+<li>替换以下的 &lt;aws_access_key_id&gt; &lt;aws_secret_access_key&gt;。</li>
+<li>如果是 admin role：role_arn替换为 arn:aws:iam::xxxxxx:role/k8sAdmin</li>
+<li>如果是 integ role：role_arn=arn:aws:iam::xxxxxx:role/k8sInteg</li>
+</ol>
+<pre><code>$ cat ~/.aws/config
+[default]
+role_arn=arn:aws:iam::101606529841:role/k8sDev
+# role_arn=arn:aws:iam::101606529841:role/k8sInteg
+source_profile=default
+
+$ cat ~/.aws/credentials
+[default]
+aws_access_key_id = &lt;aws_access_key_id&gt;
+aws_secret_access_key = &lt;aws_secret_access_key&gt;
+
+$ cat ~/.kube/config
+apiVersion: v1
+clusters:
+- cluster:
+    certificate-authority-data: xxxxxx
+    server: xxxxxx
+  name: xxxxxx
+contexts:
+- context:
+    cluster: xxxxxx
+    user: xxxxxx
+  name: xxxxxx
+current-context: xxxxxx
+kind: Config
+preferences: {}
+users:
+- name: xxxxxx
+  user:
+    exec:
+      apiVersion: client.authentication.k8s.io/v1alpha1
+      args:
+      - --region
+      - ap-northeast-1
+      - eks
+      - get-token
+      - --cluster-name
+      - eks-try-2020-2
+      command: aws
+</code></pre><p>aws 配置是关键。</p>
+<p>role_arn 一定要指定，然后 role_arn 也是需要 source_profile 的，两者都指定下即可。</p>
+<p>也就是说，role 的使用一定要显式地使用。如果不显式，默认就是没有role，没有权限，非 cluster 创建者，就没有权限去访问了。</p>
+<p>aws cli 的配置文件，得参考如下。</p>
+<ol>
+<li><a href="https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-quickstart.html">Configuration basics - AWS Command Line Interface</a></li>
+<li>查看下配置 <a href="https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-files.html">Configuration and credential file settings - AWS Command Line Interface</a></li>
+<li>named profile，这里我们使用 default profile 即可，不需要指定 profile。 <a href="https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-profiles.html">https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-profiles.html</a></li>
+<li>使用 IAM role <a href="https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-role.html">https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-role.html</a></li>
+</ol>
+<p>kubeconfig 使用默认生成的即可。credentials 也可以使用 aws configure 来设置认证信息。只要新增 role_arn 即可。应该是最简设置了。</p>
+<h1 id="参考">参考</h1>
+<ul>
+<li><a href="https://kubernetes.io/docs/concepts/security/controlling-access/">Controlling Access to the Kubernetes API</a></li>
+<li><a href="https://kubernetes.io/docs/reference/access-authn-authz/authentication/">Authenticating</a></li>
+<li><a href="https://github.com/kubernetes-sigs/aws-iam-authenticator">kubernetes-sigs/aws-iam-authenticator: A tool to use AWS IAM credentials to authenticate to a Kubernetes cluster</a></li>
+<li><a href="https://programmer.group/how-to-deeply-understand-the-implementation-mechanism-of-eks-iam-authenticator.html">How to Deeply Understand the Implementation Mechanism of EKS IAM Authenticator</a></li>
+<li>IAM user 映射为 Kubernetes user <a href="https://www.eksworkshop.com/beginner/090_rbac/">Intro to RBAC</a></li>
+<li>IAM group/role 映射为 Kubernetes user <a href="https://www.eksworkshop.com/beginner/091_iam-groups/">Using IAM Groups to manage Kubernetes access</a></li>
+<li>Create a kubeconfig for Amazon EKS <a href="https://docs.aws.amazon.com/eks/latest/userguide/create-kubeconfig.html#create-kubeconfig-automatically">https://docs.aws.amazon.com/eks/latest/userguide/create-kubeconfig.html#create-kubeconfig-automatically</a></li>
+<li><a href="https://www.eksworkshop.com/beginner/091_iam-groups/">Using IAM Groups to manage Kubernetes access</a></li>
+<li><a href="https://docs.aws.amazon.com/eks/latest/userguide/add-user-role.html">Managing users or IAM roles for your cluster - Amazon EKS</a> 是上面那个 tutorial 的浓缩版</li>
+<li><a href="https://docs.aws.amazon.com/IAM/latest/UserGuide/introduction.html">https://docs.aws.amazon.com/IAM/latest/UserGuide/introduction.html</a></li>
+</ul>
+
+                    
+                    <HR width="100%" id="EOF">
+                    <p style="color:#777;">Last modified on 2021-04-25</p>
+                    
+                </div>
+            </div>
+            
+            
+            <nav class="post-pagination">
+
+                
+                <a class="newer-posts">
+                    Next<br>No newer posts.
+                </a>
+                
+                
+                
+                <a class="older-posts" href="https://xujiahua.github.io/posts/eksctl-nodecreationfailure-instances-failed-to-join-the-kubernetes-cluster-0393476e-6e53-42f7-8222-842ffd0e8358/">
+                    Previous<br>eksctl: NodeCreationFailure: Instances failed to join the kubernetes cluster
+                </a>
+                
+            </nav>
+            <div class="post-comment-wrapper">
+                
+
+
+
+
+
+
+            </div>
+        </div>
+    </div>
+</div>
+
+            </div><div id="single-column-footer">
+Hugo Theme <a href="https://github.com/amazingrise/hugo-theme-diary">Diary</a> by <a href="https://amazingrise.net">Rise</a>
+<br>
+Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopener">Makito</a>'s <a href="https://github.com/SumiMakito/hexo-theme-journal/" target="_blank" rel="noreferrer noopener">Journal.</a> <br>
+<br>
+
+&copy;
+	
+	2021 Happy Coding
+	</div>
+    	</div>
+    <script src="https://xujiahua.github.io//js/journal.js"></script>
+    </body>
+</html>

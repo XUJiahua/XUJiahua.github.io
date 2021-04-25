@@ -1,18 +1,27 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Categories on 许嘉华的笔记</title>
+    <title>Categories on Happy Coding</title>
     <link>https://xujiahua.github.io/categories/</link>
-    <description>Recent content in Categories on 许嘉华的笔记</description>
+    <description>Recent content in Categories on Happy Coding</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Sun, 25 Apr 2021 13:18:00 +0800</lastBuildDate><atom:link href="https://xujiahua.github.io/categories/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sun, 25 Apr 2021 16:35:55 +0800</lastBuildDate><atom:link href="https://xujiahua.github.io/categories/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>K8s</title>
       <link>https://xujiahua.github.io/categories/k8s/</link>
-      <pubDate>Sun, 25 Apr 2021 13:18:00 +0800</pubDate>
+      <pubDate>Sun, 25 Apr 2021 16:35:55 +0800</pubDate>
       
       <guid>https://xujiahua.github.io/categories/k8s/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>sideproject</title>
+      <link>https://xujiahua.github.io/categories/sideproject/</link>
+      <pubDate>Wed, 21 Apr 2021 18:03:00 +0800</pubDate>
+      
+      <guid>https://xujiahua.github.io/categories/sideproject/</guid>
       <description></description>
     </item>
     

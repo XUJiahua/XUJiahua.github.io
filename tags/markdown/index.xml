@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>markdown on 许嘉华的笔记</title>
+    <title>markdown on Happy Coding</title>
     <link>https://xujiahua.github.io/tags/markdown/</link>
-    <description>Recent content in markdown on 许嘉华的笔记</description>
+    <description>Recent content in markdown on Happy Coding</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
     <lastBuildDate>Mon, 12 Apr 2021 17:25:00 +0800</lastBuildDate><atom:link href="https://xujiahua.github.io/tags/markdown/index.xml" rel="self" type="application/rss+xml" />
@@ -18,7 +18,7 @@
 Github pages重新开始：使用Hugo、Typora
 怎么把我 Notion 中的文章同步到我的博客呢。这是本文目的。
 主要是写了一个 notion-mk 的程序将 notion 文章导出到 hugo 工作目录。后面的工作与之前保持一致。
-notion -- notion-mk(todo) --&amp;gt; hugo directory -- hugo generate --&amp;gt; static html/js/css  WIP 代码如下：
+notion -- notion-mk(todo) --&amp;gt; hugo directory -- hugo generate --&amp;gt; static html/js/css WIP 代码如下：
 XUJiahua/notion-md
 功能  Download images Notion extract to markdown markdown hugo compatiable image location? remove title from markdown, now #&amp;hellip; support category support tag table of content at the beginning  使用 将要发布的文档添加到这个 list 页面</description>
     </item>
