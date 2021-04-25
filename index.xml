@@ -42,6 +42,7 @@ incoming query: select * from iris
 &lt;p&gt;当时手头正好有份指标数据需要做对比分析，觉得可以用 Metabase 试试。但是 Metabase 还得安装到本地，进行一系列的设置：创建用户、加入一个数据源、导入数据。然后才是我想要做的数据分析！&lt;/p&gt;
 &lt;p&gt;我只是要分析一份没多大的 CSV 文件而已啊。我需要一个“用完就走”的工具。&lt;/p&gt;
 &lt;p&gt;惦记着 Metabase 的简洁美观，也没找到适合的分析 CSV 的工具，那就自己做一个吧。（可能 Excel 更合适，但一直没习惯使用。。。）&lt;/p&gt;
+&lt;p&gt;其他命令行工具最大的问题就是没有交互。&lt;/p&gt;
 &lt;h2 id=&#34;工作量分析&#34;&gt;工作量分析&lt;/h2&gt;
 &lt;p&gt;大体思路如下：&lt;/p&gt;
 &lt;ol&gt;
@@ -61,6 +62,8 @@ incoming query: select * from iris
 &lt;h2 id=&#34;优化空间&#34;&gt;优化空间&lt;/h2&gt;
 &lt;h3 id=&#34;支持更多的-metabase-api&#34;&gt;支持更多的 Metabase API&lt;/h3&gt;
 &lt;p&gt;这样可以更大范围地复用 Metabase 前端代码。可以使用到与原版 Metabase 一样的功能。&lt;/p&gt;
+&lt;p&gt;特别是 MBQL，交互式筛选数据的能力。&lt;/p&gt;
+&lt;p&gt;XRAY，根据一些常见的统计知识以及内置的分析策略，自动化生成 dashboard 的能力。&lt;/p&gt;
 &lt;h3 id=&#34;更多的存储引擎支持&#34;&gt;更多的存储引擎支持&lt;/h3&gt;
 &lt;p&gt;目前使用的是开源库的内存数据库。考虑到如果有大尺寸的 CSV 文件进行聚合操作，列式存储引擎的效果会更好。&lt;/p&gt;
 &lt;h3 id=&#34;缩小前端产物大小&#34;&gt;缩小前端产物大小&lt;/h3&gt;
@@ -159,6 +162,8 @@ MSET (10 keys): 93283.58 requests per second, p50=0.423 msec
 &amp;quot;SET&amp;quot;,&amp;quot;44662.79&amp;quot;,&amp;quot;1.033&amp;quot;,&amp;quot;0.040&amp;quot;,&amp;quot;1.167&amp;quot;,&amp;quot;1.535&amp;quot;,&amp;quot;2.367&amp;quot;,&amp;quot;36.095&amp;quot;
 &amp;quot;GET&amp;quot;,&amp;quot;52137.64&amp;quot;,&amp;quot;0.523&amp;quot;,&amp;quot;0.088&amp;quot;,&amp;quot;0.503&amp;quot;,&amp;quot;0.687&amp;quot;,&amp;quot;1.199&amp;quot;,&amp;quot;6.327&amp;quot;
 &lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;可视化对比 p99_latency_ms 这个指标：&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/Untitled-47e16126-1acc-4d64-ab5a-b5ee281fa1cb.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
 &lt;h2 id=&#34;总结&#34;&gt;总结&lt;/h2&gt;
 &lt;p&gt;使用 redis-benchmark 作为性能测试框架。在相同的测试用例下，通过对照比较其他存储引擎的测试结果，了解自己需要进步的空间。&lt;/p&gt;
 - https://xujiahua.github.io/posts/redis-benchmark-kv-a3e78900-612a-4d04-b2aa-fc6f0908b431/ - </description>
