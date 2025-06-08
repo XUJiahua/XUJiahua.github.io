@@ -1,29 +1,19 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>logging on Happy Coding</title>
+    <title>Logging on Happy Coding</title>
     <link>https://xujiahua.github.io/tags/logging/</link>
-    <description>Recent content in logging on Happy Coding</description>
-    <generator>Hugo -- gohugo.io</generator>
+    <description>Recent content in Logging on Happy Coding</description>
+    <generator>Hugo</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Tue, 14 Apr 2020 09:53:35 +0800</lastBuildDate><atom:link href="https://xujiahua.github.io/tags/logging/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Tue, 14 Apr 2020 09:53:35 +0800</lastBuildDate>
+    <atom:link href="https://xujiahua.github.io/tags/logging/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>k8s 应用日志收集</title>
       <link>https://xujiahua.github.io/posts/20200414-k8s-logging/</link>
       <pubDate>Tue, 14 Apr 2020 09:53:35 +0800</pubDate>
-      
       <guid>https://xujiahua.github.io/posts/20200414-k8s-logging/</guid>
-      <description>k8s 日志收集架构 以下是比较一般、普适的架构。更多参考：Kubernetes 日志架构 https://kubernetes.io/zh/docs/concepts/cluster-administration/logging/
- 容器化应用将日志写入stdout、stderr。 Docker容器引擎将stdout、stderr流重定向到日志驱动，比如默认的json-file。 json-file日志驱动将日志写入到（宿主机上的）文件。 日志收集工具以DaemonSet的形式安装在每个节点。 日志收集工具监听文件变化，并将日志写入到日志中心服务。  k8s 日志收集细节 实战 可以直接参考以下教程：minikube创建了一个Kubernetes集群，Fluentd收集日志，存入ElasticSearch，使用Kibana查看日志。典型的EFK技术栈。
- Logging in Kubernetes with Elasticsearch, Kibana, and Fluentd https://mherman.org/blog/logging-in-kubernetes-with-elasticsearch-Kibana-fluentd/  在Kibana上看收集到的日志。能看到日志收集工具也采集了容器、镜像、Pod有关的信息。这些上下文信息能让人定位到是哪个应用在生产日志。
-fluentd 收集上下文信息 Docker json-file 日志驱动写文件，并不记录上下文信息。 https://docs.docker.com/config/containers/logging/json-file/
-{&amp;quot;log&amp;quot;:&amp;quot;Log line is here\n&amp;quot;,&amp;quot;stream&amp;quot;:&amp;quot;stdout&amp;quot;,&amp;quot;time&amp;quot;:&amp;quot;2019-01-01T11:11:11.111111111Z&amp;quot;} 上文中使用的日志收集镜像是 fluent/fluentd-kubernetes-daemonset:v1.3-debian-elasticsearch。
-具体代码路径在此 https://github.com/fluent/fluentd-kubernetes-daemonset/tree/master/docker-image/v1.3/debian-elasticsearch
-收集容器目录下的日志。
-使用kubernetes_metadata这个第三方插件获取容器相关的上下文信息。这里是通过请求API server得到metadata的。
-kubernetes_metadata 插件地址 https://github.com/fabric8io/fluent-plugin-kubernetes_metadata_filter
-插件中有缓存metadata的选项，不用担心每处理一条日志，就要向API server发送请求。</description>
+      <description>&lt;h2 id=&#34;k8s-日志收集架构&#34;&gt;k8s 日志收集架构&lt;/h2&gt;&#xA;&lt;p&gt;以下是比较一般、普适的架构。更多参考：Kubernetes 日志架构 &lt;a href=&#34;https://kubernetes.io/zh/docs/concepts/cluster-administration/logging/&#34; target=&#34;_blank&#34; rel=&#34;noopener noreffer &#34;&gt;https://kubernetes.io/zh/docs/concepts/cluster-administration/logging/&lt;/a&gt;&lt;/p&gt;&#xA;&lt;p&gt;&lt;img&#xA;        class=&#34;lazyload&#34;&#xA;        src=&#34;https://xujiahua.github.io/svg/loading.min.svg&#34;&#xA;        data-src=&#34;../../images/logging-with-node-agent.png&#34;&#xA;        data-srcset=&#34;../../images/logging-with-node-agent.png, ../../images/logging-with-node-agent.png 1.5x, ../../images/logging-with-node-agent.png 2x&#34;&#xA;        data-sizes=&#34;auto&#34;&#xA;        alt=&#34;../../images/logging-with-node-agent.png&#34;&#xA;        title=&#34;使用节点日志记录代理&#34; /&gt;&lt;/p&gt;&#xA;&lt;ol&gt;&#xA;&lt;li&gt;容器化应用将日志写入&lt;code&gt;stdout&lt;/code&gt;、&lt;code&gt;stderr&lt;/code&gt;。&lt;/li&gt;&#xA;&lt;li&gt;Docker容器引擎将&lt;code&gt;stdout&lt;/code&gt;、&lt;code&gt;stderr&lt;/code&gt;流重定向到日志驱动，比如默认的json-file。&lt;/li&gt;&#xA;&lt;li&gt;json-file日志驱动将日志写入到（宿主机上的）文件。&lt;/li&gt;&#xA;&lt;li&gt;日志收集工具以DaemonSet的形式安装在每个节点。&lt;/li&gt;&#xA;&lt;li&gt;日志收集工具监听文件变化，并将日志写入到日志中心服务。&lt;/li&gt;&#xA;&lt;/ol&gt;&#xA;&lt;h2 id=&#34;k8s-日志收集细节&#34;&gt;k8s 日志收集细节&lt;/h2&gt;&#xA;&lt;h3 id=&#34;实战&#34;&gt;实战&lt;/h3&gt;&#xA;&lt;p&gt;可以直接参考以下教程：minikube创建了一个Kubernetes集群，Fluentd收集日志，存入ElasticSearch，使用Kibana查看日志。典型的EFK技术栈。&lt;/p&gt;&#xA;&lt;ol&gt;&#xA;&lt;li&gt;Logging in Kubernetes with Elasticsearch, Kibana, and Fluentd &lt;a href=&#34;https://mherman.org/blog/logging-in-kubernetes-with-elasticsearch-Kibana-fluentd/&#34; target=&#34;_blank&#34; rel=&#34;noopener noreffer &#34;&gt;https://mherman.org/blog/logging-in-kubernetes-with-elasticsearch-Kibana-fluentd/&lt;/a&gt;&lt;/li&gt;&#xA;&lt;/ol&gt;&#xA;&lt;p&gt;在Kibana上看收集到的日志。能看到日志收集工具也采集了容器、镜像、Pod有关的信息。这些上下文信息能让人定位到是哪个应用在生产日志。&lt;/p&gt;&#xA;&lt;p&gt;&lt;img&#xA;        class=&#34;lazyload&#34;&#xA;        src=&#34;https://xujiahua.github.io/svg/loading.min.svg&#34;&#xA;        data-src=&#34;../../images/image-20200414104511399.png&#34;&#xA;        data-srcset=&#34;../../images/image-20200414104511399.png, ../../images/image-20200414104511399.png 1.5x, ../../images/image-20200414104511399.png 2x&#34;&#xA;        data-sizes=&#34;auto&#34;&#xA;        alt=&#34;../../images/image-20200414104511399.png&#34;&#xA;        title=&#34;image-20200414104511399&#34; /&gt;&lt;/p&gt;&#xA;&lt;h3 id=&#34;fluentd-收集上下文信息&#34;&gt;fluentd 收集上下文信息&lt;/h3&gt;&#xA;&lt;p&gt;Docker &lt;code&gt;json-file&lt;/code&gt; 日志驱动写文件，并不记录上下文信息。 &lt;a href=&#34;https://docs.docker.com/config/containers/logging/json-file/&#34; target=&#34;_blank&#34; rel=&#34;noopener noreffer &#34;&gt;https://docs.docker.com/config/containers/logging/json-file/&lt;/a&gt;&lt;/p&gt;&#xA;&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;{&amp;#34;log&amp;#34;:&amp;#34;Log line is here\n&amp;#34;,&amp;#34;stream&amp;#34;:&amp;#34;stdout&amp;#34;,&amp;#34;time&amp;#34;:&amp;#34;2019-01-01T11:11:11.111111111Z&amp;#34;}&#xA;&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;上文中使用的日志收集镜像是 &lt;code&gt;fluent/fluentd-kubernetes-daemonset:v1.3-debian-elasticsearch&lt;/code&gt;。&lt;/p&gt;&#xA;&lt;p&gt;具体代码路径在此 &lt;a href=&#34;https://github.com/fluent/fluentd-kubernetes-daemonset/tree/master/docker-image/v1.3/debian-elasticsearch&#34; target=&#34;_blank&#34; rel=&#34;noopener noreffer &#34;&gt;https://github.com/fluent/fluentd-kubernetes-daemonset/tree/master/docker-image/v1.3/debian-elasticsearch&lt;/a&gt;&lt;/p&gt;&#xA;&lt;p&gt;收集容器目录下的日志。&lt;/p&gt;&#xA;&lt;p&gt;&lt;img&#xA;        class=&#34;lazyload&#34;&#xA;        src=&#34;https://xujiahua.github.io/svg/loading.min.svg&#34;&#xA;        data-src=&#34;../../images/image-20200414105706563.png&#34;&#xA;        data-srcset=&#34;../../images/image-20200414105706563.png, ../../images/image-20200414105706563.png 1.5x, ../../images/image-20200414105706563.png 2x&#34;&#xA;        data-sizes=&#34;auto&#34;&#xA;        alt=&#34;../../images/image-20200414105706563.png&#34;&#xA;        title=&#34;image-20200414105706563&#34; /&gt;&lt;/p&gt;&#xA;&lt;p&gt;使用&lt;code&gt;kubernetes_metadata&lt;/code&gt;这个第三方插件获取容器相关的上下文信息。这里是通过请求API server得到metadata的。&lt;/p&gt;</description>
     </item>
-    
   </channel>
 </rss>

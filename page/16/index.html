@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+    <head>
+	<meta name="generator" content="Hugo 0.147.3"><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="robots" content="noodp" />
+        <title>Happy Coding</title><meta name="Description" content=""><meta property="og:url" content="http://localhost:1313/">
+  <meta property="og:site_name" content="Happy Coding">
+  <meta property="og:title" content="Happy Coding">
+  <meta property="og:locale" content="zh_cn">
+  <meta property="og:type" content="website">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Happy Coding">
+<meta name="application-name" content="Happy Coding">
+<meta name="apple-mobile-web-app-title" content="Happy Coding"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="http://localhost:1313/" /><link rel="alternate" href="/index.xml" type="application/rss+xml" title="Happy Coding">
+    <link rel="feed" href="/index.xml" type="application/rss+xml" title="Happy Coding"><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="/lib/fontawesome-free/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="/lib/fontawesome-free/all.min.css"></noscript><link rel="preload" href="/lib/animate/animate.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="/lib/animate/animate.min.css"></noscript><script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "WebSite",
+        "url": "http:\/\/localhost:1313\/","inLanguage": "zh-cn","author": {
+                "@type": "Person",
+                "name": "Happy Coding"
+            },"name": "Happy Coding"
+    }
+    </script></head>
+    <body data-header-desktop="fixed" data-header-mobile="auto"><script type="text/javascript">(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
+
+        <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
+    <div class="header-wrapper">
+        <div class="header-title">
+            <a href="/" title="Happy Coding">Happy Coding</a>
+        </div>
+        <div class="menu">
+            <div class="menu-inner"><a class="menu-item" href="/posts"> Archive </a><a class="menu-item" href="/categories"> Categories </a><a class="menu-item" href="/tags"> Tags </a><a class="menu-item" href="/index.xml"> RSS Feed </a><span class="menu-item delimiter"></span><a href="javascript:void(0);" class="menu-item theme-switch" title="Switch Theme">
+                    <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+                </a></div>
+        </div>
+    </div>
+</header><header class="mobile" id="header-mobile">
+    <div class="header-container">
+        <div class="header-wrapper">
+            <div class="header-title">
+                <a href="/" title="Happy Coding">Happy Coding</a>
+            </div>
+            <div class="menu-toggle" id="menu-toggle-mobile">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="menu" id="menu-mobile"><a class="menu-item" href="/posts" title="">Archive</a><a class="menu-item" href="/categories" title="">Categories</a><a class="menu-item" href="/tags" title="">Tags</a><a class="menu-item" href="/index.xml" title="">RSS Feed</a><a href="javascript:void(0);" class="menu-item theme-switch" title="Switch Theme">
+                <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+            </a></div>
+    </div>
+</header><main class="main">
+                <div class="container"><div class="page home" data-home="posts"><div class="home-profile"><div class="links"></div></div>
+<article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
+        <a href="/posts/20200403-docker-logging/">Docker日志驱动小结</a>
+    </h1><div class="post-meta"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Happy Coding</a></span>&nbsp;<span class="post-publish">published on <time datetime="2020-04-03">2020-04-03</time></span></div><div class="content"><p><code>docker logs</code>， <code>kubectl logs</code>能看到Docker容器的标准输出、标准错误，方便定位问题。而 <code>xxx logs</code>之所以能看到，是因为标准输出、标准错误存储在每个容器独有的日志文件中。</p>
+<p>另外日志量大了，用<code>docker logs</code>看历史数据不大合适。我们就需要考虑将日志存储到日志中心去。</p>
+<p>Docker默认支持如下日志驱动。有直接写文件的，有使用云服务的。下面简单介绍下。</p>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="../../images/Screen-Shot-2017-09-11-at-3.08.50-PM.png"
+        data-srcset="../../images/Screen-Shot-2017-09-11-at-3.08.50-PM.png, ../../images/Screen-Shot-2017-09-11-at-3.08.50-PM.png 1.5x, ../../images/Screen-Shot-2017-09-11-at-3.08.50-PM.png 2x"
+        data-sizes="auto"
+        alt="../../images/Screen-Shot-2017-09-11-at-3.08.50-PM.png"
+        title="img" /></p>
+<p>credit: <a href="https://jaxenter.com/docker-logging-gotchas-137049.html" target="_blank" rel="noopener noreffer ">https://jaxenter.com/docker-logging-gotchas-137049.html</a></p>
+<p>官方文档 <a href="https://docs.docker.com/config/containers/logging/configure/" target="_blank" rel="noopener noreffer ">https://docs.docker.com/config/containers/logging/configure/</a></p>
+<h2 id="默认驱动json-file">默认驱动：json-file</h2>
+<p>默认的Logging Driver是json-file。<code>docker info</code>可以查看。全局的日志驱动设置，可以修改daemon配置文件 <code>/etc/docker/daemon.json</code>。</p>
+<p>写入文件的日志格式长这样：<code>{&quot;log&quot;:&quot;Log line is here\n&quot;,&quot;stream&quot;:&quot;stdout&quot;,&quot;time&quot;:&quot;2019-01-01T11:11:11.111111111Z&quot;}</code>，每一行是一个json文件，log字段为容器原来输出的每行内容。</p>
+<p>默认配置，创建的容器的信息在这个目录下： <code>/var/lib/docker/containers</code>。</p>
+<h3 id="实验">实验</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>root@ubuntu-parallel:~# docker run --name default_logging_driver hello-world
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>root@ubuntu-parallel:~# cd /var/lib/docker/containers/<span style="color:#66d9ef">$(</span>docker ps --no-trunc -aqf <span style="color:#e6db74">&#34;name=default_logging_driver&#34;</span><span style="color:#66d9ef">)</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>root@ubuntu-parallel:~# cat <span style="color:#66d9ef">$(</span>docker ps --no-trunc -aqf <span style="color:#e6db74">&#34;name=default_logging_driver&#34;</span><span style="color:#66d9ef">)</span>-json.log
+</span></span><span style="display:flex;"><span><span style="color:#f92672">{</span><span style="color:#e6db74">&#34;log&#34;</span>:<span style="color:#e6db74">&#34;\n&#34;</span>,<span style="color:#e6db74">&#34;stream&#34;</span>:<span style="color:#e6db74">&#34;stdout&#34;</span>,<span style="color:#e6db74">&#34;time&#34;</span>:<span style="color:#e6db74">&#34;2020-04-02T01:46:54.096347888Z&#34;</span><span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">{</span><span style="color:#e6db74">&#34;log&#34;</span>:<span style="color:#e6db74">&#34;Hello from Docker!\n&#34;</span>,<span style="color:#e6db74">&#34;stream&#34;</span>:<span style="color:#e6db74">&#34;stdout&#34;</span>,<span style="color:#e6db74">&#34;time&#34;</span>:<span style="color:#e6db74">&#34;2020-04-02T01:46:54.096377382Z&#34;</span><span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">{</span><span style="color:#e6db74">&#34;log&#34;</span>:<span style="color:#e6db74">&#34;This message shows that your installation appears to be working correctly.\n&#34;</span>,<span style="color:#e6db74">&#34;stream&#34;</span>:<span style="color:#e6db74">&#34;stdout&#34;</span>,<span style="color:#e6db74">&#34;time&#34;</span>:<span style="color:#e6db74">&#34;2020-04-02T01:46:54.096381118Z&#34;</span><span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">{</span><span style="color:#e6db74">&#34;log&#34;</span>:<span style="color:#e6db74">&#34;\n&#34;</span>,<span style="color:#e6db74">&#34;stream&#34;</span>:<span style="color:#e6db74">&#34;stdout&#34;</span>,<span style="color:#e6db74">&#34;time&#34;</span>:<span style="color:#e6db74">&#34;2020-04-02T01:46:54.096383725Z&#34;</span><span style="color:#f92672">}</span>
+</span></span></code></pre></div><p><a href="https://docs.docker.com/config/containers/logging/json-file/" target="_blank" rel="noopener noreffer ">https://docs.docker.com/config/containers/logging/json-file/</a></p></div><div class="post-footer">
+        <a href="/posts/20200403-docker-logging/">Read More</a><div class="post-tags">
+                <i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/docker/">Docker</a></div></div>
+</article><article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
+        <a href="/posts/20200402-use-fluentd/">Fluentd 实战——收集 Docker 容器日志</a>
+    </h1><div class="post-meta"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Happy Coding</a></span>&nbsp;<span class="post-publish">published on <time datetime="2020-04-02">2020-04-02</time></span></div><div class="content"><p>以收集Docker容器日志的例子，介绍下Fluentd的用法。不考虑logstash，太占服务器资源了。</p>
+<h2 id="安装-fluentd">安装 Fluentd</h2>
+<p>Ubuntu 18.04上的安装命令（https://docs.fluentd.org/installation/install-by-deb）：</p>
+<pre tabindex="0"><code>root@ubuntu-parallel:~# curl -L https://toolbelt.treasuredata.com/sh/install-ubuntu-bionic-td-agent3.sh | sh
+</code></pre><p>以Daemon方式启动：</p>
+<pre tabindex="0"><code>root@ubuntu-parallel:~# systemctl start td-agent.service
+root@ubuntu-parallel:~# systemctl status td-agent.service
+</code></pre><p>fluentd的安装目录是在/opt/td-agent/下的。为演示方便，我们可以直接使用 <code>/opt/td-agent/embedded/bin/fluentd</code>这个程序。</p>
+<pre tabindex="0"><code>root@ubuntu-parallel:~# ps -ef | grep fluentd
+td-agent 30596     1  0 17:10 ?        00:00:00 /opt/td-agent/embedded/bin/ruby /opt/td-agent/embedded/bin/fluentd --log /var/log/td-agent/td-agent.log --daemon /var/run/td-agent/td-agent.pid
+td-agent 30602 30596  9 17:10 ?        00:00:00 /opt/td-agent/embedded/bin/ruby -Eascii-8bit:ascii-8bit /opt/td-agent/embedded/bin/fluentd --log /var/log/td-agent/td-agent.log --daemon /var/run/td-agent/td-agent.pid --under-supervisor
+</code></pre><p>其他系统的安装参考：https://docs.fluentd.org/installation</p>
+<h3 id="小试牛刀">小试牛刀</h3>
+<p>配置文件 test.conf，启动一个HTTP服务，并把接收到的日志，打印到标准输出。</p>
+<pre tabindex="0"><code>&lt;source&gt;
+  @type http
+  port 9880
+&lt;/source&gt;
+
+&lt;match *.*&gt;
+  @type stdout
+&lt;/match&gt;
+</code></pre><p>启动fluentd进程。</p>
+<pre tabindex="0"><code>root@ubuntu-parallel:~# /opt/td-agent/embedded/bin/fluentd -c test.conf
+</code></pre><p>通过HTTP服务提交日志。可以看到fluentd终端打印出了输入的日志。</p></div><div class="post-footer">
+        <a href="/posts/20200402-use-fluentd/">Read More</a></div>
+</article><article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
+        <a href="/posts/docker-source-code/">Docker Source Code</a>
+    </h1><div class="post-meta"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Happy Coding</a></span>&nbsp;<span class="post-publish">published on <time datetime="2020-04-01">2020-04-01</time></span></div><div class="content"><p>从单元测试和集成测试中学习。</p>
+<pre tabindex="0"><code>api - Docker API Server
+builder - ???
+cli - 命令行工具
+client - Docker Client
+cmd/dockerd - Dockerd 
+container - 容器
+contrib - 非核心代码和脚本，可能过时
+daemon - daemon ???
+distribution - ???
+dockerversion - 版本信息
+docs - 文档
+errdefs - 自定义error
+hack - 一些脚本
+image - 镜像有关
+integration - 集成测试
+integration-cli - 已废弃
+internal/test/suite - 测试相关
+layer - image/container的layer
+libcontainerd - containerd client，daemon会调用
+oci - 里面都没单元测试，还是需要了解oci这个标准，daemon会调用
+opts - options? 
+pkg - pkg/ is a collection of utility packages used by the Moby project without being specific to its internals.
+plugin -  ???
+profiles - ???
+project - md文档
+reference - ???
+registry - Package registry contains client primitives to interact with a remote Docker registry.
+restartmanager - ???
+rootless - ???
+runconfig - ???
+testutil - 测试工具
+vendor - 第三方代码
+volume - volume相关
+</code></pre></div><div class="post-footer">
+        <a href="/posts/docker-source-code/">Read More</a></div>
+</article><article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
+        <a href="/posts/20200401-google-vision-api/">Google Vision API</a>
+    </h1><div class="post-meta"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Happy Coding</a></span>&nbsp;<span class="post-publish">published on <time datetime="2020-04-01">2020-04-01</time></span></div><div class="content"><h2 id="目标">目标</h2>
+<p>业务上需要识别出文本、图像敏感内容，降低业务风险。</p>
+<p>调用下云服务的产品。</p>
+<h2 id="google-cloud-platform">Google Cloud Platform</h2>
+<p>GCP上，图像识别有两个产品：</p>
+<ol>
+<li>Vision API 直接使用预先训练的模型</li>
+<li>AutoML 迁移学习，使用用户提交的新分类数据，训练模型。</li>
+</ol>
+<p>关于文本识别的产品是类似的，也分直接使用预训练模型和迁移学习重新训练。</p>
+<h2 id="vision-api图像内容识别">Vision API：图像内容识别</h2>
+<ol>
+<li>Google Vision API的模型已经有审核内容的能力：暴力、成人内容的识别。</li>
+<li>提供API，也提供了各个语言的SDK。</li>
+<li>不需要开发者训练模型。</li>
+</ol>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="../../images/image-20200401145549783.png"
+        data-srcset="../../images/image-20200401145549783.png, ../../images/image-20200401145549783.png 1.5x, ../../images/image-20200401145549783.png 2x"
+        data-sizes="auto"
+        alt="../../images/image-20200401145549783.png"
+        title="image-20200401145549783" /></p>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="../../images/image-20200401145658730.png"
+        data-srcset="../../images/image-20200401145658730.png, ../../images/image-20200401145658730.png 1.5x, ../../images/image-20200401145658730.png 2x"
+        data-sizes="auto"
+        alt="../../images/image-20200401145658730.png"
+        title="image-20200401145658730" /></p>
+<p>参考：https://cloud.google.com/vision?hl=zh-cn</p>
+<h3 id="试用">试用</h3>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="../../images/image-20200401142058025.png"
+        data-srcset="../../images/image-20200401142058025.png, ../../images/image-20200401142058025.png 1.5x, ../../images/image-20200401142058025.png 2x"
+        data-sizes="auto"
+        alt="../../images/image-20200401142058025.png"
+        title="image-20200401142058025" /></p>
+<h3 id="安全搜索的分类说明">安全搜索的分类说明</h3>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="../../images/image-20200401144423857.png"
+        data-srcset="../../images/image-20200401144423857.png, ../../images/image-20200401144423857.png 1.5x, ../../images/image-20200401144423857.png 2x"
+        data-sizes="auto"
+        alt="../../images/image-20200401144423857.png"
+        title="image-20200401144423857" /></p>
+<ol>
+<li>Adult 成人内容</li>
+<li>Spoof 恶搞，比如恶搞政治人物</li>
+<li>Medical 医疗影像</li>
+<li>Violence 暴力内容</li>
+<li>Racy 猥亵类，类似成人内容</li>
+</ol>
+<p>参考：https://cloud.google.com/vision/docs/reference/rpc/google.cloud.vision.v1?hl=zh-cn#google.cloud.vision.v1.SafeSearchAnnotation</p></div><div class="post-footer">
+        <a href="/posts/20200401-google-vision-api/">Read More</a></div>
+</article><article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
+        <a href="/posts/vscode-go/">Vscode Go</a>
+    </h1><div class="post-meta"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Happy Coding</a></span>&nbsp;<span class="post-publish">published on <time datetime="2020-04-01">2020-04-01</time></span></div><div class="content"><p>Docker代码在MacOS上是编译不了的，代码跳转不了。现在需要MacOS连上Linux，读Docker代码。</p>
+<p>Go IDE选择不多，Goland、Vscode。Goland在IDE角度肯定好很多，但装个Linux桌面版，再装Goland太繁琐了。</p>
+<p>Vscode有个好处，就是可以远程连接装在Linux上的Vscode server。安装简便，还开源免费。</p>
+<h2 id="vscode-go">vscode-go</h2>
+<p>用过Goland，再用vscode真是无法接受。</p>
+<h3 id="gopls">gopls</h3>
+<p>用户文档 <a href="https://github.com/golang/tools/blob/master/gopls/doc/user.md" target="_blank" rel="noopener noreffer ">https://github.com/golang/tools/blob/master/gopls/doc/user.md</a></p>
+<p><a href="https://github.com/golang/tools/blob/master/gopls/doc/vscode.md" target="_blank" rel="noopener noreffer ">https://github.com/golang/tools/blob/master/gopls/doc/vscode.md</a></p>
+<p>vscode-go typically requires installing multiple packages like gocode, gopkg, gosymbols, go-outline, … These are all replaced by gopls <a href="https://medium.com/the-andela-way/gopls-language-server-setup-for-go-projects-3ee79dcac123" target="_blank" rel="noopener noreffer ">https://medium.com/the-andela-way/gopls-language-server-setup-for-go-projects-3ee79dcac123</a></p>
+<p>If you have chosen to use the Go language server, then most of the below tools are no longer needed as the corresponding features will be provided by the language server.  <a href="https://github.com/Microsoft/vscode-go/wiki/Go-tools-that-the-Go-extension-depends-on" target="_blank" rel="noopener noreffer ">https://github.com/Microsoft/vscode-go/wiki/Go-tools-that-the-Go-extension-depends-on</a></p>
+<h3 id="自动安装gopls">自动安装gopls</h3>
+<p>安装完vscode-go，打开一个go项目，vscode会提示你安装的。一般情况，会安装失败。</p>
+<p>以前vscode-go会安装一堆依赖，因为网络的原因，看到一堆安装报错。</p></div><div class="post-footer">
+        <a href="/posts/vscode-go/">Read More</a></div>
+</article><article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
+        <a href="/posts/20200331-use-docker-machine/">使用 Docker Machine</a>
+    </h1><div class="post-meta"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Happy Coding</a></span>&nbsp;<span class="post-publish">published on <time datetime="2020-03-31">2020-03-31</time></span></div><div class="content"><h2 id="简介">简介</h2>
+<p>Docker Machine lets you create Docker hosts on your computer, on cloud providers, and inside your own data center. It creates servers, installs Docker on them, then configures the Docker client to talk to them.</p>
+<p>参考：</p>
+<ol>
+<li><a href="https://github.com/docker/machine" target="_blank" rel="noopener noreffer ">https://github.com/docker/machine</a></li>
+<li><a href="https://docs.docker.com/machine/overview/" target="_blank" rel="noopener noreffer ">https://docs.docker.com/machine/overview/</a></li>
+</ol>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="../../images/machine.png"
+        data-srcset="../../images/machine.png, ../../images/machine.png 1.5x, ../../images/machine.png 2x"
+        data-sizes="auto"
+        alt="../../images/machine.png"
+        title="Docker Machine" /></p>
+<h2 id="vs-vagrant">vs. Vagrant</h2>
+<h3 id="与vagrant的交集">与Vagrant的交集</h3>
+<p>目前使用 Vagrant 搭 Docker 环境的步骤如下：</p>
+<ol>
+<li>vagrant init {box_name}，下载一个基础的虚拟机镜像，比如centos，并创建一个Vagrantfile。</li>
+<li>Vagrantfile中设置虚拟机hostname。</li>
+<li>Vagrantfile中设置Private network，使得几个VM可以互相通信。</li>
+<li>VM内安装docker软件。</li>
+</ol>
+<p>如果用上了docker-machine，只要一行命令。在这个场景上，docker-machine 比 Vagrant 方便了很多。</p></div><div class="post-footer">
+        <a href="/posts/20200331-use-docker-machine/">Read More</a><div class="post-tags">
+                <i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/docker/">Docker</a></div></div>
+</article><ul class="pagination"><li class="page-item ">
+                    <span class="page-link">
+                        <a href="/">1</a>
+                    </span>
+                </li><li class="page-item ">
+                    <span class="page-link" aria-hidden="true">&hellip;</span>
+                </li><li class="page-item ">
+                    <span class="page-link">
+                        <a href="/page/14/">14</a>
+                    </span>
+                </li><li class="page-item ">
+                    <span class="page-link">
+                        <a href="/page/15/">15</a>
+                    </span>
+                </li><li class="page-item active">
+                    <span class="page-link">
+                        <a href="/page/16/">16</a>
+                    </span>
+                </li><li class="page-item ">
+                    <span class="page-link">
+                        <a href="/page/17/">17</a>
+                    </span>
+                </li><li class="page-item ">
+                    <span class="page-link">
+                        <a href="/page/18/">18</a>
+                    </span>
+                </li><li class="page-item ">
+                    <span class="page-link" aria-hidden="true">&hellip;</span>
+                </li><li class="page-item ">
+                    <span class="page-link">
+                        <a href="/page/20/">20</a>
+                    </span>
+                </li></ul></div></div>
+            </main><footer class="footer">
+        <div class="footer-container"><div class="footer-line">Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.147.3">Hugo</a> | Theme - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.3.0"><i class="far fa-kiss-wink-heart fa-fw" aria-hidden="true"></i> LoveIt</a>
+                </div><div class="footer-line" itemscope itemtype="http://schema.org/CreativeWork"><i class="far fa-copyright fa-fw" aria-hidden="true"></i><span itemprop="copyrightYear">2022 - 2025</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/" target="_blank">Happy Coding</a></span></div>
+        </div>
+    </footer></div>
+
+        <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="Back to Top">
+                <i class="fas fa-arrow-up fa-fw" aria-hidden="true"></i>
+            </a><a href="#" id="view-comments" class="fixed-button" title="View Comments">
+                <i class="fas fa-comment fa-fw" aria-hidden="true"></i>
+            </a>
+        </div><script type="text/javascript" src="/lib/lazysizes/lazysizes.min.js"></script><script type="text/javascript" src="/lib/clipboard/clipboard.min.js"></script><script type="text/javascript" src="/lib/sharer/sharer.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"Copy to clipboard","maxShownLines":50}};</script><script type="text/javascript" src="/js/theme.min.js"></script></body>
+</html>

@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+    <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="robots" content="noodp" />
+        <title>Vscode Go - Happy Coding</title><meta name="Description" content=""><meta property="og:url" content="http://localhost:1313/posts/vscode-go/">
+  <meta property="og:site_name" content="Happy Coding">
+  <meta property="og:title" content="Vscode Go">
+  <meta property="og:description" content="Docker代码在MacOS上是编译不了的，代码跳转不了。现在需要MacOS连上Linux，读Docker代码。
+Go IDE选择不多，Goland、Vscode。Goland在IDE角度肯定好很多，但装个Linux桌面版，再装Goland太繁琐了。
+Vscode有个好处，就是可以远程连接装在Linux上的Vscode server。安装简便，还开源免费。
+vscode-go 用过Goland，再用vscode真是无法接受。
+gopls 用户文档 https://github.com/golang/tools/blob/master/gopls/doc/user.md
+https://github.com/golang/tools/blob/master/gopls/doc/vscode.md
+vscode-go typically requires installing multiple packages like gocode, gopkg, gosymbols, go-outline, … These are all replaced by gopls https://medium.com/the-andela-way/gopls-language-server-setup-for-go-projects-3ee79dcac123
+If you have chosen to use the Go language server, then most of the below tools are no longer needed as the corresponding features will be provided by the language server. https://github.com/Microsoft/vscode-go/wiki/Go-tools-that-the-Go-extension-depends-on
+自动安装gopls 安装完vscode-go，打开一个go项目，vscode会提示你安装的。一般情况，会安装失败。
+以前vscode-go会安装一堆依赖，因为网络的原因，看到一堆安装报错。">
+  <meta property="og:locale" content="zh_cn">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2020-04-01T07:56:07+08:00">
+    <meta property="article:modified_time" content="2020-04-01T07:56:07+08:00">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Vscode Go">
+  <meta name="twitter:description" content="Docker代码在MacOS上是编译不了的，代码跳转不了。现在需要MacOS连上Linux，读Docker代码。
+Go IDE选择不多，Goland、Vscode。Goland在IDE角度肯定好很多，但装个Linux桌面版，再装Goland太繁琐了。
+Vscode有个好处，就是可以远程连接装在Linux上的Vscode server。安装简便，还开源免费。
+vscode-go 用过Goland，再用vscode真是无法接受。
+gopls 用户文档 https://github.com/golang/tools/blob/master/gopls/doc/user.md
+https://github.com/golang/tools/blob/master/gopls/doc/vscode.md
+vscode-go typically requires installing multiple packages like gocode, gopkg, gosymbols, go-outline, … These are all replaced by gopls https://medium.com/the-andela-way/gopls-language-server-setup-for-go-projects-3ee79dcac123
+If you have chosen to use the Go language server, then most of the below tools are no longer needed as the corresponding features will be provided by the language server. https://github.com/Microsoft/vscode-go/wiki/Go-tools-that-the-Go-extension-depends-on
+自动安装gopls 安装完vscode-go，打开一个go项目，vscode会提示你安装的。一般情况，会安装失败。
+以前vscode-go会安装一堆依赖，因为网络的原因，看到一堆安装报错。">
+<meta name="application-name" content="Happy Coding">
+<meta name="apple-mobile-web-app-title" content="Happy Coding"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="http://localhost:1313/posts/vscode-go/" /><link rel="prev" href="http://localhost:1313/posts/20200331-use-docker-machine/" /><link rel="next" href="http://localhost:1313/posts/20200401-google-vision-api/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="/lib/fontawesome-free/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="/lib/fontawesome-free/all.min.css"></noscript><link rel="preload" href="/lib/animate/animate.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="/lib/animate/animate.min.css"></noscript><script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "headline": "Vscode Go",
+        "inLanguage": "zh-cn",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "http:\/\/localhost:1313\/posts\/vscode-go\/"
+        },"genre": "posts","wordcount":  159 ,
+        "url": "http:\/\/localhost:1313\/posts\/vscode-go\/","datePublished": "2020-04-01T07:56:07+08:00","dateModified": "2020-04-01T07:56:07+08:00","publisher": {
+            "@type": "Organization",
+            "name": ""},"author": {
+                "@type": "Person",
+                "name": "Happy Coding"
+            },"description": ""
+    }
+    </script></head>
+    <body data-header-desktop="fixed" data-header-mobile="auto"><script type="text/javascript">(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
+
+        <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
+    <div class="header-wrapper">
+        <div class="header-title">
+            <a href="/" title="Happy Coding">Happy Coding</a>
+        </div>
+        <div class="menu">
+            <div class="menu-inner"><a class="menu-item" href="/posts"> Archive </a><a class="menu-item" href="/categories"> Categories </a><a class="menu-item" href="/tags"> Tags </a><a class="menu-item" href="/index.xml"> RSS Feed </a><span class="menu-item delimiter"></span><a href="javascript:void(0);" class="menu-item theme-switch" title="Switch Theme">
+                    <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+                </a></div>
+        </div>
+    </div>
+</header><header class="mobile" id="header-mobile">
+    <div class="header-container">
+        <div class="header-wrapper">
+            <div class="header-title">
+                <a href="/" title="Happy Coding">Happy Coding</a>
+            </div>
+            <div class="menu-toggle" id="menu-toggle-mobile">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="menu" id="menu-mobile"><a class="menu-item" href="/posts" title="">Archive</a><a class="menu-item" href="/categories" title="">Categories</a><a class="menu-item" href="/tags" title="">Tags</a><a class="menu-item" href="/index.xml" title="">RSS Feed</a><a href="javascript:void(0);" class="menu-item theme-switch" title="Switch Theme">
+                <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+            </a></div>
+    </div>
+</header><main class="main">
+                <div class="container"><div class="toc" id="toc-auto">
+            <h2 class="toc-title">Contents</h2>
+            <div class="toc-content" id="toc-content-auto"></div>
+        </div><article class="page single"><h1 class="single-title animate__animated animate__flipInX">Vscode Go</h1><div class="post-meta">
+            <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Happy Coding</a></span></div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2020-04-01">2020-04-01</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;159 words&nbsp;
+                <i class="far fa-clock fa-fw" aria-hidden="true"></i>&nbsp;One minute&nbsp;</div>
+        </div><div class="details toc" id="toc-static"  data-kept="">
+                <div class="details-summary toc-title">
+                    <span>Contents</span>
+                    <span><i class="details-icon fas fa-angle-right" aria-hidden="true"></i></span>
+                </div>
+                <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#vscode-go">vscode-go</a>
+      <ul>
+        <li><a href="#gopls">gopls</a></li>
+        <li><a href="#自动安装gopls">自动安装gopls</a></li>
+        <li><a href="#手动安装gopls">手动安装gopls</a></li>
+        <li><a href="#使用感受">使用感受</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav></div>
+            </div><div class="content" id="content"><p>Docker代码在MacOS上是编译不了的，代码跳转不了。现在需要MacOS连上Linux，读Docker代码。</p>
+<p>Go IDE选择不多，Goland、Vscode。Goland在IDE角度肯定好很多，但装个Linux桌面版，再装Goland太繁琐了。</p>
+<p>Vscode有个好处，就是可以远程连接装在Linux上的Vscode server。安装简便，还开源免费。</p>
+<h2 id="vscode-go">vscode-go</h2>
+<p>用过Goland，再用vscode真是无法接受。</p>
+<h3 id="gopls">gopls</h3>
+<p>用户文档 <a href="https://github.com/golang/tools/blob/master/gopls/doc/user.md" target="_blank" rel="noopener noreffer ">https://github.com/golang/tools/blob/master/gopls/doc/user.md</a></p>
+<p><a href="https://github.com/golang/tools/blob/master/gopls/doc/vscode.md" target="_blank" rel="noopener noreffer ">https://github.com/golang/tools/blob/master/gopls/doc/vscode.md</a></p>
+<p>vscode-go typically requires installing multiple packages like gocode, gopkg, gosymbols, go-outline, … These are all replaced by gopls <a href="https://medium.com/the-andela-way/gopls-language-server-setup-for-go-projects-3ee79dcac123" target="_blank" rel="noopener noreffer ">https://medium.com/the-andela-way/gopls-language-server-setup-for-go-projects-3ee79dcac123</a></p>
+<p>If you have chosen to use the Go language server, then most of the below tools are no longer needed as the corresponding features will be provided by the language server.  <a href="https://github.com/Microsoft/vscode-go/wiki/Go-tools-that-the-Go-extension-depends-on" target="_blank" rel="noopener noreffer ">https://github.com/Microsoft/vscode-go/wiki/Go-tools-that-the-Go-extension-depends-on</a></p>
+<h3 id="自动安装gopls">自动安装gopls</h3>
+<p>安装完vscode-go，打开一个go项目，vscode会提示你安装的。一般情况，会安装失败。</p>
+<p>以前vscode-go会安装一堆依赖，因为网络的原因，看到一堆安装报错。</p>
+<p>现在好很多了，只依赖gopls，报错也只有一条，心情好了很多。</p>
+<h3 id="手动安装gopls">手动安装gopls</h3>
+<pre tabindex="0"><code>export GOPROXY=https://goproxy.io
+GO111MODULE=on go get golang.org/x/tools/gopls@latest
+</code></pre><h4 id="陷阱-previous-declaration-at">陷阱 previous declaration at</h4>
+<pre tabindex="0"><code>$ GO111MODULE=on go get golang.org/x/tools/gopls@latest
+go: downloading golang.org/x/tools v0.0.0-20200331202046-9d5940d49312
+go: downloading golang.org/x/tools/gopls v0.3.4
+go: golang.org/x/tools/gopls latest =&gt; v0.3.4
+go: downloading golang.org/x/tools v0.0.0-20200316194252-fafb6e2e8a4a
+go: downloading mvdan.cc/xurls/v2 v2.1.0
+go: downloading honnef.co/go/tools v0.0.1-2020.1.3
+go: downloading github.com/sergi/go-diff v1.0.0
+go: downloading golang.org/x/xerrors v0.0.0-20191011141410-1b5146add898
+go: downloading golang.org/x/sync v0.0.0-20190423024810-112230192c58
+go: downloading golang.org/x/mod v0.1.1-0.20191105210325-c90efee705ee
+go: downloading github.com/BurntSushi/toml v0.3.1
+# runtime/internal/atomic
+/usr/local/go/src/runtime/internal/atomic/atomic_amd64x.go:13:6: Load redeclared in this block
+	previous declaration at /usr/local/go/src/runtime/internal/atomic/atomic_amd64.go:16:24
+/usr/local/go/src/runtime/internal/atomic/atomic_amd64x.go:51:6: too many errors
+</code></pre><p>安装Go新版本，最好把老版本删掉，重新解压。</p>
+<pre tabindex="0"><code>sudo rm -rf /usr/local/go &amp;&amp; sudo sudo tar -C /usr/local -xzf go1.14.1.linux-amd64.tar.gz
+</code></pre><p>参考：https://stackoverflow.com/questions/60447260/what-causes-this-runtime-internal-error-about-previous-declaration-at-when-bui</p>
+<h3 id="使用感受">使用感受</h3>
+<p>内存用的比较多。</p>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="../../images/image-20200401181529110.png"
+        data-srcset="../../images/image-20200401181529110.png, ../../images/image-20200401181529110.png 1.5x, ../../images/image-20200401181529110.png 2x"
+        data-sizes="auto"
+        alt="../../images/image-20200401181529110.png"
+        title="image-20200401181529110" /></p>
+</div><div class="post-footer" id="post-footer">
+    <div class="post-info">
+        <div class="post-info-line">
+            <div class="post-info-mod">
+                <span>Updated on 2020-04-01</span>
+            </div></div>
+        <div class="post-info-line">
+            <div class="post-info-md"></div>
+            <div class="post-info-share">
+                <span><a href="javascript:void(0);" title="Share on Twitter" data-sharer="twitter" data-url="http://localhost:1313/posts/vscode-go/" data-title="Vscode Go"><i class="fab fa-twitter fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="Share on Facebook" data-sharer="facebook" data-url="http://localhost:1313/posts/vscode-go/"><i class="fab fa-facebook-square fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="Share on Hacker News" data-sharer="hackernews" data-url="http://localhost:1313/posts/vscode-go/" data-title="Vscode Go"><i class="fab fa-hacker-news fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="Share on Line" data-sharer="line" data-url="http://localhost:1313/posts/vscode-go/" data-title="Vscode Go"><i data-svg-src="/lib/simple-icons/icons/line.min.svg" aria-hidden="true"></i></a><a href="javascript:void(0);" title="Share on 微博" data-sharer="weibo" data-url="http://localhost:1313/posts/vscode-go/" data-title="Vscode Go"><i class="fab fa-weibo fa-fw" aria-hidden="true"></i></a></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="post-info-more">
+        <section class="post-tags"></section>
+        <section>
+            <span><a href="javascript:void(0);" onclick="window.history.back();">Back</a></span>&nbsp;|&nbsp;<span><a href="/">Home</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav"><a href="/posts/20200331-use-docker-machine/" class="prev" rel="prev" title="使用 Docker Machine"><i class="fas fa-angle-left fa-fw" aria-hidden="true"></i>使用 Docker Machine</a>
+            <a href="/posts/20200401-google-vision-api/" class="next" rel="next" title="Google Vision API">Google Vision API<i class="fas fa-angle-right fa-fw" aria-hidden="true"></i></a></div>
+</div>
+</article></div>
+            </main><footer class="footer">
+        <div class="footer-container"><div class="footer-line">Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.147.3">Hugo</a> | Theme - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.3.0"><i class="far fa-kiss-wink-heart fa-fw" aria-hidden="true"></i> LoveIt</a>
+                </div><div class="footer-line" itemscope itemtype="http://schema.org/CreativeWork"><i class="far fa-copyright fa-fw" aria-hidden="true"></i><span itemprop="copyrightYear">2022 - 2025</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/" target="_blank">Happy Coding</a></span></div>
+        </div>
+    </footer></div>
+
+        <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="Back to Top">
+                <i class="fas fa-arrow-up fa-fw" aria-hidden="true"></i>
+            </a><a href="#" id="view-comments" class="fixed-button" title="View Comments">
+                <i class="fas fa-comment fa-fw" aria-hidden="true"></i>
+            </a>
+        </div><script type="text/javascript" src="/lib/lazysizes/lazysizes.min.js"></script><script type="text/javascript" src="/lib/clipboard/clipboard.min.js"></script><script type="text/javascript" src="/lib/sharer/sharer.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"Copy to clipboard","maxShownLines":50},"comment":{}};</script><script type="text/javascript" src="/js/theme.min.js"></script></body>
+</html>

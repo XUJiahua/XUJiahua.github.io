@@ -1,40 +1,26 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>consul on Happy Coding</title>
+    <title>Consul on Happy Coding</title>
     <link>https://xujiahua.github.io/tags/consul/</link>
-    <description>Recent content in consul on Happy Coding</description>
-    <generator>Hugo -- gohugo.io</generator>
+    <description>Recent content in Consul on Happy Coding</description>
+    <generator>Hugo</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Tue, 21 Apr 2020 09:01:38 +0800</lastBuildDate><atom:link href="https://xujiahua.github.io/tags/consul/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Tue, 21 Apr 2020 09:01:38 +0800</lastBuildDate>
+    <atom:link href="https://xujiahua.github.io/tags/consul/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>consul 小结</title>
       <link>https://xujiahua.github.io/posts/20200421-use-consul/</link>
       <pubDate>Tue, 21 Apr 2020 09:01:38 +0800</pubDate>
-      
       <guid>https://xujiahua.github.io/posts/20200421-use-consul/</guid>
-      <description>简单介绍 hashicorp 对 Consul 的定位是服务间网络方案。
- Consul is a service networking solution to connect and secure services across any runtime platform and public or private cloud. https://www.consul.io/
- 官方的两个 use case 就是 service discovery, service mesh。
-service discovery 与 etcd 比起来，Consul 的服务发现是开箱即用的。优点如下：
- First class 的服务注册和获取接口。不需要像 etcd 那样在 kv 存储基础上做包装。 服务注册，可以是consul 命令，也可以是HTTP API。 获取服务注册表，除了 HTTP 接口，还可以使用 DNS 查询接口。 健康检查。服务注册的时候可以提供健康检查项。健康检查机制保证了拿到的服务注册表是“健康”的。健康检查也包括节点的检查。单纯利用 consul 健康检查这个功能，consul 就是一个分布式监控工具。 Web 管理界面。节点、服务、健康与否一目了然。 Watch 功能。通过 blocking queries/ long-polling HTTP API 的方式得到服务注册表的改变的通知。 跨数据中心（取资源）。When a request is made for a resource in another datacenter, the local Consul servers forward an RPC request to the remote Consul servers for that resource and return the results.</description>
+      <description>&lt;h2 id=&#34;简单介绍&#34;&gt;简单介绍&lt;/h2&gt;&#xA;&lt;p&gt;hashicorp 对 Consul 的定位是服务间网络方案。&lt;/p&gt;&#xA;&lt;blockquote&gt;&#xA;&lt;p&gt;Consul is a service networking solution to connect and secure services across any runtime platform and public or private cloud. &lt;a href=&#34;https://www.consul.io/&#34; target=&#34;_blank&#34; rel=&#34;noopener noreffer &#34;&gt;https://www.consul.io/&lt;/a&gt;&lt;/p&gt;&lt;/blockquote&gt;&#xA;&lt;p&gt;官方的两个 use case 就是 service discovery, service mesh。&lt;/p&gt;&#xA;&lt;h3 id=&#34;service-discovery&#34;&gt;service discovery&lt;/h3&gt;&#xA;&lt;p&gt;与 etcd 比起来，Consul 的服务发现是开箱即用的。优点如下：&lt;/p&gt;&#xA;&lt;ol&gt;&#xA;&lt;li&gt;First class 的服务注册和获取接口。不需要像 etcd 那样在 kv 存储基础上做包装。&lt;/li&gt;&#xA;&lt;li&gt;服务注册，可以是consul 命令，也可以是HTTP API。&lt;/li&gt;&#xA;&lt;li&gt;获取服务注册表，除了 HTTP 接口，还可以使用  DNS 查询接口。&lt;/li&gt;&#xA;&lt;li&gt;健康检查。服务注册的时候可以提供健康检查项。健康检查机制保证了拿到的服务注册表是“健康”的。健康检查也包括节点的检查。单纯利用 consul 健康检查这个功能，consul 就是一个分布式监控工具。&lt;/li&gt;&#xA;&lt;li&gt;Web 管理界面。节点、服务、健康与否一目了然。&lt;/li&gt;&#xA;&lt;li&gt;Watch 功能。通过 blocking queries/ long-polling HTTP API 的方式得到服务注册表的改变的通知。&lt;/li&gt;&#xA;&lt;li&gt;跨数据中心（取资源）。When a request is made for a resource in another datacenter, the local Consul servers forward an RPC request to the remote Consul servers for that resource and return the results. &lt;a href=&#34;https://learn.hashicorp.com/consul/security-networking/datacenters#data-replication&#34; target=&#34;_blank&#34; rel=&#34;noopener noreffer &#34;&gt;https://learn.hashicorp.com/consul/security-networking/datacenters#data-replication&lt;/a&gt;&lt;/li&gt;&#xA;&lt;/ol&gt;&#xA;&lt;h3 id=&#34;service-mesh&#34;&gt;service mesh&lt;/h3&gt;&#xA;&lt;p&gt;service discovery 只是微服务治理的初级阶段。作为服务请求方，通过 consul/ etcd 获取到服务注册表，下一步就是选择其中一个服务实例，发送请求。这个步骤叫做负载均衡。可以想象，客户端的代码会越来越重了。&lt;/p&gt;</description>
     </item>
-    
     <item>
       <title>k8s configmap 与热更新</title>
       <link>https://xujiahua.github.io/posts/20200417-kubernetes-configmap/</link>
       <pubDate>Fri, 17 Apr 2020 16:09:28 +0800</pubDate>
-      
       <guid>https://xujiahua.github.io/posts/20200417-kubernetes-configmap/</guid>
-      <description>configmap 简介 官方介绍：使用 ConfigMap 配置 Pod https://kubernetes.io/zh/docs/tasks/configure-pod-container/configure-pod-configmap/
-他人总结：ConfigMap https://jimmysong.io/kubernetes-handbook/concepts/configmap.html
-稍微总结下：
- 每个configmap都有一个名字，名字全局唯一（命名空间内），重复创建会报错。 每个configmap本身是键值对。 configmap可以通过环境变量的方式让Pod内容器读取。 configmap可以通过挂载文件的方式让Pod内容器读取。k8s每隔一段时间同步configmap，如果有更新的话。当然，应用本身是不知道的。这个定时更新感觉有点鸡肋。 configmap更新，不会自动重启应用。只能人工方式，滚动重启应用。  把配置更新也当作一次应用变更看待，心情就好很多了。
-官方不支持热更新，所以有了各种技巧，提高效率。
- create a new ConfigMap with the changes you want to make, and point your deployment at the new ConfigMap https://stackoverflow.com/a/40624029/820682 因为 deployment 文件变化了，触发滚动重启。 还有deployment 文件中配置 configmap hash值的。配置变化，hash值变化，deployment变化，滚动重启，一级级联动。 https://blog.questionable.services/article/kubernetes-deployments-configmap-change/ 还有使用sidecar的方式做热更新的，太复杂了 https://zhuanlan.zhihu.com/p/57570231  关于热更新 configmap的更新，容器化应用是无感知的。configmap这种方式没有推送更新到应用内的机制，要实现热更新过于复杂。
-k8s最核心的功能还是自动部署、伸缩、容器管理以及资源分配。微服务架构还是得需要其他框架来辅助的。
-配置热更新应用，就选择 etcd, consul 吧，有 watch 功能。</description>
+      <description>&lt;h2 id=&#34;configmap-简介&#34;&gt;configmap 简介&lt;/h2&gt;&#xA;&lt;p&gt;官方介绍：使用 ConfigMap 配置 Pod  &lt;a href=&#34;https://kubernetes.io/zh/docs/tasks/configure-pod-container/configure-pod-configmap/&#34; target=&#34;_blank&#34; rel=&#34;noopener noreffer &#34;&gt;https://kubernetes.io/zh/docs/tasks/configure-pod-container/configure-pod-configmap/&lt;/a&gt;&lt;/p&gt;&#xA;&lt;p&gt;他人总结：ConfigMap &lt;a href=&#34;https://jimmysong.io/kubernetes-handbook/concepts/configmap.html&#34; target=&#34;_blank&#34; rel=&#34;noopener noreffer &#34;&gt;https://jimmysong.io/kubernetes-handbook/concepts/configmap.html&lt;/a&gt;&lt;/p&gt;&#xA;&lt;p&gt;稍微总结下：&lt;/p&gt;&#xA;&lt;ol&gt;&#xA;&lt;li&gt;每个configmap都有一个名字，名字全局唯一（命名空间内），重复创建会报错。&lt;/li&gt;&#xA;&lt;li&gt;每个configmap本身是键值对。&lt;/li&gt;&#xA;&lt;li&gt;configmap可以通过环境变量的方式让Pod内容器读取。&lt;/li&gt;&#xA;&lt;li&gt;configmap可以通过挂载文件的方式让Pod内容器读取。k8s每隔一段时间同步configmap，如果有更新的话。当然，应用本身是不知道的。这个定时更新感觉有点鸡肋。&lt;/li&gt;&#xA;&lt;li&gt;configmap更新，不会自动重启应用。只能人工方式，滚动重启应用。&lt;/li&gt;&#xA;&lt;/ol&gt;&#xA;&lt;p&gt;把配置更新也当作一次应用变更看待，心情就好很多了。&lt;/p&gt;&#xA;&lt;p&gt;官方不支持热更新，所以有了各种技巧，提高效率。&lt;/p&gt;&#xA;&lt;ol&gt;&#xA;&lt;li&gt;create a new ConfigMap with the changes you want to make, and point your deployment at the new ConfigMap &lt;a href=&#34;https://stackoverflow.com/a/40624029/820682&#34; target=&#34;_blank&#34; rel=&#34;noopener noreffer &#34;&gt;https://stackoverflow.com/a/40624029/820682&lt;/a&gt; 因为 deployment 文件变化了，触发滚动重启。&lt;/li&gt;&#xA;&lt;li&gt;还有deployment 文件中配置 configmap hash值的。配置变化，hash值变化，deployment变化，滚动重启，一级级联动。 &lt;a href=&#34;https://blog.questionable.services/article/kubernetes-deployments-configmap-change/&#34; target=&#34;_blank&#34; rel=&#34;noopener noreffer &#34;&gt;https://blog.questionable.services/article/kubernetes-deployments-configmap-change/&lt;/a&gt;&lt;/li&gt;&#xA;&lt;li&gt;还有使用sidecar的方式做热更新的，太复杂了 &lt;a href=&#34;https://zhuanlan.zhihu.com/p/57570231&#34; target=&#34;_blank&#34; rel=&#34;noopener noreffer &#34;&gt;https://zhuanlan.zhihu.com/p/57570231&lt;/a&gt;&lt;/li&gt;&#xA;&lt;/ol&gt;&#xA;&lt;h2 id=&#34;关于热更新&#34;&gt;关于热更新&lt;/h2&gt;&#xA;&lt;p&gt;configmap的更新，容器化应用是无感知的。configmap这种方式没有推送更新到应用内的机制，要实现热更新过于复杂。&lt;/p&gt;&#xA;&lt;p&gt;k8s最核心的功能还是自动部署、伸缩、容器管理以及资源分配。微服务架构还是得需要其他框架来辅助的。&lt;/p&gt;&#xA;&lt;p&gt;配置热更新应用，就选择 etcd, consul 吧，有 watch 功能。&lt;/p&gt;</description>
     </item>
-    
   </channel>
 </rss>

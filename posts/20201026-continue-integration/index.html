@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+    <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="robots" content="noodp" />
+        <title>持续集成提高代码质量 - Happy Coding</title><meta name="Description" content=""><meta property="og:url" content="http://localhost:1313/posts/20201026-continue-integration/">
+  <meta property="og:site_name" content="Happy Coding">
+  <meta property="og:title" content="持续集成提高代码质量">
+  <meta property="og:description" content="目前存在的问题：
+持续集成 &#43; 持续部署，也就是CI/CD目前是一条 pipeline。因为两周生命周期是不一样的，建议分开。—— GitLab CI 支持并行的 pipeline，就不会有这方面的问题了。 准确的说，除了应用打包，持续集成基本为 0。没有单元测试、code lint 静态检查、没有集成测试。 CD 流程，应该由测试人员选择使用哪个版本进测试环境，而不是自动部署到测试环境。持续部署，就是部署到生产环境。假设经过了CI以及测试。 背景知识 测试简介 测试金字塔。越往下，越独立、测试快速，越往下，越集成、测试慢速。
+按照测试类型和方式来对各种测试分组。
+以上两图来源：https://medium.com/@lawrey/unit-tests-ui-tests-integration-tests-end-to-end-tests-c0d98e0218a6
+单元测试在本地用mock跑测试。
+集成测试在本地用真实依赖跑测试，比如数据库。
+E2E测试，需要交互，真实。
+CI/CD CI is usually implemented with pipelines that run periodically or are triggered when a developer pushes a code change. For example, a CI pipeline could have three jobs: one that runs a linter, one that runs unit tests, and one that builds an artifact from the source code.">
+  <meta property="og:locale" content="zh_cn">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2020-10-26T18:01:47+08:00">
+    <meta property="article:modified_time" content="2020-10-26T18:01:47+08:00">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="持续集成提高代码质量">
+  <meta name="twitter:description" content="目前存在的问题：
+持续集成 &#43; 持续部署，也就是CI/CD目前是一条 pipeline。因为两周生命周期是不一样的，建议分开。—— GitLab CI 支持并行的 pipeline，就不会有这方面的问题了。 准确的说，除了应用打包，持续集成基本为 0。没有单元测试、code lint 静态检查、没有集成测试。 CD 流程，应该由测试人员选择使用哪个版本进测试环境，而不是自动部署到测试环境。持续部署，就是部署到生产环境。假设经过了CI以及测试。 背景知识 测试简介 测试金字塔。越往下，越独立、测试快速，越往下，越集成、测试慢速。
+按照测试类型和方式来对各种测试分组。
+以上两图来源：https://medium.com/@lawrey/unit-tests-ui-tests-integration-tests-end-to-end-tests-c0d98e0218a6
+单元测试在本地用mock跑测试。
+集成测试在本地用真实依赖跑测试，比如数据库。
+E2E测试，需要交互，真实。
+CI/CD CI is usually implemented with pipelines that run periodically or are triggered when a developer pushes a code change. For example, a CI pipeline could have three jobs: one that runs a linter, one that runs unit tests, and one that builds an artifact from the source code.">
+<meta name="application-name" content="Happy Coding">
+<meta name="apple-mobile-web-app-title" content="Happy Coding"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="http://localhost:1313/posts/20201026-continue-integration/" /><link rel="prev" href="http://localhost:1313/posts/20201023-gopheracademy/" /><link rel="next" href="http://localhost:1313/posts/20201102-saas-payment/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="/lib/fontawesome-free/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="/lib/fontawesome-free/all.min.css"></noscript><link rel="preload" href="/lib/animate/animate.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="/lib/animate/animate.min.css"></noscript><script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "headline": "持续集成提高代码质量",
+        "inLanguage": "zh-cn",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "http:\/\/localhost:1313\/posts\/20201026-continue-integration\/"
+        },"genre": "posts","wordcount":  237 ,
+        "url": "http:\/\/localhost:1313\/posts\/20201026-continue-integration\/","datePublished": "2020-10-26T18:01:47+08:00","dateModified": "2020-10-26T18:01:47+08:00","publisher": {
+            "@type": "Organization",
+            "name": ""},"author": {
+                "@type": "Person",
+                "name": "Happy Coding"
+            },"description": ""
+    }
+    </script></head>
+    <body data-header-desktop="fixed" data-header-mobile="auto"><script type="text/javascript">(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
+
+        <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
+    <div class="header-wrapper">
+        <div class="header-title">
+            <a href="/" title="Happy Coding">Happy Coding</a>
+        </div>
+        <div class="menu">
+            <div class="menu-inner"><a class="menu-item" href="/posts"> Archive </a><a class="menu-item" href="/categories"> Categories </a><a class="menu-item" href="/tags"> Tags </a><a class="menu-item" href="/index.xml"> RSS Feed </a><span class="menu-item delimiter"></span><a href="javascript:void(0);" class="menu-item theme-switch" title="Switch Theme">
+                    <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+                </a></div>
+        </div>
+    </div>
+</header><header class="mobile" id="header-mobile">
+    <div class="header-container">
+        <div class="header-wrapper">
+            <div class="header-title">
+                <a href="/" title="Happy Coding">Happy Coding</a>
+            </div>
+            <div class="menu-toggle" id="menu-toggle-mobile">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="menu" id="menu-mobile"><a class="menu-item" href="/posts" title="">Archive</a><a class="menu-item" href="/categories" title="">Categories</a><a class="menu-item" href="/tags" title="">Tags</a><a class="menu-item" href="/index.xml" title="">RSS Feed</a><a href="javascript:void(0);" class="menu-item theme-switch" title="Switch Theme">
+                <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+            </a></div>
+    </div>
+</header><main class="main">
+                <div class="container"><div class="toc" id="toc-auto">
+            <h2 class="toc-title">Contents</h2>
+            <div class="toc-content" id="toc-content-auto"></div>
+        </div><article class="page single"><h1 class="single-title animate__animated animate__flipInX">持续集成提高代码质量</h1><div class="post-meta">
+            <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Happy Coding</a></span></div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2020-10-26">2020-10-26</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;237 words&nbsp;
+                <i class="far fa-clock fa-fw" aria-hidden="true"></i>&nbsp;2 minutes&nbsp;</div>
+        </div><div class="details toc" id="toc-static"  data-kept="">
+                <div class="details-summary toc-title">
+                    <span>Contents</span>
+                    <span><i class="details-icon fas fa-angle-right" aria-hidden="true"></i></span>
+                </div>
+                <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#背景知识">背景知识</a>
+      <ul>
+        <li><a href="#测试简介">测试简介</a></li>
+        <li><a href="#cicd">CI/CD</a></li>
+      </ul>
+    </li>
+    <li><a href="#ci-工作--提高代码质量">CI 工作 —— 提高代码质量</a></li>
+    <li><a href="#日志监控">日志、监控</a></li>
+  </ul>
+</nav></div>
+            </div><div class="content" id="content"><p>目前存在的问题：</p>
+<ol>
+<li>持续集成 + 持续部署，也就是CI/CD目前是一条 pipeline。因为两周生命周期是不一样的，建议分开。—— GitLab CI 支持并行的 pipeline，就不会有这方面的问题了。</li>
+<li>准确的说，除了应用打包，持续集成基本为 0。没有单元测试、code lint 静态检查、没有集成测试。</li>
+<li>CD 流程，应该由测试人员选择使用哪个版本进测试环境，而不是自动部署到测试环境。持续部署，就是部署到生产环境。假设经过了CI以及测试。</li>
+</ol>
+<h2 id="背景知识">背景知识</h2>
+<h3 id="测试简介">测试简介</h3>
+<p>测试金字塔。越往下，越独立、测试快速，越往下，越集成、测试慢速。</p>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="../../images/1*lqWygfNJqWQ4VCyjecQ6Eg.png"
+        data-srcset="../../images/1*lqWygfNJqWQ4VCyjecQ6Eg.png, ../../images/1*lqWygfNJqWQ4VCyjecQ6Eg.png 1.5x, ../../images/1*lqWygfNJqWQ4VCyjecQ6Eg.png 2x"
+        data-sizes="auto"
+        alt="../../images/1*lqWygfNJqWQ4VCyjecQ6Eg.png"
+        title="Image for post" /></p>
+<p>按照测试类型和方式来对各种测试分组。</p>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="../../images/1*x9tQDdHwFIUMFvWO7CL_fw.png"
+        data-srcset="../../images/1*x9tQDdHwFIUMFvWO7CL_fw.png, ../../images/1*x9tQDdHwFIUMFvWO7CL_fw.png 1.5x, ../../images/1*x9tQDdHwFIUMFvWO7CL_fw.png 2x"
+        data-sizes="auto"
+        alt="../../images/1*x9tQDdHwFIUMFvWO7CL_fw.png"
+        title="Image for post" /></p>
+<p>以上两图来源：https://medium.com/@lawrey/unit-tests-ui-tests-integration-tests-end-to-end-tests-c0d98e0218a6</p>
+<p>单元测试在本地用mock跑测试。</p>
+<p>集成测试在本地用真实依赖跑测试，比如数据库。</p>
+<p>E2E测试，需要交互，真实。</p>
+<h3 id="cicd">CI/CD</h3>
+<blockquote>
+<p>CI is usually implemented with pipelines that run periodically or are triggered when a developer pushes a code change. For example, a CI pipeline could have three jobs: one that runs a linter, one that runs unit tests, and one that builds an artifact from the source code.</p>
+<p>The usual output of a CI pipeline is an artifact in an artifact storage system.</p></blockquote>
+<p>CI/CD的生命周期其实不同。</p>
+<blockquote>
+<p>Many organizations create a single pipeline that implements both CI and CD. We do not recommend this setup because CI and CD have the following conflicting goals:</p>
+<ul>
+<li>The goal of CI is to provide a short feedback loop to developers. A CI pipeline should run in less than <a href="https://cloud.google.com/solutions/devops/devops-tech-continuous-integration#common_pitfalls" target="_blank" rel="noopener noreffer ">10 minutes</a>.</li>
+<li>The goal of CD is to ensure the stability of your production environment. This goal might necessitate processes that can last several hours (such as <a href="https://cloud.google.com/solutions/automated-canary-analysis-kubernetes-engine-spinnaker" target="_blank" rel="noopener noreffer ">canary analysis</a>).</li>
+</ul>
+<p>When you&rsquo;re actively developing an application, with several commits to the main branch each day, it&rsquo;s not ideal to trigger your full CD pipeline after your CI pipeline succeeds if your CD pipeline requires several hours.</p></blockquote>
+<p><strong>SourceURL:</strong> <a href="https://cloud.google.com/solutions/addressing-continuous-delivery-challenges-in-a-kubernetes-world" target="_blank" rel="noopener noreffer ">https://cloud.google.com/solutions/addressing-continuous-delivery-challenges-in-a-kubernetes-world</a></p>
+<h2 id="ci-工作--提高代码质量">CI 工作 —— 提高代码质量</h2>
+<ol>
+<li>golang 单元测试及覆盖率结果输出。</li>
+<li>golang 静态检查及检查结果输出。</li>
+<li>静态检查工具开发？比如 panic 风险检查。</li>
+<li>集成测试和性能测试尽量复用脚本，首选使用 Python，集成测试已经使用 pytest 了，性能测试框架可以使用 Locust。</li>
+<li>使用 docker-compose 创建本地集成测试环境，运行集成测试脚本。</li>
+<li>Build image，并上传到镜像仓库。</li>
+<li>与 gitlab CI 集成。</li>
+</ol>
+<h2 id="日志监控">日志、监控</h2>
+<p>短期内，应用的日志结构化还没有提上议程。监控系统还是得沿用之前的Flink路线，Flink 尽量SQL化，报警渠道多样化。</p>
+<p>未来，日志结构化，埋点日志化。监控系统可以消费 ES index。</p>
+<p>Flink监控系统，没有去改FlinkSQLClient这个项目，而是自己重头封装的。</p>
+<p>自写JAR包+SQL的组合。</p>
+<p>SQL还不是足够纯粹。还是有配置化的，但是总比写Java舒服多了。</p>
+</div><div class="post-footer" id="post-footer">
+    <div class="post-info">
+        <div class="post-info-line">
+            <div class="post-info-mod">
+                <span>Updated on 2020-10-26</span>
+            </div></div>
+        <div class="post-info-line">
+            <div class="post-info-md"></div>
+            <div class="post-info-share">
+                <span><a href="javascript:void(0);" title="Share on Twitter" data-sharer="twitter" data-url="http://localhost:1313/posts/20201026-continue-integration/" data-title="持续集成提高代码质量"><i class="fab fa-twitter fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="Share on Facebook" data-sharer="facebook" data-url="http://localhost:1313/posts/20201026-continue-integration/"><i class="fab fa-facebook-square fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="Share on Hacker News" data-sharer="hackernews" data-url="http://localhost:1313/posts/20201026-continue-integration/" data-title="持续集成提高代码质量"><i class="fab fa-hacker-news fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="Share on Line" data-sharer="line" data-url="http://localhost:1313/posts/20201026-continue-integration/" data-title="持续集成提高代码质量"><i data-svg-src="/lib/simple-icons/icons/line.min.svg" aria-hidden="true"></i></a><a href="javascript:void(0);" title="Share on 微博" data-sharer="weibo" data-url="http://localhost:1313/posts/20201026-continue-integration/" data-title="持续集成提高代码质量"><i class="fab fa-weibo fa-fw" aria-hidden="true"></i></a></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="post-info-more">
+        <section class="post-tags"></section>
+        <section>
+            <span><a href="javascript:void(0);" onclick="window.history.back();">Back</a></span>&nbsp;|&nbsp;<span><a href="/">Home</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav"><a href="/posts/20201023-gopheracademy/" class="prev" rel="prev" title="20201023 Gopheracademy"><i class="fas fa-angle-left fa-fw" aria-hidden="true"></i>20201023 Gopheracademy</a>
+            <a href="/posts/20201102-saas-payment/" class="next" rel="next" title="支付SaaS系统架构调整">支付SaaS系统架构调整<i class="fas fa-angle-right fa-fw" aria-hidden="true"></i></a></div>
+</div>
+</article></div>
+            </main><footer class="footer">
+        <div class="footer-container"><div class="footer-line">Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.147.3">Hugo</a> | Theme - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.3.0"><i class="far fa-kiss-wink-heart fa-fw" aria-hidden="true"></i> LoveIt</a>
+                </div><div class="footer-line" itemscope itemtype="http://schema.org/CreativeWork"><i class="far fa-copyright fa-fw" aria-hidden="true"></i><span itemprop="copyrightYear">2022 - 2025</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/" target="_blank">Happy Coding</a></span></div>
+        </div>
+    </footer></div>
+
+        <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="Back to Top">
+                <i class="fas fa-arrow-up fa-fw" aria-hidden="true"></i>
+            </a><a href="#" id="view-comments" class="fixed-button" title="View Comments">
+                <i class="fas fa-comment fa-fw" aria-hidden="true"></i>
+            </a>
+        </div><script type="text/javascript" src="/lib/lazysizes/lazysizes.min.js"></script><script type="text/javascript" src="/lib/clipboard/clipboard.min.js"></script><script type="text/javascript" src="/lib/sharer/sharer.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"Copy to clipboard","maxShownLines":50},"comment":{}};</script><script type="text/javascript" src="/js/theme.min.js"></script></body>
+</html>

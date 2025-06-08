@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+    <head>
+	<meta name="generator" content="Hugo 0.147.3">
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="robots" content="noodp" />
+        <title>Happy Coding</title><meta name="Description" content=""><meta property="og:url" content="https://xujiahua.github.io/">
+  <meta property="og:site_name" content="Happy Coding">
+  <meta property="og:title" content="Happy Coding">
+  <meta property="og:locale" content="zh_cn">
+  <meta property="og:type" content="website">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Happy Coding">
+<meta name="application-name" content="Happy Coding">
+<meta name="apple-mobile-web-app-title" content="Happy Coding"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://xujiahua.github.io/" /><link rel="alternate" href="/index.xml" type="application/rss+xml" title="Happy Coding">
+    <link rel="feed" href="/index.xml" type="application/rss+xml" title="Happy Coding"><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css"></noscript><link rel="preload" href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css"></noscript><script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "WebSite",
+        "url": "https:\/\/xujiahua.github.io\/","inLanguage": "zh-cn","author": {
+                "@type": "Person",
+                "name": "Happy Coding"
+            },"name": "Happy Coding"
+    }
+    </script></head>
+    <body data-header-desktop="fixed" data-header-mobile="auto"><script type="text/javascript">(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
+
+        <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
+    <div class="header-wrapper">
+        <div class="header-title">
+            <a href="/" title="Happy Coding">Happy Coding</a>
+        </div>
+        <div class="menu">
+            <div class="menu-inner"><a class="menu-item" href="/posts"> Archive </a><a class="menu-item" href="/categories"> Categories </a><a class="menu-item" href="/tags"> Tags </a><a class="menu-item" href="/index.xml"> RSS Feed </a><span class="menu-item delimiter"></span><a href="javascript:void(0);" class="menu-item theme-switch" title="Switch Theme">
+                    <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+                </a></div>
+        </div>
+    </div>
+</header><header class="mobile" id="header-mobile">
+    <div class="header-container">
+        <div class="header-wrapper">
+            <div class="header-title">
+                <a href="/" title="Happy Coding">Happy Coding</a>
+            </div>
+            <div class="menu-toggle" id="menu-toggle-mobile">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="menu" id="menu-mobile"><a class="menu-item" href="/posts" title="">Archive</a><a class="menu-item" href="/categories" title="">Categories</a><a class="menu-item" href="/tags" title="">Tags</a><a class="menu-item" href="/index.xml" title="">RSS Feed</a><a href="javascript:void(0);" class="menu-item theme-switch" title="Switch Theme">
+                <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+            </a></div>
+    </div>
+</header><main class="main">
+                <div class="container"><div class="page home" data-home="posts"><div class="home-profile"><div class="links"></div></div>
+<article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
+        <a href="/posts/20200320-go-web-project/">Go Web 项目框架</a>
+    </h1><div class="post-meta"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Happy Coding</a></span>&nbsp;<span class="post-publish">published on <time datetime="2020-03-20">2020-03-20</time></span></div><div class="content"><h2 id="常用开源库">常用开源库</h2>
+<h3 id="依赖包管理-go-modules">依赖包管理 Go Modules</h3>
+<p>Go Modules。Go 从1.11版本开始支持，Go 1.14被认为是生产可用了。个人用过最方便的Go依赖包管理工具了。</p>
+<p>版本管理中维护 <code>go.mod</code>/<code>go.sum</code> 两个文件。</p>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="../../images/image-20200320152954581.png"
+        data-srcset="../../images/image-20200320152954581.png, ../../images/image-20200320152954581.png 1.5x, ../../images/image-20200320152954581.png 2x"
+        data-sizes="auto"
+        alt="../../images/image-20200320152954581.png"
+        title="image-20200320152954581" /></p>
+<h4 id="参考">参考</h4>
+<ol>
+<li>Using Go Modules <a href="https://blog.golang.org/using-go-modules" target="_blank" rel="noopener noreffer ">https://blog.golang.org/using-go-modules</a></li>
+</ol>
+<h3 id="命令行框架-corba">命令行框架 Corba</h3>
+<p>Corba。第一次看到，是在翻看 Hyperledger Fabric 的时候。</p>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="../../images/ad566232-814f-11e5-9cd0-aa101788c117.png"
+        data-srcset="../../images/ad566232-814f-11e5-9cd0-aa101788c117.png, ../../images/ad566232-814f-11e5-9cd0-aa101788c117.png 1.5x, ../../images/ad566232-814f-11e5-9cd0-aa101788c117.png 2x"
+        data-sizes="auto"
+        alt="../../images/ad566232-814f-11e5-9cd0-aa101788c117.png"
+        title="cobra logo" /></p>
+<ol>
+<li>子命令，嵌套的子命令。</li>
+<li>增强版本的flags。</li>
+<li>项目模板的生成工具。</li>
+<li>生成工具也自动引入了Viper这个包。Corba与Viper由一个作者开发，两个项目配合使用非常方便。</li>
+</ol>
+<p>建议使用Cobra命令行工具生成项目模板。</p>
+<pre tabindex="0"><code>  ▾ appName/
+    ▾ cmd/
+        add.go
+        your.go
+        commands.go
+        here.go
+      main.go
+</code></pre><h4 id="参考-1">参考</h4>
+<ol>
+<li>A Commander for modern Go CLI interactions <a href="https://github.com/spf13/cobra" target="_blank" rel="noopener noreffer ">https://github.com/spf13/cobra</a></li>
+<li>Cobra Generator <a href="https://github.com/spf13/cobra/blob/master/cobra/README.md" target="_blank" rel="noopener noreffer ">https://github.com/spf13/cobra/blob/master/cobra/README.md</a></li>
+</ol>
+<h3 id="配置管理-viper">配置管理 Viper</h3>
+<p>Viper。常常与Corba搭配使用。抄一段官方简介：</p></div><div class="post-footer">
+        <a href="/posts/20200320-go-web-project/">Read More</a><div class="post-tags">
+                <i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/golang/">Golang</a>,&nbsp;<a href="/tags/web/">Web</a></div></div>
+</article><article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
+        <a href="/posts/20200312-slash-in-url-path/">Go库对URL Path中%2F的处理</a>
+    </h1><div class="post-meta"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Happy Coding</a></span>&nbsp;<span class="post-publish">published on <time datetime="2020-03-12">2020-03-12</time></span></div><div class="content"><h2 id="问题描述">问题描述</h2>
+<ol>
+<li>有同事反馈Go项目的接口404了。看了下nginx日志，只有部分请求404了，404请求的显著特征是URL里有<code>%2F</code>，也就是<code>/</code>的转义。</li>
+<li>接口定义是这样的：<code>/api/xxx/{mid}/{uid}</code>。mid、uid是URL path的一部分。从现象来看，程序没处理好转义字符，因为多了一个path部分，路由不匹配了，404。</li>
+<li>nginx的URL记录是<code>%2F</code>，其实调用方传的是微信ID，比如<code>IEd5W/jqsdF9qpuagQscEg==</code>。调用方在发请求之前对ID已经做好了转义。</li>
+</ol>
+<h2 id="go内置库不区分2f和">Go内置库：不区分<code>%2F</code>和<code>/</code></h2>
+<p>An application cannot distinguish between &ldquo;/&rdquo; used as a path segment delimiter and &ldquo;/&rdquo; encoded in a path segment.</p>
+<p>这个问题由来已久了，看着官方也不打算解决了，见这个issue：https://github.com/golang/go/issues/3659</p>
+<pre tabindex="0"><code>If your app needs to assign special meaning, the
+server can reprocess req.RequestURI as it sees fit, and the client can
+issue requests using &amp;url.URL{Opaque: rawURI}.
+</code></pre><ol>
+<li>reprocess req.RequestURI 就是让你别用内置路由库了。</li>
+<li>issue requests using &amp;url.URL{Opaque: rawURI}. 试了，问题没解决。客户端不管怎么做，最终都是以HTTP协议输出的。<code>GET http://www.google.com/index.html HTTP/1.1</code> 服务端代码最终解析的还是中间的那段URL文本。照理就不通啊。</li>
+</ol>
+<h3 id="源码角度">源码角度</h3>
+<p><code>url.URL</code>的定义，明确指出Path字段存储的是decode之后的数据，所以<code>%2F</code>在这里已经被转义成了<code>/</code>，跟之前的Path意义完全不同了。</p>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="../../images/image-20200312154454662.png"
+        data-srcset="../../images/image-20200312154454662.png, ../../images/image-20200312154454662.png 1.5x, ../../images/image-20200312154454662.png 2x"
+        data-sizes="auto"
+        alt="../../images/image-20200312154454662.png"
+        title="image-20200312154454662" /></p></div><div class="post-footer">
+        <a href="/posts/20200312-slash-in-url-path/">Read More</a><div class="post-tags">
+                <i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/go/">Go</a>,&nbsp;<a href="/tags/go-router/">Go Router</a>,&nbsp;<a href="/tags/bug/">Bug</a></div></div>
+</article><article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
+        <a href="/posts/20200311-patent/">专利申请流程小结</a>
+    </h1><div class="post-meta"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Happy Coding</a></span>&nbsp;<span class="post-publish">published on <time datetime="2020-03-11">2020-03-11</time></span></div><div class="content"><p>去年憋的一篇专利，到申请公布阶段了，算是去年研究区块链的副成果。https://patents.google.com/patent/CN110807211。整理下专利申请流程。</p>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="../../images/01C8BAF0-B9C7-4F08-9575-38AF85AC4F14.png"
+        data-srcset="../../images/01C8BAF0-B9C7-4F08-9575-38AF85AC4F14.png, ../../images/01C8BAF0-B9C7-4F08-9575-38AF85AC4F14.png 1.5x, ../../images/01C8BAF0-B9C7-4F08-9575-38AF85AC4F14.png 2x"
+        data-sizes="auto"
+        alt="../../images/01C8BAF0-B9C7-4F08-9575-38AF85AC4F14.png"
+        title="01C8BAF0-B9C7-4F08-9575-38AF85AC4F14" /></p>
+<h2 id="专利申请流程">专利申请流程</h2>
+<p>主要流程如下图，来自网络。</p>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="../../images/7CA0DB1A-692F-481B-BFA3-987F503E1E39.png"
+        data-srcset="../../images/7CA0DB1A-692F-481B-BFA3-987F503E1E39.png, ../../images/7CA0DB1A-692F-481B-BFA3-987F503E1E39.png 1.5x, ../../images/7CA0DB1A-692F-481B-BFA3-987F503E1E39.png 2x"
+        data-sizes="auto"
+        alt="../../images/7CA0DB1A-692F-481B-BFA3-987F503E1E39.png"
+        title="7CA0DB1A-692F-481B-BFA3-987F503E1E39" /></p>
+<h3 id="技术成果生成">技术成果生成</h3>
+<p>有可以申请专利的点，这个因人而异。基于点子，写个草稿。</p>
+<h3 id="申请专利">申请专利</h3>
+<p>找一个专利代理，让他们提供专利稿的修改意见。反复迭代直到专利代理觉得没问题了。</p>
+<p>之后专利代理会出具一份「专利申请受理通知书」，你再交点钱，可能还会有税费减免。</p>
+<p>我遇到了专利代理看不大懂专利的情况，僵持了一段时间，后面换了一家顺畅好多。</p>
+<h3 id="专利申请公布">专利申请公布</h3>
+<p>这个时间点叫做：申请公布日。</p>
+<p>说明初审过了。实用新型和外观发明的话，直接就授权了，而发明还需要实质审查。</p>
+<p>&ldquo;初步审查合格后，实用新型和外观就直接授权了，而发明还要经过实质审查，检索国内外的资料，确认没有相同的才会授权，所以发明的含金量会高很多，因此发明专利审查的时间也会是比较长的，一般从申请到拿证书都需要2-3年，而实用、外观这两项专利一年能拿到。&rdquo;</p>
+<h3 id="专利授权公告">专利授权公告</h3>
+<p>这个时间点叫做：授权公告日。</p>
+<p>说明正式审查完了。这时候才算是真正拥有专利。</p></div><div class="post-footer">
+        <a href="/posts/20200311-patent/">Read More</a><div class="post-tags">
+                <i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/%E4%B8%93%E5%88%A9/">专利</a></div></div>
+</article><article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
+        <a href="/posts/20200310-github-pages-restart/">Github pages重新开始：使用Hugo、Typora</a>
+    </h1><div class="post-meta"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Happy Coding</a></span>&nbsp;<span class="post-publish">published on <time datetime="2020-03-10">2020-03-10</time></span></div><div class="content"><h2 id="重新开始github-pages">重新开始GitHub pages</h2>
+<p>曾使用<code>GitHub pages</code> + <code> jekyll</code> 写过一段时间博客，没啥营养。</p>
+<p>打算重新开始：</p>
+<ol>
+<li>把我记录在Evernote和Typora中的资料迁移到<code>GitHub pages</code>上。</li>
+<li>另外做一些Web形式的小工具，挂载在一个子目录里，方便平时使用。</li>
+</ol>
+<h2 id="hugo--typora">Hugo + Typora</h2>
+<p>打算如下：</p>
+<ol>
+<li>Markdown文件还是使用Typora写。用过MWeb、Typora，Typora使用感受更好些（这么好用还不要钱）。</li>
+<li>Hugo作为静态网站生成，创建一个博客模板。</li>
+</ol>
+<h3 id="hugo-quickstart">Hugo quickstart</h3>
+<pre tabindex="0"><code># 安装hugo（其实是Go编译的二进制文件）
+brew install hugo
+
+# 创建site
+hugo new site quickstart
+
+# 通过git submodule的方式下载主题
+git init
+git submodule -b master add https://github.com/dillonzq/LoveIt themes/LoveIt
+
+# 更新config.toml，配置主题参数，见loveit配置
+
+# 创建博客，创建的posts在content目录下。文件格式为：content/&lt;CATEGORY&gt;/&lt;FILE&gt;.&lt;FORMAT&gt;
+# hugo new 会采用 archetypes/default.md作为模板，把一些共性配置放在这个模板里吧。
+hugo new posts/my-first-post.md
+
+# 本地看blog效果，-D表示草稿状态的博客也显示
+hugo server -D
+
+# 生成静态网站到./public/，也可以指定目录
+hugo -D
+</code></pre><p>挑选了一个比较实用的主题 <a href="https://hugoloveit.com/" target="_blank" rel="noopener noreffer ">https://hugoloveit.com/</a></p>
+<ol>
+<li>比较基本的posts, tags, categories</li>
+<li>文章页面右边可显示文章的目录表</li>
+</ol>
+<p>参考：</p></div><div class="post-footer">
+        <a href="/posts/20200310-github-pages-restart/">Read More</a><div class="post-tags">
+                <i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/github-pages/">GitHub Pages</a>,&nbsp;<a href="/tags/hugo/">Hugo</a>,&nbsp;<a href="/tags/typora/">Typora</a></div></div>
+</article><article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
+        <a href="/posts/20200323-use-hyper-v/">Hyper-V使用体验</a>
+    </h1><div class="post-meta"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Happy Coding</a></span>&nbsp;<span class="post-publish">published on <time datetime="2020-03-03">2020-03-03</time></span></div><div class="content"><h2 id="hyper-v-使用体验">Hyper-V 使用体验</h2>
+<p>Hyper-V是 Windows10 内置的虚拟机软件，没想到我会用到它。</p>
+<h3 id="为什么要用hyper-v">为什么要用Hyper-V</h3>
+<ol>
+<li>需要使用虚拟机来模拟Kubernetes环境。</li>
+<li>Windows Docker依赖Hyper-V。貌似WSL2也是基于Hyper-V。应该是不会卸载Hyper-V了。</li>
+<li>Hyper-V与其他虚拟机软件（VirtualBox, VMWare）冲突，用不了其他的，只能用Hyper-V。</li>
+<li>Hyper-V与VirtualBox兼容的方案有没有。可能有，不想过于折腾了，那就不得不用。</li>
+</ol>
+<h3 id="hyper-v好不好用">Hyper-V好不好用</h3>
+<ol>
+<li>使用体验太差了，从Mac、从其他虚拟机使用过来，默认配置各种踩坑。</li>
+<li>安装VM碰到DHCP超时的问题，反复试验无果，重启Windows后VM的DHCP不超时了。总结下，Windows上，如果怎么搞都搞不定，重启下可能就好了。WTF！</li>
+<li>自带的NAT网络有点残疾，VM配置静态IP，网络就不通了。不像VirtualBox是开箱即用的。</li>
+<li>最后借助网络上的零碎信息自定义了下NAT网络，各种神奇配置。</li>
+<li>Windows还是很屎，除了打游戏，开发体验跟我之前的体验一样糟。最后搞定花了我一天时间。要是用VMware/VirtualBox，可能在2个小时内就能搞定。总结，不好用。</li>
+</ol>
+<h2 id="hyper-v-创建和克隆vm">Hyper-V 创建和克隆VM</h2>
+<h3 id="创建vm">创建VM</h3>
+<p>从<code>*.iso</code>文件创建VM。</p>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="../../images/465F25A3-07A1-4DB7-90CE-FD02376D4C92.png"
+        data-srcset="../../images/465F25A3-07A1-4DB7-90CE-FD02376D4C92.png, ../../images/465F25A3-07A1-4DB7-90CE-FD02376D4C92.png 1.5x, ../../images/465F25A3-07A1-4DB7-90CE-FD02376D4C92.png 2x"
+        data-sizes="auto"
+        alt="../../images/465F25A3-07A1-4DB7-90CE-FD02376D4C92.png"
+        title="465F25A3-07A1-4DB7-90CE-FD02376D4C92" /></p>
+<ol>
+<li>注意，Linux VM，不启用Windows Secure Boot。</li>
+<li>更多选项里，设置VM的名称和交换机。</li>
+<li>体验不好的地方：左上方的「选择操作系统」区域有长时间的加载过程，即使使用本地镜像文件也得等。</li>
+</ol>
+<h3 id="克隆vm">克隆VM</h3>
+<p>从硬盘文件创建VM。</p>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="../../images/03603F71-9B97-4ABC-8D1F-91F6CBB6602E.png"
+        data-srcset="../../images/03603F71-9B97-4ABC-8D1F-91F6CBB6602E.png, ../../images/03603F71-9B97-4ABC-8D1F-91F6CBB6602E.png 1.5x, ../../images/03603F71-9B97-4ABC-8D1F-91F6CBB6602E.png 2x"
+        data-sizes="auto"
+        alt="../../images/03603F71-9B97-4ABC-8D1F-91F6CBB6602E.png"
+        title="03603F71-9B97-4ABC-8D1F-91F6CBB6602E" /></p>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="../../images/3C85F0B5-0763-468F-9ABC-2FC35AF20235.png"
+        data-srcset="../../images/3C85F0B5-0763-468F-9ABC-2FC35AF20235.png, ../../images/3C85F0B5-0763-468F-9ABC-2FC35AF20235.png 1.5x, ../../images/3C85F0B5-0763-468F-9ABC-2FC35AF20235.png 2x"
+        data-sizes="auto"
+        alt="../../images/3C85F0B5-0763-468F-9ABC-2FC35AF20235.png"
+        title="3C85F0B5-0763-468F-9ABC-2FC35AF20235" /></p>
+<ol>
+<li>克隆是为了减少重复配置一些基础环境的工作量。</li>
+<li>不像VirtualBox那样有直观的克隆按钮。摸索出的克隆功能是这样的：就是从VM硬盘创建VM。</li>
+<li>建议先关机母体VM后，再基于母体VM的硬盘文件克隆。防止母体VM开机状态下一些更新并没有持久化到硬盘文件中。</li>
+</ol>
+<h2 id="hyper-v-nat网络搭建总结">Hyper-V NAT网络搭建总结</h2>
+<p>如果使用VMWare/VirtualBox的话，NAT网络是完全自动搭建的。</p>
+<p>VMWare中有三种网络模式，Bridging、NAT、Host-only分别对应Hyper-V下的三种交换机，外部、内部、专用。</p>
+<ol>
+<li>Bridging：VM使用物理网络。GUEST VM与HOST相当于通过交换机连上一个网络（细节不确定）。</li>
+<li>NAT：VM使用虚拟网络，HOST同时连入物理网络和虚拟网络。VM出口流量都会通过HOST，使用HOST IP。</li>
+<li>Host-only：在NAT基础上，VM连不上外网，除非有路由设置。</li>
+</ol>
+<h3 id="默认的nat网络">默认的NAT网络</h3>
+<p>默认交换机支持NAT，但是瑕疵不少，无法满足工作需要。</p></div><div class="post-footer">
+        <a href="/posts/20200323-use-hyper-v/">Read More</a><div class="post-tags">
+                <i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/hyper-v/">Hyper-V</a>,&nbsp;<a href="/tags/vm/">VM</a></div></div>
+</article><article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
+        <a href="/posts/20200228-go-modules/">使用Go Modules</a>
+    </h1><div class="post-meta"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Happy Coding</a></span>&nbsp;<span class="post-publish">published on <time datetime="2020-02-28">2020-02-28</time></span></div><div class="content"><p>Go Modules使用着感觉不错，Go终于有正常点的依赖管理工具了。记录一二。</p>
+<h2 id="使用小结">使用小结</h2>
+<ol>
+<li>go.mod, go.sum加入版本管理 Both go.mod and go.sum should be checked into version control.</li>
+<li>直接依赖体现在go.mod，间接依赖由直接依赖自己管理，这是个递归的过程 Only direct dependencies are recorded in the go.mod file.</li>
+<li>go命令自动管理go.mod，这可太方便了 When it encounters an import of a package not provided   by any module in go.mod, the go command automatically   looks up the module containing that package and adds it to   go.mod, using the latest version.</li>
+<li>看着比之前的依赖管理好用很多。比如dep。因为网络下载包等问题，最后把依赖包全checkin到vendor目录了。太臃肿。</li>
+</ol>
+<h2 id="常用命令">常用命令</h2>
+<ul>
+<li><code>go mod init</code> creates a new module, initializing the go.mod file that describes it.</li>
+<li><code>go build</code>,<code> go test</code>, and other package-building commands add new dependencies to go.mod as needed.</li>
+<li><code>go list -m</code> all prints the current module’s dependencies.</li>
+<li><code>go get</code> changes the required version of a dependency (or adds a new dependency).</li>
+<li><code>go mod tidy</code> removes unused dependencies.</li>
+</ul>
+<h2 id="代理">代理</h2>
+<p>国内网络的问题，加上下面这行就好很多了。</p></div><div class="post-footer">
+        <a href="/posts/20200228-go-modules/">Read More</a><div class="post-tags">
+                <i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/go/">Go</a>,&nbsp;<a href="/tags/%E4%BE%9D%E8%B5%96%E7%AE%A1%E7%90%86/">依赖管理</a></div></div>
+</article><ul class="pagination"><li class="page-item ">
+                    <span class="page-link">
+                        <a href="/">1</a>
+                    </span>
+                </li><li class="page-item ">
+                    <span class="page-link" aria-hidden="true">&hellip;</span>
+                </li><li class="page-item ">
+                    <span class="page-link">
+                        <a href="/page/6/">6</a>
+                    </span>
+                </li><li class="page-item ">
+                    <span class="page-link">
+                        <a href="/page/7/">7</a>
+                    </span>
+                </li><li class="page-item active">
+                    <span class="page-link">
+                        <a href="/page/8/">8</a>
+                    </span>
+                </li><li class="page-item ">
+                    <span class="page-link">
+                        <a href="/page/9/">9</a>
+                    </span>
+                </li><li class="page-item ">
+                    <span class="page-link">
+                        <a href="/page/10/">10</a>
+                    </span>
+                </li></ul></div></div>
+            </main><footer class="footer">
+        <div class="footer-container"><div class="footer-line">Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.147.3">Hugo</a> | Theme - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.3.0"><i class="far fa-kiss-wink-heart fa-fw" aria-hidden="true"></i> LoveIt</a>
+                </div><div class="footer-line" itemscope itemtype="http://schema.org/CreativeWork"><i class="far fa-copyright fa-fw" aria-hidden="true"></i><span itemprop="copyrightYear">2022 - 2025</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/" target="_blank">Happy Coding</a></span></div>
+        </div>
+    </footer></div>
+
+        <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="Back to Top">
+                <i class="fas fa-arrow-up fa-fw" aria-hidden="true"></i>
+            </a><a href="#" id="view-comments" class="fixed-button" title="View Comments">
+                <i class="fas fa-comment fa-fw" aria-hidden="true"></i>
+            </a>
+        </div><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/lazysizes@5.3.2/lazysizes.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/clipboard@2.0.11/dist/clipboard.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/sharer.js@0.5.1/sharer.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"Copy to clipboard","maxShownLines":50}};</script><script type="text/javascript" src="/js/theme.min.js"></script></body>
+</html>

@@ -1,20 +1,19 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>kubectl on Happy Coding</title>
+    <title>Kubectl on Happy Coding</title>
     <link>https://xujiahua.github.io/tags/kubectl/</link>
-    <description>Recent content in kubectl on Happy Coding</description>
-    <generator>Hugo -- gohugo.io</generator>
+    <description>Recent content in Kubectl on Happy Coding</description>
+    <generator>Hugo</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Tue, 09 Mar 2021 19:41:00 +0800</lastBuildDate><atom:link href="https://xujiahua.github.io/tags/kubectl/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Tue, 09 Mar 2021 19:41:00 +0800</lastBuildDate>
+    <atom:link href="https://xujiahua.github.io/tags/kubectl/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>kubectl 怎么念</title>
       <link>https://xujiahua.github.io/posts/kubectl-4f270b11-8ad4-47c5-b20c-6f340f5ccad1/</link>
       <pubDate>Tue, 09 Mar 2021 19:41:00 +0800</pubDate>
-      
       <guid>https://xujiahua.github.io/posts/kubectl-4f270b11-8ad4-47c5-b20c-6f340f5ccad1/</guid>
-      <description>念法很多。就选这个吧。我也一直这么念的。</description>
+      <description>&lt;p&gt;念法很多。就选这个吧。我也一直这么念的。&lt;/p&gt;&#xA;&lt;p&gt;&lt;img&#xA;        class=&#34;lazyload&#34;&#xA;        src=&#34;https://xujiahua.github.io/svg/loading.min.svg&#34;&#xA;        data-src=&#34;../../images/20210309_194055-35576ceb-cf98-47bb-9cf1-e18f61826b22.jpg&#34;&#xA;        data-srcset=&#34;../../images/20210309_194055-35576ceb-cf98-47bb-9cf1-e18f61826b22.jpg, ../../images/20210309_194055-35576ceb-cf98-47bb-9cf1-e18f61826b22.jpg 1.5x, ../../images/20210309_194055-35576ceb-cf98-47bb-9cf1-e18f61826b22.jpg 2x&#34;&#xA;        data-sizes=&#34;auto&#34;&#xA;        alt=&#34;../../images/20210309_194055-35576ceb-cf98-47bb-9cf1-e18f61826b22.jpg&#34;&#xA;        title=&#34;../../images/20210309_194055-35576ceb-cf98-47bb-9cf1-e18f61826b22.jpg&#34; /&gt;&lt;/p&gt;</description>
     </item>
-    
   </channel>
 </rss>

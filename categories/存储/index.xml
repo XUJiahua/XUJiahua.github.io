@@ -4,19 +4,16 @@
     <title>存储 on Happy Coding</title>
     <link>https://xujiahua.github.io/categories/%E5%AD%98%E5%82%A8/</link>
     <description>Recent content in 存储 on Happy Coding</description>
-    <generator>Hugo -- gohugo.io</generator>
+    <generator>Hugo</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Mon, 19 Apr 2021 10:24:00 +0800</lastBuildDate><atom:link href="https://xujiahua.github.io/categories/%E5%AD%98%E5%82%A8/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 19 Apr 2021 10:24:00 +0800</lastBuildDate>
+    <atom:link href="https://xujiahua.github.io/categories/%E5%AD%98%E5%82%A8/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>使用 redis-benchmark 压测自建的 kv 存储引擎</title>
       <link>https://xujiahua.github.io/posts/redis-benchmark-kv-a3e78900-612a-4d04-b2aa-fc6f0908b431/</link>
       <pubDate>Mon, 19 Apr 2021 10:24:00 +0800</pubDate>
-      
       <guid>https://xujiahua.github.io/posts/redis-benchmark-kv-a3e78900-612a-4d04-b2aa-fc6f0908b431/</guid>
-      <description>给自建 kv 存储引擎做性能测试不难，使用 redis-benchmark 压测的目的是，测试结果能与 redis-server 的结果做横向对比。
-redis-benchmark redis-benchmark 支持如下指令的 benchmark。其中 GET/SET 指令可用于 kv 存储引擎的压测。
-redis-benchmark -q PING_INLINE: 102669.41 requests per second, p50=0.247 msec PING_MBULK: 102880.66 requests per second, p50=0.231 msec SET: 101936.80 requests per second, p50=0.239 msec GET: 101626.02 requests per second, p50=0.239 msec INCR: 102249.49 requests per second, p50=0.239 msec LPUSH: 100603.62 requests per second, p50=0.255 msec RPUSH: 101626.02 requests per second, p50=0.255 msec LPOP: 102354.15 requests per second, p50=0.</description>
+      <description>&lt;p&gt;给自建 kv 存储引擎做性能测试不难，使用 redis-benchmark 压测的目的是，测试结果能与 redis-server 的结果做横向对比。&lt;/p&gt;&#xA;&lt;h2 id=&#34;redis-benchmark&#34;&gt;redis-benchmark&lt;/h2&gt;&#xA;&lt;p&gt;redis-benchmark 支持如下指令的 benchmark。其中 GET/SET 指令可用于 kv 存储引擎的压测。&lt;/p&gt;&#xA;&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;redis-benchmark -q&#xA;PING_INLINE: 102669.41 requests per second, p50=0.247 msec&#xA;PING_MBULK: 102880.66 requests per second, p50=0.231 msec&#xA;SET: 101936.80 requests per second, p50=0.239 msec&#xA;GET: 101626.02 requests per second, p50=0.239 msec&#xA;INCR: 102249.49 requests per second, p50=0.239 msec&#xA;LPUSH: 100603.62 requests per second, p50=0.255 msec&#xA;RPUSH: 101626.02 requests per second, p50=0.255 msec&#xA;LPOP: 102354.15 requests per second, p50=0.255 msec&#xA;RPOP: 102249.49 requests per second, p50=0.255 msec&#xA;SADD: 101522.84 requests per second, p50=0.247 msec&#xA;HSET: 100603.62 requests per second, p50=0.255 msec&#xA;SPOP: 102249.49 requests per second, p50=0.247 msec&#xA;ZADD: 102564.10 requests per second, p50=0.255 msec&#xA;ZPOPMIN: 103412.62 requests per second, p50=0.247 msec&#xA;LPUSH (needed to benchmark LRANGE): 94607.38 requests per second, p50=0.263 msec&#xA;LRANGE_100 (first 100 elements): 27964.21 requests per second, p50=0.855 msec&#xA;LRANGE_300 (first 300 elements): 11193.19 requests per second, p50=2.135 msec&#xA;LRANGE_500 (first 450 elements): 7649.94 requests per second, p50=3.159 msec&#xA;LRANGE_600 (first 600 elements): 5884.78 requests per second, p50=4.103 msec&#xA;MSET (10 keys): 93283.58 requests per second, p50=0.423 msec&#xA;&lt;/code&gt;&lt;/pre&gt;&lt;h2 id=&#34;redcon&#34;&gt;redcon&lt;/h2&gt;&#xA;&lt;p&gt;Redis compatible server framework for &lt;strong&gt;Go&lt;/strong&gt;.&lt;/p&gt;</description>
     </item>
-    
   </channel>
 </rss>

@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+    <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="robots" content="noodp" />
+        <title>大数据项目持续集成 - Happy Coding</title><meta name="Description" content=""><meta property="og:url" content="http://localhost:1313/posts/20200817-data-project-ci/">
+  <meta property="og:site_name" content="Happy Coding">
+  <meta property="og:title" content="大数据项目持续集成">
+  <meta property="og:description" content="目前遇到的不好的体验：
+开发、调试不够衔接，代码测不全。 持续集成不够，手动操作多。 还有特别的费劲的是，非得写成多个任务，因为有些任务需要连hadoop环境，需要认证，这个azkaban一些特殊任务类型是自动支持的。??? 通过 Socks5 代理伪装本地环境为集群环境 目前两种开发模式：
+Zeppelin Notebook 上写好并调试好主要逻辑的PySpark/SQL脚本，然后将脚本贴入一个脚手架pyspark程序中。问题是测试只测到核心逻辑。 本地准备一个Spark环境，准备些数据，写完pyspark可以直接调试。问题是本地环境与生产环境有差异，数据准备也是不容易。 以上测试都不够充分，直到打包上传到Azkaban，在Azkaban上执行，才会知道脚本是否真正无错误。
+理想的开发模式，是本地开发环境直接连入集群，开发调试，能测到全量数据、也能测到整块代码。本地开发环境，可以使用自己喜欢的IDE。
+ssh -ND 开个代理服务器，程序里设置proxy代理，请求就会直接进入服务器了。不需要本地有内网IP。
+TODO：实验下连入kerboros认证的hadoop环境怎么样
+Git 持续集成 目前的开发部署流程，本地开发完成，运行打包脚本，上传Azkaban。
+这块完全可以通过持续集成来做到。开发只要做到代码Git提交，发PR即可。不手动打包、不手动上传交付物。
+better Azkaban??? 读ftp文件，传输到hdfs上，直接用hadoopShell类型执行一个python程序应该就行吧？？？
+写完代码，定义好dag（flow文件），可以打印出dag吧，自己写程序也行。
+问题3 azkaban 看看有无更好的替代。
+组成 DAG 的任务链怎么做？">
+  <meta property="og:locale" content="zh_cn">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2020-08-17T17:43:07+08:00">
+    <meta property="article:modified_time" content="2020-08-17T17:43:07+08:00">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="大数据项目持续集成">
+  <meta name="twitter:description" content="目前遇到的不好的体验：
+开发、调试不够衔接，代码测不全。 持续集成不够，手动操作多。 还有特别的费劲的是，非得写成多个任务，因为有些任务需要连hadoop环境，需要认证，这个azkaban一些特殊任务类型是自动支持的。??? 通过 Socks5 代理伪装本地环境为集群环境 目前两种开发模式：
+Zeppelin Notebook 上写好并调试好主要逻辑的PySpark/SQL脚本，然后将脚本贴入一个脚手架pyspark程序中。问题是测试只测到核心逻辑。 本地准备一个Spark环境，准备些数据，写完pyspark可以直接调试。问题是本地环境与生产环境有差异，数据准备也是不容易。 以上测试都不够充分，直到打包上传到Azkaban，在Azkaban上执行，才会知道脚本是否真正无错误。
+理想的开发模式，是本地开发环境直接连入集群，开发调试，能测到全量数据、也能测到整块代码。本地开发环境，可以使用自己喜欢的IDE。
+ssh -ND 开个代理服务器，程序里设置proxy代理，请求就会直接进入服务器了。不需要本地有内网IP。
+TODO：实验下连入kerboros认证的hadoop环境怎么样
+Git 持续集成 目前的开发部署流程，本地开发完成，运行打包脚本，上传Azkaban。
+这块完全可以通过持续集成来做到。开发只要做到代码Git提交，发PR即可。不手动打包、不手动上传交付物。
+better Azkaban??? 读ftp文件，传输到hdfs上，直接用hadoopShell类型执行一个python程序应该就行吧？？？
+写完代码，定义好dag（flow文件），可以打印出dag吧，自己写程序也行。
+问题3 azkaban 看看有无更好的替代。
+组成 DAG 的任务链怎么做？">
+<meta name="application-name" content="Happy Coding">
+<meta name="apple-mobile-web-app-title" content="Happy Coding"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="http://localhost:1313/posts/20200817-data-project-ci/" /><link rel="prev" href="http://localhost:1313/posts/20200813-kubernetes-faq/" /><link rel="next" href="http://localhost:1313/posts/20200818-impala-sql-tuning/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="/lib/fontawesome-free/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="/lib/fontawesome-free/all.min.css"></noscript><link rel="preload" href="/lib/animate/animate.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="/lib/animate/animate.min.css"></noscript><script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "headline": "大数据项目持续集成",
+        "inLanguage": "zh-cn",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "http:\/\/localhost:1313\/posts\/20200817-data-project-ci\/"
+        },"genre": "posts","wordcount":  32 ,
+        "url": "http:\/\/localhost:1313\/posts\/20200817-data-project-ci\/","datePublished": "2020-08-17T17:43:07+08:00","dateModified": "2020-08-17T17:43:07+08:00","publisher": {
+            "@type": "Organization",
+            "name": ""},"author": {
+                "@type": "Person",
+                "name": "Happy Coding"
+            },"description": ""
+    }
+    </script></head>
+    <body data-header-desktop="fixed" data-header-mobile="auto"><script type="text/javascript">(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
+
+        <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
+    <div class="header-wrapper">
+        <div class="header-title">
+            <a href="/" title="Happy Coding">Happy Coding</a>
+        </div>
+        <div class="menu">
+            <div class="menu-inner"><a class="menu-item" href="/posts"> Archive </a><a class="menu-item" href="/categories"> Categories </a><a class="menu-item" href="/tags"> Tags </a><a class="menu-item" href="/index.xml"> RSS Feed </a><span class="menu-item delimiter"></span><a href="javascript:void(0);" class="menu-item theme-switch" title="Switch Theme">
+                    <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+                </a></div>
+        </div>
+    </div>
+</header><header class="mobile" id="header-mobile">
+    <div class="header-container">
+        <div class="header-wrapper">
+            <div class="header-title">
+                <a href="/" title="Happy Coding">Happy Coding</a>
+            </div>
+            <div class="menu-toggle" id="menu-toggle-mobile">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="menu" id="menu-mobile"><a class="menu-item" href="/posts" title="">Archive</a><a class="menu-item" href="/categories" title="">Categories</a><a class="menu-item" href="/tags" title="">Tags</a><a class="menu-item" href="/index.xml" title="">RSS Feed</a><a href="javascript:void(0);" class="menu-item theme-switch" title="Switch Theme">
+                <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+            </a></div>
+    </div>
+</header><main class="main">
+                <div class="container"><div class="toc" id="toc-auto">
+            <h2 class="toc-title">Contents</h2>
+            <div class="toc-content" id="toc-content-auto"></div>
+        </div><article class="page single"><h1 class="single-title animate__animated animate__flipInX">大数据项目持续集成</h1><div class="post-meta">
+            <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Happy Coding</a></span></div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2020-08-17">2020-08-17</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;32 words&nbsp;
+                <i class="far fa-clock fa-fw" aria-hidden="true"></i>&nbsp;One minute&nbsp;</div>
+        </div><div class="details toc" id="toc-static"  data-kept="">
+                <div class="details-summary toc-title">
+                    <span>Contents</span>
+                    <span><i class="details-icon fas fa-angle-right" aria-hidden="true"></i></span>
+                </div>
+                <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#通过-socks5-代理伪装本地环境为集群环境">通过 Socks5 代理伪装本地环境为集群环境</a></li>
+    <li><a href="#git-持续集成">Git 持续集成</a></li>
+    <li><a href="#better-azkaban">better Azkaban???</a></li>
+  </ul>
+</nav></div>
+            </div><div class="content" id="content"><p>目前遇到的不好的体验：</p>
+<ol>
+<li>开发、调试不够衔接，代码测不全。</li>
+<li>持续集成不够，手动操作多。</li>
+<li>还有特别的费劲的是，非得写成多个任务，因为有些任务需要连hadoop环境，需要认证，这个azkaban一些特殊任务类型是自动支持的。???</li>
+</ol>
+<h2 id="通过-socks5-代理伪装本地环境为集群环境">通过 Socks5 代理伪装本地环境为集群环境</h2>
+<p>目前两种开发模式：</p>
+<ol>
+<li>Zeppelin Notebook 上写好并调试好主要逻辑的PySpark/SQL脚本，然后将脚本贴入一个脚手架pyspark程序中。问题是测试只测到核心逻辑。</li>
+<li>本地准备一个Spark环境，准备些数据，写完pyspark可以直接调试。问题是本地环境与生产环境有差异，数据准备也是不容易。</li>
+</ol>
+<p>以上测试都不够充分，直到打包上传到Azkaban，在Azkaban上执行，才会知道脚本是否真正无错误。</p>
+<p>理想的开发模式，是本地开发环境直接连入集群，开发调试，能测到全量数据、也能测到整块代码。本地开发环境，可以使用自己喜欢的IDE。</p>
+<p>ssh -ND 开个代理服务器，程序里设置proxy代理，请求就会直接进入服务器了。不需要本地有内网IP。</p>
+<p>TODO：实验下连入kerboros认证的hadoop环境怎么样</p>
+<h2 id="git-持续集成">Git 持续集成</h2>
+<p>目前的开发部署流程，本地开发完成，运行打包脚本，上传Azkaban。</p>
+<p>这块完全可以通过持续集成来做到。开发只要做到代码Git提交，发PR即可。不手动打包、不手动上传交付物。</p>
+<h2 id="better-azkaban">better Azkaban???</h2>
+<p>读ftp文件，传输到hdfs上，直接用hadoopShell类型执行一个python程序应该就行吧？？？</p>
+<p>写完代码，定义好dag（flow文件），可以打印出dag吧，自己写程序也行。</p>
+<p>问题3 azkaban 看看有无更好的替代。</p>
+<p>组成 DAG 的任务链怎么做？</p>
+</div><div class="post-footer" id="post-footer">
+    <div class="post-info">
+        <div class="post-info-line">
+            <div class="post-info-mod">
+                <span>Updated on 2020-08-17</span>
+            </div></div>
+        <div class="post-info-line">
+            <div class="post-info-md"></div>
+            <div class="post-info-share">
+                <span><a href="javascript:void(0);" title="Share on Twitter" data-sharer="twitter" data-url="http://localhost:1313/posts/20200817-data-project-ci/" data-title="大数据项目持续集成"><i class="fab fa-twitter fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="Share on Facebook" data-sharer="facebook" data-url="http://localhost:1313/posts/20200817-data-project-ci/"><i class="fab fa-facebook-square fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="Share on Hacker News" data-sharer="hackernews" data-url="http://localhost:1313/posts/20200817-data-project-ci/" data-title="大数据项目持续集成"><i class="fab fa-hacker-news fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="Share on Line" data-sharer="line" data-url="http://localhost:1313/posts/20200817-data-project-ci/" data-title="大数据项目持续集成"><i data-svg-src="/lib/simple-icons/icons/line.min.svg" aria-hidden="true"></i></a><a href="javascript:void(0);" title="Share on 微博" data-sharer="weibo" data-url="http://localhost:1313/posts/20200817-data-project-ci/" data-title="大数据项目持续集成"><i class="fab fa-weibo fa-fw" aria-hidden="true"></i></a></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="post-info-more">
+        <section class="post-tags"></section>
+        <section>
+            <span><a href="javascript:void(0);" onclick="window.history.back();">Back</a></span>&nbsp;|&nbsp;<span><a href="/">Home</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav"><a href="/posts/20200813-kubernetes-faq/" class="prev" rel="prev" title="Kubernetes QA"><i class="fas fa-angle-left fa-fw" aria-hidden="true"></i>Kubernetes QA</a>
+            <a href="/posts/20200818-impala-sql-tuning/" class="next" rel="next" title="Impala SQL Tuning">Impala SQL Tuning<i class="fas fa-angle-right fa-fw" aria-hidden="true"></i></a></div>
+</div>
+</article></div>
+            </main><footer class="footer">
+        <div class="footer-container"><div class="footer-line">Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.147.3">Hugo</a> | Theme - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.3.0"><i class="far fa-kiss-wink-heart fa-fw" aria-hidden="true"></i> LoveIt</a>
+                </div><div class="footer-line" itemscope itemtype="http://schema.org/CreativeWork"><i class="far fa-copyright fa-fw" aria-hidden="true"></i><span itemprop="copyrightYear">2022 - 2025</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/" target="_blank">Happy Coding</a></span></div>
+        </div>
+    </footer></div>
+
+        <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="Back to Top">
+                <i class="fas fa-arrow-up fa-fw" aria-hidden="true"></i>
+            </a><a href="#" id="view-comments" class="fixed-button" title="View Comments">
+                <i class="fas fa-comment fa-fw" aria-hidden="true"></i>
+            </a>
+        </div><script type="text/javascript" src="/lib/lazysizes/lazysizes.min.js"></script><script type="text/javascript" src="/lib/clipboard/clipboard.min.js"></script><script type="text/javascript" src="/lib/sharer/sharer.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"Copy to clipboard","maxShownLines":50},"comment":{}};</script><script type="text/javascript" src="/js/theme.min.js"></script></body>
+</html>

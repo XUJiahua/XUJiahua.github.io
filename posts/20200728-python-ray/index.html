@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+    <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="robots" content="noodp" />
+        <title>Python&#43;Ray 并发编程 - Happy Coding</title><meta name="Description" content=""><meta property="og:url" content="http://localhost:1313/posts/20200728-python-ray/">
+  <meta property="og:site_name" content="Happy Coding">
+  <meta property="og:title" content="Python&#43;Ray 并发编程">
+  <meta property="og:description" content="Ray 简介 Python 的数据科学生态软件 numpy，scipy，pandas，scikit-learn 都是单机的，pandas的计算更是只能使用一个CPU core，跟不上多核多机分布式计算的大形式了。
+Ray 就是在这个背景下产生的。Ray Core 是一个用于开发分布式应用的框架。基于Ray Core，Ray 生态主要是数据科学相关，比如分布式机器学习训练、可伸缩的机器学习超参数调优。
+On top of Ray Core are several libraries for solving problems in machine learning:
+Tune: Scalable Hyperparameter Tuning RLlib: Scalable Reinforcement Learning RaySGD: Distributed Training Wrappers Ray Serve: Scalable and Programmable Serving Ray also has a number of other community contributed libraries:
+Pandas on Ray Distributed Scikit-learn / Joblib Distributed multiprocessing.Pool 其中 Pandas on Ray 的思路，兼容 Pandas API，照顾老用户使用习惯，底层用 Ray 重写了。所以 Pandas on Ray 不是 Pandas。类似的项目有 Dask。">
+  <meta property="og:locale" content="zh_cn">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2020-07-28T11:20:46+08:00">
+    <meta property="article:modified_time" content="2020-07-28T11:20:46+08:00">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Python&#43;Ray 并发编程">
+  <meta name="twitter:description" content="Ray 简介 Python 的数据科学生态软件 numpy，scipy，pandas，scikit-learn 都是单机的，pandas的计算更是只能使用一个CPU core，跟不上多核多机分布式计算的大形式了。
+Ray 就是在这个背景下产生的。Ray Core 是一个用于开发分布式应用的框架。基于Ray Core，Ray 生态主要是数据科学相关，比如分布式机器学习训练、可伸缩的机器学习超参数调优。
+On top of Ray Core are several libraries for solving problems in machine learning:
+Tune: Scalable Hyperparameter Tuning RLlib: Scalable Reinforcement Learning RaySGD: Distributed Training Wrappers Ray Serve: Scalable and Programmable Serving Ray also has a number of other community contributed libraries:
+Pandas on Ray Distributed Scikit-learn / Joblib Distributed multiprocessing.Pool 其中 Pandas on Ray 的思路，兼容 Pandas API，照顾老用户使用习惯，底层用 Ray 重写了。所以 Pandas on Ray 不是 Pandas。类似的项目有 Dask。">
+<meta name="application-name" content="Happy Coding">
+<meta name="apple-mobile-web-app-title" content="Happy Coding"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="http://localhost:1313/posts/20200728-python-ray/" /><link rel="prev" href="http://localhost:1313/posts/20200726-lcg/" /><link rel="next" href="http://localhost:1313/posts/20200803-homomorphic-encryption/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="/lib/fontawesome-free/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="/lib/fontawesome-free/all.min.css"></noscript><link rel="preload" href="/lib/animate/animate.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="/lib/animate/animate.min.css"></noscript><script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "headline": "Python+Ray 并发编程",
+        "inLanguage": "zh-cn",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "http:\/\/localhost:1313\/posts\/20200728-python-ray\/"
+        },"genre": "posts","wordcount":  169 ,
+        "url": "http:\/\/localhost:1313\/posts\/20200728-python-ray\/","datePublished": "2020-07-28T11:20:46+08:00","dateModified": "2020-07-28T11:20:46+08:00","publisher": {
+            "@type": "Organization",
+            "name": ""},"author": {
+                "@type": "Person",
+                "name": "Happy Coding"
+            },"description": ""
+    }
+    </script></head>
+    <body data-header-desktop="fixed" data-header-mobile="auto"><script type="text/javascript">(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
+
+        <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
+    <div class="header-wrapper">
+        <div class="header-title">
+            <a href="/" title="Happy Coding">Happy Coding</a>
+        </div>
+        <div class="menu">
+            <div class="menu-inner"><a class="menu-item" href="/posts"> Archive </a><a class="menu-item" href="/categories"> Categories </a><a class="menu-item" href="/tags"> Tags </a><a class="menu-item" href="/index.xml"> RSS Feed </a><span class="menu-item delimiter"></span><a href="javascript:void(0);" class="menu-item theme-switch" title="Switch Theme">
+                    <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+                </a></div>
+        </div>
+    </div>
+</header><header class="mobile" id="header-mobile">
+    <div class="header-container">
+        <div class="header-wrapper">
+            <div class="header-title">
+                <a href="/" title="Happy Coding">Happy Coding</a>
+            </div>
+            <div class="menu-toggle" id="menu-toggle-mobile">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="menu" id="menu-mobile"><a class="menu-item" href="/posts" title="">Archive</a><a class="menu-item" href="/categories" title="">Categories</a><a class="menu-item" href="/tags" title="">Tags</a><a class="menu-item" href="/index.xml" title="">RSS Feed</a><a href="javascript:void(0);" class="menu-item theme-switch" title="Switch Theme">
+                <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+            </a></div>
+    </div>
+</header><main class="main">
+                <div class="container"><div class="toc" id="toc-auto">
+            <h2 class="toc-title">Contents</h2>
+            <div class="toc-content" id="toc-content-auto"></div>
+        </div><article class="page single"><h1 class="single-title animate__animated animate__flipInX">Python+Ray 并发编程</h1><div class="post-meta">
+            <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Happy Coding</a></span></div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2020-07-28">2020-07-28</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;169 words&nbsp;
+                <i class="far fa-clock fa-fw" aria-hidden="true"></i>&nbsp;One minute&nbsp;</div>
+        </div><div class="details toc" id="toc-static"  data-kept="">
+                <div class="details-summary toc-title">
+                    <span>Contents</span>
+                    <span><i class="details-icon fas fa-angle-right" aria-hidden="true"></i></span>
+                </div>
+                <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#ray-简介">Ray 简介</a></li>
+    <li><a href="#python-并发编程">Python 并发编程</a>
+      <ul>
+        <li><a href="#并发-并行">并发 并行</a></li>
+        <li><a href="#io密集型操作-cpu密集型操作">IO密集型操作 CPU密集型操作</a></li>
+        <li><a href="#进程-线程-协程">进程 线程 协程</a></li>
+        <li><a href="#并行手段">并行手段</a></li>
+        <li><a href="#gil">GIL</a></li>
+        <li><a href="#multiprocessingpool">multiprocessing.Pool</a></li>
+      </ul>
+    </li>
+    <li><a href="#使用-ray-core-并发编程">使用 Ray Core 并发编程</a>
+      <ul>
+        <li><a href="#资源与调度">资源与调度</a></li>
+      </ul>
+    </li>
+    <li><a href="#使用-ray-多机-scikit-learn-训练">使用 Ray 多机 Scikit-Learn 训练</a></li>
+    <li><a href="#总结">总结</a></li>
+  </ul>
+</nav></div>
+            </div><div class="content" id="content"><h2 id="ray-简介">Ray 简介</h2>
+<p>Python 的数据科学生态软件 numpy，scipy，pandas，scikit-learn 都是单机的，pandas的计算更是只能使用一个CPU core，跟不上多核多机分布式计算的大形式了。</p>
+<p>Ray 就是在这个背景下产生的。<a href="https://docs.ray.io/en/latest/ray-overview/index.html" target="_blank" rel="noopener noreffer ">Ray</a> Core 是一个用于开发分布式应用的框架。基于Ray Core，Ray 生态主要是数据科学相关，比如分布式机器学习训练、可伸缩的机器学习超参数调优。</p>
+<blockquote>
+<p>On top of <strong>Ray Core</strong> are several libraries for solving problems in machine learning:</p>
+<ul>
+<li><a href="https://docs.ray.io/en/latest/tune.html#tune-index" target="_blank" rel="noopener noreffer ">Tune: Scalable Hyperparameter Tuning</a></li>
+<li><a href="https://docs.ray.io/en/latest/rllib.html#rllib-index" target="_blank" rel="noopener noreffer ">RLlib: Scalable Reinforcement Learning</a></li>
+<li><a href="https://docs.ray.io/en/latest/raysgd/raysgd.html#sgd-index" target="_blank" rel="noopener noreffer ">RaySGD: Distributed Training Wrappers</a></li>
+<li><a href="https://docs.ray.io/en/latest/serve/index.html#rayserve" target="_blank" rel="noopener noreffer ">Ray Serve: Scalable and Programmable Serving</a></li>
+</ul>
+<p>Ray also has a number of other community contributed libraries:</p>
+<ul>
+<li><a href="https://docs.ray.io/en/latest/pandas_on_ray.html" target="_blank" rel="noopener noreffer ">Pandas on Ray</a></li>
+<li><a href="https://docs.ray.io/en/latest/joblib.html" target="_blank" rel="noopener noreffer ">Distributed Scikit-learn / Joblib</a></li>
+<li><a href="https://docs.ray.io/en/latest/multiprocessing.html" target="_blank" rel="noopener noreffer ">Distributed multiprocessing.Pool</a></li>
+</ul></blockquote>
+<p>其中 <a href="https://modin.readthedocs.io/en/latest/index.html" target="_blank" rel="noopener noreffer ">Pandas on Ray</a> 的思路，兼容 Pandas API，照顾老用户使用习惯，底层用 Ray 重写了。所以 Pandas on Ray 不是 Pandas。类似的项目有 <a href="https://dask.org/" target="_blank" rel="noopener noreffer ">Dask</a>。</p>
+<p>Driver-Workers的架构。</p>
+<p>本文关注 Ray Core。</p>
+<p>数据科学 CPU-bound 计算任务。</p>
+<h2 id="python-并发编程">Python 并发编程</h2>
+<p>参考：<a href="https://realpython.com/python-concurrency/" target="_blank" rel="noopener noreffer ">Speed Up Your Python Program With Concurrency</a></p>
+<h3 id="并发-并行">并发 并行</h3>
+<p>并发 Concurrency</p>
+<p>单核CPU，同时只有一个线程可执行。操作系统协调多个线程使用CPU。</p>
+<p>并行 Parallelism</p>
+<p>多核CPU，不同线程可以在不同CPU上执行。</p>
+<h3 id="io密集型操作-cpu密集型操作">IO密集型操作 CPU密集型操作</h3>
+<p>IO密集型操作 I/O-bound</p>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="../../images/IOBound.4810a888b457.png"
+        data-srcset="../../images/IOBound.4810a888b457.png, ../../images/IOBound.4810a888b457.png 1.5x, ../../images/IOBound.4810a888b457.png 2x"
+        data-sizes="auto"
+        alt="../../images/IOBound.4810a888b457.png"
+        title="Timing Diagram of an I/O Bound Program" /></p>
+<p>CPU密集型操作 CPU-bound</p>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="../../images/CPUBound.d2d32cb2626c.png"
+        data-srcset="../../images/CPUBound.d2d32cb2626c.png, ../../images/CPUBound.d2d32cb2626c.png 1.5x, ../../images/CPUBound.d2d32cb2626c.png 2x"
+        data-sizes="auto"
+        alt="../../images/CPUBound.d2d32cb2626c.png"
+        title="Timing Diagram of an CPU Bound Program" /></p>
+<h3 id="进程-线程-协程">进程 线程 协程</h3>
+<p>进程粒度就很大了，没法充分利用的。</p>
+<p>程序的实例，就是进程。每个进程都有自己的地址空间。</p>
+<h3 id="并行手段">并行手段</h3>
+<p>threading</p>
+<p>asyncio 代码写复杂了，很多库也不支持</p>
+<p>对于计算密集型任务来说，利用多核才能提高性能。多线程的手段只会降低总体性能，因为CPU还花时间在线程调度上了。</p>
+<p>process</p>
+<p>多进程是最简单粗暴的。</p>
+<h3 id="gil">GIL</h3>
+<p><a href="https://zh.wikipedia.org/wiki/%E5%85%A8%E5%B1%80%E8%A7%A3%E9%87%8A%E5%99%A8%E9%94%81" target="_blank" rel="noopener noreffer ">全局解释器锁（Global Interpreter Lock，缩写GIL）</a>造成的结果，单进程无法利用多核。除非使用多进程。</p>
+<blockquote>
+<ul>
+<li>CPython的线程是<a href="https://zh.wikipedia.org/wiki/%e6%93%8d%e4%bd%9c%e7%b3%bb%e7%bb%9f" target="_blank" rel="noopener noreffer ">操作系统</a>的原生线程。在<a href="https://zh.wikipedia.org/wiki/Linux" target="_blank" rel="noopener noreffer ">Linux</a>上为pthread，在<a href="https://zh.wikipedia.org/wiki/Windows" target="_blank" rel="noopener noreffer ">Windows</a>上为Win thread，完全由操作系统调度线程的执行。一个Python解释器进程内有一个主线程，以及多个用户程序的执行线程。即便使用<a href="https://zh.wikipedia.org/wiki/%e5%a4%9a%e6%a0%b8%e5%bf%83CPU" target="_blank" rel="noopener noreffer ">多核心CPU</a>平台，由于GIL的存在，也将禁止多线程的并行执行。[<a href="https://zh.wikipedia.org/wiki/%e5%85%a8%e5%b1%80%e8%a7%a3%e9%87%8a%e5%99%a8%e9%94%81#cite_note-2" target="_blank" rel="noopener noreffer ">2]</a></li>
+</ul></blockquote>
+<p>Go单进程利用多核。</p>
+<p>Python单进程只能利用单核，所以需要显式地多进程。</p>
+<h3 id="multiprocessingpool">multiprocessing.Pool</h3>
+<p>为了充分利用多核资源，Python引入multiprocessing多进程包。通过多进程的方式避免GIL带来的限制，每个进程。</p>
+<p>单机多核。</p>
+<h2 id="使用-ray-core-并发编程">使用 Ray Core 并发编程</h2>
+<p>理论上还是多进程编程。</p>
+<h3 id="资源与调度">资源与调度</h3>
+<p>多机多核。</p>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="../../images/image-20200804154228362.png"
+        data-srcset="../../images/image-20200804154228362.png, ../../images/image-20200804154228362.png 1.5x, ../../images/image-20200804154228362.png 2x"
+        data-sizes="auto"
+        alt="../../images/image-20200804154228362.png"
+        title="image-20200804154228362" /></p>
+<p>参考：<a href="https://docs.ray.io/en/latest/ray-dashboard.html" target="_blank" rel="noopener noreffer ">Ray Dashboard</a></p>
+<p>资源有内存（还能细分）、CPU。</p>
+<p>分配给worker的资源不能超过资源的总数，比如节点有8个CPU，那就只有8个标记为remote的方法并行执行。</p>
+<p>一个remote分配的最小资源是一个CPU。如果这个remote没有充分利用CPU（只占25%），比如仅仅是网络请求，网络等待的时间比较多，CPU是浪费的。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>ray<span style="color:#f92672">.</span>timeline(<span style="color:#e6db74">&#39;timeline.json&#39;</span>)
+</span></span></code></pre></div><p><a href="https://docs.ray.io/en/latest/package-ref.html#ray.timeline" target="_blank" rel="noopener noreffer ">https://docs.ray.io/en/latest/package-ref.html#ray.timeline</a></p>
+<p>保存的timeline.json文件使用 <a href="chrome://tracing" target="_blank" rel="noopener noreffer ">chrome://tracing</a> 打开。多核利用起来了。</p>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="../../images/image-20200804161035501.png"
+        data-srcset="../../images/image-20200804161035501.png, ../../images/image-20200804161035501.png 1.5x, ../../images/image-20200804161035501.png 2x"
+        data-sizes="auto"
+        alt="../../images/image-20200804161035501.png"
+        title="image-20200804161035501" /></p>
+<p>缩放看细节。driver大部分时间都在ray.wait，等待时间大概是一次task的执行时间。worker都是在执行task，空闲率不多（空白处）。</p>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="../../images/image-20200804161457372.png"
+        data-srcset="../../images/image-20200804161457372.png, ../../images/image-20200804161457372.png 1.5x, ../../images/image-20200804161457372.png 2x"
+        data-sizes="auto"
+        alt="../../images/image-20200804161457372.png"
+        title="image-20200804161457372" /></p>
+<p>再次缩放，ray.wait等待一些task完成，ray.get获取结果后，submit_task提交任务。</p>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="../../images/image-20200804161930548.png"
+        data-srcset="../../images/image-20200804161930548.png, ../../images/image-20200804161930548.png 1.5x, ../../images/image-20200804161930548.png 2x"
+        data-sizes="auto"
+        alt="../../images/image-20200804161930548.png"
+        title="image-20200804161930548" /></p>
+<p>参考：</p>
+<ol>
+<li><a href="https://docs.ray.io/en/latest/troubleshooting.html" target="_blank" rel="noopener noreffer ">Debugging and Profiling</a></li>
+<li></li>
+</ol>
+<h2 id="使用-ray-多机-scikit-learn-训练">使用 Ray 多机 Scikit-Learn 训练</h2>
+<p>数据科学家基本上以pandas/numpy/scikitlearn这些工具为主，需要为这些工具提供并行化功能。</p>
+<p>5分钟10w张头像下载与抽取特征，并发也在300以上，可以接受了。</p>
+<p>总结：</p>
+<ol>
+<li>与Golang比起来，Python+Ray并没有办法充分利用CPU，除非方法全都是计算任务。</li>
+</ol>
+<h2 id="总结">总结</h2>
+<p>Ray 是：</p>
+<ol>
+<li>本质上仍然是一个多进程的方案。具体地说，分布式多进程方案。</li>
+<li>适合CPU计算密集型的任务。数据科学主要是计算密集型工作。</li>
+</ol>
+</div><div class="post-footer" id="post-footer">
+    <div class="post-info">
+        <div class="post-info-line">
+            <div class="post-info-mod">
+                <span>Updated on 2020-07-28</span>
+            </div></div>
+        <div class="post-info-line">
+            <div class="post-info-md"></div>
+            <div class="post-info-share">
+                <span><a href="javascript:void(0);" title="Share on Twitter" data-sharer="twitter" data-url="http://localhost:1313/posts/20200728-python-ray/" data-title="Python&#43;Ray 并发编程"><i class="fab fa-twitter fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="Share on Facebook" data-sharer="facebook" data-url="http://localhost:1313/posts/20200728-python-ray/"><i class="fab fa-facebook-square fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="Share on Hacker News" data-sharer="hackernews" data-url="http://localhost:1313/posts/20200728-python-ray/" data-title="Python&#43;Ray 并发编程"><i class="fab fa-hacker-news fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="Share on Line" data-sharer="line" data-url="http://localhost:1313/posts/20200728-python-ray/" data-title="Python&#43;Ray 并发编程"><i data-svg-src="/lib/simple-icons/icons/line.min.svg" aria-hidden="true"></i></a><a href="javascript:void(0);" title="Share on 微博" data-sharer="weibo" data-url="http://localhost:1313/posts/20200728-python-ray/" data-title="Python&#43;Ray 并发编程"><i class="fab fa-weibo fa-fw" aria-hidden="true"></i></a></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="post-info-more">
+        <section class="post-tags"></section>
+        <section>
+            <span><a href="javascript:void(0);" onclick="window.history.back();">Back</a></span>&nbsp;|&nbsp;<span><a href="/">Home</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav"><a href="/posts/20200726-lcg/" class="prev" rel="prev" title="伪随机数生成算法——线性同余法"><i class="fas fa-angle-left fa-fw" aria-hidden="true"></i>伪随机数生成算法——线性同余法</a>
+            <a href="/posts/20200803-homomorphic-encryption/" class="next" rel="next" title="同态加密科普">同态加密科普<i class="fas fa-angle-right fa-fw" aria-hidden="true"></i></a></div>
+</div>
+</article></div>
+            </main><footer class="footer">
+        <div class="footer-container"><div class="footer-line">Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.147.3">Hugo</a> | Theme - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.3.0"><i class="far fa-kiss-wink-heart fa-fw" aria-hidden="true"></i> LoveIt</a>
+                </div><div class="footer-line" itemscope itemtype="http://schema.org/CreativeWork"><i class="far fa-copyright fa-fw" aria-hidden="true"></i><span itemprop="copyrightYear">2022 - 2025</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/" target="_blank">Happy Coding</a></span></div>
+        </div>
+    </footer></div>
+
+        <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="Back to Top">
+                <i class="fas fa-arrow-up fa-fw" aria-hidden="true"></i>
+            </a><a href="#" id="view-comments" class="fixed-button" title="View Comments">
+                <i class="fas fa-comment fa-fw" aria-hidden="true"></i>
+            </a>
+        </div><script type="text/javascript" src="/lib/lazysizes/lazysizes.min.js"></script><script type="text/javascript" src="/lib/clipboard/clipboard.min.js"></script><script type="text/javascript" src="/lib/sharer/sharer.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"Copy to clipboard","maxShownLines":50},"comment":{}};</script><script type="text/javascript" src="/js/theme.min.js"></script></body>
+</html>

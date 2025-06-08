@@ -1,24 +1,19 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>microservices on Happy Coding</title>
+    <title>Microservices on Happy Coding</title>
     <link>https://xujiahua.github.io/tags/microservices/</link>
-    <description>Recent content in microservices on Happy Coding</description>
-    <generator>Hugo -- gohugo.io</generator>
+    <description>Recent content in Microservices on Happy Coding</description>
+    <generator>Hugo</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Tue, 21 Apr 2020 09:01:38 +0800</lastBuildDate><atom:link href="https://xujiahua.github.io/tags/microservices/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Tue, 21 Apr 2020 09:01:38 +0800</lastBuildDate>
+    <atom:link href="https://xujiahua.github.io/tags/microservices/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>consul 小结</title>
       <link>https://xujiahua.github.io/posts/20200421-use-consul/</link>
       <pubDate>Tue, 21 Apr 2020 09:01:38 +0800</pubDate>
-      
       <guid>https://xujiahua.github.io/posts/20200421-use-consul/</guid>
-      <description>简单介绍 hashicorp 对 Consul 的定位是服务间网络方案。
- Consul is a service networking solution to connect and secure services across any runtime platform and public or private cloud. https://www.consul.io/
- 官方的两个 use case 就是 service discovery, service mesh。
-service discovery 与 etcd 比起来，Consul 的服务发现是开箱即用的。优点如下：
- First class 的服务注册和获取接口。不需要像 etcd 那样在 kv 存储基础上做包装。 服务注册，可以是consul 命令，也可以是HTTP API。 获取服务注册表，除了 HTTP 接口，还可以使用 DNS 查询接口。 健康检查。服务注册的时候可以提供健康检查项。健康检查机制保证了拿到的服务注册表是“健康”的。健康检查也包括节点的检查。单纯利用 consul 健康检查这个功能，consul 就是一个分布式监控工具。 Web 管理界面。节点、服务、健康与否一目了然。 Watch 功能。通过 blocking queries/ long-polling HTTP API 的方式得到服务注册表的改变的通知。 跨数据中心（取资源）。When a request is made for a resource in another datacenter, the local Consul servers forward an RPC request to the remote Consul servers for that resource and return the results.</description>
+      <description>&lt;h2 id=&#34;简单介绍&#34;&gt;简单介绍&lt;/h2&gt;&#xA;&lt;p&gt;hashicorp 对 Consul 的定位是服务间网络方案。&lt;/p&gt;&#xA;&lt;blockquote&gt;&#xA;&lt;p&gt;Consul is a service networking solution to connect and secure services across any runtime platform and public or private cloud. &lt;a href=&#34;https://www.consul.io/&#34; target=&#34;_blank&#34; rel=&#34;noopener noreffer &#34;&gt;https://www.consul.io/&lt;/a&gt;&lt;/p&gt;&lt;/blockquote&gt;&#xA;&lt;p&gt;官方的两个 use case 就是 service discovery, service mesh。&lt;/p&gt;&#xA;&lt;h3 id=&#34;service-discovery&#34;&gt;service discovery&lt;/h3&gt;&#xA;&lt;p&gt;与 etcd 比起来，Consul 的服务发现是开箱即用的。优点如下：&lt;/p&gt;&#xA;&lt;ol&gt;&#xA;&lt;li&gt;First class 的服务注册和获取接口。不需要像 etcd 那样在 kv 存储基础上做包装。&lt;/li&gt;&#xA;&lt;li&gt;服务注册，可以是consul 命令，也可以是HTTP API。&lt;/li&gt;&#xA;&lt;li&gt;获取服务注册表，除了 HTTP 接口，还可以使用  DNS 查询接口。&lt;/li&gt;&#xA;&lt;li&gt;健康检查。服务注册的时候可以提供健康检查项。健康检查机制保证了拿到的服务注册表是“健康”的。健康检查也包括节点的检查。单纯利用 consul 健康检查这个功能，consul 就是一个分布式监控工具。&lt;/li&gt;&#xA;&lt;li&gt;Web 管理界面。节点、服务、健康与否一目了然。&lt;/li&gt;&#xA;&lt;li&gt;Watch 功能。通过 blocking queries/ long-polling HTTP API 的方式得到服务注册表的改变的通知。&lt;/li&gt;&#xA;&lt;li&gt;跨数据中心（取资源）。When a request is made for a resource in another datacenter, the local Consul servers forward an RPC request to the remote Consul servers for that resource and return the results. &lt;a href=&#34;https://learn.hashicorp.com/consul/security-networking/datacenters#data-replication&#34; target=&#34;_blank&#34; rel=&#34;noopener noreffer &#34;&gt;https://learn.hashicorp.com/consul/security-networking/datacenters#data-replication&lt;/a&gt;&lt;/li&gt;&#xA;&lt;/ol&gt;&#xA;&lt;h3 id=&#34;service-mesh&#34;&gt;service mesh&lt;/h3&gt;&#xA;&lt;p&gt;service discovery 只是微服务治理的初级阶段。作为服务请求方，通过 consul/ etcd 获取到服务注册表，下一步就是选择其中一个服务实例，发送请求。这个步骤叫做负载均衡。可以想象，客户端的代码会越来越重了。&lt;/p&gt;</description>
     </item>
-    
   </channel>
 </rss>

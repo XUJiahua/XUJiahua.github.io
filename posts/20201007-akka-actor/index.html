@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+    <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="robots" content="noodp" />
+        <title>Akka Actor - Happy Coding</title><meta name="Description" content=""><meta property="og:url" content="http://localhost:1313/posts/20201007-akka-actor/">
+  <meta property="og:site_name" content="Happy Coding">
+  <meta property="og:title" content="Akka Actor">
+  <meta property="og:description" content="Evernote里搜了下Akka：Akka太抽象了，缺氧。20190527: 经过差不多2个小时的深度阅读，quickstart能看懂了。
+之前是没怎么看懂的，现在都没啥印象了。
+Akka, a set of open-source libraries for designing scalable, resilient systems that span processor cores and networks.
+Akka allows you to focus on meeting business needs instead of writing low-level code to provide reliable behavior, fault tolerance, and high performance.
+To be successful, distributed systems must cope in an environment where components crash without responding, messages get lost without a trace on the wire, and network latency fluctuates. 这也是 Akka 解决的问题。">
+  <meta property="og:locale" content="zh_cn">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2020-10-07T21:20:31+08:00">
+    <meta property="article:modified_time" content="2020-10-07T21:20:31+08:00">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Akka Actor">
+  <meta name="twitter:description" content="Evernote里搜了下Akka：Akka太抽象了，缺氧。20190527: 经过差不多2个小时的深度阅读，quickstart能看懂了。
+之前是没怎么看懂的，现在都没啥印象了。
+Akka, a set of open-source libraries for designing scalable, resilient systems that span processor cores and networks.
+Akka allows you to focus on meeting business needs instead of writing low-level code to provide reliable behavior, fault tolerance, and high performance.
+To be successful, distributed systems must cope in an environment where components crash without responding, messages get lost without a trace on the wire, and network latency fluctuates. 这也是 Akka 解决的问题。">
+<meta name="application-name" content="Happy Coding">
+<meta name="apple-mobile-web-app-title" content="Happy Coding"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="http://localhost:1313/posts/20201007-akka-actor/" /><link rel="prev" href="http://localhost:1313/posts/20201002-scala-java/" /><link rel="next" href="http://localhost:1313/posts/20201009-mit-6.824-distributed-systems/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="/lib/fontawesome-free/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="/lib/fontawesome-free/all.min.css"></noscript><link rel="preload" href="/lib/animate/animate.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="/lib/animate/animate.min.css"></noscript><script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "headline": "Akka Actor",
+        "inLanguage": "zh-cn",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "http:\/\/localhost:1313\/posts\/20201007-akka-actor\/"
+        },"genre": "posts","wordcount":  1588 ,
+        "url": "http:\/\/localhost:1313\/posts\/20201007-akka-actor\/","datePublished": "2020-10-07T21:20:31+08:00","dateModified": "2020-10-07T21:20:31+08:00","publisher": {
+            "@type": "Organization",
+            "name": ""},"author": {
+                "@type": "Person",
+                "name": "Happy Coding"
+            },"description": ""
+    }
+    </script></head>
+    <body data-header-desktop="fixed" data-header-mobile="auto"><script type="text/javascript">(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
+
+        <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
+    <div class="header-wrapper">
+        <div class="header-title">
+            <a href="/" title="Happy Coding">Happy Coding</a>
+        </div>
+        <div class="menu">
+            <div class="menu-inner"><a class="menu-item" href="/posts"> Archive </a><a class="menu-item" href="/categories"> Categories </a><a class="menu-item" href="/tags"> Tags </a><a class="menu-item" href="/index.xml"> RSS Feed </a><span class="menu-item delimiter"></span><a href="javascript:void(0);" class="menu-item theme-switch" title="Switch Theme">
+                    <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+                </a></div>
+        </div>
+    </div>
+</header><header class="mobile" id="header-mobile">
+    <div class="header-container">
+        <div class="header-wrapper">
+            <div class="header-title">
+                <a href="/" title="Happy Coding">Happy Coding</a>
+            </div>
+            <div class="menu-toggle" id="menu-toggle-mobile">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="menu" id="menu-mobile"><a class="menu-item" href="/posts" title="">Archive</a><a class="menu-item" href="/categories" title="">Categories</a><a class="menu-item" href="/tags" title="">Tags</a><a class="menu-item" href="/index.xml" title="">RSS Feed</a><a href="javascript:void(0);" class="menu-item theme-switch" title="Switch Theme">
+                <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+            </a></div>
+    </div>
+</header><main class="main">
+                <div class="container"><div class="toc" id="toc-auto">
+            <h2 class="toc-title">Contents</h2>
+            <div class="toc-content" id="toc-content-auto"></div>
+        </div><article class="page single"><h1 class="single-title animate__animated animate__flipInX">Akka Actor</h1><div class="post-meta">
+            <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Happy Coding</a></span></div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2020-10-07">2020-10-07</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;1588 words&nbsp;
+                <i class="far fa-clock fa-fw" aria-hidden="true"></i>&nbsp;8 minutes&nbsp;</div>
+        </div><div class="details toc" id="toc-static"  data-kept="">
+                <div class="details-summary toc-title">
+                    <span>Contents</span>
+                    <span><i class="details-icon fas fa-angle-right" aria-hidden="true"></i></span>
+                </div>
+                <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#why-modern-systems-need-a-new-programming-model">Why modern systems need a new programming model</a>
+      <ul>
+        <li><a href="#oop-封装的挑战--并没有解决多线程并发修改对象内部状态的问题">OOP 封装的挑战 —— 并没有解决多线程并发修改对象内部状态的问题</a></li>
+        <li><a href="#共享内存的错觉在多线程多cpu的架构下思考--cpu-写入一个变量会先写入缓存而不是直接进入共享内存">共享内存的错觉，在多线程、多CPU的架构下思考 —— CPU 写入一个变量，会先写入缓存，而不是直接进入共享内存</a></li>
+        <li><a href="#调用堆栈上的错觉--这是单线程内的处理逻辑无法使用多线程场景">调用堆栈上的错觉 —— 这是单线程内的处理逻辑，无法使用多线程场景</a></li>
+      </ul>
+    </li>
+    <li><a href="#how-the-actor-model-meets-the-needs-of-modern-distributed-systems">How the Actor Model Meets the Needs of Modern, Distributed Systems</a>
+      <ul>
+        <li><a href="#usage-of-message-passing-avoids-locking-and-blocking">Usage of message passing avoids locking and blocking</a></li>
+        <li><a href="#actors-handle-error-situations-gracefully">Actors handle error situations gracefully</a></li>
+      </ul>
+    </li>
+    <li><a href="#akka-quickstart-with-scala">Akka Quickstart with Scala</a></li>
+    <li><a href="#introduction-to-the-example-iot-example">Introduction to the Example IoT example</a></li>
+    <li><a href="#why-akka-typed">Why Akka Typed</a></li>
+  </ul>
+</nav></div>
+            </div><div class="content" id="content"><p>Evernote里搜了下Akka：Akka太抽象了，缺氧。20190527: 经过差不多2个小时的深度阅读，quickstart能看懂了。</p>
+<p>之前是没怎么看懂的，现在都没啥印象了。</p>
+<p>Akka, a set of open-source libraries for designing scalable, resilient systems that span processor cores and networks.</p>
+<p>Akka allows you to focus on meeting business needs instead of writing low-level code to provide reliable behavior, fault tolerance, and high performance.</p>
+<p>To be successful, distributed systems must cope in an environment where components crash without responding, messages get lost without a trace on the wire, and network latency fluctuates. 这也是 Akka 解决的问题。</p>
+<p>几个问题：</p>
+<ol>
+<li>Go goroutine + channel vs. Akka message passing 有何本质区别么？解决的是一个问题么？goroutine 只是单机的概念。Akka 分布式+容错+并发。</li>
+<li><a href="https://doc.akka.io/docs/akka/current/typed/guide/index.html" target="_blank" rel="noopener noreffer ">https://doc.akka.io/docs/akka/current/typed/guide/index.html</a></li>
+<li>Akka 异步消息怎么适应实时的 API 呢？</li>
+</ol>
+<p>Akka的作者看来，单机内多线程的通信问题与多机多线程没什么两样，Akka是适应单机与多机的统一模型。</p>
+<p>多线程，主线程分发任务，任务线程执行任务，主线程需要处理与任务线程之间的通信。</p>
+<p>跨网络，主线程与其他机器的线程交互除了是经过网络的，跟单机多线程的处理没有两样。主线程与其他机器线程交互的方式，是投递消息。Akka 让单机多线程也这么做，同样是消息投递。</p>
+<p>Akka 的出现是为了适应现代计算机架构与分布式系统。</p>
+<p>Akka 提高生产力的方面在于：</p>
+<ol>
+<li>不用 Low-level 的处理多线程并行 building block，比如原子操作、锁。</li>
+<li>不用写底层的网络通信。</li>
+<li>还提供了一个高可用的集群架构。</li>
+</ol>
+<h2 id="why-modern-systems-need-a-new-programming-model">Why modern systems need a new programming model</h2>
+<p>这篇文章讲的是 Akka 出现的动机。https://doc.akka.io/docs/akka/current/typed/guide/actors-motivation.html</p>
+<p>现代架构是多线程、多CPU的架构，传统的 OOP 编程模型并不适合。OOP 面向对象编程并不是解决并行计算的模型。这里介绍下 Actor model。</p>
+<p>To highlight issues that the actor model addresses, this topic discusses the following <strong>mismatches between traditional programming assumptions and the reality of modern multi-threaded, multi-CPU architectures</strong>:</p>
+<ul>
+<li><a href="https://doc.akka.io/docs/akka/current/typed/guide/actors-motivation.html#the-challenge-of-encapsulation" target="_blank" rel="noopener noreffer ">The challenge of encapsulation</a></li>
+<li><a href="https://doc.akka.io/docs/akka/current/typed/guide/actors-motivation.html#the-illusion-of-shared-memory-on-modern-computer-architectures" target="_blank" rel="noopener noreffer ">The illusion of shared memory on modern computer architectures</a></li>
+<li><a href="https://doc.akka.io/docs/akka/current/typed/guide/actors-motivation.html#the-illusion-of-a-call-stack" target="_blank" rel="noopener noreffer ">The illusion of a call stack</a></li>
+</ul>
+<h3 id="oop-封装的挑战--并没有解决多线程并发修改对象内部状态的问题">OOP 封装的挑战 —— 并没有解决多线程并发修改对象内部状态的问题</h3>
+<p>封装并没有解决对象被多线程并发访问（修改）的竟态问题。这时候只能使用锁来解决。锁并不美好，限制了并发，也容易写出死锁的代码。</p>
+<p>OOP 的编程模型，我们很少考虑多线程。比较单线程思维，都是从对象A方法调用对象B，这个角度去思考。而实际上，在多线程环境，是线程在驱动整个调用链。</p>
+<blockquote>
+<p>In summary:</p>
+<p>Objects can only guarantee encapsulation (protection of invariants) in the face of single-threaded access, multi-thread execution almost always leads to corrupted internal state. Every invariant can be violated by having two contending threads in the same code segment.
+While locks seem to be the natural remedy to uphold encapsulation with multiple threads, in practice they are inefficient and easily lead to deadlocks in any application of real-world scale.
+Locks work locally, attempts to make them distributed exist, but offer limited potential for scaling out.</p></blockquote>
+<h3 id="共享内存的错觉在多线程多cpu的架构下思考--cpu-写入一个变量会先写入缓存而不是直接进入共享内存">共享内存的错觉，在多线程、多CPU的架构下思考 —— CPU 写入一个变量，会先写入缓存，而不是直接进入共享内存</h3>
+<p>Programming models of the 80’-90’s conceptualize that writing to a variable means writing to a memory location directly.</p>
+<p>On modern architectures - if we simplify things a bit - CPUs are writing to <a href="https://en.wikipedia.org/wiki/CPU_cache" target="_blank" rel="noopener noreffer ">cache lines</a> instead of writing to memory directly.</p>
+<p>Most of these caches are local to the CPU core, that is, writes by one core are not visible by another. In order to make local changes visible to another core, and hence to another thread, the cache line needs to be shipped to the other core’s cache.</p>
+<p>以前的编程模型假设，写入一个变量，是直接写入内存。实际上，并不是，是先写入缓存，而不是直接内存。然后就有了变量的可见性问题。在 Java 里，需要在变量前定义一些关键字来解决。</p>
+<p>On the JVM, we have to explicitly denote memory locations to be shared across threads by using <em>volatile</em> markers or <code>Atomic</code> wrappers. Otherwise, we can access them only in a locked section. Why don’t we just mark all variables as volatile? Because shipping cache lines across cores is a very costly operation! Doing so would implicitly stall the cores involved from doing additional work, and result in bottlenecks on the cache coherence protocol (the protocol CPUs use to transfer cache lines between main memory and other CPUs). The result is magnitudes of slowdown.</p>
+<p>为什么不为每个变量声明为<em>volatile</em>，这样所有线程都可见呢。因为这样会要求CPU把当前core的cache移动到其他core的cache，这是耗时操作！</p>
+<p>所以，akka的思路是，干脆不考虑共享，直接通过消息投递。线程负责好这个对象，在akka里，是actor吧。</p>
+<blockquote>
+<p>In summary:</p>
+<p>There is no real shared memory anymore, CPU cores pass chunks of data (cache lines) explicitly to each other just as computers on a network do. <strong>Inter-CPU communication and network communication have more in common than many realize.</strong> Passing messages is the norm now be it across CPUs or networked computers.
+Instead of hiding the message passing aspect through variables marked as shared or using atomic data structures, a more disciplined and principled approach is to keep state local to a concurrent entity and propagate data or events between concurrent entities explicitly via messages.</p></blockquote>
+<p>摩尔定律失效了，单核上的提升比较有限了。现代 CPU 的发展，是通过多核的方式提高性能的。所以 CPU core 之间的通信，与 CPU 网络间的通信是可以类比的。</p>
+<h3 id="调用堆栈上的错觉--这是单线程内的处理逻辑无法使用多线程场景">调用堆栈上的错觉 —— 这是单线程内的处理逻辑，无法使用多线程场景</h3>
+<p>Call stacks do not cross threads and hence, do not model asynchronous call chains.</p>
+<p>调用堆栈，一般的印象是在单个线程内的方法调用堆栈，throw exception 也是在单线程内的。调用堆栈也可以是跨线程、跨网络的，这是Akka提醒我们的？</p>
+<p>为了提高运行效率，势必会有把一些计算任务委托给工作线程的工作。这时候该如何思考调用堆栈。</p>
+<p>会出现如下的现象，工作线程出现 exception 后，工作状态也丢了。怎么跟主线程汇报呢？no way了，除非写try catch 代码吧。这跟网络间交互，网络问题导致工作线程无法汇报给另一台机器的主线程是一样的。</p>
+<blockquote>
+<p>unexpected phenomena: the actual task, that the thread was currently working on, is no longer in the shared memory location where tasks are taken from (usually a queue). In fact, due to the exception reaching to the top, unwinding all of the call stack, the task state is fully lost!</p></blockquote>
+<p>基于 Call stack 的错误处理在 task-delegating、分布式计算的场景已经不适宜了。需要引入显式的错误信号机制。</p>
+<blockquote>
+<p>In summary:</p>
+<p>To achieve any meaningful concurrency and performance on current systems, threads must delegate tasks among each other in an efficient way without blocking. With this style of task-delegating concurrency (and even more so with networked/distributed computing) call stack-based error handling breaks down and new, explicit error signaling mechanisms need to be introduced. Failures become part of the domain model.</p>
+<p>Concurrent systems with work delegation need to handle service faults and have principled means to recover from them. Clients of such services need to be aware that tasks/messages might get lost during restarts. Even if loss does not happen, a response might be delayed arbitrarily due to previously enqueued tasks (a long queue), delays caused by garbage collection, etc. In face of these, concurrent systems should handle response deadlines in the form of timeouts, just like networked/distributed systems.</p></blockquote>
+<h2 id="how-the-actor-model-meets-the-needs-of-modern-distributed-systems">How the Actor Model Meets the Needs of Modern, Distributed Systems</h2>
+<p><a href="https://doc.akka.io/docs/akka/current/typed/guide/actors-intro.html" target="_blank" rel="noopener noreffer ">https://doc.akka.io/docs/akka/current/typed/guide/actors-intro.html</a></p>
+<h3 id="usage-of-message-passing-avoids-locking-and-blocking">Usage of message passing avoids locking and blocking</h3>
+<blockquote>
+<p>An important difference between passing messages and calling methods is that messages have no return value. By sending a message, an actor delegates work to another actor. As we saw in <a href="https://doc.akka.io/docs/akka/current/typed/guide/actors-motivation.html#the-illusion-of-a-call-stack" target="_blank" rel="noopener noreffer ">The illusion of a call stack</a>, if it expected a return value, the sending actor would either need to block or to execute the other actor’s work on the same thread. Instead, the receiving actor delivers the results in a reply message.</p></blockquote>
+<p>Object -&gt; Actor，invoke method -&gt; message passing。Actors react to messages just like objects “react” to methods invoked on them., they react to incoming messages sequentially, one at a time. 因为 Actor 同时只处理一条 message，所以没有并发问题，被顺序处理解决了。调用没有阻塞了，保证两个actor可以并行运行。也就是说，看似单个actor是顺序修改内部状态的，没有并行，但是多个actor是并行的。</p>
+<p>保持了封装性的同时，不再需要锁和原子包装来解决并发修改内部状态的问题。</p>
+<p>To accomplish this behavior, actors have:</p>
+<ul>
+<li>A mailbox (the queue where messages end up).</li>
+<li>A behavior (the state of the actor, internal variables etc.).</li>
+<li>Messages (pieces of data representing a signal, similar to method calls and their parameters).</li>
+<li>An execution environment (the machinery that takes actors that have messages to react to and invokes their message handling code). An execution environment orchestrates a pool of threads to drive all these actions completely transparently. 复杂逻辑是这块在处理啊。</li>
+<li>An address (more on this later).</li>
+</ul>
+<p>This is a very simple model and it solves the issues enumerated previously:</p>
+<ul>
+<li>Encapsulation is preserved by decoupling execution from signaling (method calls transfer execution, message passing does not). 保留了封装性。</li>
+<li>There is no need for locks. Modifying the internal state of an actor is only possible via messages, which are processed one at a time eliminating races when trying to keep invariants. 顺序执行，不需要锁。</li>
+<li>There are no locks used anywhere, and senders are not blocked. Millions of actors can be efficiently scheduled on a dozen of threads reaching the full potential of modern CPUs. Task delegation is the natural mode of operation for actors. 无锁，sender 不会阻塞。无数的 actor 会被高效地调度在一堆线程上，充分利用 CPU 资源。</li>
+<li>State of actors is local and not shared, changes and data is propagated via messages, <strong>which maps to how modern memory hierarchy actually works</strong>. In many cases, this means transferring over only the cache lines that contain the data in the message while keeping local state and data cached at the original core. The same model maps exactly to remote communication where the state is kept in the RAM of machines and changes/data is propagated over the network as packets. actor 的状态是本地的，不必共享！符合现代内存架构（CPU缓存+内存的架构）</li>
+</ul>
+<h3 id="actors-handle-error-situations-gracefully">Actors handle error situations gracefully</h3>
+<p>第一种error是task本身的error，这个在业务范畴里。第二种比较重要，是actor本身遇到错误。这里actor是树状层级的，都有一个parent，actor出错了，由其parent来决定如何处理这个失败。</p>
+<ul>
+<li>The second case is when a service itself encounters an internal fault. Akka enforces that all actors are organized into a tree-like hierarchy, i.e. an actor that creates another actor becomes the parent of that new actor. This is very similar how operating systems organize processes into a tree. Just like with processes, when an actor fails, its parent actor can decide how to react to the failure. Also, if the parent actor is stopped, all of its children are recursively stopped, too. This service is called supervision and it is central to Akka.</li>
+</ul>
+<h2 id="akka-quickstart-with-scala">Akka Quickstart with Scala</h2>
+<p><a href="https://developer.lightbend.com/guides/akka-quickstart-scala/index.html" target="_blank" rel="noopener noreffer ">https://developer.lightbend.com/guides/akka-quickstart-scala/index.html</a></p>
+<p>定义 actor 太不直观了吧。还需要behavior等工厂方法。</p>
+<p>Actor 与外界通信的接口就是 Message！使用 case class 定义 Message。</p>
+<p>Actor 还有处理消息的能力。使用 object apply 方法接收 Message，并返回其他类型的Message。def apply(): Behavior[Greet] = Behaviors.receive</p>
+<p>这里大量使用 Behavior 类、函数。</p>
+<p>Behaviors.setup 闭包？里创建 Actor，Actor创建使用context.spawn(Greeter(), &ldquo;greeter&rdquo;)。</p>
+<p>root 级的Actor创建：val greeterMain: ActorSystem[GreeterMain.SayHello] = ActorSystem(GreeterMain(), &ldquo;AkkaQuickStart&rdquo;)</p>
+<p>这个例子是单机版的，很好奇跨网络是怎么处理的。</p>
+<h2 id="introduction-to-the-example-iot-example">Introduction to the Example IoT example</h2>
+<p><a href="https://doc.akka.io/docs/akka/current/typed/guide/tutorial.html" target="_blank" rel="noopener noreffer ">https://doc.akka.io/docs/akka/current/typed/guide/tutorial.html</a></p>
+<p>Actor 是有层级的，Actor 可以管理其 child Actor 的失败处理策略，比如重启。</p>
+<ul>
+<li><code>/</code> the so-called <em>root guardian</em>. This is the parent of all actors in the system, and the last one to stop when the system itself is terminated.</li>
+<li><code>/system</code> the <em>system guardian</em>. Akka or other libraries built on top of Akka may create actors in the <em>system</em> namespace.</li>
+<li><code>/user</code> the <em>user guardian</em>. This is the top level actor that you provide to start all other actors in your application.</li>
+</ul>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="../../images/actor_top_tree.png"
+        data-srcset="../../images/actor_top_tree.png, ../../images/actor_top_tree.png 1.5x, ../../images/actor_top_tree.png 2x"
+        data-sizes="auto"
+        alt="../../images/actor_top_tree.png"
+        title="actor tree diagram" /></p>
+<p>这个例子，不再只是用 object apply 了。继承 AbstractBehavior class 的自定义 Behavior，重写 onMessage 做 match case，不再使用 case class了？只是不再用 behaviors.Receive 这种方法了，在apply里直接 setup！这是两种写法，一种是OOP写法，一种是FP写法。https://doc.akka.io/docs/akka/current/typed/style-guide.html#functional-versus-object-oriented-style</p>
+<p>每个actor 都有一个 akka 地址。如果是跨网络通信，会有IP地址。</p>
+<pre tabindex="0"><code>First: Actor[akka://testSystem/user/first-actor#1053618476]
+Second: Actor[akka://testSystem/user/first-actor/second-actor#-1544706041]
+</code></pre><p>Go 上手真是容易太多了。</p>
+<p>Akka 用于 Web 服务，有点大材小用。Golang web服务，比如一个请求进入，一个 goroutine 负责这个请求，如果需要提高处理速度，可以开启新的 goroutine 处理耗时任务，然后通过channel或是 wait.group的方式拿到结果。</p>
+<p>如果是Akka，该怎么处理呢？还得构建 Actor 出来啊。</p>
+<p>Actor 还是适合处理长时间耗时的，分布式任务。</p>
+<p>Akka provides the following behavior for message sends:</p>
+<ul>
+<li>At-most-once delivery, that is, no guaranteed delivery. 最多一次传递。sender 发完就忘了，性能最高。至少一次传递，需要receiver的ACK，需要重试。正好一次传递，it requires the state to be kept at the receiving end in order to filter out duplicate deliveries</li>
+<li>Message ordering is maintained per sender, receiver pair.</li>
+</ul>
+<p>不能保证准确的正好一次发送，会不会出现很多问题啊！！！这么多原因，看的云里雾里。不管怎么样，需要应用层处理消息的准确传递了。Message里加上 RequestID。</p>
+<blockquote>
+<p><strong>For these reasons Akka lifts the responsibilities of guarantees to the application itself, i.e. you have to implement them yourself with the tools that Akka provides. This gives you full control of the guarantees that you want to provide</strong>.</p></blockquote>
+<p>sender发送消息给target 的形式：targetActor ! Message(senderActor)</p>
+<p>target 有 Message 接口。</p>
+<p>定义 Device 这个 actor 的两套接口，每套接口都有对应的 Request/Response case class。</p>
+<p>Actor Device 支持这种 Behavior[Command]，Command是trait，也就是可以支持很多实现trait的Command。</p>
+<p>与Device交互的Actor，也就是需要支持或者继承，Behavior[TemperatureRecorded]，Behavior[RespondTemperature]。</p>
+<p>通过定义好Actor，写单元测试也很容易了。真的是一套闭环。</p>
+<p>Akka 写一套 Master/Slave 架构的代码很方便。</p>
+<p>Go CSP 与 Scala Akka Actor 的一个共性：</p>
+<ol>
+<li>Don’t communicate by sharing memory, share memory by communicating。</li>
+</ol>
+<p>看看高手的文章：</p>
+<ol>
+<li>并发之痛 Thread，Goroutine，Actor <a href="http://jolestar.com/parallel-programming-model-thread-goroutine-actor/" target="_blank" rel="noopener noreffer ">http://jolestar.com/parallel-programming-model-thread-goroutine-actor/</a></li>
+</ol>
+<h2 id="why-akka-typed">Why Akka Typed</h2>
+<p><a href="https://manuel.bernhardt.io/2019/07/11/tour-of-akka-typed-protocols-and-behaviors/" target="_blank" rel="noopener noreffer ">https://manuel.bernhardt.io/2019/07/11/tour-of-akka-typed-protocols-and-behaviors/</a></p>
+<p>build real-world, fault-tolerant, concurrent and distributed systems</p>
+<p>fault-tolerant Goroutines 处理不了吧</p>
+<p>concurrent Go OK</p>
+<p>distributed systems Go No</p>
+</div><div class="post-footer" id="post-footer">
+    <div class="post-info">
+        <div class="post-info-line">
+            <div class="post-info-mod">
+                <span>Updated on 2020-10-07</span>
+            </div></div>
+        <div class="post-info-line">
+            <div class="post-info-md"></div>
+            <div class="post-info-share">
+                <span><a href="javascript:void(0);" title="Share on Twitter" data-sharer="twitter" data-url="http://localhost:1313/posts/20201007-akka-actor/" data-title="Akka Actor"><i class="fab fa-twitter fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="Share on Facebook" data-sharer="facebook" data-url="http://localhost:1313/posts/20201007-akka-actor/"><i class="fab fa-facebook-square fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="Share on Hacker News" data-sharer="hackernews" data-url="http://localhost:1313/posts/20201007-akka-actor/" data-title="Akka Actor"><i class="fab fa-hacker-news fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="Share on Line" data-sharer="line" data-url="http://localhost:1313/posts/20201007-akka-actor/" data-title="Akka Actor"><i data-svg-src="/lib/simple-icons/icons/line.min.svg" aria-hidden="true"></i></a><a href="javascript:void(0);" title="Share on 微博" data-sharer="weibo" data-url="http://localhost:1313/posts/20201007-akka-actor/" data-title="Akka Actor"><i class="fab fa-weibo fa-fw" aria-hidden="true"></i></a></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="post-info-more">
+        <section class="post-tags"></section>
+        <section>
+            <span><a href="javascript:void(0);" onclick="window.history.back();">Back</a></span>&nbsp;|&nbsp;<span><a href="/">Home</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav"><a href="/posts/20201002-scala-java/" class="prev" rel="prev" title="Scala Java"><i class="fas fa-angle-left fa-fw" aria-hidden="true"></i>Scala Java</a>
+            <a href="/posts/20201009-mit-6.824-distributed-systems/" class="next" rel="next" title="20201009 MIT 6">20201009 MIT 6<i class="fas fa-angle-right fa-fw" aria-hidden="true"></i></a></div>
+</div>
+</article></div>
+            </main><footer class="footer">
+        <div class="footer-container"><div class="footer-line">Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.147.3">Hugo</a> | Theme - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.3.0"><i class="far fa-kiss-wink-heart fa-fw" aria-hidden="true"></i> LoveIt</a>
+                </div><div class="footer-line" itemscope itemtype="http://schema.org/CreativeWork"><i class="far fa-copyright fa-fw" aria-hidden="true"></i><span itemprop="copyrightYear">2022 - 2025</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/" target="_blank">Happy Coding</a></span></div>
+        </div>
+    </footer></div>
+
+        <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="Back to Top">
+                <i class="fas fa-arrow-up fa-fw" aria-hidden="true"></i>
+            </a><a href="#" id="view-comments" class="fixed-button" title="View Comments">
+                <i class="fas fa-comment fa-fw" aria-hidden="true"></i>
+            </a>
+        </div><script type="text/javascript" src="/lib/lazysizes/lazysizes.min.js"></script><script type="text/javascript" src="/lib/clipboard/clipboard.min.js"></script><script type="text/javascript" src="/lib/sharer/sharer.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"Copy to clipboard","maxShownLines":50},"comment":{}};</script><script type="text/javascript" src="/js/theme.min.js"></script></body>
+</html>

@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+    <head>
+	<meta name="generator" content="Hugo 0.147.3"><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="robots" content="noodp" />
+        <title>Happy Coding</title><meta name="Description" content=""><meta property="og:url" content="http://localhost:1313/">
+  <meta property="og:site_name" content="Happy Coding">
+  <meta property="og:title" content="Happy Coding">
+  <meta property="og:locale" content="zh_cn">
+  <meta property="og:type" content="website">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Happy Coding">
+<meta name="application-name" content="Happy Coding">
+<meta name="apple-mobile-web-app-title" content="Happy Coding"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="http://localhost:1313/" /><link rel="alternate" href="/index.xml" type="application/rss+xml" title="Happy Coding">
+    <link rel="feed" href="/index.xml" type="application/rss+xml" title="Happy Coding"><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="/lib/fontawesome-free/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="/lib/fontawesome-free/all.min.css"></noscript><link rel="preload" href="/lib/animate/animate.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="/lib/animate/animate.min.css"></noscript><script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "WebSite",
+        "url": "http:\/\/localhost:1313\/","inLanguage": "zh-cn","author": {
+                "@type": "Person",
+                "name": "Happy Coding"
+            },"name": "Happy Coding"
+    }
+    </script></head>
+    <body data-header-desktop="fixed" data-header-mobile="auto"><script type="text/javascript">(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
+
+        <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
+    <div class="header-wrapper">
+        <div class="header-title">
+            <a href="/" title="Happy Coding">Happy Coding</a>
+        </div>
+        <div class="menu">
+            <div class="menu-inner"><a class="menu-item" href="/posts"> Archive </a><a class="menu-item" href="/categories"> Categories </a><a class="menu-item" href="/tags"> Tags </a><a class="menu-item" href="/index.xml"> RSS Feed </a><span class="menu-item delimiter"></span><a href="javascript:void(0);" class="menu-item theme-switch" title="Switch Theme">
+                    <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+                </a></div>
+        </div>
+    </div>
+</header><header class="mobile" id="header-mobile">
+    <div class="header-container">
+        <div class="header-wrapper">
+            <div class="header-title">
+                <a href="/" title="Happy Coding">Happy Coding</a>
+            </div>
+            <div class="menu-toggle" id="menu-toggle-mobile">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="menu" id="menu-mobile"><a class="menu-item" href="/posts" title="">Archive</a><a class="menu-item" href="/categories" title="">Categories</a><a class="menu-item" href="/tags" title="">Tags</a><a class="menu-item" href="/index.xml" title="">RSS Feed</a><a href="javascript:void(0);" class="menu-item theme-switch" title="Switch Theme">
+                <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+            </a></div>
+    </div>
+</header><main class="main">
+                <div class="container"><div class="page home" data-home="posts"><div class="home-profile"><div class="links"></div></div>
+<article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
+        <a href="/posts/20200527-metabase-impala-driver/">Metabase Impala Driver</a>
+    </h1><div class="post-meta"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Happy Coding</a></span>&nbsp;<span class="post-publish">published on <time datetime="2020-05-27">2020-05-27</time></span>&nbsp;<span class="post-category">included in <a href="/categories/metabase/"><i class="far fa-folder fa-fw" aria-hidden="true"></i>Metabase</a></span></div><div class="content"><p>更新日志</p>
+<ol>
+<li><a href="https://xujiahua.github.io/posts/20200528-metabase-impala-type/" target="_blank" rel="noopener noreffer ">Metabase Impala Driver 0528更新日志</a></li>
+<li><a href="https://xujiahua.github.io/posts/20200710-metabase-impala-driver/" target="_blank" rel="noopener noreffer ">Metabase Impala Driver 0710更新日志</a></li>
+</ol>
+<h2 id="背景">背景</h2>
+<p>我们的数据仓库是 Hadoop/Hive 体系的。Hadoop 版本采用的是 CDH 发行版。在这个背景下 SQL on Hadoop 的方案有 Hive/Impala/(SparkSQL)。作为 BI 数据库，Impala 在我们的场景下比较合适。</p>
+<ol>
+<li>Hive：太慢了。做 ETL 可以，BI 非常不适。</li>
+<li>SparkSQL：CDH 官方 Spark 不含 Thrift Server。为了能够使用 Metabase ，独立于 CDH 启了个 Thrift Server，用着还不错。问题就在于缺乏统一管理，比如 Kerberos 的管理就得自己写脚本处理、进程 OOM 挂掉了 CDH Manager 也监测不到。</li>
+<li>Impala：CDH 官方出品，为 BI 而设计，由 CDH Manager 管理。根据这份报告，见下参考链接，Impala 好于 SparkSQL。</li>
+</ol>
+<p>出于尽可能复用已有基础设施的目的，选择 Impala。而 Metabase 官方、社区并不提供 Impala 驱动。本文就是为了探索并解决这个问题。</p>
+<p>参考：</p>
+<ol>
+<li>开源OLAP引擎测评报告(SparkSql、Presto、Impala、HAWQ、ClickHouse、GreenPlum) <a href="http://www.clickhouse.com.cn/topic/5c453371389ad55f127768ea" target="_blank" rel="noopener noreffer ">http://www.clickhouse.com.cn/topic/5c453371389ad55f127768ea</a></li>
+</ol>
+<h2 id="现有驱动探索">现有驱动探索</h2>
+<h3 id="搭建-impala-开发环境">搭建 Impala 开发环境</h3>
+<p>使用 Cloudera Quickstart Docker 镜像（官方已经下架 quickstart vm ）。其中，Impala版本 2.5.0。（我们的生产环境：CDH 6.3.2 Impala 3.2.0 Hive 2.1.1）</p></div><div class="post-footer">
+        <a href="/posts/20200527-metabase-impala-driver/">Read More</a><div class="post-tags">
+                <i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/metabase/">Metabase</a>,&nbsp;<a href="/tags/impala/">Impala</a></div></div>
+</article><article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
+        <a href="/posts/20200519-spark-dynamic-partition/">Spark存储表结构动态分区</a>
+    </h1><div class="post-meta"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Happy Coding</a></span>&nbsp;<span class="post-publish">published on <time datetime="2020-05-19">2020-05-19</time></span></div><div class="content"><p>历史数据，动态分区就很有用。</p>
+<p>搜了下Spark的issue，找到了答案。 [https://issues.apache.org/jira/browse/HIVE-2918?jql=summary%20~%20%22hive.exec.max.dynamic.partitions*%22%20OR%20description%20~%20%22hive.exec.max.dynamic.partitions*%22%20ORDER%20BY%20lastViewed%20DESC](<a href="https://issues.apache.org/jira/browse/HIVE-2918?jql=summary" target="_blank" rel="noopener noreffer ">https://issues.apache.org/jira/browse/HIVE-2918?jql=summary</a> ~ &ldquo;hive.exec.max.dynamic.partitions*&rdquo; OR description ~ &ldquo;hive.exec.max.dynamic.partitions*&rdquo; ORDER BY lastViewed DESC)</p>
+<p>使用Hive动态分区创建出现这个问题，不知道怎么解决。</p>
+<ul>
+<li>Error while processing statement: FAILED: Execution Error, return code 2 from org.apache.hadoop.hive.ql.exec.mr.MapRedTask</li>
+</ul>
+<p>Spark动态分区的陷阱。</p>
+<p>Spark 动态分区的语法。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-scala" data-lang="scala"><span style="display:flex;"><span><span style="color:#75715e">// Create SparkSession with Hive dynamic partitioning enabled
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">val</span> spark<span style="color:#66d9ef">:</span> <span style="color:#66d9ef">SparkSession</span> <span style="color:#f92672">=</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">SparkSession</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">.</span>builder<span style="color:#f92672">()</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">.</span>appName<span style="color:#f92672">(</span><span style="color:#e6db74">&#34;StatsAnalyzer&#34;</span><span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">.</span>enableHiveSupport<span style="color:#f92672">()</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">.</span>config<span style="color:#f92672">(</span><span style="color:#e6db74">&#34;hive.exec.dynamic.partition&#34;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;true&#34;</span><span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">.</span>config<span style="color:#f92672">(</span><span style="color:#e6db74">&#34;hive.exec.dynamic.partition.mode&#34;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;nonstrict&#34;</span><span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">.</span>getOrCreate<span style="color:#f92672">()</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Register the dataframe as a Hive table
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>impressionsDF<span style="color:#f92672">.</span>createOrReplaceTempView<span style="color:#f92672">(</span><span style="color:#e6db74">&#34;impressions_dataframe&#34;</span><span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Create the output Hive table
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>spark<span style="color:#f92672">.</span>sql<span style="color:#f92672">(</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">s&#34;&#34;&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      |CREATE EXTERNAL TABLE stats (
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      |   ad            STRING,
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      |   impressions   INT,
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      |   clicks        INT
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      |) PARTITIONED BY (country STRING, year INT, month INT, day INT)
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      |ROW FORMAT DELIMITED FIELDS TERMINATED BY &#39;\t&#39; LINES TERMINATED BY &#39;\n&#39;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    &#34;&#34;&#34;</span><span style="color:#f92672">.</span>stripMargin
+</span></span><span style="display:flex;"><span><span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Write the data into disk as Hive partitions
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>spark<span style="color:#f92672">.</span>sql<span style="color:#f92672">(</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">s&#34;&#34;&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      |INSERT OVERWRITE TABLE stats 
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      |PARTITION(country = &#39;US&#39;, year = 2017, month = 3, day)
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      |SELECT ad, SUM(impressions), SUM(clicks), day
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      |FROM impressions_dataframe
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      |GROUP BY ad
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    &#34;&#34;&#34;</span><span style="color:#f92672">.</span>stripMargin
+</span></span><span style="display:flex;"><span><span style="color:#f92672">)</span>
+</span></span></code></pre></div><p><a href="https://medium.com/a-muggles-pensieve/writing-into-dynamic-partitions-using-spark-2e2b818a007a" target="_blank" rel="noopener noreffer ">https://medium.com/a-muggles-pensieve/writing-into-dynamic-partitions-using-spark-2e2b818a007a</a></p></div><div class="post-footer">
+        <a href="/posts/20200519-spark-dynamic-partition/">Read More</a><div class="post-tags">
+                <i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/spark/">Spark</a></div></div>
+</article><article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
+        <a href="/posts/20200514-wx-avatar/">微信用户授权头像内容带随机干扰的问题</a>
+    </h1><div class="post-meta"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Happy Coding</a></span>&nbsp;<span class="post-publish">published on <time datetime="2020-05-14">2020-05-14</time></span></div><div class="content"><p>项目需要基于头像、昵称对不同实体账号下的微信用户进行匹配。基于这个思路，打算先下载微信头像的图像，后计算其MD5，“单元测试”了下这个简单方法，结果惊人。</p>
+<p>同一个人的同一个头像链接返回的图像内容都不一样。内容不一样，MD5值也就不一样。</p>
+<p>看来微信对我们这些拙劣的手段早有防备。</p>
+<h2 id="微信头像内容分析">微信头像内容分析</h2>
+<p>同一个头像链接下载两次。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ wget -O 1.png https://wx.qlogo.cn/mmopen/vi_32/DYAIOgq83eoc614h6RfCUnwQTblG9y2dq4g5PKVicVZd5CQO9JNdPCWCovl8cmsvxQcWDemcLYGW6pSt97uUW5A/132
+</span></span><span style="display:flex;"><span>$ wget -O 2.png https://wx.qlogo.cn/mmopen/vi_32/DYAIOgq83eoc614h6RfCUnwQTblG9y2dq4g5PKVicVZd5CQO9JNdPCWCovl8cmsvxQcWDemcLYGW6pSt97uUW5A/132
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>$ md5 1.png
+</span></span><span style="display:flex;"><span>MD5 <span style="color:#f92672">(</span>1.png<span style="color:#f92672">)</span> <span style="color:#f92672">=</span> dd6aa938cbec381a3e83702776be88a3
+</span></span><span style="display:flex;"><span>$ md5 2.png
+</span></span><span style="display:flex;"><span>MD5 <span style="color:#f92672">(</span>2.png<span style="color:#f92672">)</span> <span style="color:#f92672">=</span> 83668a6ad7eeee8fa8e5e0db339233d1
+</span></span></code></pre></div><h3 id="肉眼比较">肉眼比较</h3>
+<p>肉眼完全无法区分。</p>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="../../images/image-20200514134445598.png"
+        data-srcset="../../images/image-20200514134445598.png, ../../images/image-20200514134445598.png 1.5x, ../../images/image-20200514134445598.png 2x"
+        data-sizes="auto"
+        alt="../../images/image-20200514134445598.png"
+        title="image-20200514134445598" /></p>
+<h3 id="字节级比较">字节级比较</h3>
+<p>两张图，可以看出差异很大。</p>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="../../images/image-20200514134712953.png"
+        data-srcset="../../images/image-20200514134712953.png, ../../images/image-20200514134712953.png 1.5x, ../../images/image-20200514134712953.png 2x"
+        data-sizes="auto"
+        alt="../../images/image-20200514134712953.png"
+        title="image-20200514134712953" /></p>
+<h3 id="像素级比较">像素级比较</h3>
+<p>为了方便对比，图先灰度化（一个像素点的RGB三值改为1个值）。</p>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="../../images/image-20200514184021629.png"
+        data-srcset="../../images/image-20200514184021629.png, ../../images/image-20200514184021629.png 1.5x, ../../images/image-20200514184021629.png 2x"
+        data-sizes="auto"
+        alt="../../images/image-20200514184021629.png"
+        title="image-20200514184021629" /></p>
+<p>两张灰度图差值的数据分布。x轴为差值，y轴为出现次数。</p>
+<p>0代表相同位置的像素点相同，非0代表相同位置像素点有差异及其差异幅度。</p>
+<p>0出现次数最多，可见两张图的大部分像素点的值是相同的。差异主要分为两部分，1-10 闭区间。（试了几张图）</p>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="../../images/image-20200515094333720.png"
+        data-srcset="../../images/image-20200515094333720.png, ../../images/image-20200515094333720.png 1.5x, ../../images/image-20200515094333720.png 2x"
+        data-sizes="auto"
+        alt="../../images/image-20200515094333720.png"
+        title="image-20200515094333720" /></p></div><div class="post-footer">
+        <a href="/posts/20200514-wx-avatar/">Read More</a></div>
+</article><article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
+        <a href="/posts/20200504-hackintosh/">NUC8i5BEH Hackintosh</a>
+    </h1><div class="post-meta"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Happy Coding</a></span>&nbsp;<span class="post-publish">published on <time datetime="2020-05-04">2020-05-04</time></span></div><div class="content"><p>买了个 NUC8i5BEH 当玩具，不怎么折腾的方式体验下黑苹果。</p>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="../../images/image-20200504145011481.png"
+        data-srcset="../../images/image-20200504145011481.png, ../../images/image-20200504145011481.png 1.5x, ../../images/image-20200504145011481.png 2x"
+        data-sizes="auto"
+        alt="../../images/image-20200504145011481.png"
+        title="image-20200504145011481" /></p>
+<h2 id="效果">效果</h2>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="../../images/image-20200504132303349.png"
+        data-srcset="../../images/image-20200504132303349.png, ../../images/image-20200504132303349.png 1.5x, ../../images/image-20200504132303349.png 2x"
+        data-sizes="auto"
+        alt="../../images/image-20200504132303349.png"
+        title="image-20200504132303349" /></p>
+<p>与我的 2018 MBP 13.3 做对比。处理器、显卡是一样的。用很少的钱提升内存，16GB 2133 DDR3 -&gt; 32GB 2400 DDR4。</p>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="../../images/image-20200504132417310.png"
+        data-srcset="../../images/image-20200504132417310.png, ../../images/image-20200504132417310.png 1.5x, ../../images/image-20200504132417310.png 2x"
+        data-sizes="auto"
+        alt="../../images/image-20200504132417310.png"
+        title="image-20200504132417310" /></p>
+<h3 id="成本">成本</h3>
+<p>大概 ￥4000。2018年买的MacBook近￥15000。</p>
+<ol>
+<li>NUC8i5BEH ￥2379</li>
+<li>DDR4 2400 16 GB X 2 笔记本内存条 ￥978</li>
+<li>500GB M.2 SSD 大约￥600（不在这次消费计划里，从现有机器抠出来的）</li>
+</ol>
+<h3 id="不足">不足</h3>
+<p>WiFi、蓝牙，以及之上的AirDrop等功能缺失。</p>
+<p>网上有解决方案，主要是网卡使用Macbook的配件替代。感觉配件也不便宜，应该是炒热了。用网线，不折腾了。</p>
+<h2 id="why-nuc8i5beh">WHY NUC8i5BEH</h2>
+<p>豆子峡谷 NUC8i5BEH 机箱真的小！性能也不差。可以说，是最具性价比的了。</p>
+<p>能做这么小，机箱与电源分离的设计功不可没。- -!</p>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="../../images/v2-80ec6cb9eb82fa2c5e0e16cbda516f41_720w.jpg"
+        data-srcset="../../images/v2-80ec6cb9eb82fa2c5e0e16cbda516f41_720w.jpg, ../../images/v2-80ec6cb9eb82fa2c5e0e16cbda516f41_720w.jpg 1.5x, ../../images/v2-80ec6cb9eb82fa2c5e0e16cbda516f41_720w.jpg 2x"
+        data-sizes="auto"
+        alt="../../images/v2-80ec6cb9eb82fa2c5e0e16cbda516f41_720w.jpg"
+        title="v2-80ec6cb9eb82fa2c5e0e16cbda516f41_720w" /></p></div><div class="post-footer">
+        <a href="/posts/20200504-hackintosh/">Read More</a></div>
+</article><article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
+        <a href="/posts/20200423-pyspark/">Pyspark</a>
+    </h1><div class="post-meta"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Happy Coding</a></span>&nbsp;<span class="post-publish">published on <time datetime="2020-04-23">2020-04-23</time></span></div><div class="content"><p>断断续续使用  PySpark，每次都要重新翻 API。</p>
+<ol>
+<li><a href="https://spark.apache.org/docs/latest/sql-getting-started.html" target="_blank" rel="noopener noreffer ">https://spark.apache.org/docs/latest/sql-getting-started.html</a></li>
+<li><a href="https://spark.apache.org/docs/latest/api/sql" target="_blank" rel="noopener noreffer ">https://spark.apache.org/docs/latest/api/sql</a></li>
+</ol></div><div class="post-footer">
+        <a href="/posts/20200423-pyspark/">Read More</a><div class="post-tags">
+                <i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/spark/">Spark</a></div></div>
+</article><article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
+        <a href="/posts/20200421-use-consul/">consul 小结</a>
+    </h1><div class="post-meta"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Happy Coding</a></span>&nbsp;<span class="post-publish">published on <time datetime="2020-04-21">2020-04-21</time></span></div><div class="content"><h2 id="简单介绍">简单介绍</h2>
+<p>hashicorp 对 Consul 的定位是服务间网络方案。</p>
+<blockquote>
+<p>Consul is a service networking solution to connect and secure services across any runtime platform and public or private cloud. <a href="https://www.consul.io/" target="_blank" rel="noopener noreffer ">https://www.consul.io/</a></p></blockquote>
+<p>官方的两个 use case 就是 service discovery, service mesh。</p>
+<h3 id="service-discovery">service discovery</h3>
+<p>与 etcd 比起来，Consul 的服务发现是开箱即用的。优点如下：</p>
+<ol>
+<li>First class 的服务注册和获取接口。不需要像 etcd 那样在 kv 存储基础上做包装。</li>
+<li>服务注册，可以是consul 命令，也可以是HTTP API。</li>
+<li>获取服务注册表，除了 HTTP 接口，还可以使用  DNS 查询接口。</li>
+<li>健康检查。服务注册的时候可以提供健康检查项。健康检查机制保证了拿到的服务注册表是“健康”的。健康检查也包括节点的检查。单纯利用 consul 健康检查这个功能，consul 就是一个分布式监控工具。</li>
+<li>Web 管理界面。节点、服务、健康与否一目了然。</li>
+<li>Watch 功能。通过 blocking queries/ long-polling HTTP API 的方式得到服务注册表的改变的通知。</li>
+<li>跨数据中心（取资源）。When a request is made for a resource in another datacenter, the local Consul servers forward an RPC request to the remote Consul servers for that resource and return the results. <a href="https://learn.hashicorp.com/consul/security-networking/datacenters#data-replication" target="_blank" rel="noopener noreffer ">https://learn.hashicorp.com/consul/security-networking/datacenters#data-replication</a></li>
+</ol>
+<h3 id="service-mesh">service mesh</h3>
+<p>service discovery 只是微服务治理的初级阶段。作为服务请求方，通过 consul/ etcd 获取到服务注册表，下一步就是选择其中一个服务实例，发送请求。这个步骤叫做负载均衡。可以想象，客户端的代码会越来越重了。</p></div><div class="post-footer">
+        <a href="/posts/20200421-use-consul/">Read More</a><div class="post-tags">
+                <i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/service-mesh/">Service Mesh</a>,&nbsp;<a href="/tags/consul/">Consul</a>,&nbsp;<a href="/tags/microservices/">Microservices</a></div></div>
+</article><ul class="pagination"><li class="page-item ">
+                    <span class="page-link">
+                        <a href="/">1</a>
+                    </span>
+                </li><li class="page-item ">
+                    <span class="page-link" aria-hidden="true">&hellip;</span>
+                </li><li class="page-item ">
+                    <span class="page-link">
+                        <a href="/page/11/">11</a>
+                    </span>
+                </li><li class="page-item ">
+                    <span class="page-link">
+                        <a href="/page/12/">12</a>
+                    </span>
+                </li><li class="page-item active">
+                    <span class="page-link">
+                        <a href="/page/13/">13</a>
+                    </span>
+                </li><li class="page-item ">
+                    <span class="page-link">
+                        <a href="/page/14/">14</a>
+                    </span>
+                </li><li class="page-item ">
+                    <span class="page-link">
+                        <a href="/page/15/">15</a>
+                    </span>
+                </li><li class="page-item ">
+                    <span class="page-link" aria-hidden="true">&hellip;</span>
+                </li><li class="page-item ">
+                    <span class="page-link">
+                        <a href="/page/20/">20</a>
+                    </span>
+                </li></ul></div></div>
+            </main><footer class="footer">
+        <div class="footer-container"><div class="footer-line">Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.147.3">Hugo</a> | Theme - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.3.0"><i class="far fa-kiss-wink-heart fa-fw" aria-hidden="true"></i> LoveIt</a>
+                </div><div class="footer-line" itemscope itemtype="http://schema.org/CreativeWork"><i class="far fa-copyright fa-fw" aria-hidden="true"></i><span itemprop="copyrightYear">2022 - 2025</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/" target="_blank">Happy Coding</a></span></div>
+        </div>
+    </footer></div>
+
+        <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="Back to Top">
+                <i class="fas fa-arrow-up fa-fw" aria-hidden="true"></i>
+            </a><a href="#" id="view-comments" class="fixed-button" title="View Comments">
+                <i class="fas fa-comment fa-fw" aria-hidden="true"></i>
+            </a>
+        </div><script type="text/javascript" src="/lib/lazysizes/lazysizes.min.js"></script><script type="text/javascript" src="/lib/clipboard/clipboard.min.js"></script><script type="text/javascript" src="/lib/sharer/sharer.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"Copy to clipboard","maxShownLines":50}};</script><script type="text/javascript" src="/js/theme.min.js"></script></body>
+</html>

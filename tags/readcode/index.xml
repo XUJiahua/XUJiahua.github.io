@@ -1,26 +1,19 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>readcode on Happy Coding</title>
+    <title>Readcode on Happy Coding</title>
     <link>https://xujiahua.github.io/tags/readcode/</link>
-    <description>Recent content in readcode on Happy Coding</description>
-    <generator>Hugo -- gohugo.io</generator>
+    <description>Recent content in Readcode on Happy Coding</description>
+    <generator>Hugo</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Wed, 16 Sep 2020 10:48:11 +0800</lastBuildDate><atom:link href="https://xujiahua.github.io/tags/readcode/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Wed, 16 Sep 2020 10:48:11 +0800</lastBuildDate>
+    <atom:link href="https://xujiahua.github.io/tags/readcode/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>pandasql库解析</title>
       <link>https://xujiahua.github.io/posts/20200916-pandas-sql/</link>
       <pubDate>Wed, 16 Sep 2020 10:48:11 +0800</pubDate>
-      
       <guid>https://xujiahua.github.io/posts/20200916-pandas-sql/</guid>
-      <description>对 Pandas 库没有原生 SQL 支持表示遗憾，今天看到这么一个库 https://github.com/yhat/pandasql 。
-它的思路比较简单粗暴，先把 pandas Dataframe 存储到一个关系型数据库（sqlite/postgresql），最后 SQL query 的结果其实是查询关系型数据库返回的结果，封装成 Dataframe 来呈现。其中数据库操作使用 sqlalchemy 这个库。
-学到的知识点：locals()，globals() 这两个方法。
- The globals() method returns the dictionary of the current global symbol table. https://www.programiz.com/python-programming/methods/built-in/globals
-The locals() method updates and returns a dictionary of the current local symbol table. https://www.programiz.com/python-programming/methods/built-in/locals
- 如下代码，meat 是一个 Dataframe 变量，为何 SQL query 里能直接引用这个变量。
-$ python &amp;gt;&amp;gt;&amp;gt; from pandasql import sqldf, load_meat, load_births &amp;gt;&amp;gt;&amp;gt; pysqldf = lambda q: sqldf(q, globals()) &amp;gt;&amp;gt;&amp;gt; meat = load_meat() &amp;gt;&amp;gt;&amp;gt; print pysqldf(&amp;quot;SELECT * FROM meat LIMIT 10;&amp;quot;).</description>
+      <description>&lt;p&gt;对 Pandas 库没有原生 SQL 支持表示遗憾，今天看到这么一个库 &lt;a href=&#34;https://github.com/yhat/pandasql&#34; target=&#34;_blank&#34; rel=&#34;noopener noreffer &#34;&gt;https://github.com/yhat/pandasql&lt;/a&gt; 。&lt;/p&gt;&#xA;&lt;p&gt;它的思路比较简单粗暴，先把 pandas Dataframe 存储到一个关系型数据库（sqlite/postgresql），最后 SQL query 的结果其实是查询关系型数据库返回的结果，封装成 Dataframe 来呈现。其中数据库操作使用 sqlalchemy 这个库。&lt;/p&gt;&#xA;&lt;p&gt;学到的知识点：locals()，globals() 这两个方法。&lt;/p&gt;&#xA;&lt;blockquote&gt;&#xA;&lt;p&gt;The globals() method returns the dictionary of the current global symbol table. &lt;a href=&#34;https://www.programiz.com/python-programming/methods/built-in/globals&#34; target=&#34;_blank&#34; rel=&#34;noopener noreffer &#34;&gt;https://www.programiz.com/python-programming/methods/built-in/globals&lt;/a&gt;&lt;/p&gt;&#xA;&lt;p&gt;The locals() method updates and returns a dictionary of the current local symbol table. &lt;a href=&#34;https://www.programiz.com/python-programming/methods/built-in/locals&#34; target=&#34;_blank&#34; rel=&#34;noopener noreffer &#34;&gt;https://www.programiz.com/python-programming/methods/built-in/locals&lt;/a&gt;&lt;/p&gt;&lt;/blockquote&gt;&#xA;&lt;p&gt;如下代码，meat 是一个 Dataframe 变量，为何 SQL query 里能直接引用这个变量。&lt;/p&gt;&#xA;&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;$ python&#xA;&amp;gt;&amp;gt;&amp;gt; from pandasql import sqldf, load_meat, load_births&#xA;&amp;gt;&amp;gt;&amp;gt; pysqldf = lambda q: sqldf(q, globals())&#xA;&amp;gt;&amp;gt;&amp;gt; meat = load_meat()&#xA;&amp;gt;&amp;gt;&amp;gt; print pysqldf(&amp;#34;SELECT * FROM meat LIMIT 10;&amp;#34;).head()&#xA;&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;因为可以从 globals() 里通过符号 meat 拿到这个变量。&lt;/p&gt;</description>
     </item>
-    
   </channel>
 </rss>

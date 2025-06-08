@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+    <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="robots" content="noodp" />
+        <title>Go Memory Model - Happy Coding</title><meta name="Description" content=""><meta property="og:url" content="http://localhost:1313/posts/20201015-go-memory-model/">
+  <meta property="og:site_name" content="Happy Coding">
+  <meta property="og:title" content="Go Memory Model">
+  <meta property="og:description" content="读这篇文章，让你写好并发代码，介绍了 Go 并发同步所用的工具。
+一个变量在一个 goroutine 里修改了，在另一个 goroutine 能保证可见这个变量的修改（结果）。这是一个非常有用的，但对程序员透明的功能。
+感觉是自己理解错了，并发同步还是得程序员来处理。只是Go内存模型提供一些工具，比如 channel、mutex，用于贯彻 happen before 策略。
+The Go memory model specifies the conditions under which reads of a variable in one goroutine can be guaranteed to observe values produced by writes to the same variable in a different goroutine.
+可见性问题，貌似与这个主题没啥关系啊？？？。现在操作系统架构，是多级缓存，多核心（多线程）的。线程模型，变量都会缓存于当前线程的缓存、寄存器中。也就是说，其他线程不可见该变量的改变，这会带来并发同步（变量）问题。
+Java 里有 Volatile 关键字，就是为了解决这个问题，让变量存储于内存中，所有线程可见内存变量。（在介绍为何需要引入 Akka 模型中，有讲到这个背景。Akka 模型引入通过消息通信的方式，避免直面这个问题。）
+“volatile” tells the compiler that the value of a variable must never be cached as its value may change outside of the scope of the program itself">
+  <meta property="og:locale" content="zh_cn">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2020-10-15T18:58:47+08:00">
+    <meta property="article:modified_time" content="2020-10-15T18:58:47+08:00">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Go Memory Model">
+  <meta name="twitter:description" content="读这篇文章，让你写好并发代码，介绍了 Go 并发同步所用的工具。
+一个变量在一个 goroutine 里修改了，在另一个 goroutine 能保证可见这个变量的修改（结果）。这是一个非常有用的，但对程序员透明的功能。
+感觉是自己理解错了，并发同步还是得程序员来处理。只是Go内存模型提供一些工具，比如 channel、mutex，用于贯彻 happen before 策略。
+The Go memory model specifies the conditions under which reads of a variable in one goroutine can be guaranteed to observe values produced by writes to the same variable in a different goroutine.
+可见性问题，貌似与这个主题没啥关系啊？？？。现在操作系统架构，是多级缓存，多核心（多线程）的。线程模型，变量都会缓存于当前线程的缓存、寄存器中。也就是说，其他线程不可见该变量的改变，这会带来并发同步（变量）问题。
+Java 里有 Volatile 关键字，就是为了解决这个问题，让变量存储于内存中，所有线程可见内存变量。（在介绍为何需要引入 Akka 模型中，有讲到这个背景。Akka 模型引入通过消息通信的方式，避免直面这个问题。）
+“volatile” tells the compiler that the value of a variable must never be cached as its value may change outside of the scope of the program itself">
+<meta name="application-name" content="Happy Coding">
+<meta name="apple-mobile-web-app-title" content="Happy Coding"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="http://localhost:1313/posts/20201015-go-memory-model/" /><link rel="prev" href="http://localhost:1313/posts/20201010-flink-sql/" /><link rel="next" href="http://localhost:1313/posts/20201016-new-design/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="/lib/fontawesome-free/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="/lib/fontawesome-free/all.min.css"></noscript><link rel="preload" href="/lib/animate/animate.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="/lib/animate/animate.min.css"></noscript><script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "headline": "Go Memory Model",
+        "inLanguage": "zh-cn",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "http:\/\/localhost:1313\/posts\/20201015-go-memory-model\/"
+        },"genre": "posts","wordcount":  416 ,
+        "url": "http:\/\/localhost:1313\/posts\/20201015-go-memory-model\/","datePublished": "2020-10-15T18:58:47+08:00","dateModified": "2020-10-15T18:58:47+08:00","publisher": {
+            "@type": "Organization",
+            "name": ""},"author": {
+                "@type": "Person",
+                "name": "Happy Coding"
+            },"description": ""
+    }
+    </script></head>
+    <body data-header-desktop="fixed" data-header-mobile="auto"><script type="text/javascript">(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
+
+        <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
+    <div class="header-wrapper">
+        <div class="header-title">
+            <a href="/" title="Happy Coding">Happy Coding</a>
+        </div>
+        <div class="menu">
+            <div class="menu-inner"><a class="menu-item" href="/posts"> Archive </a><a class="menu-item" href="/categories"> Categories </a><a class="menu-item" href="/tags"> Tags </a><a class="menu-item" href="/index.xml"> RSS Feed </a><span class="menu-item delimiter"></span><a href="javascript:void(0);" class="menu-item theme-switch" title="Switch Theme">
+                    <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+                </a></div>
+        </div>
+    </div>
+</header><header class="mobile" id="header-mobile">
+    <div class="header-container">
+        <div class="header-wrapper">
+            <div class="header-title">
+                <a href="/" title="Happy Coding">Happy Coding</a>
+            </div>
+            <div class="menu-toggle" id="menu-toggle-mobile">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="menu" id="menu-mobile"><a class="menu-item" href="/posts" title="">Archive</a><a class="menu-item" href="/categories" title="">Categories</a><a class="menu-item" href="/tags" title="">Tags</a><a class="menu-item" href="/index.xml" title="">RSS Feed</a><a href="javascript:void(0);" class="menu-item theme-switch" title="Switch Theme">
+                <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+            </a></div>
+    </div>
+</header><main class="main">
+                <div class="container"><div class="toc" id="toc-auto">
+            <h2 class="toc-title">Contents</h2>
+            <div class="toc-content" id="toc-content-auto"></div>
+        </div><article class="page single"><h1 class="single-title animate__animated animate__flipInX">Go Memory Model</h1><div class="post-meta">
+            <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Happy Coding</a></span></div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2020-10-15">2020-10-15</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;416 words&nbsp;
+                <i class="far fa-clock fa-fw" aria-hidden="true"></i>&nbsp;2 minutes&nbsp;</div>
+        </div><div class="details toc" id="toc-static"  data-kept="">
+                <div class="details-summary toc-title">
+                    <span>Contents</span>
+                    <span><i class="details-icon fas fa-angle-right" aria-hidden="true"></i></span>
+                </div>
+                <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#参考">参考</a></li>
+  </ul>
+</nav></div>
+            </div><div class="content" id="content"><p>读这篇文章，让你写好并发代码，介绍了 Go 并发同步所用的工具。</p>
+<p>一个变量在一个 goroutine 里修改了，在另一个 goroutine 能保证可见这个变量的修改（结果）。<del>这是一个非常有用的，但对程序员透明的功能。</del></p>
+<p>感觉是自己理解错了，并发同步还是得程序员来处理。只是Go内存模型提供一些工具，比如 channel、mutex，用于贯彻 happen before 策略。</p>
+<blockquote>
+<p>The Go memory model specifies the conditions under which reads of a variable in one goroutine can be guaranteed to observe values produced by writes to the same variable in a different goroutine.</p></blockquote>
+<p>可见性问题，貌似与这个主题没啥关系啊？？？。现在操作系统架构，是多级缓存，多核心（多线程）的。线程模型，变量都会缓存于当前线程的缓存、寄存器中。也就是说，其他线程不可见该变量的改变，这会带来并发同步（变量）问题。</p>
+<p>Java 里有 Volatile 关键字，就是为了解决这个问题，让变量存储于内存中，所有线程可见内存变量。（在介绍为何需要引入 Akka 模型中，有讲到这个背景。Akka 模型引入通过消息通信的方式，避免直面这个问题。）</p>
+<blockquote>
+<p>“volatile” tells the compiler that the value of a variable must never be cached as its value may change outside of the scope of the program itself</p></blockquote>
+<p>这里 <a href="https://www.geeksforgeeks.org/volatile-keyword-in-java/" target="_blank" rel="noopener noreffer ">https://www.geeksforgeeks.org/volatile-keyword-in-java/</a> 有比较直白的描述。</p>
+<blockquote>
+<p>Suppose that two threads are working on <strong>SharedObj</strong>. If two threads run on different processors each thread may have its own local copy of <strong>sharedVariable</strong>. If one thread modifies its value the change might not reflect in the original one in the main memory instantly. This depends on the <a href="https://en.wikipedia.org/wiki/CPU_cache#Write_policies" target="_blank" rel="noopener noreffer ">write policy</a> of cache. Now the other thread is not aware of the modified value which leads to data inconsistency.</p></blockquote>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="../../images/volatile-keyword-in-java.png"
+        data-srcset="../../images/volatile-keyword-in-java.png, ../../images/volatile-keyword-in-java.png 1.5x, ../../images/volatile-keyword-in-java.png 2x"
+        data-sizes="auto"
+        alt="../../images/volatile-keyword-in-java.png"
+        title="img" /></p>
+<p>并发修改（至少一个是write就会触发并发问题）数据，需要顺序化访问。</p>
+<blockquote>
+<p>Programs that modify data being simultaneously accessed by multiple goroutines must serialize such access.</p></blockquote>
+<p>Golang 处理并发数据同步的方式有两种：</p>
+<ol>
+<li>优先使用 channel 通信。</li>
+<li>使用 mutex 锁。如果一个变量 a，不使用 mutex 保护下多 goroutine 修改，就会触发并发问题。</li>
+</ol>
+<p>同步的关键，就是指令是顺序的。顺序的，确定的，就不会出错（出现不同的现象，只有一种结果）。</p>
+<blockquote>
+<p>In all these examples, the solution is the same: use explicit synchronization.</p></blockquote>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#f92672">package</span> <span style="color:#a6e22e">main</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> (
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;fmt&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;time&#34;</span>
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">var</span> <span style="color:#a6e22e">sharedVal</span> = <span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">inc</span>() {
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">sharedVal</span> <span style="color:#f92672">++</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">main</span>() {
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">i</span> <span style="color:#f92672">:=</span> <span style="color:#ae81ff">0</span>; <span style="color:#a6e22e">i</span> &lt; <span style="color:#ae81ff">2</span>; <span style="color:#a6e22e">i</span><span style="color:#f92672">++</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">go</span> <span style="color:#a6e22e">inc</span>()
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Sleep</span>(<span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Second</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#a6e22e">sharedVal</span>)
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>这种代码，使用race参数就可以检测出来了。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ go run -race main.go
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">==================</span>
+</span></span><span style="display:flex;"><span>WARNING: DATA RACE
+</span></span><span style="display:flex;"><span>Read at 0x00000123d5c8 by goroutine 8:
+</span></span><span style="display:flex;"><span>  main.inc<span style="color:#f92672">()</span>
+</span></span><span style="display:flex;"><span>      /private/tmp/kv/main.go:11 +0x3a
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>Previous write at 0x00000123d5c8 by goroutine 7:
+</span></span><span style="display:flex;"><span>  main.inc<span style="color:#f92672">()</span>
+</span></span><span style="display:flex;"><span>      /private/tmp/kv/main.go:11 +0x56
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>Goroutine <span style="color:#ae81ff">8</span> <span style="color:#f92672">(</span>running<span style="color:#f92672">)</span> created at:
+</span></span><span style="display:flex;"><span>  main.main<span style="color:#f92672">()</span>
+</span></span><span style="display:flex;"><span>      /private/tmp/kv/main.go:16 +0x4f
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>Goroutine <span style="color:#ae81ff">7</span> <span style="color:#f92672">(</span>finished<span style="color:#f92672">)</span> created at:
+</span></span><span style="display:flex;"><span>  main.main<span style="color:#f92672">()</span>
+</span></span><span style="display:flex;"><span>      /private/tmp/kv/main.go:16 +0x4f
+</span></span><span style="display:flex;"><span><span style="color:#f92672">==================</span>
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">3</span>
+</span></span><span style="display:flex;"><span>Found <span style="color:#ae81ff">1</span> data race<span style="color:#f92672">(</span>s<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>exit status <span style="color:#ae81ff">66</span>
+</span></span></code></pre></div><p>共享变量加锁。锁使得访问顺序确定了。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#f92672">package</span> <span style="color:#a6e22e">main</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> (
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;fmt&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;sync&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;time&#34;</span>
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">var</span> <span style="color:#a6e22e">sharedVal</span> = <span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">var</span> <span style="color:#a6e22e">l</span> = <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">sync</span>.<span style="color:#a6e22e">RWMutex</span>{}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">inc</span>() {
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">l</span>.<span style="color:#a6e22e">Lock</span>()
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">defer</span> <span style="color:#a6e22e">l</span>.<span style="color:#a6e22e">Unlock</span>()
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">sharedVal</span><span style="color:#f92672">++</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">main</span>() {
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">i</span> <span style="color:#f92672">:=</span> <span style="color:#ae81ff">0</span>; <span style="color:#a6e22e">i</span> &lt; <span style="color:#ae81ff">2</span>; <span style="color:#a6e22e">i</span><span style="color:#f92672">++</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">go</span> <span style="color:#a6e22e">inc</span>()
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Sleep</span>(<span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Second</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">l</span>.<span style="color:#a6e22e">RLock</span>()
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">defer</span> <span style="color:#a6e22e">l</span>.<span style="color:#a6e22e">RUnlock</span>()
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#a6e22e">sharedVal</span>)
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>这句话什么意思：read r 被允许观察（可见） write w 更新的变量 v ，需要满足如下条件。</p>
+<blockquote>
+<p>A read <em>r</em> of a variable <code>v</code> is <em>allowed</em> to observe a write <em>w</em> to <code>v</code> if both of the following hold:</p></blockquote>
+<p>（单个 goroutine 下）read r 可见最近一次 write w 更新的变量 v</p>
+<blockquote>
+<p>a read <em>r</em> observes the value written by the most recent write <em>w</em> to <code>v</code></p></blockquote>
+<p>多 goroutine 下，使用同步原语。</p>
+<blockquote>
+<p>When multiple goroutines access a shared variable <code>v</code>, they must use synchronization events to establish happens-before conditions that ensure reads observe the desired writes.</p></blockquote>
+<h2 id="参考">参考</h2>
+<ol>
+<li>The Go Memory Model <a href="https://golang.org/ref/mem" target="_blank" rel="noopener noreffer ">https://golang.org/ref/mem</a></li>
+</ol>
+</div><div class="post-footer" id="post-footer">
+    <div class="post-info">
+        <div class="post-info-line">
+            <div class="post-info-mod">
+                <span>Updated on 2020-10-15</span>
+            </div></div>
+        <div class="post-info-line">
+            <div class="post-info-md"></div>
+            <div class="post-info-share">
+                <span><a href="javascript:void(0);" title="Share on Twitter" data-sharer="twitter" data-url="http://localhost:1313/posts/20201015-go-memory-model/" data-title="Go Memory Model"><i class="fab fa-twitter fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="Share on Facebook" data-sharer="facebook" data-url="http://localhost:1313/posts/20201015-go-memory-model/"><i class="fab fa-facebook-square fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="Share on Hacker News" data-sharer="hackernews" data-url="http://localhost:1313/posts/20201015-go-memory-model/" data-title="Go Memory Model"><i class="fab fa-hacker-news fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="Share on Line" data-sharer="line" data-url="http://localhost:1313/posts/20201015-go-memory-model/" data-title="Go Memory Model"><i data-svg-src="/lib/simple-icons/icons/line.min.svg" aria-hidden="true"></i></a><a href="javascript:void(0);" title="Share on 微博" data-sharer="weibo" data-url="http://localhost:1313/posts/20201015-go-memory-model/" data-title="Go Memory Model"><i class="fab fa-weibo fa-fw" aria-hidden="true"></i></a></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="post-info-more">
+        <section class="post-tags"></section>
+        <section>
+            <span><a href="javascript:void(0);" onclick="window.history.back();">Back</a></span>&nbsp;|&nbsp;<span><a href="/">Home</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav"><a href="/posts/20201010-flink-sql/" class="prev" rel="prev" title="Flink SQL 工程化"><i class="fas fa-angle-left fa-fw" aria-hidden="true"></i>Flink SQL 工程化</a>
+            <a href="/posts/20201016-new-design/" class="next" rel="next" title="支付系统 New Design">支付系统 New Design<i class="fas fa-angle-right fa-fw" aria-hidden="true"></i></a></div>
+</div>
+</article></div>
+            </main><footer class="footer">
+        <div class="footer-container"><div class="footer-line">Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.147.3">Hugo</a> | Theme - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.3.0"><i class="far fa-kiss-wink-heart fa-fw" aria-hidden="true"></i> LoveIt</a>
+                </div><div class="footer-line" itemscope itemtype="http://schema.org/CreativeWork"><i class="far fa-copyright fa-fw" aria-hidden="true"></i><span itemprop="copyrightYear">2022 - 2025</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/" target="_blank">Happy Coding</a></span></div>
+        </div>
+    </footer></div>
+
+        <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="Back to Top">
+                <i class="fas fa-arrow-up fa-fw" aria-hidden="true"></i>
+            </a><a href="#" id="view-comments" class="fixed-button" title="View Comments">
+                <i class="fas fa-comment fa-fw" aria-hidden="true"></i>
+            </a>
+        </div><script type="text/javascript" src="/lib/lazysizes/lazysizes.min.js"></script><script type="text/javascript" src="/lib/clipboard/clipboard.min.js"></script><script type="text/javascript" src="/lib/sharer/sharer.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"Copy to clipboard","maxShownLines":50},"comment":{}};</script><script type="text/javascript" src="/js/theme.min.js"></script></body>
+</html>

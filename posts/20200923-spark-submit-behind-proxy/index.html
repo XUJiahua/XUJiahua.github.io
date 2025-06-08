@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+    <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="robots" content="noodp" />
+        <title>本地通过代理提交 Spark 任务到集群 - Happy Coding</title><meta name="Description" content=""><meta property="og:url" content="http://localhost:1313/posts/20200923-spark-submit-behind-proxy/">
+  <meta property="og:site_name" content="Happy Coding">
+  <meta property="og:title" content="本地通过代理提交 Spark 任务到集群">
+  <meta property="og:description" content="目标 本地电脑通过代理连入大数据集群的网络，本地开发，并 spark-submit 提交任务到大数据集群。
+创建代理 $ ssh -ND 8080 webapp@ip_of_spark_cluster # install proxychains4 $ vim /usr/local/etc/proxychains.conf socks5 127.0.0.1 8080 准备工作 下载集群上的 spark 版本。打包下载即可。
+CDH 下载 YARN 的 CONF 文件。以及将当前的hadoop用户指定为 spark ，不然当前用户没有权限。
+export HADOOP_CONF_DIR=~/Downloads/yarn-conf/ export HADOOP_USER_NAME=spark YARN 有两种模式。
+There are two deploy modes that can be used to launch Spark applications on YARN. In cluster mode, the Spark driver runs inside an application master process which is managed by YARN on the cluster, and the client can go away after initiating the application. In client mode, the driver runs in the client process, and the application master is only used for requesting resources from YARN.">
+  <meta property="og:locale" content="zh_cn">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2020-09-23T14:39:11+08:00">
+    <meta property="article:modified_time" content="2020-09-23T14:39:11+08:00">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="本地通过代理提交 Spark 任务到集群">
+  <meta name="twitter:description" content="目标 本地电脑通过代理连入大数据集群的网络，本地开发，并 spark-submit 提交任务到大数据集群。
+创建代理 $ ssh -ND 8080 webapp@ip_of_spark_cluster # install proxychains4 $ vim /usr/local/etc/proxychains.conf socks5 127.0.0.1 8080 准备工作 下载集群上的 spark 版本。打包下载即可。
+CDH 下载 YARN 的 CONF 文件。以及将当前的hadoop用户指定为 spark ，不然当前用户没有权限。
+export HADOOP_CONF_DIR=~/Downloads/yarn-conf/ export HADOOP_USER_NAME=spark YARN 有两种模式。
+There are two deploy modes that can be used to launch Spark applications on YARN. In cluster mode, the Spark driver runs inside an application master process which is managed by YARN on the cluster, and the client can go away after initiating the application. In client mode, the driver runs in the client process, and the application master is only used for requesting resources from YARN.">
+<meta name="application-name" content="Happy Coding">
+<meta name="apple-mobile-web-app-title" content="Happy Coding"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="http://localhost:1313/posts/20200923-spark-submit-behind-proxy/" /><link rel="prev" href="http://localhost:1313/posts/20200922-mongo-slow-query/" /><link rel="next" href="http://localhost:1313/posts/20200928-deeplearning-usage/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="/lib/fontawesome-free/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="/lib/fontawesome-free/all.min.css"></noscript><link rel="preload" href="/lib/animate/animate.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="/lib/animate/animate.min.css"></noscript><script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "headline": "本地通过代理提交 Spark 任务到集群",
+        "inLanguage": "zh-cn",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "http:\/\/localhost:1313\/posts\/20200923-spark-submit-behind-proxy\/"
+        },"genre": "posts","wordcount":  672 ,
+        "url": "http:\/\/localhost:1313\/posts\/20200923-spark-submit-behind-proxy\/","datePublished": "2020-09-23T14:39:11+08:00","dateModified": "2020-09-23T14:39:11+08:00","publisher": {
+            "@type": "Organization",
+            "name": ""},"author": {
+                "@type": "Person",
+                "name": "Happy Coding"
+            },"description": ""
+    }
+    </script></head>
+    <body data-header-desktop="fixed" data-header-mobile="auto"><script type="text/javascript">(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
+
+        <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
+    <div class="header-wrapper">
+        <div class="header-title">
+            <a href="/" title="Happy Coding">Happy Coding</a>
+        </div>
+        <div class="menu">
+            <div class="menu-inner"><a class="menu-item" href="/posts"> Archive </a><a class="menu-item" href="/categories"> Categories </a><a class="menu-item" href="/tags"> Tags </a><a class="menu-item" href="/index.xml"> RSS Feed </a><span class="menu-item delimiter"></span><a href="javascript:void(0);" class="menu-item theme-switch" title="Switch Theme">
+                    <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+                </a></div>
+        </div>
+    </div>
+</header><header class="mobile" id="header-mobile">
+    <div class="header-container">
+        <div class="header-wrapper">
+            <div class="header-title">
+                <a href="/" title="Happy Coding">Happy Coding</a>
+            </div>
+            <div class="menu-toggle" id="menu-toggle-mobile">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="menu" id="menu-mobile"><a class="menu-item" href="/posts" title="">Archive</a><a class="menu-item" href="/categories" title="">Categories</a><a class="menu-item" href="/tags" title="">Tags</a><a class="menu-item" href="/index.xml" title="">RSS Feed</a><a href="javascript:void(0);" class="menu-item theme-switch" title="Switch Theme">
+                <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+            </a></div>
+    </div>
+</header><main class="main">
+                <div class="container"><div class="toc" id="toc-auto">
+            <h2 class="toc-title">Contents</h2>
+            <div class="toc-content" id="toc-content-auto"></div>
+        </div><article class="page single"><h1 class="single-title animate__animated animate__flipInX">本地通过代理提交 Spark 任务到集群</h1><div class="post-meta">
+            <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Happy Coding</a></span></div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2020-09-23">2020-09-23</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;672 words&nbsp;
+                <i class="far fa-clock fa-fw" aria-hidden="true"></i>&nbsp;4 minutes&nbsp;</div>
+        </div><div class="details toc" id="toc-static"  data-kept="">
+                <div class="details-summary toc-title">
+                    <span>Contents</span>
+                    <span><i class="details-icon fas fa-angle-right" aria-hidden="true"></i></span>
+                </div>
+                <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#目标">目标</a>
+      <ul>
+        <li><a href="#创建代理">创建代理</a></li>
+        <li><a href="#准备工作">准备工作</a></li>
+        <li><a href="#client-模式">client 模式</a></li>
+        <li><a href="#cluster-模式">cluster 模式</a></li>
+        <li><a href="#python">python</a></li>
+      </ul>
+    </li>
+    <li><a href="#结论">结论</a></li>
+    <li><a href="#参考">参考</a></li>
+    <li><a href="#其他">其他</a></li>
+  </ul>
+</nav></div>
+            </div><div class="content" id="content"><h2 id="目标">目标</h2>
+<p>本地电脑通过代理连入大数据集群的网络，本地开发，并 spark-submit 提交任务到大数据集群。</p>
+<h3 id="创建代理">创建代理</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ ssh -ND <span style="color:#ae81ff">8080</span> webapp@ip_of_spark_cluster
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># install proxychains4</span>
+</span></span><span style="display:flex;"><span>$ vim /usr/local/etc/proxychains.conf
+</span></span><span style="display:flex;"><span>socks5  127.0.0.1 <span style="color:#ae81ff">8080</span>
+</span></span></code></pre></div><h3 id="准备工作">准备工作</h3>
+<p>下载集群上的 spark 版本。打包下载即可。</p>
+<p>CDH 下载 YARN 的 CONF 文件。以及将当前的hadoop用户指定为 spark ，不然当前用户没有权限。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>export HADOOP_CONF_DIR<span style="color:#f92672">=</span>~/Downloads/yarn-conf/
+</span></span><span style="display:flex;"><span>export HADOOP_USER_NAME<span style="color:#f92672">=</span>spark
+</span></span></code></pre></div><p>YARN 有两种模式。</p>
+<blockquote>
+<p>There are two deploy modes that can be used to launch Spark applications on YARN. In cluster mode, the Spark driver runs inside an application master process which is managed by YARN on the cluster, and the client can go away after initiating the application. In client mode, the driver runs in the client process, and the application master is only used for requesting resources from YARN.</p></blockquote>
+<p>driver 主动发起的通信，因为有代理网络，是没问题的。</p>
+<p>如果其他进程主动发起的通信到 driver 呢，就找不着了！network latency between the drivers and the executors</p>
+<p>看图，driver 会主动连接 executor，executor 也会主动连接 driver。</p>
+<p>大致架构如图。driver 与 executor 之间是互相通信的。</p>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="../../images/Image-1-1.png"
+        data-srcset="../../images/Image-1-1.png, ../../images/Image-1-1.png 1.5x, ../../images/Image-1-1.png 2x"
+        data-sizes="auto"
+        alt="../../images/Image-1-1.png"
+        title="img" /></p>
+<blockquote>
+<p>Responsibility of EXECUTOR</p>
+<ol>
+<li>To run an individual Task and return the result to the Driver.</li>
+<li>It can cache (persist) the data in the Worker node.</li>
+</ol>
+<p><a href="https://blog.knoldus.com/understanding-the-working-of-spark-driver-and-executor/" target="_blank" rel="noopener noreffer ">https://blog.knoldus.com/understanding-the-working-of-spark-driver-and-executor/</a></p></blockquote>
+<h3 id="client-模式">client 模式</h3>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="../../images/KQTyb.png"
+        data-srcset="../../images/KQTyb.png, ../../images/KQTyb.png 1.5x, ../../images/KQTyb.png 2x"
+        data-sizes="auto"
+        alt="../../images/KQTyb.png"
+        title="yarn-client mode" /></p>
+<p><a href="https://stackoverflow.com/a/51763002" target="_blank" rel="noopener noreffer ">https://stackoverflow.com/a/51763002</a></p>
+<p>driver 进程在本地。</p>
+<p>cluster manager 就是 YARN，Spark 只知道通过 YARN 可以申请到 executor process 资源。然后 spark driver 与 spark executor 之间是会互相通信的。</p>
+<p>spark driver 必须监听一个端口，因为 spark executor 会与之通信。所以 spark driver 所在节点必须是 worker 节点网络可达的。现在只有 driver 通过 proxy 访问 executor，而 executor 无法访问 driver，因为网络不可达。</p>
+<blockquote>
+<p>Spark is agnostic to the underlying cluster manager. As long as it can acquire executor processes, and these communicate with each other, it is relatively easy to run it even on a cluster manager that also supports other applications (e.g. Mesos/YARN).</p>
+<p>The driver program must listen for and accept incoming connections from its executors throughout its lifetime (e.g., see spark.driver.port in the network config section). As such, the driver program must be network addressable from the worker nodes.</p>
+<p>Because the driver schedules tasks on the cluster, it should be run close to the worker nodes, preferably on the same local area network. If you’d like to send requests to the cluster remotely, it’s better to open an RPC to the driver and have it submit operations from nearby than to run a driver far away from the worker nodes.</p>
+<p><a href="https://www.ikbigdataanalytics.com/2018/09/spark-components-communication.html" target="_blank" rel="noopener noreffer ">https://www.ikbigdataanalytics.com/2018/09/spark-components-communication.html</a></p></blockquote>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ proxychains4 ./bin/spark-submit <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>  --class org.apache.spark.examples.SparkPi <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>  --master yarn <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>  --deploy-mode client <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>  examples/jars/spark-examples_2.11-2.4.0-cdh6.3.2.jar <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>  <span style="color:#ae81ff">1000</span>
+</span></span></code></pre></div><p>报错信息，Cannot receive any reply from 10.30.3.30:58419 in 120 seconds，其中 58419 是 driver port，意思是 XXX 连接 driver进程 120秒超时了。</p>
+<blockquote>
+<p>20/09/23 14:12:12 ERROR cluster.YarnClientSchedulerBackend: YARN application has exited unexpectedly with state FAILED! Check the YARN application logs for more details.
+20/09/23 14:12:12 ERROR cluster.YarnClientSchedulerBackend: Diagnostics message: Uncaught exception: org.apache.spark.rpc.RpcTimeoutException: Cannot receive any reply from 10.30.3.30:58419 in 120 seconds. This timeout is controlled by spark.rpc.askTimeout</p></blockquote>
+<h3 id="cluster-模式">cluster 模式</h3>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="../../images/F0ALa.png"
+        data-srcset="../../images/F0ALa.png, ../../images/F0ALa.png 1.5x, ../../images/F0ALa.png 2x"
+        data-sizes="auto"
+        alt="../../images/F0ALa.png"
+        title="yarn-cluster mode" /></p>
+<p><a href="https://stackoverflow.com/a/51763002" target="_blank" rel="noopener noreffer ">https://stackoverflow.com/a/51763002</a></p>
+<p>driver 进程在集群内。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ proxychains4 ./bin/spark-submit <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>  --class org.apache.spark.examples.SparkPi <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>  --master yarn <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>  --deploy-mode cluster <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>  examples/jars/spark-examples_2.11-2.4.0-cdh6.3.2.jar <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>  <span style="color:#ae81ff">1000</span>
+</span></span></code></pre></div><h3 id="python">python</h3>
+<p>python 是可以支持 cluster 模式的。</p>
+<p>执行 python 程序各种崩溃啊。pi.py 需要这么多内存的？？？加到6g终于不挂了，集群内运行没问题了。同样的效果，Scala 版本耗内存就低很多。Python 版本很伤内存啊。</p>
+<pre tabindex="0"><code>$ proxychains4 ./bin/spark-submit \
+  --master yarn \
+  --deploy-mode cluster \
+  --driver-memory 6g \
+  examples/pi.py \
+  1000
+</code></pre><blockquote>
+<p>20/09/23 16:11:46 INFO yarn.ApplicationMaster: Final app status: FAILED, exitCode: 13, (reason: User application exited with status 1)
+20/09/23 16:11:46 ERROR yarn.ApplicationMaster: Uncaught exception:
+org.apache.spark.SparkException: Exception thrown in awaitResult:
+at org.apache.spark.util.ThreadUtils$.awaitResult(ThreadUtils.scala:226)
+at org.apache.spark.deploy.yarn.ApplicationMaster.runDriver(ApplicationMaster.scala:447)
+at org.apache.spark.deploy.yarn.ApplicationMaster.run(ApplicationMaster.scala:275)
+at org.apache.spark.deploy.yarn.ApplicationMaster$$anon$3.run(ApplicationMaster.scala:805)
+at org.apache.spark.deploy.yarn.ApplicationMaster$$anon$3.run(ApplicationMaster.scala:804)
+at java.security.AccessController.doPrivileged(Native Method)
+at javax.security.auth.Subject.doAs(Subject.java:422)
+at org.apache.hadoop.security.UserGroupInformation.doAs(UserGroupInformation.java:1875)
+at org.apache.spark.deploy.yarn.ApplicationMaster$.main(ApplicationMaster.scala:804)
+at org.apache.spark.deploy.yarn.ApplicationMaster.main(ApplicationMaster.scala)
+Caused by: org.apache.spark.SparkUserAppException: User application exited with 1
+at org.apache.spark.deploy.PythonRunner$.main(PythonRunner.scala:106)
+at org.apache.spark.deploy.PythonRunner.main(PythonRunner.scala)
+at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+at java.lang.reflect.Method.invoke(Method.java:498)</p></blockquote>
+<p>网络上有说版本不一致了？？？WTF。。。python 版本肯定不一致啊。</p>
+<p>如果执行 client 模式，发现错误 [proxychains] Strict chain  &hellip;  127.0.0.1:8080  &hellip;  127.0.0.1:62054 &lt;&ndash;socket error or timeout! 因为 python 程序与 JVM 程序是通过 127.0.0.1 通信的，不能走代理。</p>
+<pre tabindex="0"><code>$ proxychains4 ./bin/spark-submit \
+  --master yarn \
+  --deploy-mode client \
+  examples/pi.py \
+  1000
+</code></pre><h2 id="结论">结论</h2>
+<p>因为本地与集群不是在一个网络（互相可达）里，client 模式就不能用了，因为 executor process 无法与 driver process 通信。client 模式的好处是本地能看到一些结果。适合 spark-shell 这种需要交互的场景。</p>
+<p>只能使用 cluster 模式。本地通过代理 spark-submit 提交任务到集群中，driver process 在集群内创建，与 executor process 通信问题就不用担心。</p>
+<p>Python cluster 模式在本地没有调试通过，有点难。</p>
+<p>提交 jar 包，以及 cluster 模式的方式提交，比较合适使用代理的方式。</p>
+<p>鉴于目前是以 Python 开发 Spark 应用为主，可先用 Python 开发，然后通过代理同步到集群内，在集群里执行任务更合适目前的状况。</p>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="https://i.stack.imgur.com/Y2xMo.png"
+        data-srcset="https://i.stack.imgur.com/Y2xMo.png, https://i.stack.imgur.com/Y2xMo.png 1.5x, https://i.stack.imgur.com/Y2xMo.png 2x"
+        data-sizes="auto"
+        alt="https://i.stack.imgur.com/Y2xMo.png"
+        title="enter image description here" /></p>
+<p><a href="https://stackoverflow.com/a/51763002" target="_blank" rel="noopener noreffer ">https://stackoverflow.com/a/51763002</a></p>
+<h2 id="参考">参考</h2>
+<ol>
+<li><a href="https://stackoverflow.com/a/51763002" target="_blank" rel="noopener noreffer ">https://stackoverflow.com/a/51763002</a></li>
+<li>Understanding the working of Spark Driver and Executor <a href="https://blog.knoldus.com/understanding-the-working-of-spark-driver-and-executor/" target="_blank" rel="noopener noreffer ">https://blog.knoldus.com/understanding-the-working-of-spark-driver-and-executor/</a></li>
+</ol>
+<h2 id="其他">其他</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e"># on server yarn</span>
+</span></span><span style="display:flex;"><span>export JAVA_HOME<span style="color:#f92672">=</span>/usr/java/jdk1.8.0_181-cloudera/
+</span></span><span style="display:flex;"><span>export HADOOP_USER_NAME<span style="color:#f92672">=</span>spark
+</span></span><span style="display:flex;"><span>./bin/spark-submit <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>  --class org.apache.spark.examples.SparkPi <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>  --master yarn <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>  --deploy-mode client <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>  examples/jars/spark-examples_2.11-2.4.0-cdh6.3.2.jar <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>  <span style="color:#ae81ff">1000</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># on server</span>
+</span></span><span style="display:flex;"><span>cd /opt/cloudera/parcels/CDH-6.3.2-1.cdh6.3.2.p0.1605554/lib/spark
+</span></span><span style="display:flex;"><span>$JAVA_HOME/bin/jar cv0f spark-libs.jar -C ./jars/ .
+</span></span><span style="display:flex;"><span>hdfs dfs -put spark-libs.jar /user/spark
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># on client</span>
+</span></span><span style="display:flex;"><span>vim conf/spark-defaults.conf
+</span></span><span style="display:flex;"><span>spark.yarn.archive hdfs:///user/spark/spark-libs.jar
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>proxychains4 ./bin/spark-submit <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>  --class org.apache.spark.examples.SparkPi <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>  --master yarn <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>  --deploy-mode client <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>  examples/jars/spark-examples_2.11-2.4.0-cdh6.3.2.jar <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>  <span style="color:#ae81ff">1000</span>
+</span></span></code></pre></div></div><div class="post-footer" id="post-footer">
+    <div class="post-info">
+        <div class="post-info-line">
+            <div class="post-info-mod">
+                <span>Updated on 2020-09-23</span>
+            </div></div>
+        <div class="post-info-line">
+            <div class="post-info-md"></div>
+            <div class="post-info-share">
+                <span><a href="javascript:void(0);" title="Share on Twitter" data-sharer="twitter" data-url="http://localhost:1313/posts/20200923-spark-submit-behind-proxy/" data-title="本地通过代理提交 Spark 任务到集群"><i class="fab fa-twitter fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="Share on Facebook" data-sharer="facebook" data-url="http://localhost:1313/posts/20200923-spark-submit-behind-proxy/"><i class="fab fa-facebook-square fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="Share on Hacker News" data-sharer="hackernews" data-url="http://localhost:1313/posts/20200923-spark-submit-behind-proxy/" data-title="本地通过代理提交 Spark 任务到集群"><i class="fab fa-hacker-news fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="Share on Line" data-sharer="line" data-url="http://localhost:1313/posts/20200923-spark-submit-behind-proxy/" data-title="本地通过代理提交 Spark 任务到集群"><i data-svg-src="/lib/simple-icons/icons/line.min.svg" aria-hidden="true"></i></a><a href="javascript:void(0);" title="Share on 微博" data-sharer="weibo" data-url="http://localhost:1313/posts/20200923-spark-submit-behind-proxy/" data-title="本地通过代理提交 Spark 任务到集群"><i class="fab fa-weibo fa-fw" aria-hidden="true"></i></a></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="post-info-more">
+        <section class="post-tags"></section>
+        <section>
+            <span><a href="javascript:void(0);" onclick="window.history.back();">Back</a></span>&nbsp;|&nbsp;<span><a href="/">Home</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav"><a href="/posts/20200922-mongo-slow-query/" class="prev" rel="prev" title="20200922 Mongo Slow Query"><i class="fas fa-angle-left fa-fw" aria-hidden="true"></i>20200922 Mongo Slow Query</a>
+            <a href="/posts/20200928-deeplearning-usage/" class="next" rel="next" title="深度学习算法及其应用">深度学习算法及其应用<i class="fas fa-angle-right fa-fw" aria-hidden="true"></i></a></div>
+</div>
+</article></div>
+            </main><footer class="footer">
+        <div class="footer-container"><div class="footer-line">Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.147.3">Hugo</a> | Theme - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.3.0"><i class="far fa-kiss-wink-heart fa-fw" aria-hidden="true"></i> LoveIt</a>
+                </div><div class="footer-line" itemscope itemtype="http://schema.org/CreativeWork"><i class="far fa-copyright fa-fw" aria-hidden="true"></i><span itemprop="copyrightYear">2022 - 2025</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/" target="_blank">Happy Coding</a></span></div>
+        </div>
+    </footer></div>
+
+        <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="Back to Top">
+                <i class="fas fa-arrow-up fa-fw" aria-hidden="true"></i>
+            </a><a href="#" id="view-comments" class="fixed-button" title="View Comments">
+                <i class="fas fa-comment fa-fw" aria-hidden="true"></i>
+            </a>
+        </div><script type="text/javascript" src="/lib/lazysizes/lazysizes.min.js"></script><script type="text/javascript" src="/lib/clipboard/clipboard.min.js"></script><script type="text/javascript" src="/lib/sharer/sharer.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"Copy to clipboard","maxShownLines":50},"comment":{}};</script><script type="text/javascript" src="/js/theme.min.js"></script></body>
+</html>

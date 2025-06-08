@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+    <head>
+	<meta name="generator" content="Hugo 0.147.3"><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="robots" content="noodp" />
+        <title>Happy Coding</title><meta name="Description" content=""><meta property="og:url" content="http://localhost:1313/">
+  <meta property="og:site_name" content="Happy Coding">
+  <meta property="og:title" content="Happy Coding">
+  <meta property="og:locale" content="zh_cn">
+  <meta property="og:type" content="website">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Happy Coding">
+<meta name="application-name" content="Happy Coding">
+<meta name="apple-mobile-web-app-title" content="Happy Coding"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="http://localhost:1313/" /><link rel="alternate" href="/index.xml" type="application/rss+xml" title="Happy Coding">
+    <link rel="feed" href="/index.xml" type="application/rss+xml" title="Happy Coding"><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="/lib/fontawesome-free/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="/lib/fontawesome-free/all.min.css"></noscript><link rel="preload" href="/lib/animate/animate.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="/lib/animate/animate.min.css"></noscript><script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "WebSite",
+        "url": "http:\/\/localhost:1313\/","inLanguage": "zh-cn","author": {
+                "@type": "Person",
+                "name": "Happy Coding"
+            },"name": "Happy Coding"
+    }
+    </script></head>
+    <body data-header-desktop="fixed" data-header-mobile="auto"><script type="text/javascript">(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
+
+        <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
+    <div class="header-wrapper">
+        <div class="header-title">
+            <a href="/" title="Happy Coding">Happy Coding</a>
+        </div>
+        <div class="menu">
+            <div class="menu-inner"><a class="menu-item" href="/posts"> Archive </a><a class="menu-item" href="/categories"> Categories </a><a class="menu-item" href="/tags"> Tags </a><a class="menu-item" href="/index.xml"> RSS Feed </a><span class="menu-item delimiter"></span><a href="javascript:void(0);" class="menu-item theme-switch" title="Switch Theme">
+                    <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+                </a></div>
+        </div>
+    </div>
+</header><header class="mobile" id="header-mobile">
+    <div class="header-container">
+        <div class="header-wrapper">
+            <div class="header-title">
+                <a href="/" title="Happy Coding">Happy Coding</a>
+            </div>
+            <div class="menu-toggle" id="menu-toggle-mobile">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="menu" id="menu-mobile"><a class="menu-item" href="/posts" title="">Archive</a><a class="menu-item" href="/categories" title="">Categories</a><a class="menu-item" href="/tags" title="">Tags</a><a class="menu-item" href="/index.xml" title="">RSS Feed</a><a href="javascript:void(0);" class="menu-item theme-switch" title="Switch Theme">
+                <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+            </a></div>
+    </div>
+</header><main class="main">
+                <div class="container"><div class="page home" data-home="posts"><div class="home-profile"><div class="links"></div></div>
+<article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
+        <a href="/posts/20200321-docker-network/">Docker Network小结</a>
+    </h1><div class="post-meta"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Happy Coding</a></span>&nbsp;<span class="post-publish">published on <time datetime="2020-03-21">2020-03-21</time></span></div><div class="content"><p>Docker网络非常值得学习。对Docker不熟的同学，建议先看一些入门资料。</p>
+<h2 id="docker-学习资料">Docker 学习资料</h2>
+<ol>
+<li>Docker — 从入门到实践  <a href="https://www.yuque.com/grasilife/docker" target="_blank" rel="noopener noreffer ">https://www.yuque.com/grasilife/docker</a></li>
+<li>Docker Kubernetes Lab Handbook <a href="https://docker-k8s-lab.readthedocs.io/en/latest/index.html" target="_blank" rel="noopener noreffer ">https://docker-k8s-lab.readthedocs.io/en/latest/index.html</a></li>
+<li>「Docker进阶与实战」华为Docker实践小组</li>
+</ol>
+<h2 id="单机网络">单机网络</h2>
+<p>（建议在Linux系统上实验。）</p>
+<p>Docker安装完后，默认有三个（三种）网络。分别是默认的bridge模式，host模式，none模式。</p>
+<pre tabindex="0"><code># docker network ls
+NETWORK ID          NAME                DRIVER              SCOPE
+51cbe7a9bb19        bridge              bridge              local
+7182ef9fa8c4        host                host                local
+bd80d0dedaa8        none                null                local
+</code></pre><p>参考：https://docs.docker.com/network/</p>
+<h3 id="none模式-netnone">none模式 &ndash;net=none</h3>
+<p>无网络。</p>
+<pre tabindex="0"><code># docker run --net=none --rm -it alpine ip addr show
+1: lo: &lt;LOOPBACK,UP,LOWER_UP&gt; mtu 65536 qdisc noqueue state UNKNOWN qlen 1000
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+    inet 127.0.0.1/8 scope host lo
+       valid_lft forever preferred_lft forever
+</code></pre><h3 id="host模式-nethost">host模式 &ndash;net=host</h3>
+<ol>
+<li>容器共用宿主机的网络。但是，容器的其他方面，如文件系统、进程列表等还是和宿主机隔离的。</li>
+<li>容器不会申请独立的IP。</li>
+<li>容器申请的端口占用宿主机的端口资源。</li>
+<li>-p等端口映射命令不起作用：WARNING: Published ports are discarded when using host network mode</li>
+<li>性能上比较好，因为没有地址转换。Host mode networking can be useful to optimize performance, and in situations where a container needs to handle a large range of ports, as it does not require network address translation (NAT), and no “userland-proxy” is created for each port.</li>
+<li>Linux ONLY。The host networking driver only works on Linux hosts, and is not supported on Docker Desktop for Mac, Docker Desktop for Windows, or Docker EE for Windows Server.</li>
+</ol>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="../../images/907596-20170517105727775-430532496.jpg"
+        data-srcset="../../images/907596-20170517105727775-430532496.jpg, ../../images/907596-20170517105727775-430532496.jpg 1.5x, ../../images/907596-20170517105727775-430532496.jpg 2x"
+        data-sizes="auto"
+        alt="../../images/907596-20170517105727775-430532496.jpg"
+        title="img" /></p></div><div class="post-footer">
+        <a href="/posts/20200321-docker-network/">Read More</a><div class="post-tags">
+                <i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/docker/">Docker</a>,&nbsp;<a href="/tags/network/">Network</a></div></div>
+</article><article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
+        <a href="/posts/20200320-go-web-project/">Go Web 项目框架</a>
+    </h1><div class="post-meta"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Happy Coding</a></span>&nbsp;<span class="post-publish">published on <time datetime="2020-03-20">2020-03-20</time></span></div><div class="content"><h2 id="常用开源库">常用开源库</h2>
+<h3 id="依赖包管理-go-modules">依赖包管理 Go Modules</h3>
+<p>Go Modules。Go 从1.11版本开始支持，Go 1.14被认为是生产可用了。个人用过最方便的Go依赖包管理工具了。</p>
+<p>版本管理中维护 <code>go.mod</code>/<code>go.sum</code> 两个文件。</p>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="../../images/image-20200320152954581.png"
+        data-srcset="../../images/image-20200320152954581.png, ../../images/image-20200320152954581.png 1.5x, ../../images/image-20200320152954581.png 2x"
+        data-sizes="auto"
+        alt="../../images/image-20200320152954581.png"
+        title="image-20200320152954581" /></p>
+<h4 id="参考">参考</h4>
+<ol>
+<li>Using Go Modules <a href="https://blog.golang.org/using-go-modules" target="_blank" rel="noopener noreffer ">https://blog.golang.org/using-go-modules</a></li>
+</ol>
+<h3 id="命令行框架-corba">命令行框架 Corba</h3>
+<p>Corba。第一次看到，是在翻看 Hyperledger Fabric 的时候。</p>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="../../images/ad566232-814f-11e5-9cd0-aa101788c117.png"
+        data-srcset="../../images/ad566232-814f-11e5-9cd0-aa101788c117.png, ../../images/ad566232-814f-11e5-9cd0-aa101788c117.png 1.5x, ../../images/ad566232-814f-11e5-9cd0-aa101788c117.png 2x"
+        data-sizes="auto"
+        alt="../../images/ad566232-814f-11e5-9cd0-aa101788c117.png"
+        title="cobra logo" /></p>
+<ol>
+<li>子命令，嵌套的子命令。</li>
+<li>增强版本的flags。</li>
+<li>项目模板的生成工具。</li>
+<li>生成工具也自动引入了Viper这个包。Corba与Viper由一个作者开发，两个项目配合使用非常方便。</li>
+</ol>
+<p>建议使用Cobra命令行工具生成项目模板。</p>
+<pre tabindex="0"><code>  ▾ appName/
+    ▾ cmd/
+        add.go
+        your.go
+        commands.go
+        here.go
+      main.go
+</code></pre><h4 id="参考-1">参考</h4>
+<ol>
+<li>A Commander for modern Go CLI interactions <a href="https://github.com/spf13/cobra" target="_blank" rel="noopener noreffer ">https://github.com/spf13/cobra</a></li>
+<li>Cobra Generator <a href="https://github.com/spf13/cobra/blob/master/cobra/README.md" target="_blank" rel="noopener noreffer ">https://github.com/spf13/cobra/blob/master/cobra/README.md</a></li>
+</ol>
+<h3 id="配置管理-viper">配置管理 Viper</h3>
+<p>Viper。常常与Corba搭配使用。抄一段官方简介：</p></div><div class="post-footer">
+        <a href="/posts/20200320-go-web-project/">Read More</a><div class="post-tags">
+                <i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/golang/">Golang</a>,&nbsp;<a href="/tags/web/">Web</a></div></div>
+</article><article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
+        <a href="/posts/docker-harbor/">Harbor镜像仓库</a>
+    </h1><div class="post-meta"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Happy Coding</a></span>&nbsp;<span class="post-publish">published on <time datetime="2020-03-16">2020-03-16</time></span></div><div class="content"><h2 id="harbor镜像仓库使用">Harbor镜像仓库使用</h2>
+<h3 id="登录harbor新建项目">登录Harbor，新建项目</h3>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="../../images/image-20200316173407795.png"
+        data-srcset="../../images/image-20200316173407795.png, ../../images/image-20200316173407795.png 1.5x, ../../images/image-20200316173407795.png 2x"
+        data-sizes="auto"
+        alt="../../images/image-20200316173407795.png"
+        title="image-20200316173407795" /></p>
+<h3 id="有了项目就可以推送image到harbor镜像仓库">有了项目，就可以推送image到Harbor镜像仓库</h3>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="../../images/image-20200316173601307.png"
+        data-srcset="../../images/image-20200316173601307.png, ../../images/image-20200316173601307.png 1.5x, ../../images/image-20200316173601307.png 2x"
+        data-sizes="auto"
+        alt="../../images/image-20200316173601307.png"
+        title="image-20200316173601307" /></p>
+<h3 id="配置一个能访问harbor镜像仓库的bot账户">配置一个能访问Harbor镜像仓库的bot账户</h3>
+<p>创建成功后，token记得记录下来，因为只有一次机会。</p>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="../../images/image-20200316173939836.png"
+        data-srcset="../../images/image-20200316173939836.png, ../../images/image-20200316173939836.png 1.5x, ../../images/image-20200316173939836.png 2x"
+        data-sizes="auto"
+        alt="../../images/image-20200316173939836.png"
+        title="image-20200316173939836" /></p>
+<h3 id="服务器上配置登录">服务器上配置登录</h3>
+<pre tabindex="0"><code>cat ~/harbor_bot_pwd.txt | docker login harbor.domain.com --username &#39;robot$recsys_bot&#39; --password-stdin
+</code></pre><p>注意，用户名中含有<code>$</code>符号在bash中会被转义，转义后就不是原来的意义了，当然账户密码不对。需要加上引号。这个issue：https://github.com/goharbor/harbor/issues/7944</p>
+<p>账号是会过期的！！！怎么管理好过期问题呢？？？</p>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="../../images/image-20200428112136491.png"
+        data-srcset="../../images/image-20200428112136491.png, ../../images/image-20200428112136491.png 1.5x, ../../images/image-20200428112136491.png 2x"
+        data-sizes="auto"
+        alt="../../images/image-20200428112136491.png"
+        title="image-20200428112136491" /></p></div><div class="post-footer">
+        <a href="/posts/docker-harbor/">Read More</a><div class="post-tags">
+                <i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/docker/">Docker</a></div></div>
+</article><article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
+        <a href="/posts/20200312-slash-in-url-path/">Go库对URL Path中%2F的处理</a>
+    </h1><div class="post-meta"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Happy Coding</a></span>&nbsp;<span class="post-publish">published on <time datetime="2020-03-12">2020-03-12</time></span></div><div class="content"><h2 id="问题描述">问题描述</h2>
+<ol>
+<li>有同事反馈Go项目的接口404了。看了下nginx日志，只有部分请求404了，404请求的显著特征是URL里有<code>%2F</code>，也就是<code>/</code>的转义。</li>
+<li>接口定义是这样的：<code>/api/xxx/{mid}/{uid}</code>。mid、uid是URL path的一部分。从现象来看，程序没处理好转义字符，因为多了一个path部分，路由不匹配了，404。</li>
+<li>nginx的URL记录是<code>%2F</code>，其实调用方传的是微信ID，比如<code>IEd5W/jqsdF9qpuagQscEg==</code>。调用方在发请求之前对ID已经做好了转义。</li>
+</ol>
+<h2 id="go内置库不区分2f和">Go内置库：不区分<code>%2F</code>和<code>/</code></h2>
+<p>An application cannot distinguish between &ldquo;/&rdquo; used as a path segment delimiter and &ldquo;/&rdquo; encoded in a path segment.</p>
+<p>这个问题由来已久了，看着官方也不打算解决了，见这个issue：https://github.com/golang/go/issues/3659</p>
+<pre tabindex="0"><code>If your app needs to assign special meaning, the
+server can reprocess req.RequestURI as it sees fit, and the client can
+issue requests using &amp;url.URL{Opaque: rawURI}.
+</code></pre><ol>
+<li>reprocess req.RequestURI 就是让你别用内置路由库了。</li>
+<li>issue requests using &amp;url.URL{Opaque: rawURI}. 试了，问题没解决。客户端不管怎么做，最终都是以HTTP协议输出的。<code>GET http://www.google.com/index.html HTTP/1.1</code> 服务端代码最终解析的还是中间的那段URL文本。照理就不通啊。</li>
+</ol>
+<h3 id="源码角度">源码角度</h3>
+<p><code>url.URL</code>的定义，明确指出Path字段存储的是decode之后的数据，所以<code>%2F</code>在这里已经被转义成了<code>/</code>，跟之前的Path意义完全不同了。</p>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="../../images/image-20200312154454662.png"
+        data-srcset="../../images/image-20200312154454662.png, ../../images/image-20200312154454662.png 1.5x, ../../images/image-20200312154454662.png 2x"
+        data-sizes="auto"
+        alt="../../images/image-20200312154454662.png"
+        title="image-20200312154454662" /></p></div><div class="post-footer">
+        <a href="/posts/20200312-slash-in-url-path/">Read More</a><div class="post-tags">
+                <i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/go/">Go</a>,&nbsp;<a href="/tags/go-router/">Go Router</a>,&nbsp;<a href="/tags/bug/">Bug</a></div></div>
+</article><article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
+        <a href="/posts/anki_card/">Anki闪卡</a>
+    </h1><div class="post-meta"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Happy Coding</a></span>&nbsp;<span class="post-publish">published on <time datetime="2020-03-11">2020-03-11</time></span></div><div class="content"><p>下载Anki很久了，今天好好用下。</p>
+<h2 id="anki">Anki</h2>
+<p>下载安装：https://apps.ankiweb.net/ 。</p>
+<p>基本概念：</p>
+<ol>
+<li></li>
+</ol>
+<h2 id="mdanki---converts-markdown-files-to-the-anki-cards">MDAnki - Converts Markdown file(s) to the Anki cards.</h2>
+<p>闪卡制作工具，将Markdown文件转成Anki闪卡。地址：https://github.com/ashlinchak/mdanki</p>
+<h3 id="安装">安装</h3>
+<pre tabindex="0"><code>npm install -g mdanki
+</code></pre><h3 id="算法闪卡制作">算法闪卡制作</h3>
+<p>An Open-Source Collection of +200 Algorithmic Flash Cards to Help you Preparing your Algorithm &amp; Data Structure Interview <a href="https://github.com/teivah/algodeck" target="_blank" rel="noopener noreffer ">https://github.com/teivah/algodeck</a></p>
+<pre tabindex="0"><code>
+git clone https://github.com/teivah/algodeck.git
+
+rm algodeck/README.md # 不是闪卡一部分
+
+mdanki --deck algodeck ./algodeck algodeck.apkg # algodeck.apkg双击打开，进入Anki界面
+</code></pre></div><div class="post-footer">
+        <a href="/posts/anki_card/">Read More</a><div class="post-tags">
+                <i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/anki/">Anki</a>,&nbsp;<a href="/tags/algorithm/">Algorithm</a>,&nbsp;<a href="/tags/%E5%B7%A5%E5%85%B7/">工具</a></div></div>
+</article><article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
+        <a href="/posts/20200311-patent/">专利申请流程小结</a>
+    </h1><div class="post-meta"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Happy Coding</a></span>&nbsp;<span class="post-publish">published on <time datetime="2020-03-11">2020-03-11</time></span></div><div class="content"><p>去年憋的一篇专利，到申请公布阶段了，算是去年研究区块链的副成果。https://patents.google.com/patent/CN110807211。整理下专利申请流程。</p>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="../../images/01C8BAF0-B9C7-4F08-9575-38AF85AC4F14.png"
+        data-srcset="../../images/01C8BAF0-B9C7-4F08-9575-38AF85AC4F14.png, ../../images/01C8BAF0-B9C7-4F08-9575-38AF85AC4F14.png 1.5x, ../../images/01C8BAF0-B9C7-4F08-9575-38AF85AC4F14.png 2x"
+        data-sizes="auto"
+        alt="../../images/01C8BAF0-B9C7-4F08-9575-38AF85AC4F14.png"
+        title="01C8BAF0-B9C7-4F08-9575-38AF85AC4F14" /></p>
+<h2 id="专利申请流程">专利申请流程</h2>
+<p>主要流程如下图，来自网络。</p>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="../../images/7CA0DB1A-692F-481B-BFA3-987F503E1E39.png"
+        data-srcset="../../images/7CA0DB1A-692F-481B-BFA3-987F503E1E39.png, ../../images/7CA0DB1A-692F-481B-BFA3-987F503E1E39.png 1.5x, ../../images/7CA0DB1A-692F-481B-BFA3-987F503E1E39.png 2x"
+        data-sizes="auto"
+        alt="../../images/7CA0DB1A-692F-481B-BFA3-987F503E1E39.png"
+        title="7CA0DB1A-692F-481B-BFA3-987F503E1E39" /></p>
+<h3 id="技术成果生成">技术成果生成</h3>
+<p>有可以申请专利的点，这个因人而异。基于点子，写个草稿。</p>
+<h3 id="申请专利">申请专利</h3>
+<p>找一个专利代理，让他们提供专利稿的修改意见。反复迭代直到专利代理觉得没问题了。</p>
+<p>之后专利代理会出具一份「专利申请受理通知书」，你再交点钱，可能还会有税费减免。</p>
+<p>我遇到了专利代理看不大懂专利的情况，僵持了一段时间，后面换了一家顺畅好多。</p>
+<h3 id="专利申请公布">专利申请公布</h3>
+<p>这个时间点叫做：申请公布日。</p>
+<p>说明初审过了。实用新型和外观发明的话，直接就授权了，而发明还需要实质审查。</p>
+<p>&ldquo;初步审查合格后，实用新型和外观就直接授权了，而发明还要经过实质审查，检索国内外的资料，确认没有相同的才会授权，所以发明的含金量会高很多，因此发明专利审查的时间也会是比较长的，一般从申请到拿证书都需要2-3年，而实用、外观这两项专利一年能拿到。&rdquo;</p>
+<h3 id="专利授权公告">专利授权公告</h3>
+<p>这个时间点叫做：授权公告日。</p>
+<p>说明正式审查完了。这时候才算是真正拥有专利。</p></div><div class="post-footer">
+        <a href="/posts/20200311-patent/">Read More</a><div class="post-tags">
+                <i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/%E4%B8%93%E5%88%A9/">专利</a></div></div>
+</article><ul class="pagination"><li class="page-item ">
+                    <span class="page-link">
+                        <a href="/">1</a>
+                    </span>
+                </li><li class="page-item ">
+                    <span class="page-link" aria-hidden="true">&hellip;</span>
+                </li><li class="page-item ">
+                    <span class="page-link">
+                        <a href="/page/15/">15</a>
+                    </span>
+                </li><li class="page-item ">
+                    <span class="page-link">
+                        <a href="/page/16/">16</a>
+                    </span>
+                </li><li class="page-item active">
+                    <span class="page-link">
+                        <a href="/page/17/">17</a>
+                    </span>
+                </li><li class="page-item ">
+                    <span class="page-link">
+                        <a href="/page/18/">18</a>
+                    </span>
+                </li><li class="page-item ">
+                    <span class="page-link">
+                        <a href="/page/19/">19</a>
+                    </span>
+                </li><li class="page-item ">
+                    <span class="page-link">
+                        <a href="/page/20/">20</a>
+                    </span>
+                </li></ul></div></div>
+            </main><footer class="footer">
+        <div class="footer-container"><div class="footer-line">Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.147.3">Hugo</a> | Theme - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.3.0"><i class="far fa-kiss-wink-heart fa-fw" aria-hidden="true"></i> LoveIt</a>
+                </div><div class="footer-line" itemscope itemtype="http://schema.org/CreativeWork"><i class="far fa-copyright fa-fw" aria-hidden="true"></i><span itemprop="copyrightYear">2022 - 2025</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/" target="_blank">Happy Coding</a></span></div>
+        </div>
+    </footer></div>
+
+        <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="Back to Top">
+                <i class="fas fa-arrow-up fa-fw" aria-hidden="true"></i>
+            </a><a href="#" id="view-comments" class="fixed-button" title="View Comments">
+                <i class="fas fa-comment fa-fw" aria-hidden="true"></i>
+            </a>
+        </div><script type="text/javascript" src="/lib/lazysizes/lazysizes.min.js"></script><script type="text/javascript" src="/lib/clipboard/clipboard.min.js"></script><script type="text/javascript" src="/lib/sharer/sharer.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"Copy to clipboard","maxShownLines":50}};</script><script type="text/javascript" src="/js/theme.min.js"></script></body>
+</html>

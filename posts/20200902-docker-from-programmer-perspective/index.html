@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+    <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="robots" content="noodp" />
+        <title>Docker 简介——一个普通程序员的视角 - Happy Coding</title><meta name="Description" content=""><meta property="og:url" content="http://localhost:1313/posts/20200902-docker-from-programmer-perspective/">
+  <meta property="og:site_name" content="Happy Coding">
+  <meta property="og:title" content="Docker 简介——一个普通程序员的视角">
+  <meta property="og:description" content="就从一个普通程序员角度，讲下 Docker 是什么，在工作上带来了哪些改变。本文作为一个引子给听众一个直接观感，是否能掌握还需听众自发学习。
+Docker 是什么 Docker is a platform for developers and sysadmins to build, run, and share applications with containers.
+基本使用 参考 https://docs.docker.com/get-started/
+底层技术：
+（Linux）容器技术。 分层镜像技术。 https://docs.docker.com/get-started/overview/#the-underlying-technology
+容器技术 基于 Linux 内核的虚拟化技术，比起其他虚拟化技术更轻量。
+namespace 资源隔离 cgroup 资源控制 分层镜像技术 Image 本质上是容器运行需要的文件系统。
+基于 Linux 的联合文件系统，overlayfs。
+Docker 分层镜像技术：AUFS/DeviceMapper / overlay
+Docker的分层镜像是怎么通过UnionFS这种文件系统做到的，但是，因为Docker首选的AUFS并不在Linux的内核主干里，所以，对于非Ubuntu的Linux分发包，比如CentOS，就无法使用AUFS作为Docker的文件系统了。于是作为第二优先级的DeviceMapper就被拿出来做分层镜像的一个实现。
+Union file systems, or UnionFS, are file systems that operate by creating layers, making them very lightweight and fast. Docker Engine uses UnionFS to provide the building blocks for containers. Docker Engine can use multiple UnionFS variants, including AUFS, btrfs, vfs, and DeviceMapper.">
+  <meta property="og:locale" content="zh_cn">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2020-09-02T15:50:12+08:00">
+    <meta property="article:modified_time" content="2020-09-02T15:50:12+08:00">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Docker 简介——一个普通程序员的视角">
+  <meta name="twitter:description" content="就从一个普通程序员角度，讲下 Docker 是什么，在工作上带来了哪些改变。本文作为一个引子给听众一个直接观感，是否能掌握还需听众自发学习。
+Docker 是什么 Docker is a platform for developers and sysadmins to build, run, and share applications with containers.
+基本使用 参考 https://docs.docker.com/get-started/
+底层技术：
+（Linux）容器技术。 分层镜像技术。 https://docs.docker.com/get-started/overview/#the-underlying-technology
+容器技术 基于 Linux 内核的虚拟化技术，比起其他虚拟化技术更轻量。
+namespace 资源隔离 cgroup 资源控制 分层镜像技术 Image 本质上是容器运行需要的文件系统。
+基于 Linux 的联合文件系统，overlayfs。
+Docker 分层镜像技术：AUFS/DeviceMapper / overlay
+Docker的分层镜像是怎么通过UnionFS这种文件系统做到的，但是，因为Docker首选的AUFS并不在Linux的内核主干里，所以，对于非Ubuntu的Linux分发包，比如CentOS，就无法使用AUFS作为Docker的文件系统了。于是作为第二优先级的DeviceMapper就被拿出来做分层镜像的一个实现。
+Union file systems, or UnionFS, are file systems that operate by creating layers, making them very lightweight and fast. Docker Engine uses UnionFS to provide the building blocks for containers. Docker Engine can use multiple UnionFS variants, including AUFS, btrfs, vfs, and DeviceMapper.">
+<meta name="application-name" content="Happy Coding">
+<meta name="apple-mobile-web-app-title" content="Happy Coding"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="http://localhost:1313/posts/20200902-docker-from-programmer-perspective/" /><link rel="prev" href="http://localhost:1313/posts/20200902-linux-overlay/" /><link rel="next" href="http://localhost:1313/posts/20200903-fuck-thin-client/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="/lib/fontawesome-free/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="/lib/fontawesome-free/all.min.css"></noscript><link rel="preload" href="/lib/animate/animate.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="/lib/animate/animate.min.css"></noscript><script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "headline": "Docker 简介——一个普通程序员的视角",
+        "inLanguage": "zh-cn",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "http:\/\/localhost:1313\/posts\/20200902-docker-from-programmer-perspective\/"
+        },"genre": "posts","wordcount":  328 ,
+        "url": "http:\/\/localhost:1313\/posts\/20200902-docker-from-programmer-perspective\/","datePublished": "2020-09-02T15:50:12+08:00","dateModified": "2020-09-02T15:50:12+08:00","publisher": {
+            "@type": "Organization",
+            "name": ""},"author": {
+                "@type": "Person",
+                "name": "Happy Coding"
+            },"description": ""
+    }
+    </script></head>
+    <body data-header-desktop="fixed" data-header-mobile="auto"><script type="text/javascript">(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
+
+        <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
+    <div class="header-wrapper">
+        <div class="header-title">
+            <a href="/" title="Happy Coding">Happy Coding</a>
+        </div>
+        <div class="menu">
+            <div class="menu-inner"><a class="menu-item" href="/posts"> Archive </a><a class="menu-item" href="/categories"> Categories </a><a class="menu-item" href="/tags"> Tags </a><a class="menu-item" href="/index.xml"> RSS Feed </a><span class="menu-item delimiter"></span><a href="javascript:void(0);" class="menu-item theme-switch" title="Switch Theme">
+                    <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+                </a></div>
+        </div>
+    </div>
+</header><header class="mobile" id="header-mobile">
+    <div class="header-container">
+        <div class="header-wrapper">
+            <div class="header-title">
+                <a href="/" title="Happy Coding">Happy Coding</a>
+            </div>
+            <div class="menu-toggle" id="menu-toggle-mobile">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="menu" id="menu-mobile"><a class="menu-item" href="/posts" title="">Archive</a><a class="menu-item" href="/categories" title="">Categories</a><a class="menu-item" href="/tags" title="">Tags</a><a class="menu-item" href="/index.xml" title="">RSS Feed</a><a href="javascript:void(0);" class="menu-item theme-switch" title="Switch Theme">
+                <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+            </a></div>
+    </div>
+</header><main class="main">
+                <div class="container"><div class="toc" id="toc-auto">
+            <h2 class="toc-title">Contents</h2>
+            <div class="toc-content" id="toc-content-auto"></div>
+        </div><article class="page single"><h1 class="single-title animate__animated animate__flipInX">Docker 简介——一个普通程序员的视角</h1><div class="post-meta">
+            <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Happy Coding</a></span></div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2020-09-02">2020-09-02</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;328 words&nbsp;
+                <i class="far fa-clock fa-fw" aria-hidden="true"></i>&nbsp;2 minutes&nbsp;</div>
+        </div><div class="details toc" id="toc-static"  data-kept="">
+                <div class="details-summary toc-title">
+                    <span>Contents</span>
+                    <span><i class="details-icon fas fa-angle-right" aria-hidden="true"></i></span>
+                </div>
+                <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#docker-是什么">Docker 是什么</a>
+      <ul>
+        <li><a href="#基本使用">基本使用</a></li>
+        <li><a href="#容器技术">容器技术</a></li>
+        <li><a href="#分层镜像技术">分层镜像技术</a></li>
+      </ul>
+    </li>
+    <li><a href="#why-docker-container">Why Docker (Container)?</a></li>
+    <li><a href="#how-to-use-docker">How to use Docker?</a></li>
+    <li><a href="#advanced">Advanced</a>
+      <ul>
+        <li><a href="#container-的隔离原理">Container 的隔离原理</a></li>
+        <li><a href="#使用-docker-创建-container">使用 docker 创建 container</a></li>
+        <li><a href="#使用-containerd-创建-container">使用 containerd 创建 container</a></li>
+        <li><a href="#使用-runc-创建-container">使用 runc 创建 container</a></li>
+      </ul>
+    </li>
+    <li><a href="#参考">参考</a></li>
+  </ul>
+</nav></div>
+            </div><div class="content" id="content"><p>就从一个普通程序员角度，讲下 Docker 是什么，在工作上带来了哪些改变。本文作为一个引子给听众一个直接观感，是否能掌握还需听众自发学习。</p>
+<h2 id="docker-是什么">Docker 是什么</h2>
+<blockquote>
+<p>Docker is a platform for developers and sysadmins to <strong>build, run, and share</strong> applications with containers.</p></blockquote>
+<h3 id="基本使用">基本使用</h3>
+<p>参考 <a href="https://docs.docker.com/get-started/" target="_blank" rel="noopener noreffer ">https://docs.docker.com/get-started/</a></p>
+<p>底层技术：</p>
+<ol>
+<li>（Linux）容器技术。</li>
+<li>分层镜像技术。</li>
+</ol>
+<p><a href="https://docs.docker.com/get-started/overview/#the-underlying-technology" target="_blank" rel="noopener noreffer ">https://docs.docker.com/get-started/overview/#the-underlying-technology</a></p>
+<h3 id="容器技术">容器技术</h3>
+<p>基于 Linux 内核的虚拟化技术，比起其他虚拟化技术更轻量。</p>
+<ol>
+<li>namespace 资源隔离</li>
+<li>cgroup 资源控制</li>
+</ol>
+<h3 id="分层镜像技术">分层镜像技术</h3>
+<p>Image 本质上是容器运行需要的文件系统。</p>
+<p>基于 Linux 的联合文件系统，overlayfs。</p>
+<p>Docker 分层镜像技术：AUFS/DeviceMapper / overlay</p>
+<p>Docker的分层镜像是怎么通过UnionFS这种文件系统做到的，但是，因为Docker首选的AUFS并不在Linux的内核主干里，所以，对于非Ubuntu的Linux分发包，比如CentOS，就无法使用AUFS作为Docker的文件系统了。于是作为第二优先级的DeviceMapper就被拿出来做分层镜像的一个实现。</p>
+<blockquote>
+<p>Union file systems, or UnionFS, are file systems that operate by creating layers, making them very lightweight and fast. Docker Engine uses UnionFS to provide the building blocks for containers. Docker Engine can use multiple UnionFS variants, including AUFS, btrfs, vfs, and DeviceMapper.</p>
+<p><a href="https://docs.docker.com/get-started/overview/#union-file-systems" target="_blank" rel="noopener noreffer ">https://docs.docker.com/get-started/overview/#union-file-systems</a></p></blockquote>
+<h2 id="why-docker-container">Why Docker (Container)?</h2>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="../../images/image-20200824160907632.png"
+        data-srcset="../../images/image-20200824160907632.png, ../../images/image-20200824160907632.png 1.5x, ../../images/image-20200824160907632.png 2x"
+        data-sizes="auto"
+        alt="../../images/image-20200824160907632.png"
+        title="image-20200824160907632" /></p>
+<p><a href="https://www.docker.com/resources/what-container" target="_blank" rel="noopener noreffer ">https://www.docker.com/resources/what-container</a></p>
+<p>封装的特性带来哪些好处：</p>
+<ol>
+<li>一致性。开发、测试、生产环境可以保持一致。特殊环境引入的问题很耗费时间处理。</li>
+<li>易上手。开发新人、测试人员、运维人员只关注 Docker Image，不必在意其依赖环境。</li>
+</ol>
+<h2 id="how-to-use-docker">How to use Docker?</h2>
+<p>Delete all containers</p>
+<p>docker rm $(docker ps -a -q)</p>
+<p>Delete all images</p>
+<p>docker rmi $(docker images -q)</p>
+<p>docker run</p>
+<p>-t: 终端</p>
+<p>-i: 标准输入</p>
+<p>docker run -t -i <!-- raw HTML omitted --> /bin/bash</p>
+<p>docker run: Run a command in a new container</p>
+<p>每次都会起一个新的container！</p>
+<p>正确的方式：</p>
+<p>再次启动container：</p>
+<p>docker start &lt;container_id&gt;</p>
+<p>连接到这个session：</p>
+<p>docker attach &lt;container_id&gt;</p>
+<p>打开container的终端：</p>
+<p>docker exec -it &lt;container_id&gt; bash</p>
+<p>查看运行中的容器：</p>
+<p>docker ps</p>
+<p>所有容器：</p>
+<p>docker ps -a</p>
+<p>只显示container id：</p>
+<p>docker ps -a -q</p>
+<p>查看本地镜像：</p>
+<p>docker images</p>
+<p>删除Container：</p>
+<p>docker rm &lt;container_id&gt;</p>
+<p>删除Image：</p>
+<p>docker rmi &lt;image_id&gt;</p>
+<p>停docker容器：</p>
+<p>docker stop &lt;container_id&gt;</p>
+<h2 id="advanced">Advanced</h2>
+<p>对于Linux容器的最小组成，可以由以下公式来表示：</p>
+<p>容器=cgroup+namespace+rootfs+容器引擎（用户态工具）</p>
+<p>其中各项的功能分别为：</p>
+<ol>
+<li>Cgroup：资源控制。</li>
+<li>Namespace：访问隔离。</li>
+<li>rootfs：文件系统隔离。</li>
+<li>容器引擎：生命周期控制。</li>
+</ol>
+<p>容器引擎（runc/Libcontainer）是什么：</p>
+<ol>
+<li>通过clone系统调用直接创建容器，</li>
+<li>通过pivot_root系统调用进入容器（今日的容器技术，比如LXC、Docker等，也都是使用了pivot_root来做根文件系统的切换），</li>
+<li>通过直接操作cgroupfs文件实现对资源的管控</li>
+</ol>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="../../images/1*xvSX9Hk1gmsKV7tDMuO5hw.jpeg"
+        data-srcset="../../images/1*xvSX9Hk1gmsKV7tDMuO5hw.jpeg, ../../images/1*xvSX9Hk1gmsKV7tDMuO5hw.jpeg 1.5x, ../../images/1*xvSX9Hk1gmsKV7tDMuO5hw.jpeg 2x"
+        data-sizes="auto"
+        alt="../../images/1*xvSX9Hk1gmsKV7tDMuO5hw.jpeg"
+        title="Image for post" /></p>
+<p><a href="https://medium.com/faun/docker-containerd-standalone-runtimes-heres-what-you-should-know-b834ef155426" target="_blank" rel="noopener noreffer ">https://medium.com/faun/docker-containerd-standalone-runtimes-heres-what-you-should-know-b834ef155426</a></p>
+<h3 id="container-的隔离原理">Container 的隔离原理</h3>
+<p>namespace/cgroup</p>
+<p>Docker container就是一个进程</p>
+<p>创建新进程的时候，指定了namespace参数</p>
+<p>namespace的作用就是资源隔离</p>
+<h3 id="使用-docker-创建-container">使用 docker 创建 container</h3>
+<pre tabindex="0"><code>root     25790  0.0  0.0 109108  5084 ?        Sl   09:37   0:00 containerd-shim -namespace moby -workdir /var/lib/containerd/io.containerd.runtime.v1.linux/moby/85fa62779aad16178544827f221d7e65af735ab08ada65031c10acf33cb69fe0 -address /run/containerd/containerd.sock -c
+999      25816  0.0  1.9 1311872 200288 ?      Ssl  09:37   0:00 mysqld
+</code></pre><h3 id="使用-containerd-创建-container">使用 containerd 创建 container</h3>
+<p><a href="https://containerd.io/docs/getting-started/" target="_blank" rel="noopener noreffer ">https://containerd.io/docs/getting-started/</a></p>
+<p><a href="https://github.com/containerd/containerd/issues/3473" target="_blank" rel="noopener noreffer ">https://github.com/containerd/containerd/issues/3473</a></p>
+<pre tabindex="0"><code>root     27348  0.0  0.0 107572  4872 ?        Sl   09:55   0:00 containerd-shim -namespace example -workdir /var/lib/containerd/io.containerd.runtime.v1.linux/example/redis-server -address /run/containerd/containerd.sock -containerd-binary /usr/bin/containerd
+999      27374  0.1  0.0  28948  5384 ?        Ssl  09:55   0:00 redis-server
+</code></pre><h3 id="使用-runc-创建-container">使用 runc 创建 container</h3>
+<p><a href="https://medium.com/faun/docker-containerd-standalone-runtimes-heres-what-you-should-know-b834ef155426" target="_blank" rel="noopener noreffer ">https://medium.com/faun/docker-containerd-standalone-runtimes-heres-what-you-should-know-b834ef155426</a></p>
+<pre tabindex="0"><code>root     25295  0.0  0.0  66072  3932 pts/6    S+   09:16   0:00 sudo runc run john_c
+root     25296  0.0  0.1 933444 14744 pts/6    Sl+  09:16   0:00 runc run john_c
+root     25318  0.0  0.0   1320     4 pts/0    Ss+  09:16   0:00 sh
+</code></pre><h2 id="参考">参考</h2>
+<p>推荐书籍：</p>
+<ol>
+<li>官方文档 <a href="https://docs.docker.com/" target="_blank" rel="noopener noreffer ">https://docs.docker.com/</a></li>
+<li>Docker技术入门与实战（第3版）（2018）</li>
+<li>Docker 进阶与实战（2016） - 华为 Docker 实践小组</li>
+</ol>
+</div><div class="post-footer" id="post-footer">
+    <div class="post-info">
+        <div class="post-info-line">
+            <div class="post-info-mod">
+                <span>Updated on 2020-09-02</span>
+            </div></div>
+        <div class="post-info-line">
+            <div class="post-info-md"></div>
+            <div class="post-info-share">
+                <span><a href="javascript:void(0);" title="Share on Twitter" data-sharer="twitter" data-url="http://localhost:1313/posts/20200902-docker-from-programmer-perspective/" data-title="Docker 简介——一个普通程序员的视角"><i class="fab fa-twitter fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="Share on Facebook" data-sharer="facebook" data-url="http://localhost:1313/posts/20200902-docker-from-programmer-perspective/"><i class="fab fa-facebook-square fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="Share on Hacker News" data-sharer="hackernews" data-url="http://localhost:1313/posts/20200902-docker-from-programmer-perspective/" data-title="Docker 简介——一个普通程序员的视角"><i class="fab fa-hacker-news fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="Share on Line" data-sharer="line" data-url="http://localhost:1313/posts/20200902-docker-from-programmer-perspective/" data-title="Docker 简介——一个普通程序员的视角"><i data-svg-src="/lib/simple-icons/icons/line.min.svg" aria-hidden="true"></i></a><a href="javascript:void(0);" title="Share on 微博" data-sharer="weibo" data-url="http://localhost:1313/posts/20200902-docker-from-programmer-perspective/" data-title="Docker 简介——一个普通程序员的视角"><i class="fab fa-weibo fa-fw" aria-hidden="true"></i></a></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="post-info-more">
+        <section class="post-tags"></section>
+        <section>
+            <span><a href="javascript:void(0);" onclick="window.history.back();">Back</a></span>&nbsp;|&nbsp;<span><a href="/">Home</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav"><a href="/posts/20200902-linux-overlay/" class="prev" rel="prev" title="20200902 Linux Overlay"><i class="fas fa-angle-left fa-fw" aria-hidden="true"></i>20200902 Linux Overlay</a>
+            <a href="/posts/20200903-fuck-thin-client/" class="next" rel="next" title="瘦终端指北 —— ICMP tunnel">瘦终端指北 —— ICMP tunnel<i class="fas fa-angle-right fa-fw" aria-hidden="true"></i></a></div>
+</div>
+</article></div>
+            </main><footer class="footer">
+        <div class="footer-container"><div class="footer-line">Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.147.3">Hugo</a> | Theme - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.3.0"><i class="far fa-kiss-wink-heart fa-fw" aria-hidden="true"></i> LoveIt</a>
+                </div><div class="footer-line" itemscope itemtype="http://schema.org/CreativeWork"><i class="far fa-copyright fa-fw" aria-hidden="true"></i><span itemprop="copyrightYear">2022 - 2025</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/" target="_blank">Happy Coding</a></span></div>
+        </div>
+    </footer></div>
+
+        <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="Back to Top">
+                <i class="fas fa-arrow-up fa-fw" aria-hidden="true"></i>
+            </a><a href="#" id="view-comments" class="fixed-button" title="View Comments">
+                <i class="fas fa-comment fa-fw" aria-hidden="true"></i>
+            </a>
+        </div><script type="text/javascript" src="/lib/lazysizes/lazysizes.min.js"></script><script type="text/javascript" src="/lib/clipboard/clipboard.min.js"></script><script type="text/javascript" src="/lib/sharer/sharer.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"Copy to clipboard","maxShownLines":50},"comment":{}};</script><script type="text/javascript" src="/js/theme.min.js"></script></body>
+</html>

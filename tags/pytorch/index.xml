@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Pytorch on Happy Coding</title>
+    <link>http://localhost:1313/tags/pytorch/</link>
+    <description>Recent content in Pytorch on Happy Coding</description>
+    <generator>Hugo</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Sat, 04 Apr 2020 12:57:37 +0800</lastBuildDate>
+    <atom:link href="http://localhost:1313/tags/pytorch/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Detectron2体验</title>
+      <link>http://localhost:1313/posts/20200404-detectron2/</link>
+      <pubDate>Sat, 04 Apr 2020 12:57:37 +0800</pubDate>
+      <guid>http://localhost:1313/posts/20200404-detectron2/</guid>
+      <description>&lt;p&gt;Facebook开源的目标检测库 &lt;a href=&#34;https://github.com/facebookresearch/detectron2&#34; target=&#34;_blank&#34; rel=&#34;noopener noreffer &#34;&gt;https://github.com/facebookresearch/detectron2&lt;/a&gt;&lt;/p&gt;&#xA;&lt;p&gt;类似库：&lt;/p&gt;&#xA;&lt;ol&gt;&#xA;&lt;li&gt;Detectron：Facebook开源。是Detectron2前身，使用Caffe2，不再维护。Detectron2使用PyTorch重写。 &lt;a href=&#34;https://github.com/facebookresearch/detectron&#34; target=&#34;_blank&#34; rel=&#34;noopener noreffer &#34;&gt;https://github.com/facebookresearch/detectron&lt;/a&gt;&lt;/li&gt;&#xA;&lt;li&gt;maskrcnn-benchmark：Facebook开源。不再维护，绑定在PyTorch 1.0了。 &lt;a href=&#34;https://github.com/facebookresearch/maskrcnn-benchmark&#34; target=&#34;_blank&#34; rel=&#34;noopener noreffer &#34;&gt;https://github.com/facebookresearch/maskrcnn-benchmark&lt;/a&gt;&lt;/li&gt;&#xA;&lt;li&gt;mmDetection：香港中文大学-商汤联合实验室维护。 &lt;a href=&#34;https://github.com/open-mmlab/mmdetection&#34; target=&#34;_blank&#34; rel=&#34;noopener noreffer &#34;&gt;https://github.com/open-mmlab/mmdetection&lt;/a&gt;&lt;/li&gt;&#xA;&lt;li&gt;SimpleDet： &lt;a href=&#34;https://github.com/TuSimple/simpledet&#34; target=&#34;_blank&#34; rel=&#34;noopener noreffer &#34;&gt;https://github.com/TuSimple/simpledet&lt;/a&gt;&lt;/li&gt;&#xA;&lt;/ol&gt;&#xA;&lt;p&gt;参考文章：目标检测三大开源神器：Detectron2/mmDetectron/SimpleDet  &lt;a href=&#34;https://mp.weixin.qq.com/s/jH2xz5l9QnCfWhpaY2rHcA&#34; target=&#34;_blank&#34; rel=&#34;noopener noreffer &#34;&gt;https://mp.weixin.qq.com/s/jH2xz5l9QnCfWhpaY2rHcA&lt;/a&gt;&lt;/p&gt;&#xA;&lt;p&gt;Detectron2不止目标检测功能。 Detectron2 is Facebooks new vision library that allows us to easily use and create object detection, instance segmentation, keypoint detection and panoptic segmentation models. It has a simple, modular design that makes it easy to rewrite a script for another data-set.&lt;/p&gt;&#xA;&lt;h2 id=&#34;准备工作&#34;&gt;准备工作&lt;/h2&gt;&#xA;&lt;h3 id=&#34;cudacudnn-安装&#34;&gt;CUDA/CuDNN 安装&lt;/h3&gt;&#xA;&lt;p&gt;电脑上已经有Nvidia 1080Ti显卡了。&lt;/p&gt;&#xA;&lt;p&gt;安装CUDA 10.1工具包（可以理解为Nvidia GPU开放的编程接口，https://zh.wikipedia.org/wiki/CUDA）。例如，我选择了Ubuntu 18.04 本地包。&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

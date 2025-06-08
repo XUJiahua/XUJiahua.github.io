@@ -1,1190 +1,134 @@
 <!DOCTYPE html>
-<html><head>
-<title>记一次数据项目经历</title>
+<html lang="zh-cn">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="robots" content="noodp" />
+        <title>记一次数据项目经历 - Happy Coding</title><meta name="Description" content=""><meta property="og:url" content="https://xujiahua.github.io/posts/20200529-bi_project/">
+  <meta property="og:site_name" content="Happy Coding">
+  <meta property="og:title" content="记一次数据项目经历">
+  <meta property="og:description" content="分享下 4月、5月（特别是5月，5/1假期后基本上全身心投入）在忙的这个数据项目经历，工作面覆盖陪同拜访客户、开会、需求分析、提供方案、数据清洗、数据分析、数据基础设施的搭建开发、帮甲方IT调试代码等环节，累到头秃。
+（本文刻意隐去客户信息。）
+需求背景 客户需求是做一个聚合小程序（此处脑补下麦当劳的微信小程序「i麦当劳」），用于广告投放，比如微信系APP的弹屏广告。应用本身不复杂，只是罗列客户其他小程序、H5应用和一些广告链接，让用户选择。
+投放效果需要数据量化，我们做了前后端的数据埋点，尽可能收集用户的行为记录。
+客户花钱投广告，是为了企业销售额等指标的提升。我们也对接了客户的订单数据，多方数据进行交叉分析。
+数据量化的结果，也就是数据报告，以日报、周报、月报的形式体现。
+技术细节 下文就以数据的生命周期来讲，数据是怎么从毛料，到精修，最后到报表的。
+数据采集 工作重点：
+定义数据对接规范，或是理解别人的规范。 与自家开发做好数据对接。把握数据质量。 与甲方开发做好数据对接。把握数据质量。（为了加快数据对接速度，又是写示例代码、又是帮他们定位中文编码问题。体验真是酸爽。还是自家小伙伴靠谱。） 数据质量很重要。数据质量决定了后续工作是否需要反复。 1. 前端应用埋点 用于收集聚合小程序的用户行为记录。
+整体架构还是沿用几年前的，唯一变化的就是埋点的规范，因为需求的不同而变化。基本上如下逻辑：
+前端应用开发主动在代码中加入用户行为埋点。 埋点 SDK 异步地将数据上传到服务器。多台服务器通过 DNS 解析来负载均衡。 WEB 服务器使用的是 openresty，有一些 lua 脚本，用于处理 cookie，和格式化存储行为日志。 之后数据通过Filebeat、Kafka、StreamSets等软件分发到Hadoop集群、实时处理任务。 2. SFTP 文件同步 用于接收甲方的订单数据（二期、三期项目还有其他类型数据）。
+根据双方约定时间收取文件，将文件存入Hadoop集群。
+3. 微信公众号授权 客户授权后，我们获取到了公众号的粉丝关注记录（由后端开发请求微信服务器取到数据并写入Kafka集群）。同样，也存放到了Hadoop集群。
+ETL 与 数据仓库 工作重点：
+承上启下的工作。以方便数据分析为出发点，反过来检验数据质量。 字符串类型的时间转为时间戳类型。BI 工具需要。 基于数据金字塔模型、维度分析模型建模。 数据仓库未来可以考虑 ClickHouse。Hadoop体系数据粒度是文件，更新历史数据中的某条记录，得更新所在的整个文件！ 1. ETL 经过数据采集阶段，毛料数据以文件形式存储于Hadoop集群。本阶段主要将毛料数据抽取成表（实际还是文件存储）。
+技术上使用 Hive/Spark 框架写SQL。Hive SQL实在太慢了，所以一般使用Spark做清洗，Hive更多地是用其metastore组件，维护表结构信息。
+因为Spark（SQL）脚本得用Python写。抽象了一个清洗脚本模板，填空：
+可选填清洗前执行的SQL。比如建表DDL。 可选填毛料数据的解析schema。（直接依靠框架采样推理出schema，与实际schema比，可能缺字段，程序会崩。schema也没必要手写。一个技巧就是准备一条最全的数据记录，让Spark推理，把schema存下来使用。） 填核心的清洗逻辑。 2. 数据仓库 数据是有层次结构的。以用户行为记录为例：">
+  <meta property="og:locale" content="zh_cn">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2020-05-29T11:00:23+08:00">
+    <meta property="article:modified_time" content="2020-05-29T11:00:23+08:00">
 
-<meta charset="utf-8">
-<meta name="X-UA-Compatible" content="IE=edge">
-<meta name="google-site-verification" content="">
-<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport">
-<meta content="telephone=no" name="format-detection">
-<meta name="description" content="">
-<meta name="renderer" content="webkit">
-<meta name="theme-color" content="#ffffff">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="记一次数据项目经历">
+  <meta name="twitter:description" content="分享下 4月、5月（特别是5月，5/1假期后基本上全身心投入）在忙的这个数据项目经历，工作面覆盖陪同拜访客户、开会、需求分析、提供方案、数据清洗、数据分析、数据基础设施的搭建开发、帮甲方IT调试代码等环节，累到头秃。
+（本文刻意隐去客户信息。）
+需求背景 客户需求是做一个聚合小程序（此处脑补下麦当劳的微信小程序「i麦当劳」），用于广告投放，比如微信系APP的弹屏广告。应用本身不复杂，只是罗列客户其他小程序、H5应用和一些广告链接，让用户选择。
+投放效果需要数据量化，我们做了前后端的数据埋点，尽可能收集用户的行为记录。
+客户花钱投广告，是为了企业销售额等指标的提升。我们也对接了客户的订单数据，多方数据进行交叉分析。
+数据量化的结果，也就是数据报告，以日报、周报、月报的形式体现。
+技术细节 下文就以数据的生命周期来讲，数据是怎么从毛料，到精修，最后到报表的。
+数据采集 工作重点：
+定义数据对接规范，或是理解别人的规范。 与自家开发做好数据对接。把握数据质量。 与甲方开发做好数据对接。把握数据质量。（为了加快数据对接速度，又是写示例代码、又是帮他们定位中文编码问题。体验真是酸爽。还是自家小伙伴靠谱。） 数据质量很重要。数据质量决定了后续工作是否需要反复。 1. 前端应用埋点 用于收集聚合小程序的用户行为记录。
+整体架构还是沿用几年前的，唯一变化的就是埋点的规范，因为需求的不同而变化。基本上如下逻辑：
+前端应用开发主动在代码中加入用户行为埋点。 埋点 SDK 异步地将数据上传到服务器。多台服务器通过 DNS 解析来负载均衡。 WEB 服务器使用的是 openresty，有一些 lua 脚本，用于处理 cookie，和格式化存储行为日志。 之后数据通过Filebeat、Kafka、StreamSets等软件分发到Hadoop集群、实时处理任务。 2. SFTP 文件同步 用于接收甲方的订单数据（二期、三期项目还有其他类型数据）。
+根据双方约定时间收取文件，将文件存入Hadoop集群。
+3. 微信公众号授权 客户授权后，我们获取到了公众号的粉丝关注记录（由后端开发请求微信服务器取到数据并写入Kafka集群）。同样，也存放到了Hadoop集群。
+ETL 与 数据仓库 工作重点：
+承上启下的工作。以方便数据分析为出发点，反过来检验数据质量。 字符串类型的时间转为时间戳类型。BI 工具需要。 基于数据金字塔模型、维度分析模型建模。 数据仓库未来可以考虑 ClickHouse。Hadoop体系数据粒度是文件，更新历史数据中的某条记录，得更新所在的整个文件！ 1. ETL 经过数据采集阶段，毛料数据以文件形式存储于Hadoop集群。本阶段主要将毛料数据抽取成表（实际还是文件存储）。
+技术上使用 Hive/Spark 框架写SQL。Hive SQL实在太慢了，所以一般使用Spark做清洗，Hive更多地是用其metastore组件，维护表结构信息。
+因为Spark（SQL）脚本得用Python写。抽象了一个清洗脚本模板，填空：
+可选填清洗前执行的SQL。比如建表DDL。 可选填毛料数据的解析schema。（直接依靠框架采样推理出schema，与实际schema比，可能缺字段，程序会崩。schema也没必要手写。一个技巧就是准备一条最全的数据记录，让Spark推理，把schema存下来使用。） 填核心的清洗逻辑。 2. 数据仓库 数据是有层次结构的。以用户行为记录为例：">
+<meta name="application-name" content="Happy Coding">
+<meta name="apple-mobile-web-app-title" content="Happy Coding"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://xujiahua.github.io/posts/20200529-bi_project/" /><link rel="prev" href="https://xujiahua.github.io/posts/20200528-metabase-impala-type/" /><link rel="next" href="https://xujiahua.github.io/posts/20200604-clojure-repl-debug/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css"></noscript><link rel="preload" href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css"></noscript><script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "headline": "记一次数据项目经历",
+        "inLanguage": "zh-cn",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "https:\/\/xujiahua.github.io\/posts\/20200529-bi_project\/"
+        },"genre": "posts","wordcount":  149 ,
+        "url": "https:\/\/xujiahua.github.io\/posts\/20200529-bi_project\/","datePublished": "2020-05-29T11:00:23+08:00","dateModified": "2020-05-29T11:00:23+08:00","publisher": {
+            "@type": "Organization",
+            "name": ""},"author": {
+                "@type": "Person",
+                "name": "Happy Coding"
+            },"description": ""
+    }
+    </script></head>
+    <body data-header-desktop="fixed" data-header-mobile="auto"><script type="text/javascript">(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
 
-
-
-
-<script type="application/javascript">
-var doNotTrack = false;
-if (!doNotTrack) {
-	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
-	ga('create', 'UA-162706610-1', 'auto');
-	
-	ga('send', 'pageview');
-}
-</script>
-
-
-<script src="/vendor/js/jquery.min.js" ></script>
-<script src="/vendor/js/popper.min.js" ></script>
-<script src="/vendor/js/bootstrap.min.js" ></script>
-<script src="/vendor/js/smooth-scroll.polyfills.min.js" ></script>
-<link type="text/css" rel="stylesheet" href="/vendor/css/bootstrap.min.css">
-<script src="/vendor/js/vue.min.js" ></script>
-
-
-
-
-<link rel="stylesheet" href="https://xujiahua.github.io/scss/journal.min.5d0fd093a264465a2c30c56fbe9eb8cdb0764ecf3eb96e8c64de3cf6c081cc40.css" integrity="sha256-XQ/Qk6JkRlosMMVvvp64zbB2Ts8&#43;uW6MZN489sCBzEA=" media="screen">
-
-<script src="https://xujiahua.github.io//js/loadCSS.js"></script>
-<script src="https://xujiahua.github.io//js/table.js"></script>
-
-
-<script src="https://xujiahua.github.io//js/toc.js"></script>
-
-
-<script>
-    loadCSS("https://fonts.googleapis.com/css?family=Lora|Montserrat|Fira+Mono|Noto+Serif+SC|Material+Icons");
-</script>
-
-
-
-
-
-
-</head><body>
-    	<div id="app"><div ref="sideContainer" class="side-container">
-    
-    <a class="a-block nav-head false" href="https://xujiahua.github.io/">
-    
-        <div class="nav-title">
-            Happy Coding
+        <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
+    <div class="header-wrapper">
+        <div class="header-title">
+            <a href="/" title="Happy Coding">Happy Coding</a>
         </div>
-        
-    </a>
-
-    <div class="nav-link-list">
-        
-        
-            
-            
-            
-                
-            
-            
-            
-            <a class="a-block nav-link-item active" href="/posts">
-                Archive
-            </a>
-            
-        
-            
-            
-            
-            
-            
-            <a class="a-block nav-link-item false" href="/categories">
-                Categories
-            </a>
-            
-        
-            
-            
-            
-            
-            
-            <a class="a-block nav-link-item false" href="/tags">
-                Tags
-            </a>
-            
-        
-            
-            
-            
-            
-            
-            <a class="a-block nav-link-item false" href="/index.xml">
-                RSS Feed
-            </a>
-            
-        
-    </div>
-
-    
-
-    <div class="nav-footer">
-        
-Hugo Theme <a href="https://github.com/amazingrise/hugo-theme-diary">Diary</a> by <a href="https://amazingrise.net">Rise</a>
-<br>
-Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopener">Makito</a>'s <a href="https://github.com/SumiMakito/hexo-theme-journal/" target="_blank" rel="noreferrer noopener">Journal.</a> <br>
-<br>
-
-&copy;
-	
-	2021 Happy Coding
-	
-    </div>
-    
-</div><div ref="extraContainer" class="extra-container">
-    
-    <div class="toc animated-visibility" :class="{ invisible: scrollY <= 140 }">
-
-
-	<div class="toc-content">
-	
-		
-		
-		
-		<center>- CATALOG -</center>
-			
-				
-				
-					
-						
-						
-							<ul>
-						
-							<ul>
-						
-						
-								<li>
-				 					<a href="#%e9%9c%80%e6%b1%82%e8%83%8c%e6%99%af" v-on:click="closeDrawer" id="需求背景-nav">
-										 需求背景
-									</a>
-								</li>
-						
-							</ul>
-						
-							</ul>
-						
-					
-				
-			
-				
-				
-					
-						
-						
-							<ul>
-						
-							<ul>
-						
-						
-								<li>
-				 					<a href="#%e6%8a%80%e6%9c%af%e7%bb%86%e8%8a%82" v-on:click="closeDrawer" id="技术细节-nav">
-										 技术细节
-									</a>
-								</li>
-						
-							</ul>
-						
-							</ul>
-						
-					
-				
-			
-				
-				
-					
-						
-						
-							<ul>
-						
-							<ul>
-						
-							<ul>
-						
-						
-								<li>
-				 					<a href="#%e6%95%b0%e6%8d%ae%e9%87%87%e9%9b%86" v-on:click="closeDrawer" id="数据采集-nav">
-										 数据采集
-									</a>
-								</li>
-						
-							</ul>
-						
-							</ul>
-						
-							</ul>
-						
-					
-				
-			
-				
-				
-					
-						
-						
-							<ul>
-						
-							<ul>
-						
-							<ul>
-						
-							<ul>
-						
-						
-								<li>
-				 					<a href="#1-%e5%89%8d%e7%ab%af%e5%ba%94%e7%94%a8%e5%9f%8b%e7%82%b9" v-on:click="closeDrawer" id="1-前端应用埋点-nav">
-										 1. 前端应用埋点
-									</a>
-								</li>
-						
-							</ul>
-						
-							</ul>
-						
-							</ul>
-						
-							</ul>
-						
-					
-				
-			
-				
-				
-					
-						
-						
-							<ul>
-						
-							<ul>
-						
-							<ul>
-						
-							<ul>
-						
-						
-								<li>
-				 					<a href="#2-sftp-%e6%96%87%e4%bb%b6%e5%90%8c%e6%ad%a5" v-on:click="closeDrawer" id="2-sftp-文件同步-nav">
-										 2. SFTP 文件同步
-									</a>
-								</li>
-						
-							</ul>
-						
-							</ul>
-						
-							</ul>
-						
-							</ul>
-						
-					
-				
-			
-				
-				
-					
-						
-						
-							<ul>
-						
-							<ul>
-						
-							<ul>
-						
-							<ul>
-						
-						
-								<li>
-				 					<a href="#3-%e5%be%ae%e4%bf%a1%e5%85%ac%e4%bc%97%e5%8f%b7%e6%8e%88%e6%9d%83" v-on:click="closeDrawer" id="3-微信公众号授权-nav">
-										 3. 微信公众号授权
-									</a>
-								</li>
-						
-							</ul>
-						
-							</ul>
-						
-							</ul>
-						
-							</ul>
-						
-					
-				
-			
-				
-				
-					
-						
-						
-							<ul>
-						
-							<ul>
-						
-							<ul>
-						
-						
-								<li>
-				 					<a href="#etl-%e4%b8%8e-%e6%95%b0%e6%8d%ae%e4%bb%93%e5%ba%93" v-on:click="closeDrawer" id="etl-与-数据仓库-nav">
-										 ETL 与 数据仓库
-									</a>
-								</li>
-						
-							</ul>
-						
-							</ul>
-						
-							</ul>
-						
-					
-				
-			
-				
-				
-					
-						
-						
-							<ul>
-						
-							<ul>
-						
-							<ul>
-						
-							<ul>
-						
-						
-								<li>
-				 					<a href="#1-etl" v-on:click="closeDrawer" id="1-etl-nav">
-										 1. ETL
-									</a>
-								</li>
-						
-							</ul>
-						
-							</ul>
-						
-							</ul>
-						
-							</ul>
-						
-					
-				
-			
-				
-				
-					
-						
-						
-							<ul>
-						
-							<ul>
-						
-							<ul>
-						
-							<ul>
-						
-						
-								<li>
-				 					<a href="#2-%e6%95%b0%e6%8d%ae%e4%bb%93%e5%ba%93" v-on:click="closeDrawer" id="2-数据仓库-nav">
-										 2. 数据仓库
-									</a>
-								</li>
-						
-							</ul>
-						
-							</ul>
-						
-							</ul>
-						
-							</ul>
-						
-					
-				
-			
-				
-				
-					
-						
-						
-							<ul>
-						
-							<ul>
-						
-							<ul>
-						
-						
-								<li>
-				 					<a href="#olap-%e6%95%b0%e6%8d%ae%e5%ba%93-%e4%b8%8e-bi-%e5%b7%a5%e5%85%b7" v-on:click="closeDrawer" id="olap-数据库-与-bi-工具-nav">
-										 OLAP 数据库 与 BI 工具
-									</a>
-								</li>
-						
-							</ul>
-						
-							</ul>
-						
-							</ul>
-						
-					
-				
-			
-				
-				
-					
-						
-						
-							<ul>
-						
-							<ul>
-						
-							<ul>
-						
-							<ul>
-						
-						
-								<li>
-				 					<a href="#1-sql-on-hadoop" v-on:click="closeDrawer" id="1-sql-on-hadoop-nav">
-										 1. SQL on Hadoop
-									</a>
-								</li>
-						
-							</ul>
-						
-							</ul>
-						
-							</ul>
-						
-							</ul>
-						
-					
-				
-			
-				
-				
-					
-						
-						
-							<ul>
-						
-							<ul>
-						
-							<ul>
-						
-							<ul>
-						
-						
-								<li>
-				 					<a href="#2-metabase" v-on:click="closeDrawer" id="2-metabase-nav">
-										 2. Metabase
-									</a>
-								</li>
-						
-							</ul>
-						
-							</ul>
-						
-							</ul>
-						
-							</ul>
-						
-					
-				
-			
-				
-				
-					
-						
-						
-							<ul>
-						
-							<ul>
-						
-							<ul>
-						
-						
-								<li>
-				 					<a href="#%e6%95%b0%e6%8d%ae%e5%88%86%e6%9e%90" v-on:click="closeDrawer" id="数据分析-nav">
-										 数据分析
-									</a>
-								</li>
-						
-							</ul>
-						
-							</ul>
-						
-							</ul>
-						
-					
-				
-			
-				
-				
-					
-						
-						
-							<ul>
-						
-							<ul>
-						
-							<ul>
-						
-							<ul>
-						
-						
-								<li>
-				 					<a href="#%e5%ae%a2%e6%88%b7%e9%9c%80%e6%b1%82" v-on:click="closeDrawer" id="客户需求-nav">
-										 客户需求
-									</a>
-								</li>
-						
-							</ul>
-						
-							</ul>
-						
-							</ul>
-						
-							</ul>
-						
-					
-				
-			
-				
-				
-					
-						
-						
-							<ul>
-						
-							<ul>
-						
-							<ul>
-						
-							<ul>
-						
-						
-								<li>
-				 					<a href="#%e9%9a%90%e8%97%8f%e7%9a%84%e7%bb%b4%e5%ba%a6%e4%bf%a1%e6%81%af" v-on:click="closeDrawer" id="隐藏的维度信息-nav">
-										 隐藏的维度信息
-									</a>
-								</li>
-						
-							</ul>
-						
-							</ul>
-						
-							</ul>
-						
-							</ul>
-						
-					
-				
-			
-				
-				
-					
-						
-						
-							<ul>
-						
-							<ul>
-						
-						
-								<li>
-				 					<a href="#%e6%80%bb%e7%bb%93" v-on:click="closeDrawer" id="总结-nav">
-										 总结
-									</a>
-								</li>
-						
-							</ul>
-						
-							</ul>
-						
-					
-				
-			
-	</div>
-
-</div>
-    
-    <div class="pagination">
-        <a id="globalBackToTop" class="pagination-action animated-visibility" href="#top" :class="{ invisible: scrollY == 0 }">
-            <i class="material-icons pagination-action-icon">
-                keyboard_arrow_up
-            </i>
-        </a>
-        
-    </div>
-</div><div class="single-column-drawer-container" ref="drawer"
-     v-bind:class="{ 'single-column-drawer-container-active': isDrawerOpen }">
-    <div class="drawer-content">
-        <div class="drawer-menu">
-            
-            
-                
-                
-                
-                    
-                
-                
-                
-                <a class="a-block drawer-menu-item active" href="/posts">
-                    Archive
-                </a>
-                
-            
-                
-                
-                
-                
-                
-                <a class="a-block drawer-menu-item false" href="/categories">
-                    Categories
-                </a>
-                
-            
-                
-                
-                
-                
-                
-                <a class="a-block drawer-menu-item false" href="/tags">
-                    Tags
-                </a>
-                
-            
-                
-                
-                
-                
-                
-                <a class="a-block drawer-menu-item false" href="/index.xml">
-                    RSS Feed
-                </a>
-                
-            
-            
-            <div class="toc">
-
-
-	<div class="toc-content">
-	
-		
-		
-		
-		<center>- CATALOG -</center>
-			
-				
-				
-					
-						
-						
-							<ul>
-						
-							<ul>
-						
-						
-								<li>
-				 					<a href="#%e9%9c%80%e6%b1%82%e8%83%8c%e6%99%af" v-on:click="closeDrawer" id="需求背景-nav">
-										 需求背景
-									</a>
-								</li>
-						
-							</ul>
-						
-							</ul>
-						
-					
-				
-			
-				
-				
-					
-						
-						
-							<ul>
-						
-							<ul>
-						
-						
-								<li>
-				 					<a href="#%e6%8a%80%e6%9c%af%e7%bb%86%e8%8a%82" v-on:click="closeDrawer" id="技术细节-nav">
-										 技术细节
-									</a>
-								</li>
-						
-							</ul>
-						
-							</ul>
-						
-					
-				
-			
-				
-				
-					
-						
-						
-							<ul>
-						
-							<ul>
-						
-							<ul>
-						
-						
-								<li>
-				 					<a href="#%e6%95%b0%e6%8d%ae%e9%87%87%e9%9b%86" v-on:click="closeDrawer" id="数据采集-nav">
-										 数据采集
-									</a>
-								</li>
-						
-							</ul>
-						
-							</ul>
-						
-							</ul>
-						
-					
-				
-			
-				
-				
-					
-						
-						
-							<ul>
-						
-							<ul>
-						
-							<ul>
-						
-							<ul>
-						
-						
-								<li>
-				 					<a href="#1-%e5%89%8d%e7%ab%af%e5%ba%94%e7%94%a8%e5%9f%8b%e7%82%b9" v-on:click="closeDrawer" id="1-前端应用埋点-nav">
-										 1. 前端应用埋点
-									</a>
-								</li>
-						
-							</ul>
-						
-							</ul>
-						
-							</ul>
-						
-							</ul>
-						
-					
-				
-			
-				
-				
-					
-						
-						
-							<ul>
-						
-							<ul>
-						
-							<ul>
-						
-							<ul>
-						
-						
-								<li>
-				 					<a href="#2-sftp-%e6%96%87%e4%bb%b6%e5%90%8c%e6%ad%a5" v-on:click="closeDrawer" id="2-sftp-文件同步-nav">
-										 2. SFTP 文件同步
-									</a>
-								</li>
-						
-							</ul>
-						
-							</ul>
-						
-							</ul>
-						
-							</ul>
-						
-					
-				
-			
-				
-				
-					
-						
-						
-							<ul>
-						
-							<ul>
-						
-							<ul>
-						
-							<ul>
-						
-						
-								<li>
-				 					<a href="#3-%e5%be%ae%e4%bf%a1%e5%85%ac%e4%bc%97%e5%8f%b7%e6%8e%88%e6%9d%83" v-on:click="closeDrawer" id="3-微信公众号授权-nav">
-										 3. 微信公众号授权
-									</a>
-								</li>
-						
-							</ul>
-						
-							</ul>
-						
-							</ul>
-						
-							</ul>
-						
-					
-				
-			
-				
-				
-					
-						
-						
-							<ul>
-						
-							<ul>
-						
-							<ul>
-						
-						
-								<li>
-				 					<a href="#etl-%e4%b8%8e-%e6%95%b0%e6%8d%ae%e4%bb%93%e5%ba%93" v-on:click="closeDrawer" id="etl-与-数据仓库-nav">
-										 ETL 与 数据仓库
-									</a>
-								</li>
-						
-							</ul>
-						
-							</ul>
-						
-							</ul>
-						
-					
-				
-			
-				
-				
-					
-						
-						
-							<ul>
-						
-							<ul>
-						
-							<ul>
-						
-							<ul>
-						
-						
-								<li>
-				 					<a href="#1-etl" v-on:click="closeDrawer" id="1-etl-nav">
-										 1. ETL
-									</a>
-								</li>
-						
-							</ul>
-						
-							</ul>
-						
-							</ul>
-						
-							</ul>
-						
-					
-				
-			
-				
-				
-					
-						
-						
-							<ul>
-						
-							<ul>
-						
-							<ul>
-						
-							<ul>
-						
-						
-								<li>
-				 					<a href="#2-%e6%95%b0%e6%8d%ae%e4%bb%93%e5%ba%93" v-on:click="closeDrawer" id="2-数据仓库-nav">
-										 2. 数据仓库
-									</a>
-								</li>
-						
-							</ul>
-						
-							</ul>
-						
-							</ul>
-						
-							</ul>
-						
-					
-				
-			
-				
-				
-					
-						
-						
-							<ul>
-						
-							<ul>
-						
-							<ul>
-						
-						
-								<li>
-				 					<a href="#olap-%e6%95%b0%e6%8d%ae%e5%ba%93-%e4%b8%8e-bi-%e5%b7%a5%e5%85%b7" v-on:click="closeDrawer" id="olap-数据库-与-bi-工具-nav">
-										 OLAP 数据库 与 BI 工具
-									</a>
-								</li>
-						
-							</ul>
-						
-							</ul>
-						
-							</ul>
-						
-					
-				
-			
-				
-				
-					
-						
-						
-							<ul>
-						
-							<ul>
-						
-							<ul>
-						
-							<ul>
-						
-						
-								<li>
-				 					<a href="#1-sql-on-hadoop" v-on:click="closeDrawer" id="1-sql-on-hadoop-nav">
-										 1. SQL on Hadoop
-									</a>
-								</li>
-						
-							</ul>
-						
-							</ul>
-						
-							</ul>
-						
-							</ul>
-						
-					
-				
-			
-				
-				
-					
-						
-						
-							<ul>
-						
-							<ul>
-						
-							<ul>
-						
-							<ul>
-						
-						
-								<li>
-				 					<a href="#2-metabase" v-on:click="closeDrawer" id="2-metabase-nav">
-										 2. Metabase
-									</a>
-								</li>
-						
-							</ul>
-						
-							</ul>
-						
-							</ul>
-						
-							</ul>
-						
-					
-				
-			
-				
-				
-					
-						
-						
-							<ul>
-						
-							<ul>
-						
-							<ul>
-						
-						
-								<li>
-				 					<a href="#%e6%95%b0%e6%8d%ae%e5%88%86%e6%9e%90" v-on:click="closeDrawer" id="数据分析-nav">
-										 数据分析
-									</a>
-								</li>
-						
-							</ul>
-						
-							</ul>
-						
-							</ul>
-						
-					
-				
-			
-				
-				
-					
-						
-						
-							<ul>
-						
-							<ul>
-						
-							<ul>
-						
-							<ul>
-						
-						
-								<li>
-				 					<a href="#%e5%ae%a2%e6%88%b7%e9%9c%80%e6%b1%82" v-on:click="closeDrawer" id="客户需求-nav">
-										 客户需求
-									</a>
-								</li>
-						
-							</ul>
-						
-							</ul>
-						
-							</ul>
-						
-							</ul>
-						
-					
-				
-			
-				
-				
-					
-						
-						
-							<ul>
-						
-							<ul>
-						
-							<ul>
-						
-							<ul>
-						
-						
-								<li>
-				 					<a href="#%e9%9a%90%e8%97%8f%e7%9a%84%e7%bb%b4%e5%ba%a6%e4%bf%a1%e6%81%af" v-on:click="closeDrawer" id="隐藏的维度信息-nav">
-										 隐藏的维度信息
-									</a>
-								</li>
-						
-							</ul>
-						
-							</ul>
-						
-							</ul>
-						
-							</ul>
-						
-					
-				
-			
-				
-				
-					
-						
-						
-							<ul>
-						
-							<ul>
-						
-						
-								<li>
-				 					<a href="#%e6%80%bb%e7%bb%93" v-on:click="closeDrawer" id="总结-nav">
-										 总结
-									</a>
-								</li>
-						
-							</ul>
-						
-							</ul>
-						
-					
-				
-			
-	</div>
-
-</div>
-            
+        <div class="menu">
+            <div class="menu-inner"><a class="menu-item" href="/posts"> Archive </a><a class="menu-item" href="/categories"> Categories </a><a class="menu-item" href="/tags"> Tags </a><a class="menu-item" href="/index.xml"> RSS Feed </a><span class="menu-item delimiter"></span><a href="javascript:void(0);" class="menu-item theme-switch" title="Switch Theme">
+                    <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+                </a></div>
         </div>
     </div>
-</div>
-<transition name="fade">
-    <div v-bind:class="{ 'single-column-drawer-mask': mounted }" v-if="isDrawerOpen" v-on:click="toggleDrawer"></div>
-</transition>
-<nav ref="navBar" class="navbar sticky-top navbar-light single-column-nav-container">
-    <div ref="navBackground" class="nav-background"></div>
-    <div class="container container-narrow nav-content">
-        <button id="nav_dropdown_btn" class="nav-dropdown-toggle" type="button" v-on:click="toggleDrawer">
-            <i class="material-icons">
-                menu
-            </i>
-        </button>
-        <a ref="navTitle" class="navbar-brand" href="https://xujiahua.github.io/">
-            Happy Coding
-        </a>
-    </div>
-</nav>
-<div class="single-column-header-container" ref="pageHead"
-     v-bind:style="{ transform: 'translateZ(0px) translateY('+.3*scrollY+'px)', opacity: 1-navOpacity }">
-    <a href="https://xujiahua.github.io/">
-        <div class="single-column-header-title">Happy Coding</div>
-        
-
-    </a>
-</div>
-            <div id="content">
-<div ref="streamContainer" class="stream-container">
-    <div class="post-list-container post-list-container-shadow">
-        <div class="post">
-            
-            
-            
-
-            <div class="post-head-wrapper-text-only"
-                 style="background-image: url('/')">
-                <div class="post-title">
-                    记一次数据项目经历
-                    
-                    <div class="post-meta">
-                        
-                        <time itemprop="datePublished">
-                            2020-05-29 11:00
-                        </time>
-                        
-
-                        
-
-                        
-                    </div>
-                </div>
+</header><header class="mobile" id="header-mobile">
+    <div class="header-container">
+        <div class="header-wrapper">
+            <div class="header-title">
+                <a href="/" title="Happy Coding">Happy Coding</a>
             </div>
-            
-            <div class="post-body-wrapper">
-                <div class="post-body">
-                    <p>分享下 4月、5月（特别是5月，5/1假期后基本上全身心投入）在忙的这个数据项目经历，工作面覆盖陪同拜访客户、开会、需求分析、提供方案、数据清洗、数据分析、数据基础设施的搭建开发、帮甲方IT调试代码等环节，累到头秃。</p>
+            <div class="menu-toggle" id="menu-toggle-mobile">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="menu" id="menu-mobile"><a class="menu-item" href="/posts" title="">Archive</a><a class="menu-item" href="/categories" title="">Categories</a><a class="menu-item" href="/tags" title="">Tags</a><a class="menu-item" href="/index.xml" title="">RSS Feed</a><a href="javascript:void(0);" class="menu-item theme-switch" title="Switch Theme">
+                <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+            </a></div>
+    </div>
+</header><main class="main">
+                <div class="container"><div class="toc" id="toc-auto">
+            <h2 class="toc-title">Contents</h2>
+            <div class="toc-content" id="toc-content-auto"></div>
+        </div><article class="page single"><h1 class="single-title animate__animated animate__flipInX">记一次数据项目经历</h1><div class="post-meta">
+            <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Happy Coding</a></span></div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2020-05-29">2020-05-29</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;149 words&nbsp;
+                <i class="far fa-clock fa-fw" aria-hidden="true"></i>&nbsp;One minute&nbsp;</div>
+        </div><div class="details toc" id="toc-static"  data-kept="">
+                <div class="details-summary toc-title">
+                    <span>Contents</span>
+                    <span><i class="details-icon fas fa-angle-right" aria-hidden="true"></i></span>
+                </div>
+                <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#需求背景">需求背景</a></li>
+    <li><a href="#技术细节">技术细节</a>
+      <ul>
+        <li><a href="#数据采集">数据采集</a></li>
+        <li><a href="#etl-与-数据仓库">ETL 与 数据仓库</a></li>
+        <li><a href="#olap-数据库-与-bi-工具">OLAP 数据库 与 BI 工具</a></li>
+        <li><a href="#数据分析">数据分析</a></li>
+      </ul>
+    </li>
+    <li><a href="#总结">总结</a></li>
+  </ul>
+</nav></div>
+            </div><div class="content" id="content"><p>分享下 4月、5月（特别是5月，5/1假期后基本上全身心投入）在忙的这个数据项目经历，工作面覆盖陪同拜访客户、开会、需求分析、提供方案、数据清洗、数据分析、数据基础设施的搭建开发、帮甲方IT调试代码等环节，累到头秃。</p>
 <p>（本文刻意隐去客户信息。）</p>
 <h2 id="需求背景">需求背景</h2>
 <p>客户需求是做一个聚合小程序（此处脑补下麦当劳的微信小程序「i麦当劳」），用于广告投放，比如微信系APP的弹屏广告。应用本身不复杂，只是罗列客户其他小程序、H5应用和一些广告链接，让用户选择。</p>
@@ -1210,7 +154,14 @@ Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopene
 <li>WEB 服务器使用的是 openresty，有一些 lua 脚本，用于处理 cookie，和格式化存储行为日志。</li>
 <li>之后数据通过Filebeat、Kafka、StreamSets等软件分发到Hadoop集群、实时处理任务。</li>
 </ol>
-<p><img src="../../images/image-20200512145610312.png" alt="image-20200512145610312"></p>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="../../images/image-20200512145610312.png"
+        data-srcset="../../images/image-20200512145610312.png, ../../images/image-20200512145610312.png 1.5x, ../../images/image-20200512145610312.png 2x"
+        data-sizes="auto"
+        alt="../../images/image-20200512145610312.png"
+        title="image-20200512145610312" /></p>
 <h4 id="2-sftp-文件同步">2. SFTP 文件同步</h4>
 <p>用于接收甲方的订单数据（二期、三期项目还有其他类型数据）。</p>
 <p>根据双方约定时间收取文件，将文件存入Hadoop集群。</p>
@@ -1250,7 +201,14 @@ Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopene
 <li>保证 OLAP 数据库高效稳定。</li>
 <li>选择合适的BI工具，用户体验很重要。</li>
 </ol>
-<p><img src="../../images/image-20200512153140285.png" alt="image-20200512153140285"></p>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="../../images/image-20200512153140285.png"
+        data-srcset="../../images/image-20200512153140285.png, ../../images/image-20200512153140285.png 1.5x, ../../images/image-20200512153140285.png 2x"
+        data-sizes="auto"
+        alt="../../images/image-20200512153140285.png"
+        title="image-20200512153140285" /></p>
 <h4 id="1-sql-on-hadoop">1. SQL on Hadoop</h4>
 <p>因为数据仓库是基于Hadoop/Hive的。在这个体系下的，分析型数据库选择就不多了。</p>
 <ol>
@@ -1269,15 +227,15 @@ Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopene
 <p>Metabase的优点：</p>
 <ol>
 <li>开源。</li>
-<li>简单干净的界面，良好的文档，没遇到过大bug。 <a href="https://www.metabase.com/docs/latest/users-guide/start.html">https://www.metabase.com/docs/latest/users-guide/start.html</a></li>
+<li>简单干净的界面，良好的文档，没遇到过大bug。 <a href="https://www.metabase.com/docs/latest/users-guide/start.html" target="_blank" rel="noopener noreffer ">https://www.metabase.com/docs/latest/users-guide/start.html</a></li>
 <li>X-Ray 功能。自动生成一张表的常见统计指标。惊喜的功能！我一度还在花时间写类似的工具，用于大数据上的数据探索。因为收益太低放弃了。</li>
-<li>比较常用的可视化技术。 <a href="https://www.metabase.com/docs/latest/users-guide/05-visualizing-results.html">https://www.metabase.com/docs/latest/users-guide/05-visualizing-results.html</a></li>
+<li>比较常用的可视化技术。 <a href="https://www.metabase.com/docs/latest/users-guide/05-visualizing-results.html" target="_blank" rel="noopener noreffer ">https://www.metabase.com/docs/latest/users-guide/05-visualizing-results.html</a></li>
 <li>RBAC。权限控制。权限的粒度，数据库、表、分析文件夹。通过创建权限组，将一类用户集中管理。用途，某某项目组下的用户只能看到Dashboard，不能进行SQL操作，</li>
-<li>Filters。Dashboard/Question 中可指定SQL参数，可设置默认值。用途，筛选时间段、筛选活动ID，不需要重复创建Dashboard。一个Dashboard建议不要太多 filter （更多filter，感觉Kibana+Elasticsearch的组合更合适）。详见 <a href="https://www.metabase.com/docs/latest/users-guide/08-dashboard-filters.html">https://www.metabase.com/docs/latest/users-guide/08-dashboard-filters.html</a></li>
+<li>Filters。Dashboard/Question 中可指定SQL参数，可设置默认值。用途，筛选时间段、筛选活动ID，不需要重复创建Dashboard。一个Dashboard建议不要太多 filter （更多filter，感觉Kibana+Elasticsearch的组合更合适）。详见 <a href="https://www.metabase.com/docs/latest/users-guide/08-dashboard-filters.html" target="_blank" rel="noopener noreffer ">https://www.metabase.com/docs/latest/users-guide/08-dashboard-filters.html</a></li>
 <li>数据导出。Dashboard没法直接下载Question中的数据，需要点击进入各个Question下载。</li>
 <li>BI工具，是真正贯彻了组件化思维。可视化都是选项，通过点击就能制作一个图表。平台不再是写死的，而是动态变化的。数据分析、数据工程、前后端开发，充分解耦。目前我们平台的问题就是数据分析和前后端开发是耦合在一起的，迭代会很慢。</li>
 </ol>
-<p>美中不足，没有开箱即用的 Impala 驱动。花了些时间研究，写了个 Impala 驱动，已经在生产使用了。参考 <a href="https://xujiahua.github.io/posts/20200527-metabase-impala-driver/">https://xujiahua.github.io/posts/20200527-metabase-impala-driver/</a></p>
+<p>美中不足，没有开箱即用的 Impala 驱动。花了些时间研究，写了个 Impala 驱动，已经在生产使用了。参考 <a href="https://xujiahua.github.io/posts/20200527-metabase-impala-driver/" target="_blank" rel="noopener noreffer ">https://xujiahua.github.io/posts/20200527-metabase-impala-driver/</a></p>
 <h3 id="数据分析">数据分析</h3>
 <p>工作重点：</p>
 <ol>
@@ -1293,53 +251,41 @@ Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopene
 <h2 id="总结">总结</h2>
 <p>以上为近2月项目的浓缩总结。人力有限，每个环节都做得比较粗放。</p>
 <p>但总体有条不紊，幸亏洪敏和我前期的积累。</p>
-
-                    
-                    <HR width="100%" id="EOF">
-                    <p style="color:#777;">Last modified on 2020-05-29</p>
-                    
-                </div>
-            </div>
-            
-            
-            <nav class="post-pagination">
-
-                
-                <a class="newer-posts" href="https://xujiahua.github.io/posts/20200604-clojure-repl-debug/">
-                    Next<br>使用 REPL 调试 Clojure 项目（Metabase）
-                </a>
-                
-                
-                
-                <a class="older-posts" href="https://xujiahua.github.io/posts/20200528-metabase-impala-type/">
-                    Previous<br>Metabase Impala Driver 0528更新日志
-                </a>
-                
-            </nav>
-            <div class="post-comment-wrapper">
-                
-
-
-
-
-
-
+</div><div class="post-footer" id="post-footer">
+    <div class="post-info">
+        <div class="post-info-line">
+            <div class="post-info-mod">
+                <span>Updated on 2020-05-29</span>
+            </div></div>
+        <div class="post-info-line">
+            <div class="post-info-md"></div>
+            <div class="post-info-share">
+                <span><a href="javascript:void(0);" title="Share on Twitter" data-sharer="twitter" data-url="https://xujiahua.github.io/posts/20200529-bi_project/" data-title="记一次数据项目经历"><i class="fab fa-twitter fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="Share on Facebook" data-sharer="facebook" data-url="https://xujiahua.github.io/posts/20200529-bi_project/"><i class="fab fa-facebook-square fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="Share on Hacker News" data-sharer="hackernews" data-url="https://xujiahua.github.io/posts/20200529-bi_project/" data-title="记一次数据项目经历"><i class="fab fa-hacker-news fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="Share on Line" data-sharer="line" data-url="https://xujiahua.github.io/posts/20200529-bi_project/" data-title="记一次数据项目经历"><i data-svg-src="https://cdn.jsdelivr.net/npm/simple-icons@7.3.0/icons/line.svg" aria-hidden="true"></i></a><a href="javascript:void(0);" title="Share on 微博" data-sharer="weibo" data-url="https://xujiahua.github.io/posts/20200529-bi_project/" data-title="记一次数据项目经历"><i class="fab fa-weibo fa-fw" aria-hidden="true"></i></a></span>
             </div>
         </div>
     </div>
+
+    <div class="post-info-more">
+        <section class="post-tags"></section>
+        <section>
+            <span><a href="javascript:void(0);" onclick="window.history.back();">Back</a></span>&nbsp;|&nbsp;<span><a href="/">Home</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav"><a href="/posts/20200528-metabase-impala-type/" class="prev" rel="prev" title="Metabase Impala Driver 0528更新日志"><i class="fas fa-angle-left fa-fw" aria-hidden="true"></i>Metabase Impala Driver 0528更新日志</a>
+            <a href="/posts/20200604-clojure-repl-debug/" class="next" rel="next" title="使用 REPL 调试 Clojure 项目（Metabase）">使用 REPL 调试 Clojure 项目（Metabase）<i class="fas fa-angle-right fa-fw" aria-hidden="true"></i></a></div>
 </div>
+</article></div>
+            </main><footer class="footer">
+        <div class="footer-container"><div class="footer-line">Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.147.3">Hugo</a> | Theme - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.3.0"><i class="far fa-kiss-wink-heart fa-fw" aria-hidden="true"></i> LoveIt</a>
+                </div><div class="footer-line" itemscope itemtype="http://schema.org/CreativeWork"><i class="far fa-copyright fa-fw" aria-hidden="true"></i><span itemprop="copyrightYear">2022 - 2025</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/" target="_blank">Happy Coding</a></span></div>
+        </div>
+    </footer></div>
 
-            </div><div id="single-column-footer">
-Hugo Theme <a href="https://github.com/amazingrise/hugo-theme-diary">Diary</a> by <a href="https://amazingrise.net">Rise</a>
-<br>
-Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopener">Makito</a>'s <a href="https://github.com/SumiMakito/hexo-theme-journal/" target="_blank" rel="noreferrer noopener">Journal.</a> <br>
-<br>
-
-&copy;
-	
-	2021 Happy Coding
-	</div>
-    	</div>
-    <script src="https://xujiahua.github.io//js/journal.js"></script>
-    </body>
+        <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="Back to Top">
+                <i class="fas fa-arrow-up fa-fw" aria-hidden="true"></i>
+            </a><a href="#" id="view-comments" class="fixed-button" title="View Comments">
+                <i class="fas fa-comment fa-fw" aria-hidden="true"></i>
+            </a>
+        </div><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/lazysizes@5.3.2/lazysizes.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/clipboard@2.0.11/dist/clipboard.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/sharer.js@0.5.1/sharer.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"Copy to clipboard","maxShownLines":50},"comment":{}};</script><script type="text/javascript" src="/js/theme.min.js"></script></body>
 </html>

@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+    <head>
+	<meta name="generator" content="Hugo 0.147.3"><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="robots" content="noodp" />
+        <title>Happy Coding</title><meta name="Description" content=""><meta property="og:url" content="http://localhost:1313/">
+  <meta property="og:site_name" content="Happy Coding">
+  <meta property="og:title" content="Happy Coding">
+  <meta property="og:locale" content="zh_cn">
+  <meta property="og:type" content="website">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Happy Coding">
+<meta name="application-name" content="Happy Coding">
+<meta name="apple-mobile-web-app-title" content="Happy Coding"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="http://localhost:1313/" /><link rel="alternate" href="/index.xml" type="application/rss+xml" title="Happy Coding">
+    <link rel="feed" href="/index.xml" type="application/rss+xml" title="Happy Coding"><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="/lib/fontawesome-free/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="/lib/fontawesome-free/all.min.css"></noscript><link rel="preload" href="/lib/animate/animate.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="/lib/animate/animate.min.css"></noscript><script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "WebSite",
+        "url": "http:\/\/localhost:1313\/","inLanguage": "zh-cn","author": {
+                "@type": "Person",
+                "name": "Happy Coding"
+            },"name": "Happy Coding"
+    }
+    </script></head>
+    <body data-header-desktop="fixed" data-header-mobile="auto"><script type="text/javascript">(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
+
+        <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
+    <div class="header-wrapper">
+        <div class="header-title">
+            <a href="/" title="Happy Coding">Happy Coding</a>
+        </div>
+        <div class="menu">
+            <div class="menu-inner"><a class="menu-item" href="/posts"> Archive </a><a class="menu-item" href="/categories"> Categories </a><a class="menu-item" href="/tags"> Tags </a><a class="menu-item" href="/index.xml"> RSS Feed </a><span class="menu-item delimiter"></span><a href="javascript:void(0);" class="menu-item theme-switch" title="Switch Theme">
+                    <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+                </a></div>
+        </div>
+    </div>
+</header><header class="mobile" id="header-mobile">
+    <div class="header-container">
+        <div class="header-wrapper">
+            <div class="header-title">
+                <a href="/" title="Happy Coding">Happy Coding</a>
+            </div>
+            <div class="menu-toggle" id="menu-toggle-mobile">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="menu" id="menu-mobile"><a class="menu-item" href="/posts" title="">Archive</a><a class="menu-item" href="/categories" title="">Categories</a><a class="menu-item" href="/tags" title="">Tags</a><a class="menu-item" href="/index.xml" title="">RSS Feed</a><a href="javascript:void(0);" class="menu-item theme-switch" title="Switch Theme">
+                <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+            </a></div>
+    </div>
+</header><main class="main">
+                <div class="container"><div class="page home" data-home="posts"><div class="home-profile"><div class="links"></div></div>
+<article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
+        <a href="/posts/20200414-k8s-logging/">k8s 应用日志收集</a>
+    </h1><div class="post-meta"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Happy Coding</a></span>&nbsp;<span class="post-publish">published on <time datetime="2020-04-14">2020-04-14</time></span></div><div class="content"><h2 id="k8s-日志收集架构">k8s 日志收集架构</h2>
+<p>以下是比较一般、普适的架构。更多参考：Kubernetes 日志架构 <a href="https://kubernetes.io/zh/docs/concepts/cluster-administration/logging/" target="_blank" rel="noopener noreffer ">https://kubernetes.io/zh/docs/concepts/cluster-administration/logging/</a></p>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="../../images/logging-with-node-agent.png"
+        data-srcset="../../images/logging-with-node-agent.png, ../../images/logging-with-node-agent.png 1.5x, ../../images/logging-with-node-agent.png 2x"
+        data-sizes="auto"
+        alt="../../images/logging-with-node-agent.png"
+        title="使用节点日志记录代理" /></p>
+<ol>
+<li>容器化应用将日志写入<code>stdout</code>、<code>stderr</code>。</li>
+<li>Docker容器引擎将<code>stdout</code>、<code>stderr</code>流重定向到日志驱动，比如默认的json-file。</li>
+<li>json-file日志驱动将日志写入到（宿主机上的）文件。</li>
+<li>日志收集工具以DaemonSet的形式安装在每个节点。</li>
+<li>日志收集工具监听文件变化，并将日志写入到日志中心服务。</li>
+</ol>
+<h2 id="k8s-日志收集细节">k8s 日志收集细节</h2>
+<h3 id="实战">实战</h3>
+<p>可以直接参考以下教程：minikube创建了一个Kubernetes集群，Fluentd收集日志，存入ElasticSearch，使用Kibana查看日志。典型的EFK技术栈。</p>
+<ol>
+<li>Logging in Kubernetes with Elasticsearch, Kibana, and Fluentd <a href="https://mherman.org/blog/logging-in-kubernetes-with-elasticsearch-Kibana-fluentd/" target="_blank" rel="noopener noreffer ">https://mherman.org/blog/logging-in-kubernetes-with-elasticsearch-Kibana-fluentd/</a></li>
+</ol>
+<p>在Kibana上看收集到的日志。能看到日志收集工具也采集了容器、镜像、Pod有关的信息。这些上下文信息能让人定位到是哪个应用在生产日志。</p>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="../../images/image-20200414104511399.png"
+        data-srcset="../../images/image-20200414104511399.png, ../../images/image-20200414104511399.png 1.5x, ../../images/image-20200414104511399.png 2x"
+        data-sizes="auto"
+        alt="../../images/image-20200414104511399.png"
+        title="image-20200414104511399" /></p>
+<h3 id="fluentd-收集上下文信息">fluentd 收集上下文信息</h3>
+<p>Docker <code>json-file</code> 日志驱动写文件，并不记录上下文信息。 <a href="https://docs.docker.com/config/containers/logging/json-file/" target="_blank" rel="noopener noreffer ">https://docs.docker.com/config/containers/logging/json-file/</a></p>
+<pre tabindex="0"><code>{&#34;log&#34;:&#34;Log line is here\n&#34;,&#34;stream&#34;:&#34;stdout&#34;,&#34;time&#34;:&#34;2019-01-01T11:11:11.111111111Z&#34;}
+</code></pre><p>上文中使用的日志收集镜像是 <code>fluent/fluentd-kubernetes-daemonset:v1.3-debian-elasticsearch</code>。</p>
+<p>具体代码路径在此 <a href="https://github.com/fluent/fluentd-kubernetes-daemonset/tree/master/docker-image/v1.3/debian-elasticsearch" target="_blank" rel="noopener noreffer ">https://github.com/fluent/fluentd-kubernetes-daemonset/tree/master/docker-image/v1.3/debian-elasticsearch</a></p>
+<p>收集容器目录下的日志。</p>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="../../images/image-20200414105706563.png"
+        data-srcset="../../images/image-20200414105706563.png, ../../images/image-20200414105706563.png 1.5x, ../../images/image-20200414105706563.png 2x"
+        data-sizes="auto"
+        alt="../../images/image-20200414105706563.png"
+        title="image-20200414105706563" /></p>
+<p>使用<code>kubernetes_metadata</code>这个第三方插件获取容器相关的上下文信息。这里是通过请求API server得到metadata的。</p></div><div class="post-footer">
+        <a href="/posts/20200414-k8s-logging/">Read More</a><div class="post-tags">
+                <i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/docker/">Docker</a>,&nbsp;<a href="/tags/logging/">Logging</a>,&nbsp;<a href="/tags/k8s/">K8s</a></div></div>
+</article><article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
+        <a href="/posts/deep-learning-vision/">Deep Learning Vision</a>
+    </h1><div class="post-meta"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Happy Coding</a></span>&nbsp;<span class="post-publish">published on <time datetime="2020-04-12">2020-04-12</time></span></div><div class="content"><ul>
+<li>R-CNN: <a href="https://arxiv.org/abs/1311.2524" target="_blank" rel="noopener noreffer ">https://arxiv.org/abs/1311.2524</a></li>
+<li>Fast R-CNN: <a href="https://arxiv.org/abs/1504.08083" target="_blank" rel="noopener noreffer ">https://arxiv.org/abs/1504.08083</a></li>
+<li>Faster R-CNN: <a href="https://arxiv.org/abs/1506.01497" target="_blank" rel="noopener noreffer ">https://arxiv.org/abs/1506.01497</a></li>
+<li>Mask R-CNN: <a href="https://arxiv.org/abs/1703.06870" target="_blank" rel="noopener noreffer ">https://arxiv.org/abs/1703.06870</a></li>
+<li>SSD: <a href="https://arxiv.org/abs/1512.02325" target="_blank" rel="noopener noreffer ">https://arxiv.org/abs/1512.02325</a></li>
+<li>YOLO: <a href="https://arxiv.org/abs/1506.02640" target="_blank" rel="noopener noreffer ">https://arxiv.org/abs/1506.02640</a></li>
+<li>YOLOv2: <a href="https://arxiv.org/abs/1612.08242" target="_blank" rel="noopener noreffer ">https://arxiv.org/abs/1612.08242</a></li>
+<li>YOLOv3: <a href="https://arxiv.org/abs/1804.02767" target="_blank" rel="noopener noreffer ">https://arxiv.org/abs/1804.02767</a></li>
+</ul>
+<p>AndrewNg的Deep Learning课程中讲的目标检测算法是YOLO。这个算法没有ROI区域选择阶段，所以更快。</p>
+<p>公有云的图像识别API，响应时间一般在1秒以上，实时业务是有影响的。</p></div><div class="post-footer">
+        <a href="/posts/deep-learning-vision/">Read More</a></div>
+</article><article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
+        <a href="/posts/bi-user-analysis/">Bi User Analysis</a>
+    </h1><div class="post-meta"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Happy Coding</a></span>&nbsp;<span class="post-publish">published on <time datetime="2020-04-11">2020-04-11</time></span></div><div class="content"><h3 id="标签管理">标签管理</h3>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="../../images/lhIU0DpxW3SxzupCGYXw.png"
+        data-srcset="../../images/lhIU0DpxW3SxzupCGYXw.png, ../../images/lhIU0DpxW3SxzupCGYXw.png 1.5x, ../../images/lhIU0DpxW3SxzupCGYXw.png 2x"
+        data-sizes="auto"
+        alt="../../images/lhIU0DpxW3SxzupCGYXw.png"
+        title="用户标签实践：如何建立标签体系实现精准营销？" /></p>
+<p>参考：</p>
+<ol>
+<li>用户标签实践：如何建立标签体系实现精准营销？https://36kr.com/p/5133229</li>
+</ol></div><div class="post-footer">
+        <a href="/posts/bi-user-analysis/">Read More</a></div>
+</article><article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
+        <a href="/posts/20200410-metabase-spark-sql/">Metabase + Spark SQL</a>
+    </h1><div class="post-meta"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Happy Coding</a></span>&nbsp;<span class="post-publish">published on <time datetime="2020-04-10">2020-04-10</time></span>&nbsp;<span class="post-category">included in <a href="/categories/metabase/"><i class="far fa-folder fa-fw" aria-hidden="true"></i>Metabase</a></span></div><div class="content"><p>这是大数据 BI 平台的第二步，BI 工具的搭建。假设已经配置好 Spark SQL JDBC Server，并启用了Kerberos。参考  <a href="https://xujiahua.github.io/posts/20200410-spark-thrift-server-cdh/" target="_blank" rel="noopener noreffer ">https://xujiahua.github.io/posts/20200410-spark-thrift-server-cdh/</a></p>
+<p>这里，我们选择了开源产品 Metabase。</p>
+<p>最终，大数据 BI 平台，是由 1) 以Metabase作为BI可视化，2) 由HDFS（分布式文件存储） + parquet（列式数据存储格式）+ Hive metastore（SQL表结构信息维护） + Spark SQL（批处理引擎）组合的OLAP数据库组成。</p>
+<h2 id="metabase-简介">Metabase 简介</h2>
+<p>Metabase is the easy, open source way for everyone in your company to ask questions and learn from data.</p>
+<p><a href="https://www.metabase.com/" target="_blank" rel="noopener noreffer ">https://www.metabase.com/</a></p>
+<h3 id="数据库支持">数据库支持</h3>
+<ul>
+<li>BigQuery</li>
+<li>Druid</li>
+<li>Google Analytics</li>
+<li>H2</li>
+<li>MongoDB</li>
+<li>MySQL/MariaDB</li>
+<li>PostgreSQL</li>
+<li>Presto</li>
+<li>Amazon Redshift</li>
+<li>Snowflake</li>
+<li>Spark SQL</li>
+<li>SQLite</li>
+<li>SQL Server</li>
+</ul>
+<p><a href="https://www.metabase.com/docs/latest/faq/setup/which-databases-does-metabase-support.html" target="_blank" rel="noopener noreffer ">https://www.metabase.com/docs/latest/faq/setup/which-databases-does-metabase-support.html</a></p></div><div class="post-footer">
+        <a href="/posts/20200410-metabase-spark-sql/">Read More</a><div class="post-tags">
+                <i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/bi/">BI</a>,&nbsp;<a href="/tags/metabase/">Metabase</a>,&nbsp;<a href="/tags/spark/">Spark</a></div></div>
+</article><article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
+        <a href="/posts/20200410-spark-thrift-server-cdh/">CDH6 启用 Spark Thrift Server</a>
+    </h1><div class="post-meta"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Happy Coding</a></span>&nbsp;<span class="post-publish">published on <time datetime="2020-04-10">2020-04-10</time></span></div><div class="content"><p>很遗憾，CDH版本的Spark阉割了Thrift Server。（可能与自家产品Impala有竞争关系的原因。）</p>
+<p>参考 <a href="https://docs.cloudera.com/documentation/enterprise/6/6.3/topics/spark.html#spark__d99299e107" target="_blank" rel="noopener noreffer ">https://docs.cloudera.com/documentation/enterprise/6/6.3/topics/spark.html#spark__d99299e107</a></p>
+<pre tabindex="0"><code># ll /opt/cloudera/parcels/CDH/lib/spark/sbin/
+total 84
+-rwxr-xr-x 1 root root 2803 Nov  9 00:05 slaves.sh
+-rwxr-xr-x 1 root root 1429 Nov  9 00:05 spark-config.sh
+-rwxr-xr-x 1 root root 5689 Nov  9 00:05 spark-daemon.sh
+-rwxr-xr-x 1 root root 1262 Nov  9 00:05 spark-daemons.sh
+-rwxr-xr-x 1 root root 1190 Nov  9 00:05 start-all.sh
+-rwxr-xr-x 1 root root 1274 Nov  9 00:05 start-history-server.sh
+-rwxr-xr-x 1 root root 2050 Nov  9 00:05 start-master.sh
+-rwxr-xr-x 1 root root 1877 Nov  9 00:05 start-mesos-dispatcher.sh
+-rwxr-xr-x 1 root root 1423 Nov  9 00:05 start-mesos-shuffle-service.sh
+-rwxr-xr-x 1 root root 1279 Nov  9 00:05 start-shuffle-service.sh
+-rwxr-xr-x 1 root root 3151 Nov  9 00:05 start-slave.sh
+-rwxr-xr-x 1 root root 1527 Nov  9 00:05 start-slaves.sh
+-rwxr-xr-x 1 root root 1478 Nov  9 00:05 stop-all.sh
+-rwxr-xr-x 1 root root 1056 Nov  9 00:05 stop-history-server.sh
+-rwxr-xr-x 1 root root 1080 Nov  9 00:05 stop-master.sh
+-rwxr-xr-x 1 root root 1227 Nov  9 00:05 stop-mesos-dispatcher.sh
+-rwxr-xr-x 1 root root 1084 Nov  9 00:05 stop-mesos-shuffle-service.sh
+-rwxr-xr-x 1 root root 1067 Nov  9 00:05 stop-shuffle-service.sh
+-rwxr-xr-x 1 root root 1557 Nov  9 00:05 stop-slave.sh
+-rwxr-xr-x 1 root root 1064 Nov  9 00:05 stop-slaves.sh
+</code></pre><p>可见，没有Thrift Server的启动脚本。</p></div><div class="post-footer">
+        <a href="/posts/20200410-spark-thrift-server-cdh/">Read More</a><div class="post-tags">
+                <i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/spark/">Spark</a>,&nbsp;<a href="/tags/bi/">BI</a>,&nbsp;<a href="/tags/cdh/">CDH</a></div></div>
+</article><article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
+        <a href="/posts/20200404-detectron2/">Detectron2体验</a>
+    </h1><div class="post-meta"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Happy Coding</a></span>&nbsp;<span class="post-publish">published on <time datetime="2020-04-04">2020-04-04</time></span></div><div class="content"><p>Facebook开源的目标检测库 <a href="https://github.com/facebookresearch/detectron2" target="_blank" rel="noopener noreffer ">https://github.com/facebookresearch/detectron2</a></p>
+<p>类似库：</p>
+<ol>
+<li>Detectron：Facebook开源。是Detectron2前身，使用Caffe2，不再维护。Detectron2使用PyTorch重写。 <a href="https://github.com/facebookresearch/detectron" target="_blank" rel="noopener noreffer ">https://github.com/facebookresearch/detectron</a></li>
+<li>maskrcnn-benchmark：Facebook开源。不再维护，绑定在PyTorch 1.0了。 <a href="https://github.com/facebookresearch/maskrcnn-benchmark" target="_blank" rel="noopener noreffer ">https://github.com/facebookresearch/maskrcnn-benchmark</a></li>
+<li>mmDetection：香港中文大学-商汤联合实验室维护。 <a href="https://github.com/open-mmlab/mmdetection" target="_blank" rel="noopener noreffer ">https://github.com/open-mmlab/mmdetection</a></li>
+<li>SimpleDet： <a href="https://github.com/TuSimple/simpledet" target="_blank" rel="noopener noreffer ">https://github.com/TuSimple/simpledet</a></li>
+</ol>
+<p>参考文章：目标检测三大开源神器：Detectron2/mmDetectron/SimpleDet  <a href="https://mp.weixin.qq.com/s/jH2xz5l9QnCfWhpaY2rHcA" target="_blank" rel="noopener noreffer ">https://mp.weixin.qq.com/s/jH2xz5l9QnCfWhpaY2rHcA</a></p>
+<p>Detectron2不止目标检测功能。 Detectron2 is Facebooks new vision library that allows us to easily use and create object detection, instance segmentation, keypoint detection and panoptic segmentation models. It has a simple, modular design that makes it easy to rewrite a script for another data-set.</p>
+<h2 id="准备工作">准备工作</h2>
+<h3 id="cudacudnn-安装">CUDA/CuDNN 安装</h3>
+<p>电脑上已经有Nvidia 1080Ti显卡了。</p>
+<p>安装CUDA 10.1工具包（可以理解为Nvidia GPU开放的编程接口，https://zh.wikipedia.org/wiki/CUDA）。例如，我选择了Ubuntu 18.04 本地包。</p></div><div class="post-footer">
+        <a href="/posts/20200404-detectron2/">Read More</a><div class="post-tags">
+                <i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/pytorch/">Pytorch</a></div></div>
+</article><ul class="pagination"><li class="page-item ">
+                    <span class="page-link">
+                        <a href="/">1</a>
+                    </span>
+                </li><li class="page-item ">
+                    <span class="page-link" aria-hidden="true">&hellip;</span>
+                </li><li class="page-item ">
+                    <span class="page-link">
+                        <a href="/page/13/">13</a>
+                    </span>
+                </li><li class="page-item ">
+                    <span class="page-link">
+                        <a href="/page/14/">14</a>
+                    </span>
+                </li><li class="page-item active">
+                    <span class="page-link">
+                        <a href="/page/15/">15</a>
+                    </span>
+                </li><li class="page-item ">
+                    <span class="page-link">
+                        <a href="/page/16/">16</a>
+                    </span>
+                </li><li class="page-item ">
+                    <span class="page-link">
+                        <a href="/page/17/">17</a>
+                    </span>
+                </li><li class="page-item ">
+                    <span class="page-link" aria-hidden="true">&hellip;</span>
+                </li><li class="page-item ">
+                    <span class="page-link">
+                        <a href="/page/20/">20</a>
+                    </span>
+                </li></ul></div></div>
+            </main><footer class="footer">
+        <div class="footer-container"><div class="footer-line">Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.147.3">Hugo</a> | Theme - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.3.0"><i class="far fa-kiss-wink-heart fa-fw" aria-hidden="true"></i> LoveIt</a>
+                </div><div class="footer-line" itemscope itemtype="http://schema.org/CreativeWork"><i class="far fa-copyright fa-fw" aria-hidden="true"></i><span itemprop="copyrightYear">2022 - 2025</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/" target="_blank">Happy Coding</a></span></div>
+        </div>
+    </footer></div>
+
+        <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="Back to Top">
+                <i class="fas fa-arrow-up fa-fw" aria-hidden="true"></i>
+            </a><a href="#" id="view-comments" class="fixed-button" title="View Comments">
+                <i class="fas fa-comment fa-fw" aria-hidden="true"></i>
+            </a>
+        </div><script type="text/javascript" src="/lib/lazysizes/lazysizes.min.js"></script><script type="text/javascript" src="/lib/clipboard/clipboard.min.js"></script><script type="text/javascript" src="/lib/sharer/sharer.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"Copy to clipboard","maxShownLines":50}};</script><script type="text/javascript" src="/js/theme.min.js"></script></body>
+</html>

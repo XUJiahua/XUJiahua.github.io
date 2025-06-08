@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+    <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="robots" content="noodp" />
+        <title>The Data Warehouse Toolkit - Happy Coding</title><meta name="Description" content=""><meta property="og:url" content="http://localhost:1313/posts/20200415-the-data-warehouse-toolkit/">
+  <meta property="og:site_name" content="Happy Coding">
+  <meta property="og:title" content="The Data Warehouse Toolkit">
+  <meta property="og:description" content="去年读了「The Data Warehouse Toolkit」，今年工作需要重读，记录一二。
+作者 Ralph Kimball https://en.wikipedia.org/wiki/Ralph_Kimball
+第三章开始是实战内容，会展开描述第二章中浓缩的方法论。方便读者吸收知识。书名 Toolkit，内容确实如此。
+一些概念 Dimensional Modeling 维度模型 维度模型并不严格按照3NF建模。3NF建模的目标是去重，而维度模型放松了这一要求。
+有这么几个好处：
+表会更少，更易于人理解，特别是对业务人员。如果严格按照3NF建模，一条订单记录，可能会建模成有几十个表的复杂结构了。 适当的冗余，减少了关联查询，提高查询性能。 Inmon method 和 Kimball method 数据仓库领域，有两种数据仓库建模方法。Inmon method 和 Kimball method。
+Kimball method 也就是这里的维度模型，主张从业务需求出发，倒推出逻辑、物理数据表设计，技术工具的选型。区分事实表、维度表。
+Inmon method 严格遵循第三范式 （3NF models）建模，拆分实体，维护严格的表关系，需要精心设计。不区分事实表、维度表。
+可以参考这篇：深入对比数据仓库模式：Kimball vs Inmon https://segmentfault.com/a/1190000006255954
+star schema 星形模型 在关系型数据库的语境下，维度模型指的是星形模型。星形模型进一步演化是雪花模型。
+OLAP cube 数据立方体 在多维度数据库的语境下，维度模型指的是数据立方体。OLAP cube 也是基于逻辑上的星形模型推演出来。
+这里，每个小格子代表的是预计算的指标，x、y、z三个轴代表维度。因为预计算，所以查询会很快。">
+  <meta property="og:locale" content="zh_cn">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2020-04-15T09:45:25+08:00">
+    <meta property="article:modified_time" content="2020-04-15T09:45:25+08:00">
+    <meta property="article:tag" content="BI">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="The Data Warehouse Toolkit">
+  <meta name="twitter:description" content="去年读了「The Data Warehouse Toolkit」，今年工作需要重读，记录一二。
+作者 Ralph Kimball https://en.wikipedia.org/wiki/Ralph_Kimball
+第三章开始是实战内容，会展开描述第二章中浓缩的方法论。方便读者吸收知识。书名 Toolkit，内容确实如此。
+一些概念 Dimensional Modeling 维度模型 维度模型并不严格按照3NF建模。3NF建模的目标是去重，而维度模型放松了这一要求。
+有这么几个好处：
+表会更少，更易于人理解，特别是对业务人员。如果严格按照3NF建模，一条订单记录，可能会建模成有几十个表的复杂结构了。 适当的冗余，减少了关联查询，提高查询性能。 Inmon method 和 Kimball method 数据仓库领域，有两种数据仓库建模方法。Inmon method 和 Kimball method。
+Kimball method 也就是这里的维度模型，主张从业务需求出发，倒推出逻辑、物理数据表设计，技术工具的选型。区分事实表、维度表。
+Inmon method 严格遵循第三范式 （3NF models）建模，拆分实体，维护严格的表关系，需要精心设计。不区分事实表、维度表。
+可以参考这篇：深入对比数据仓库模式：Kimball vs Inmon https://segmentfault.com/a/1190000006255954
+star schema 星形模型 在关系型数据库的语境下，维度模型指的是星形模型。星形模型进一步演化是雪花模型。
+OLAP cube 数据立方体 在多维度数据库的语境下，维度模型指的是数据立方体。OLAP cube 也是基于逻辑上的星形模型推演出来。
+这里，每个小格子代表的是预计算的指标，x、y、z三个轴代表维度。因为预计算，所以查询会很快。">
+<meta name="application-name" content="Happy Coding">
+<meta name="apple-mobile-web-app-title" content="Happy Coding"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="http://localhost:1313/posts/20200415-the-data-warehouse-toolkit/" /><link rel="prev" href="http://localhost:1313/posts/20200414-k8s-logging/" /><link rel="next" href="http://localhost:1313/posts/20200416-cortex/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="/lib/fontawesome-free/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="/lib/fontawesome-free/all.min.css"></noscript><link rel="preload" href="/lib/animate/animate.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="/lib/animate/animate.min.css"></noscript><script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "headline": "The Data Warehouse Toolkit",
+        "inLanguage": "zh-cn",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "http:\/\/localhost:1313\/posts\/20200415-the-data-warehouse-toolkit\/"
+        },"genre": "posts","keywords": "BI","wordcount":  269 ,
+        "url": "http:\/\/localhost:1313\/posts\/20200415-the-data-warehouse-toolkit\/","datePublished": "2020-04-15T09:45:25+08:00","dateModified": "2020-04-15T09:45:25+08:00","publisher": {
+            "@type": "Organization",
+            "name": ""},"author": {
+                "@type": "Person",
+                "name": "Happy Coding"
+            },"description": ""
+    }
+    </script></head>
+    <body data-header-desktop="fixed" data-header-mobile="auto"><script type="text/javascript">(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
+
+        <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
+    <div class="header-wrapper">
+        <div class="header-title">
+            <a href="/" title="Happy Coding">Happy Coding</a>
+        </div>
+        <div class="menu">
+            <div class="menu-inner"><a class="menu-item" href="/posts"> Archive </a><a class="menu-item" href="/categories"> Categories </a><a class="menu-item" href="/tags"> Tags </a><a class="menu-item" href="/index.xml"> RSS Feed </a><span class="menu-item delimiter"></span><a href="javascript:void(0);" class="menu-item theme-switch" title="Switch Theme">
+                    <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+                </a></div>
+        </div>
+    </div>
+</header><header class="mobile" id="header-mobile">
+    <div class="header-container">
+        <div class="header-wrapper">
+            <div class="header-title">
+                <a href="/" title="Happy Coding">Happy Coding</a>
+            </div>
+            <div class="menu-toggle" id="menu-toggle-mobile">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="menu" id="menu-mobile"><a class="menu-item" href="/posts" title="">Archive</a><a class="menu-item" href="/categories" title="">Categories</a><a class="menu-item" href="/tags" title="">Tags</a><a class="menu-item" href="/index.xml" title="">RSS Feed</a><a href="javascript:void(0);" class="menu-item theme-switch" title="Switch Theme">
+                <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+            </a></div>
+    </div>
+</header><main class="main">
+                <div class="container"><div class="toc" id="toc-auto">
+            <h2 class="toc-title">Contents</h2>
+            <div class="toc-content" id="toc-content-auto"></div>
+        </div><article class="page single"><h1 class="single-title animate__animated animate__flipInX">The Data Warehouse Toolkit</h1><div class="post-meta">
+            <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Happy Coding</a></span></div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2020-04-15">2020-04-15</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;269 words&nbsp;
+                <i class="far fa-clock fa-fw" aria-hidden="true"></i>&nbsp;2 minutes&nbsp;</div>
+        </div><div class="details toc" id="toc-static"  data-kept="">
+                <div class="details-summary toc-title">
+                    <span>Contents</span>
+                    <span><i class="details-icon fas fa-angle-right" aria-hidden="true"></i></span>
+                </div>
+                <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#一些概念">一些概念</a>
+      <ul>
+        <li><a href="#dimensional-modeling-维度模型">Dimensional Modeling 维度模型</a></li>
+        <li><a href="#star-schema-星形模型">star schema 星形模型</a></li>
+        <li><a href="#olap-cube-数据立方体">OLAP cube 数据立方体</a></li>
+        <li><a href="#fact-table-事实表">fact table 事实表</a></li>
+        <li><a href="#dimension-table-维度表">dimension table 维度表</a></li>
+      </ul>
+    </li>
+    <li><a href="#数据分析框架">数据分析框架</a></li>
+    <li><a href="#精益数据分析">精益数据分析</a></li>
+    <li><a href="#数据仓库结构设计与实施第二章">「数据仓库结构设计与实施」第二章</a></li>
+    <li><a href="#chapter-3-retail-sales">Chapter 3 Retail Sales</a></li>
+    <li><a href="#数据相关书籍">数据相关书籍</a></li>
+  </ul>
+</nav></div>
+            </div><div class="content" id="content"><p>去年读了「The Data Warehouse Toolkit」，今年工作需要重读，记录一二。</p>
+<p>作者 Ralph Kimball <a href="https://en.wikipedia.org/wiki/Ralph_Kimball" target="_blank" rel="noopener noreffer ">https://en.wikipedia.org/wiki/Ralph_Kimball</a></p>
+<p>第三章开始是实战内容，会展开描述第二章中浓缩的方法论。方便读者吸收知识。书名 Toolkit，内容确实如此。</p>
+<h2 id="一些概念">一些概念</h2>
+<h3 id="dimensional-modeling-维度模型">Dimensional Modeling 维度模型</h3>
+<p>维度模型并不严格按照3NF建模。3NF建模的目标是去重，而维度模型放松了这一要求。</p>
+<p>有这么几个好处：</p>
+<ol>
+<li>表会更少，更易于人理解，特别是对业务人员。如果严格按照3NF建模，一条订单记录，可能会建模成有几十个表的复杂结构了。</li>
+<li>适当的冗余，减少了关联查询，提高查询性能。</li>
+</ol>
+<h4 id="inmon-method-和-kimball-method">Inmon method 和 Kimball method</h4>
+<p>数据仓库领域，有两种数据仓库建模方法。Inmon method 和 Kimball method。</p>
+<p>Kimball method 也就是这里的维度模型，主张从业务需求出发，倒推出逻辑、物理数据表设计，技术工具的选型。区分事实表、维度表。</p>
+<p>Inmon method 严格遵循第三范式 （3NF models）建模，拆分实体，维护严格的表关系，需要精心设计。不区分事实表、维度表。</p>
+<p>可以参考这篇：深入对比数据仓库模式：Kimball vs Inmon <a href="https://segmentfault.com/a/1190000006255954" target="_blank" rel="noopener noreffer ">https://segmentfault.com/a/1190000006255954</a></p>
+<h3 id="star-schema-星形模型">star schema 星形模型</h3>
+<p>在关系型数据库的语境下，维度模型指的是星形模型。星形模型进一步演化是雪花模型。</p>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="../../images/image-20200415154942324.png"
+        data-srcset="../../images/image-20200415154942324.png, ../../images/image-20200415154942324.png 1.5x, ../../images/image-20200415154942324.png 2x"
+        data-sizes="auto"
+        alt="../../images/image-20200415154942324.png"
+        title="image-20200415154942324" /></p>
+<h3 id="olap-cube-数据立方体">OLAP cube 数据立方体</h3>
+<p>在多维度数据库的语境下，维度模型指的是数据立方体。OLAP cube 也是基于逻辑上的星形模型推演出来。</p>
+<p>这里，每个小格子代表的是预计算的指标，x、y、z三个轴代表维度。因为预计算，所以查询会很快。</p>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="../../images/image-20200415154954416.png"
+        data-srcset="../../images/image-20200415154954416.png, ../../images/image-20200415154954416.png 1.5x, ../../images/image-20200415154954416.png 2x"
+        data-sizes="auto"
+        alt="../../images/image-20200415154954416.png"
+        title="image-20200415154954416" /></p>
+<p>cube字面上指的是立方体。数据分析中，维度不可能只是三维。所以数据立方体的说法，只是一种形象的说法。人无法想象四维吧。</p>
+<blockquote>
+<p>An <strong>OLAP cube</strong> is a <a href="https://en.wikipedia.org/wiki/Multi-dimensional_array" target="_blank" rel="noopener noreffer ">multi-dimensional array</a> of data.[<a href="https://en.wikipedia.org/wiki/OLAP_cube#cite_note-1" target="_blank" rel="noopener noreffer ">1]</a> <a href="https://en.wikipedia.org/wiki/Online_analytical_processing" target="_blank" rel="noopener noreffer ">Online analytical processing</a> (OLAP)[<a href="https://en.wikipedia.org/wiki/OLAP_cube#cite_note-2" target="_blank" rel="noopener noreffer ">2]</a> is a computer-based technique of analyzing data to look for insights. The term <em>cube</em> here refers to a multi-dimensional dataset, which is also sometimes called a <a href="https://en.wikipedia.org/wiki/Hypercube" target="_blank" rel="noopener noreffer ">hypercube</a> if the number of dimensions is greater than 3.</p></blockquote>
+<p>参考 <a href="https://en.wikipedia.org/wiki/OLAP_cube" target="_blank" rel="noopener noreffer ">https://en.wikipedia.org/wiki/OLAP_cube</a></p>
+<h4 id="olap-cube上的常见操作">OLAP cube上的常见操作</h4>
+<ul>
+<li>slice 切片。</li>
+</ul>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="../../images/OLAP_slicing.png"
+        data-srcset="../../images/OLAP_slicing.png, ../../images/OLAP_slicing.png 1.5x, ../../images/OLAP_slicing.png 2x"
+        data-sizes="auto"
+        alt="../../images/OLAP_slicing.png"
+        title="img" /></p>
+<ul>
+<li>dice 切成方块。取原cube的sub cube，还是cube。</li>
+</ul>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="../../images/800px-OLAP_dicing.png"
+        data-srcset="../../images/800px-OLAP_dicing.png, ../../images/800px-OLAP_dicing.png 1.5x, ../../images/800px-OLAP_dicing.png 2x"
+        data-sizes="auto"
+        alt="../../images/800px-OLAP_dicing.png"
+        title="File:OLAP dicing.png" /></p>
+<ul>
+<li>drill down 下钻。举例，时间维度上从季度降到月份。也就是查看的数据更细。</li>
+<li>roll up 上卷。举例，浙江、江苏、上海被汇总为江浙沪。也就是聚合。</li>
+<li>pivot 旋转。</li>
+</ul>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="../../images/OLAP_pivoting.png"
+        data-srcset="../../images/OLAP_pivoting.png, ../../images/OLAP_pivoting.png 1.5x, ../../images/OLAP_pivoting.png 2x"
+        data-sizes="auto"
+        alt="../../images/OLAP_pivoting.png"
+        title="img" /></p>
+<h3 id="fact-table-事实表">fact table 事实表</h3>
+<p>星形模型中坐落于中心的表。事实表含维度表外键（FK）及指标（Measure）字段。</p>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="../../images/image-20200415163311375.png"
+        data-srcset="../../images/image-20200415163311375.png, ../../images/image-20200415163311375.png 1.5x, ../../images/image-20200415163311375.png 2x"
+        data-sizes="auto"
+        alt="../../images/image-20200415163311375.png"
+        title="image-20200415163311375" /></p>
+<h4 id="measure-指标">Measure 指标</h4>
+<p>比如交易金额。</p>
+<h3 id="dimension-table-维度表">dimension table 维度表</h3>
+<p>比如时间维度表、产品维度表。维度，可以理解为指标产生时候的上下文信息。</p>
+<p>有了上下文信息，指标的描述更有意义。</p>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="../../images/image-20200415163518073.png"
+        data-srcset="../../images/image-20200415163518073.png, ../../images/image-20200415163518073.png 1.5x, ../../images/image-20200415163518073.png 2x"
+        data-sizes="auto"
+        alt="../../images/image-20200415163518073.png"
+        title="image-20200415163518073" /></p>
+<h2 id="数据分析框架">数据分析框架</h2>
+<p>2019-12-30</p>
+<ol>
+<li>新增维度：根据客户注册时间按月分段（同期群分析）。时间维度。</li>
+</ol>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="../../images/image-20191230134903100.png"
+        data-srcset="../../images/image-20191230134903100.png, ../../images/image-20191230134903100.png 1.5x, ../../images/image-20191230134903100.png 2x"
+        data-sizes="auto"
+        alt="../../images/image-20191230134903100.png"
+        title="image-20191230134903100" /></p>
+<ol start="6">
+<li>这个“黄金策”就是一个多维数据分析的场景，这是一个典型的BI应用。指标相同，但是维度组合不同。维度1：where 30 &lt;= age &lt;= 36 and card_num = 1，维度2：where 30 &lt;= age &lt;= 36 and card_num &gt; 1，指标：客单价，购物偏好。最大的问题，应该是怎么够快？数据仓库能够在3秒内得出分析结果么？其次，数据可视化了。</li>
+</ol>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="../../images/image-20191230153252254.png"
+        data-srcset="../../images/image-20191230153252254.png, ../../images/image-20191230153252254.png 1.5x, ../../images/image-20191230153252254.png 2x"
+        data-sizes="auto"
+        alt="../../images/image-20191230153252254.png"
+        title="image-20191230153252254" /></p>
+<p>参考：</p>
+<ol>
+<li>华尔街日报是这样做数据可视化的（1） <a href="https://mp.weixin.qq.com/s?__biz=MjM5NjcxMzIwMQ==&amp;mid=502377582&amp;idx=1&amp;sn=90311b1eb3d013e39d6b4b099f179ad8&amp;scene=1&amp;srcid=0830tJVuFLsyG3xUkIQ6Zf6h#rd" target="_blank" rel="noopener noreffer ">https://mp.weixin.qq.com/s?__biz=MjM5NjcxMzIwMQ==&mid=502377582&idx=1&sn=90311b1eb3d013e39d6b4b099f179ad8&scene=1&srcid=0830tJVuFLsyG3xUkIQ6Zf6h#rd</a></li>
+</ol>
+<h2 id="精益数据分析">精益数据分析</h2>
+<p>2019-12-30</p>
+<p>数据分析的终极目标，就是指导企业如何生存与发展。</p>
+<p>本书与创业有关。</p>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="../../images/leancanvas-0c61f6b1e7c978ea69a47946f2ab60a5a3be0909da861c2b377d7c63faf1e5d6.png"
+        data-srcset="../../images/leancanvas-0c61f6b1e7c978ea69a47946f2ab60a5a3be0909da861c2b377d7c63faf1e5d6.png, ../../images/leancanvas-0c61f6b1e7c978ea69a47946f2ab60a5a3be0909da861c2b377d7c63faf1e5d6.png 1.5x, ../../images/leancanvas-0c61f6b1e7c978ea69a47946f2ab60a5a3be0909da861c2b377d7c63faf1e5d6.png 2x"
+        data-sizes="auto"
+        alt="../../images/leancanvas-0c61f6b1e7c978ea69a47946f2ab60a5a3be0909da861c2b377d7c63faf1e5d6.png"
+        title="img" /></p>
+<p>AARRR模型。</p>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="../../images/image-20191230141005897.png"
+        data-srcset="../../images/image-20191230141005897.png, ../../images/image-20191230141005897.png 1.5x, ../../images/image-20191230141005897.png 2x"
+        data-sizes="auto"
+        alt="../../images/image-20191230141005897.png"
+        title="image-20191230141005897" /></p>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="../../images/image-20191230141112770.png"
+        data-srcset="../../images/image-20191230141112770.png, ../../images/image-20191230141112770.png 1.5x, ../../images/image-20191230141112770.png 2x"
+        data-sizes="auto"
+        alt="../../images/image-20191230141112770.png"
+        title="image-20191230141112770" /></p>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="../../images/image-20191230145357766.png"
+        data-srcset="../../images/image-20191230145357766.png, ../../images/image-20191230145357766.png 1.5x, ../../images/image-20191230145357766.png 2x"
+        data-sizes="auto"
+        alt="../../images/image-20191230145357766.png"
+        title="image-20191230145357766" /></p>
+<h2 id="数据仓库结构设计与实施第二章">「数据仓库结构设计与实施」第二章</h2>
+<p>2019-11-06</p>
+<ol>
+<li>
+<p>金字塔模型，多层叠加的形式的系统：OLTP数据库中的源数据-&gt;ETL程序导入到数据仓库基础层（事实、维度）-&gt; 大量针对事实维度表的总计等操作形成的新层面 -&gt; BI系统使用</p>
+</li>
+<li>
+<p>金字塔结构从底层向上，体现出强大的收敛与聚合功能，层面越高，越能高度地概括更丰富、更有意义的信息；层面越低，容积越大，含有的数据量就越大，信息就越具体、详细。</p>
+</li>
+<li>
+<p>金字塔结构，漏斗模型，层级递进的思想是不变的</p>
+</li>
+<li>
+<p>数据仓库的理论基础，就是分层，还有元数据管理。OLAP与多维数据模型（星星模型）</p>
+</li>
+<li>
+<p>元数据是说明数据的数据，如在数据库中的数据字典，或者数据表和数据表之间的关系。（元数据管理挺烦心的，有抵触情绪）</p>
+</li>
+<li>
+<p>想到，既然是以数据能力为产品出发点，那么就需要足够丰富的数据采集工具。丰富的采集工具，采集大量的数据，然后使用大数据技术维护一个数据仓库。</p>
+</li>
+<li>
+<p>星型结构是非范式的、以查询为中心的模型，这种模型的最大优点是能够提供所谓的星连接，即通过一步连接就可以获取大部分所需要的信息，并很快得到输出结果</p>
+</li>
+<li>
+<p>作为用户的主要用途的事实表，反映了业务的主要指标，如销售量、销售额、成本、某种活动的计数、用户在网上的点击数、用户在网上的下载量，同时也包括各种与维表链接的键。（比如，用户的点击、浏览行为，就是事实表的内容）</p>
+</li>
+<li>
+<p>用户点击、访问行为为事实表（可以统计PV、UV等度量。事实表是基于一件事实，一个目的。），后端埋点的用户授权的个人信息作为维度表（可以分析基于某个用户社会属性维度的度量，也就是维度分析吧）。</p>
+</li>
+<li>
+<p>时间维中，它以时、日、周、月、季、年等构成层次级，联机分析处理和报表可按上述层次进行汇总，如周报、月报、季报、年报。（对时间这个字段的认识，理论认识上有先天不足。学习了。）</p>
+</li>
+</ol>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="../../images/image-20191106101303282.png"
+        data-srcset="../../images/image-20191106101303282.png, ../../images/image-20191106101303282.png 1.5x, ../../images/image-20191106101303282.png 2x"
+        data-sizes="auto"
+        alt="../../images/image-20191106101303282.png"
+        title="image-20191106101303282" /></p>
+<ol>
+<li>金字塔模型。</li>
+</ol>
+<h2 id="chapter-3-retail-sales">Chapter 3 Retail Sales</h2>
+<p>2019-12-03</p>
+<ol>
+<li>定义好粒度，Grain 粒度：How do you describe a single row in the fact table? 举例，一次交易（订单粒度），交易中的一次商品扫描（商品订单粒度）。</li>
+<li>确定维度。How do business people describe the data resulting from the business process measurement events? 维度是一个事实的上下文。</li>
+<li>Facts that clearly belong to a different grain must be in a separate fact table. 不同粒度的数据，写入独立的事实表。</li>
+<li>数据驱动与业务驱动要结合。</li>
+<li>了解客户，客户分层，客户标签化（用户画像），什么样的促销适合什么样的客户（适合指的是能让决策者利益最大化）</li>
+<li>收集的数据，最好是越细越全越好，未来需求无法预测。Tackling data at its lowest atomic grain.</li>
+<li>non-additive metrics 比如净利润的百分比、比例，没法累加。单价也无法累加，温度也无法累加。</li>
+<li>additive metrics 比如销售额。</li>
+<li>Drilling down（下钻） in a dimensional model is nothing more than adding row header attributes from the dimension tables. <em>Drilling up</em>（上钻） is removing row headers. up是抽象，down是细节，多加维度</li>
+</ol>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="../../images/image-20191203154119127.png"
+        data-srcset="../../images/image-20191203154119127.png, ../../images/image-20191203154119127.png 1.5x, ../../images/image-20191203154119127.png 2x"
+        data-sizes="auto"
+        alt="../../images/image-20191203154119127.png"
+        title="image-20191203154119127" /></p>
+<h2 id="数据相关书籍">数据相关书籍</h2>
+<ol>
+<li>「决战大数据」车品觉，经历 eBay、阿里</li>
+<li>「精益数据分析」指导创业中的数据思维，重新认识了很多指标</li>
+</ol>
+</div><div class="post-footer" id="post-footer">
+    <div class="post-info">
+        <div class="post-info-line">
+            <div class="post-info-mod">
+                <span>Updated on 2020-04-15</span>
+            </div></div>
+        <div class="post-info-line">
+            <div class="post-info-md"></div>
+            <div class="post-info-share">
+                <span><a href="javascript:void(0);" title="Share on Twitter" data-sharer="twitter" data-url="http://localhost:1313/posts/20200415-the-data-warehouse-toolkit/" data-title="The Data Warehouse Toolkit" data-hashtags="BI"><i class="fab fa-twitter fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="Share on Facebook" data-sharer="facebook" data-url="http://localhost:1313/posts/20200415-the-data-warehouse-toolkit/" data-hashtag="BI"><i class="fab fa-facebook-square fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="Share on Hacker News" data-sharer="hackernews" data-url="http://localhost:1313/posts/20200415-the-data-warehouse-toolkit/" data-title="The Data Warehouse Toolkit"><i class="fab fa-hacker-news fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="Share on Line" data-sharer="line" data-url="http://localhost:1313/posts/20200415-the-data-warehouse-toolkit/" data-title="The Data Warehouse Toolkit"><i data-svg-src="/lib/simple-icons/icons/line.min.svg" aria-hidden="true"></i></a><a href="javascript:void(0);" title="Share on 微博" data-sharer="weibo" data-url="http://localhost:1313/posts/20200415-the-data-warehouse-toolkit/" data-title="The Data Warehouse Toolkit"><i class="fab fa-weibo fa-fw" aria-hidden="true"></i></a></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="post-info-more">
+        <section class="post-tags"><i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/bi/">BI</a></section>
+        <section>
+            <span><a href="javascript:void(0);" onclick="window.history.back();">Back</a></span>&nbsp;|&nbsp;<span><a href="/">Home</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav"><a href="/posts/20200414-k8s-logging/" class="prev" rel="prev" title="k8s 应用日志收集"><i class="fas fa-angle-left fa-fw" aria-hidden="true"></i>k8s 应用日志收集</a>
+            <a href="/posts/20200416-cortex/" class="next" rel="next" title="机器学习在线推理部署方案：Cortex">机器学习在线推理部署方案：Cortex<i class="fas fa-angle-right fa-fw" aria-hidden="true"></i></a></div>
+</div>
+</article></div>
+            </main><footer class="footer">
+        <div class="footer-container"><div class="footer-line">Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.147.3">Hugo</a> | Theme - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.3.0"><i class="far fa-kiss-wink-heart fa-fw" aria-hidden="true"></i> LoveIt</a>
+                </div><div class="footer-line" itemscope itemtype="http://schema.org/CreativeWork"><i class="far fa-copyright fa-fw" aria-hidden="true"></i><span itemprop="copyrightYear">2022 - 2025</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/" target="_blank">Happy Coding</a></span></div>
+        </div>
+    </footer></div>
+
+        <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="Back to Top">
+                <i class="fas fa-arrow-up fa-fw" aria-hidden="true"></i>
+            </a><a href="#" id="view-comments" class="fixed-button" title="View Comments">
+                <i class="fas fa-comment fa-fw" aria-hidden="true"></i>
+            </a>
+        </div><script type="text/javascript" src="/lib/lazysizes/lazysizes.min.js"></script><script type="text/javascript" src="/lib/clipboard/clipboard.min.js"></script><script type="text/javascript" src="/lib/sharer/sharer.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"Copy to clipboard","maxShownLines":50},"comment":{}};</script><script type="text/javascript" src="/js/theme.min.js"></script></body>
+</html>

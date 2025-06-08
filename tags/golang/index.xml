@@ -4,22 +4,16 @@
     <title>Golang on Happy Coding</title>
     <link>https://xujiahua.github.io/tags/golang/</link>
     <description>Recent content in Golang on Happy Coding</description>
-    <generator>Hugo -- gohugo.io</generator>
+    <generator>Hugo</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Fri, 20 Mar 2020 15:24:22 +0800</lastBuildDate><atom:link href="https://xujiahua.github.io/tags/golang/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Fri, 20 Mar 2020 15:24:22 +0800</lastBuildDate>
+    <atom:link href="https://xujiahua.github.io/tags/golang/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Go Web 项目框架</title>
       <link>https://xujiahua.github.io/posts/20200320-go-web-project/</link>
       <pubDate>Fri, 20 Mar 2020 15:24:22 +0800</pubDate>
-      
       <guid>https://xujiahua.github.io/posts/20200320-go-web-project/</guid>
-      <description>常用开源库 依赖包管理 Go Modules Go Modules。Go 从1.11版本开始支持，Go 1.14被认为是生产可用了。个人用过最方便的Go依赖包管理工具了。
-版本管理中维护 go.mod/go.sum 两个文件。
-参考  Using Go Modules https://blog.golang.org/using-go-modules  命令行框架 Corba Corba。第一次看到，是在翻看 Hyperledger Fabric 的时候。
- 子命令，嵌套的子命令。 增强版本的flags。 项目模板的生成工具。 生成工具也自动引入了Viper这个包。Corba与Viper由一个作者开发，两个项目配合使用非常方便。  建议使用Cobra命令行工具生成项目模板。
- ▾ appName/ ▾ cmd/ add.go your.go commands.go here.go main.go 参考  A Commander for modern Go CLI interactions https://github.com/spf13/cobra Cobra Generator https://github.com/spf13/cobra/blob/master/cobra/README.md  配置管理 Viper Viper。常常与Corba搭配使用。抄一段官方简介：
-Viper is a complete configuration solution for Go applications including 12-Factor apps. It is designed to work within an application, and can handle all types of configuration needs and formats.</description>
+      <description>&lt;h2 id=&#34;常用开源库&#34;&gt;常用开源库&lt;/h2&gt;&#xA;&lt;h3 id=&#34;依赖包管理-go-modules&#34;&gt;依赖包管理 Go Modules&lt;/h3&gt;&#xA;&lt;p&gt;Go Modules。Go 从1.11版本开始支持，Go 1.14被认为是生产可用了。个人用过最方便的Go依赖包管理工具了。&lt;/p&gt;&#xA;&lt;p&gt;版本管理中维护 &lt;code&gt;go.mod&lt;/code&gt;/&lt;code&gt;go.sum&lt;/code&gt; 两个文件。&lt;/p&gt;&#xA;&lt;p&gt;&lt;img&#xA;        class=&#34;lazyload&#34;&#xA;        src=&#34;https://xujiahua.github.io/svg/loading.min.svg&#34;&#xA;        data-src=&#34;../../images/image-20200320152954581.png&#34;&#xA;        data-srcset=&#34;../../images/image-20200320152954581.png, ../../images/image-20200320152954581.png 1.5x, ../../images/image-20200320152954581.png 2x&#34;&#xA;        data-sizes=&#34;auto&#34;&#xA;        alt=&#34;../../images/image-20200320152954581.png&#34;&#xA;        title=&#34;image-20200320152954581&#34; /&gt;&lt;/p&gt;&#xA;&lt;h4 id=&#34;参考&#34;&gt;参考&lt;/h4&gt;&#xA;&lt;ol&gt;&#xA;&lt;li&gt;Using Go Modules &lt;a href=&#34;https://blog.golang.org/using-go-modules&#34; target=&#34;_blank&#34; rel=&#34;noopener noreffer &#34;&gt;https://blog.golang.org/using-go-modules&lt;/a&gt;&lt;/li&gt;&#xA;&lt;/ol&gt;&#xA;&lt;h3 id=&#34;命令行框架-corba&#34;&gt;命令行框架 Corba&lt;/h3&gt;&#xA;&lt;p&gt;Corba。第一次看到，是在翻看 Hyperledger Fabric 的时候。&lt;/p&gt;&#xA;&lt;p&gt;&lt;img&#xA;        class=&#34;lazyload&#34;&#xA;        src=&#34;https://xujiahua.github.io/svg/loading.min.svg&#34;&#xA;        data-src=&#34;../../images/ad566232-814f-11e5-9cd0-aa101788c117.png&#34;&#xA;        data-srcset=&#34;../../images/ad566232-814f-11e5-9cd0-aa101788c117.png, ../../images/ad566232-814f-11e5-9cd0-aa101788c117.png 1.5x, ../../images/ad566232-814f-11e5-9cd0-aa101788c117.png 2x&#34;&#xA;        data-sizes=&#34;auto&#34;&#xA;        alt=&#34;../../images/ad566232-814f-11e5-9cd0-aa101788c117.png&#34;&#xA;        title=&#34;cobra logo&#34; /&gt;&lt;/p&gt;&#xA;&lt;ol&gt;&#xA;&lt;li&gt;子命令，嵌套的子命令。&lt;/li&gt;&#xA;&lt;li&gt;增强版本的flags。&lt;/li&gt;&#xA;&lt;li&gt;项目模板的生成工具。&lt;/li&gt;&#xA;&lt;li&gt;生成工具也自动引入了Viper这个包。Corba与Viper由一个作者开发，两个项目配合使用非常方便。&lt;/li&gt;&#xA;&lt;/ol&gt;&#xA;&lt;p&gt;建议使用Cobra命令行工具生成项目模板。&lt;/p&gt;&#xA;&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;  ▾ appName/&#xA;    ▾ cmd/&#xA;        add.go&#xA;        your.go&#xA;        commands.go&#xA;        here.go&#xA;      main.go&#xA;&lt;/code&gt;&lt;/pre&gt;&lt;h4 id=&#34;参考-1&#34;&gt;参考&lt;/h4&gt;&#xA;&lt;ol&gt;&#xA;&lt;li&gt;A Commander for modern Go CLI interactions &lt;a href=&#34;https://github.com/spf13/cobra&#34; target=&#34;_blank&#34; rel=&#34;noopener noreffer &#34;&gt;https://github.com/spf13/cobra&lt;/a&gt;&lt;/li&gt;&#xA;&lt;li&gt;Cobra Generator &lt;a href=&#34;https://github.com/spf13/cobra/blob/master/cobra/README.md&#34; target=&#34;_blank&#34; rel=&#34;noopener noreffer &#34;&gt;https://github.com/spf13/cobra/blob/master/cobra/README.md&lt;/a&gt;&lt;/li&gt;&#xA;&lt;/ol&gt;&#xA;&lt;h3 id=&#34;配置管理-viper&#34;&gt;配置管理 Viper&lt;/h3&gt;&#xA;&lt;p&gt;Viper。常常与Corba搭配使用。抄一段官方简介：&lt;/p&gt;</description>
     </item>
-    
   </channel>
 </rss>

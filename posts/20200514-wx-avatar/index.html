@@ -1,724 +1,279 @@
 <!DOCTYPE html>
-<html><head>
-<title>微信用户授权头像内容带随机干扰的问题</title>
+<html lang="zh-cn">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="robots" content="noodp" />
+        <title>微信用户授权头像内容带随机干扰的问题 - Happy Coding</title><meta name="Description" content=""><meta property="og:url" content="https://xujiahua.github.io/posts/20200514-wx-avatar/">
+  <meta property="og:site_name" content="Happy Coding">
+  <meta property="og:title" content="微信用户授权头像内容带随机干扰的问题">
+  <meta property="og:description" content="项目需要基于头像、昵称对不同实体账号下的微信用户进行匹配。基于这个思路，打算先下载微信头像的图像，后计算其MD5，“单元测试”了下这个简单方法，结果惊人。
+同一个人的同一个头像链接返回的图像内容都不一样。内容不一样，MD5值也就不一样。
+看来微信对我们这些拙劣的手段早有防备。
+微信头像内容分析 同一个头像链接下载两次。
+$ wget -O 1.png https://wx.qlogo.cn/mmopen/vi_32/DYAIOgq83eoc614h6RfCUnwQTblG9y2dq4g5PKVicVZd5CQO9JNdPCWCovl8cmsvxQcWDemcLYGW6pSt97uUW5A/132 $ wget -O 2.png https://wx.qlogo.cn/mmopen/vi_32/DYAIOgq83eoc614h6RfCUnwQTblG9y2dq4g5PKVicVZd5CQO9JNdPCWCovl8cmsvxQcWDemcLYGW6pSt97uUW5A/132 $ md5 1.png MD5 (1.png) = dd6aa938cbec381a3e83702776be88a3 $ md5 2.png MD5 (2.png) = 83668a6ad7eeee8fa8e5e0db339233d1 肉眼比较 肉眼完全无法区分。
+字节级比较 两张图，可以看出差异很大。
+像素级比较 为了方便对比，图先灰度化（一个像素点的RGB三值改为1个值）。
+两张灰度图差值的数据分布。x轴为差值，y轴为出现次数。
+0代表相同位置的像素点相同，非0代表相同位置像素点有差异及其差异幅度。
+0出现次数最多，可见两张图的大部分像素点的值是相同的。差异主要分为两部分，1-10 闭区间。（试了几张图）">
+  <meta property="og:locale" content="zh_cn">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2020-05-14T13:38:12+08:00">
+    <meta property="article:modified_time" content="2020-05-14T13:38:12+08:00">
 
-<meta charset="utf-8">
-<meta name="X-UA-Compatible" content="IE=edge">
-<meta name="google-site-verification" content="">
-<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport">
-<meta content="telephone=no" name="format-detection">
-<meta name="description" content="">
-<meta name="renderer" content="webkit">
-<meta name="theme-color" content="#ffffff">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="微信用户授权头像内容带随机干扰的问题">
+  <meta name="twitter:description" content="项目需要基于头像、昵称对不同实体账号下的微信用户进行匹配。基于这个思路，打算先下载微信头像的图像，后计算其MD5，“单元测试”了下这个简单方法，结果惊人。
+同一个人的同一个头像链接返回的图像内容都不一样。内容不一样，MD5值也就不一样。
+看来微信对我们这些拙劣的手段早有防备。
+微信头像内容分析 同一个头像链接下载两次。
+$ wget -O 1.png https://wx.qlogo.cn/mmopen/vi_32/DYAIOgq83eoc614h6RfCUnwQTblG9y2dq4g5PKVicVZd5CQO9JNdPCWCovl8cmsvxQcWDemcLYGW6pSt97uUW5A/132 $ wget -O 2.png https://wx.qlogo.cn/mmopen/vi_32/DYAIOgq83eoc614h6RfCUnwQTblG9y2dq4g5PKVicVZd5CQO9JNdPCWCovl8cmsvxQcWDemcLYGW6pSt97uUW5A/132 $ md5 1.png MD5 (1.png) = dd6aa938cbec381a3e83702776be88a3 $ md5 2.png MD5 (2.png) = 83668a6ad7eeee8fa8e5e0db339233d1 肉眼比较 肉眼完全无法区分。
+字节级比较 两张图，可以看出差异很大。
+像素级比较 为了方便对比，图先灰度化（一个像素点的RGB三值改为1个值）。
+两张灰度图差值的数据分布。x轴为差值，y轴为出现次数。
+0代表相同位置的像素点相同，非0代表相同位置像素点有差异及其差异幅度。
+0出现次数最多，可见两张图的大部分像素点的值是相同的。差异主要分为两部分，1-10 闭区间。（试了几张图）">
+<meta name="application-name" content="Happy Coding">
+<meta name="apple-mobile-web-app-title" content="Happy Coding"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://xujiahua.github.io/posts/20200514-wx-avatar/" /><link rel="prev" href="https://xujiahua.github.io/posts/20200504-hackintosh/" /><link rel="next" href="https://xujiahua.github.io/posts/20200527-metabase-impala-driver/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css"></noscript><link rel="preload" href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css"></noscript><script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "headline": "微信用户授权头像内容带随机干扰的问题",
+        "inLanguage": "zh-cn",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "https:\/\/xujiahua.github.io\/posts\/20200514-wx-avatar\/"
+        },"genre": "posts","wordcount":  239 ,
+        "url": "https:\/\/xujiahua.github.io\/posts\/20200514-wx-avatar\/","datePublished": "2020-05-14T13:38:12+08:00","dateModified": "2020-05-14T13:38:12+08:00","publisher": {
+            "@type": "Organization",
+            "name": ""},"author": {
+                "@type": "Person",
+                "name": "Happy Coding"
+            },"description": ""
+    }
+    </script></head>
+    <body data-header-desktop="fixed" data-header-mobile="auto"><script type="text/javascript">(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
 
-
-
-
-<script type="application/javascript">
-var doNotTrack = false;
-if (!doNotTrack) {
-	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
-	ga('create', 'UA-162706610-1', 'auto');
-	
-	ga('send', 'pageview');
-}
-</script>
-
-
-<script src="/vendor/js/jquery.min.js" ></script>
-<script src="/vendor/js/popper.min.js" ></script>
-<script src="/vendor/js/bootstrap.min.js" ></script>
-<script src="/vendor/js/smooth-scroll.polyfills.min.js" ></script>
-<link type="text/css" rel="stylesheet" href="/vendor/css/bootstrap.min.css">
-<script src="/vendor/js/vue.min.js" ></script>
-
-
-
-
-<link rel="stylesheet" href="https://xujiahua.github.io/scss/journal.min.5d0fd093a264465a2c30c56fbe9eb8cdb0764ecf3eb96e8c64de3cf6c081cc40.css" integrity="sha256-XQ/Qk6JkRlosMMVvvp64zbB2Ts8&#43;uW6MZN489sCBzEA=" media="screen">
-
-<script src="https://xujiahua.github.io//js/loadCSS.js"></script>
-<script src="https://xujiahua.github.io//js/table.js"></script>
-
-
-<script src="https://xujiahua.github.io//js/toc.js"></script>
-
-
-<script>
-    loadCSS("https://fonts.googleapis.com/css?family=Lora|Montserrat|Fira+Mono|Noto+Serif+SC|Material+Icons");
-</script>
-
-
-
-
-
-
-</head><body>
-    	<div id="app"><div ref="sideContainer" class="side-container">
-    
-    <a class="a-block nav-head false" href="https://xujiahua.github.io/">
-    
-        <div class="nav-title">
-            Happy Coding
+        <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
+    <div class="header-wrapper">
+        <div class="header-title">
+            <a href="/" title="Happy Coding">Happy Coding</a>
         </div>
-        
-    </a>
-
-    <div class="nav-link-list">
-        
-        
-            
-            
-            
-                
-            
-            
-            
-            <a class="a-block nav-link-item active" href="/posts">
-                Archive
-            </a>
-            
-        
-            
-            
-            
-            
-            
-            <a class="a-block nav-link-item false" href="/categories">
-                Categories
-            </a>
-            
-        
-            
-            
-            
-            
-            
-            <a class="a-block nav-link-item false" href="/tags">
-                Tags
-            </a>
-            
-        
-            
-            
-            
-            
-            
-            <a class="a-block nav-link-item false" href="/index.xml">
-                RSS Feed
-            </a>
-            
-        
-    </div>
-
-    
-
-    <div class="nav-footer">
-        
-Hugo Theme <a href="https://github.com/amazingrise/hugo-theme-diary">Diary</a> by <a href="https://amazingrise.net">Rise</a>
-<br>
-Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopener">Makito</a>'s <a href="https://github.com/SumiMakito/hexo-theme-journal/" target="_blank" rel="noreferrer noopener">Journal.</a> <br>
-<br>
-
-&copy;
-	
-	2021 Happy Coding
-	
-    </div>
-    
-</div><div ref="extraContainer" class="extra-container">
-    
-    <div class="toc animated-visibility" :class="{ invisible: scrollY <= 140 }">
-
-
-	<div class="toc-content">
-	
-		
-		
-		
-		<center>- CATALOG -</center>
-			
-				
-				
-					
-						
-						
-							<ul>
-						
-							<ul>
-						
-						
-								<li>
-				 					<a href="#%e5%be%ae%e4%bf%a1%e5%a4%b4%e5%83%8f%e5%86%85%e5%ae%b9%e5%88%86%e6%9e%90" v-on:click="closeDrawer" id="微信头像内容分析-nav">
-										 微信头像内容分析
-									</a>
-								</li>
-						
-							</ul>
-						
-							</ul>
-						
-					
-				
-			
-				
-				
-					
-						
-						
-							<ul>
-						
-							<ul>
-						
-							<ul>
-						
-						
-								<li>
-				 					<a href="#%e8%82%89%e7%9c%bc%e6%af%94%e8%be%83" v-on:click="closeDrawer" id="肉眼比较-nav">
-										 肉眼比较
-									</a>
-								</li>
-						
-							</ul>
-						
-							</ul>
-						
-							</ul>
-						
-					
-				
-			
-				
-				
-					
-						
-						
-							<ul>
-						
-							<ul>
-						
-							<ul>
-						
-						
-								<li>
-				 					<a href="#%e5%ad%97%e8%8a%82%e7%ba%a7%e6%af%94%e8%be%83" v-on:click="closeDrawer" id="字节级比较-nav">
-										 字节级比较
-									</a>
-								</li>
-						
-							</ul>
-						
-							</ul>
-						
-							</ul>
-						
-					
-				
-			
-				
-				
-					
-						
-						
-							<ul>
-						
-							<ul>
-						
-							<ul>
-						
-						
-								<li>
-				 					<a href="#%e5%83%8f%e7%b4%a0%e7%ba%a7%e6%af%94%e8%be%83" v-on:click="closeDrawer" id="像素级比较-nav">
-										 像素级比较
-									</a>
-								</li>
-						
-							</ul>
-						
-							</ul>
-						
-							</ul>
-						
-					
-				
-			
-				
-				
-					
-						
-						
-							<ul>
-						
-							<ul>
-						
-						
-								<li>
-				 					<a href="#%e7%9b%ae%e6%a0%87%e6%b6%88%e9%99%a4%e7%99%bd%e7%82%b9" v-on:click="closeDrawer" id="目标消除白点-nav">
-										 目标：消除白点
-									</a>
-								</li>
-						
-							</ul>
-						
-							</ul>
-						
-					
-				
-			
-				
-				
-					
-						
-						
-							<ul>
-						
-							<ul>
-						
-						
-								<li>
-				 					<a href="#%e6%80%bb%e7%bb%93" v-on:click="closeDrawer" id="总结-nav">
-										 总结
-									</a>
-								</li>
-						
-							</ul>
-						
-							</ul>
-						
-					
-				
-			
-	</div>
-
-</div>
-    
-    <div class="pagination">
-        <a id="globalBackToTop" class="pagination-action animated-visibility" href="#top" :class="{ invisible: scrollY == 0 }">
-            <i class="material-icons pagination-action-icon">
-                keyboard_arrow_up
-            </i>
-        </a>
-        
-    </div>
-</div><div class="single-column-drawer-container" ref="drawer"
-     v-bind:class="{ 'single-column-drawer-container-active': isDrawerOpen }">
-    <div class="drawer-content">
-        <div class="drawer-menu">
-            
-            
-                
-                
-                
-                    
-                
-                
-                
-                <a class="a-block drawer-menu-item active" href="/posts">
-                    Archive
-                </a>
-                
-            
-                
-                
-                
-                
-                
-                <a class="a-block drawer-menu-item false" href="/categories">
-                    Categories
-                </a>
-                
-            
-                
-                
-                
-                
-                
-                <a class="a-block drawer-menu-item false" href="/tags">
-                    Tags
-                </a>
-                
-            
-                
-                
-                
-                
-                
-                <a class="a-block drawer-menu-item false" href="/index.xml">
-                    RSS Feed
-                </a>
-                
-            
-            
-            <div class="toc">
-
-
-	<div class="toc-content">
-	
-		
-		
-		
-		<center>- CATALOG -</center>
-			
-				
-				
-					
-						
-						
-							<ul>
-						
-							<ul>
-						
-						
-								<li>
-				 					<a href="#%e5%be%ae%e4%bf%a1%e5%a4%b4%e5%83%8f%e5%86%85%e5%ae%b9%e5%88%86%e6%9e%90" v-on:click="closeDrawer" id="微信头像内容分析-nav">
-										 微信头像内容分析
-									</a>
-								</li>
-						
-							</ul>
-						
-							</ul>
-						
-					
-				
-			
-				
-				
-					
-						
-						
-							<ul>
-						
-							<ul>
-						
-							<ul>
-						
-						
-								<li>
-				 					<a href="#%e8%82%89%e7%9c%bc%e6%af%94%e8%be%83" v-on:click="closeDrawer" id="肉眼比较-nav">
-										 肉眼比较
-									</a>
-								</li>
-						
-							</ul>
-						
-							</ul>
-						
-							</ul>
-						
-					
-				
-			
-				
-				
-					
-						
-						
-							<ul>
-						
-							<ul>
-						
-							<ul>
-						
-						
-								<li>
-				 					<a href="#%e5%ad%97%e8%8a%82%e7%ba%a7%e6%af%94%e8%be%83" v-on:click="closeDrawer" id="字节级比较-nav">
-										 字节级比较
-									</a>
-								</li>
-						
-							</ul>
-						
-							</ul>
-						
-							</ul>
-						
-					
-				
-			
-				
-				
-					
-						
-						
-							<ul>
-						
-							<ul>
-						
-							<ul>
-						
-						
-								<li>
-				 					<a href="#%e5%83%8f%e7%b4%a0%e7%ba%a7%e6%af%94%e8%be%83" v-on:click="closeDrawer" id="像素级比较-nav">
-										 像素级比较
-									</a>
-								</li>
-						
-							</ul>
-						
-							</ul>
-						
-							</ul>
-						
-					
-				
-			
-				
-				
-					
-						
-						
-							<ul>
-						
-							<ul>
-						
-						
-								<li>
-				 					<a href="#%e7%9b%ae%e6%a0%87%e6%b6%88%e9%99%a4%e7%99%bd%e7%82%b9" v-on:click="closeDrawer" id="目标消除白点-nav">
-										 目标：消除白点
-									</a>
-								</li>
-						
-							</ul>
-						
-							</ul>
-						
-					
-				
-			
-				
-				
-					
-						
-						
-							<ul>
-						
-							<ul>
-						
-						
-								<li>
-				 					<a href="#%e6%80%bb%e7%bb%93" v-on:click="closeDrawer" id="总结-nav">
-										 总结
-									</a>
-								</li>
-						
-							</ul>
-						
-							</ul>
-						
-					
-				
-			
-	</div>
-
-</div>
-            
+        <div class="menu">
+            <div class="menu-inner"><a class="menu-item" href="/posts"> Archive </a><a class="menu-item" href="/categories"> Categories </a><a class="menu-item" href="/tags"> Tags </a><a class="menu-item" href="/index.xml"> RSS Feed </a><span class="menu-item delimiter"></span><a href="javascript:void(0);" class="menu-item theme-switch" title="Switch Theme">
+                    <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+                </a></div>
         </div>
     </div>
-</div>
-<transition name="fade">
-    <div v-bind:class="{ 'single-column-drawer-mask': mounted }" v-if="isDrawerOpen" v-on:click="toggleDrawer"></div>
-</transition>
-<nav ref="navBar" class="navbar sticky-top navbar-light single-column-nav-container">
-    <div ref="navBackground" class="nav-background"></div>
-    <div class="container container-narrow nav-content">
-        <button id="nav_dropdown_btn" class="nav-dropdown-toggle" type="button" v-on:click="toggleDrawer">
-            <i class="material-icons">
-                menu
-            </i>
-        </button>
-        <a ref="navTitle" class="navbar-brand" href="https://xujiahua.github.io/">
-            Happy Coding
-        </a>
-    </div>
-</nav>
-<div class="single-column-header-container" ref="pageHead"
-     v-bind:style="{ transform: 'translateZ(0px) translateY('+.3*scrollY+'px)', opacity: 1-navOpacity }">
-    <a href="https://xujiahua.github.io/">
-        <div class="single-column-header-title">Happy Coding</div>
-        
-
-    </a>
-</div>
-            <div id="content">
-<div ref="streamContainer" class="stream-container">
-    <div class="post-list-container post-list-container-shadow">
-        <div class="post">
-            
-            
-            
-
-            <div class="post-head-wrapper-text-only"
-                 style="background-image: url('/')">
-                <div class="post-title">
-                    微信用户授权头像内容带随机干扰的问题
-                    
-                    <div class="post-meta">
-                        
-                        <time itemprop="datePublished">
-                            2020-05-14 13:38
-                        </time>
-                        
-
-                        
-
-                        
-                    </div>
-                </div>
+</header><header class="mobile" id="header-mobile">
+    <div class="header-container">
+        <div class="header-wrapper">
+            <div class="header-title">
+                <a href="/" title="Happy Coding">Happy Coding</a>
             </div>
-            
-            <div class="post-body-wrapper">
-                <div class="post-body">
-                    <p>项目需要基于头像、昵称对不同实体账号下的微信用户进行匹配。基于这个思路，打算先下载微信头像的图像，后计算其MD5，“单元测试”了下这个简单方法，结果惊人。</p>
+            <div class="menu-toggle" id="menu-toggle-mobile">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="menu" id="menu-mobile"><a class="menu-item" href="/posts" title="">Archive</a><a class="menu-item" href="/categories" title="">Categories</a><a class="menu-item" href="/tags" title="">Tags</a><a class="menu-item" href="/index.xml" title="">RSS Feed</a><a href="javascript:void(0);" class="menu-item theme-switch" title="Switch Theme">
+                <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+            </a></div>
+    </div>
+</header><main class="main">
+                <div class="container"><div class="toc" id="toc-auto">
+            <h2 class="toc-title">Contents</h2>
+            <div class="toc-content" id="toc-content-auto"></div>
+        </div><article class="page single"><h1 class="single-title animate__animated animate__flipInX">微信用户授权头像内容带随机干扰的问题</h1><div class="post-meta">
+            <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Happy Coding</a></span></div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2020-05-14">2020-05-14</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;239 words&nbsp;
+                <i class="far fa-clock fa-fw" aria-hidden="true"></i>&nbsp;2 minutes&nbsp;</div>
+        </div><div class="details toc" id="toc-static"  data-kept="">
+                <div class="details-summary toc-title">
+                    <span>Contents</span>
+                    <span><i class="details-icon fas fa-angle-right" aria-hidden="true"></i></span>
+                </div>
+                <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#微信头像内容分析">微信头像内容分析</a>
+      <ul>
+        <li><a href="#肉眼比较">肉眼比较</a></li>
+        <li><a href="#字节级比较">字节级比较</a></li>
+        <li><a href="#像素级比较">像素级比较</a></li>
+      </ul>
+    </li>
+    <li><a href="#目标消除白点">目标：消除白点</a></li>
+    <li><a href="#总结">总结</a></li>
+  </ul>
+</nav></div>
+            </div><div class="content" id="content"><p>项目需要基于头像、昵称对不同实体账号下的微信用户进行匹配。基于这个思路，打算先下载微信头像的图像，后计算其MD5，“单元测试”了下这个简单方法，结果惊人。</p>
 <p>同一个人的同一个头像链接返回的图像内容都不一样。内容不一样，MD5值也就不一样。</p>
 <p>看来微信对我们这些拙劣的手段早有防备。</p>
 <h2 id="微信头像内容分析">微信头像内容分析</h2>
 <p>同一个头像链接下载两次。</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ wget -O 1.png https://wx.qlogo.cn/mmopen/vi_32/DYAIOgq83eoc614h6RfCUnwQTblG9y2dq4g5PKVicVZd5CQO9JNdPCWCovl8cmsvxQcWDemcLYGW6pSt97uUW5A/132
-$ wget -O 2.png https://wx.qlogo.cn/mmopen/vi_32/DYAIOgq83eoc614h6RfCUnwQTblG9y2dq4g5PKVicVZd5CQO9JNdPCWCovl8cmsvxQcWDemcLYGW6pSt97uUW5A/132
-
-$ md5 1.png
-MD5 <span style="color:#f92672">(</span>1.png<span style="color:#f92672">)</span> <span style="color:#f92672">=</span> dd6aa938cbec381a3e83702776be88a3
-$ md5 2.png
-MD5 <span style="color:#f92672">(</span>2.png<span style="color:#f92672">)</span> <span style="color:#f92672">=</span> 83668a6ad7eeee8fa8e5e0db339233d1
-</code></pre></div><h3 id="肉眼比较">肉眼比较</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ wget -O 1.png https://wx.qlogo.cn/mmopen/vi_32/DYAIOgq83eoc614h6RfCUnwQTblG9y2dq4g5PKVicVZd5CQO9JNdPCWCovl8cmsvxQcWDemcLYGW6pSt97uUW5A/132
+</span></span><span style="display:flex;"><span>$ wget -O 2.png https://wx.qlogo.cn/mmopen/vi_32/DYAIOgq83eoc614h6RfCUnwQTblG9y2dq4g5PKVicVZd5CQO9JNdPCWCovl8cmsvxQcWDemcLYGW6pSt97uUW5A/132
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>$ md5 1.png
+</span></span><span style="display:flex;"><span>MD5 <span style="color:#f92672">(</span>1.png<span style="color:#f92672">)</span> <span style="color:#f92672">=</span> dd6aa938cbec381a3e83702776be88a3
+</span></span><span style="display:flex;"><span>$ md5 2.png
+</span></span><span style="display:flex;"><span>MD5 <span style="color:#f92672">(</span>2.png<span style="color:#f92672">)</span> <span style="color:#f92672">=</span> 83668a6ad7eeee8fa8e5e0db339233d1
+</span></span></code></pre></div><h3 id="肉眼比较">肉眼比较</h3>
 <p>肉眼完全无法区分。</p>
-<p><img src="../../images/image-20200514134445598.png" alt="image-20200514134445598"></p>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="../../images/image-20200514134445598.png"
+        data-srcset="../../images/image-20200514134445598.png, ../../images/image-20200514134445598.png 1.5x, ../../images/image-20200514134445598.png 2x"
+        data-sizes="auto"
+        alt="../../images/image-20200514134445598.png"
+        title="image-20200514134445598" /></p>
 <h3 id="字节级比较">字节级比较</h3>
 <p>两张图，可以看出差异很大。</p>
-<p><img src="../../images/image-20200514134712953.png" alt="image-20200514134712953"></p>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="../../images/image-20200514134712953.png"
+        data-srcset="../../images/image-20200514134712953.png, ../../images/image-20200514134712953.png 1.5x, ../../images/image-20200514134712953.png 2x"
+        data-sizes="auto"
+        alt="../../images/image-20200514134712953.png"
+        title="image-20200514134712953" /></p>
 <h3 id="像素级比较">像素级比较</h3>
 <p>为了方便对比，图先灰度化（一个像素点的RGB三值改为1个值）。</p>
-<p><img src="../../images/image-20200514184021629.png" alt="image-20200514184021629"></p>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="../../images/image-20200514184021629.png"
+        data-srcset="../../images/image-20200514184021629.png, ../../images/image-20200514184021629.png 1.5x, ../../images/image-20200514184021629.png 2x"
+        data-sizes="auto"
+        alt="../../images/image-20200514184021629.png"
+        title="image-20200514184021629" /></p>
 <p>两张灰度图差值的数据分布。x轴为差值，y轴为出现次数。</p>
 <p>0代表相同位置的像素点相同，非0代表相同位置像素点有差异及其差异幅度。</p>
 <p>0出现次数最多，可见两张图的大部分像素点的值是相同的。差异主要分为两部分，1-10 闭区间。（试了几张图）</p>
-<p><img src="../../images/image-20200515094333720.png" alt="image-20200515094333720"></p>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="../../images/image-20200515094333720.png"
+        data-srcset="../../images/image-20200515094333720.png, ../../images/image-20200515094333720.png 1.5x, ../../images/image-20200515094333720.png 2x"
+        data-sizes="auto"
+        alt="../../images/image-20200515094333720.png"
+        title="image-20200515094333720" /></p>
 <p>另一种可视化，白色代表两图相同位置像素点不同。可见，图片污染非常严重。</p>
 <p>上图生成脚本：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">import</span> numpy <span style="color:#f92672">as</span> np
-<span style="color:#f92672">from</span> PIL <span style="color:#f92672">import</span> Image
-
-<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">read_to_2d_array</span>(filename):
-    img <span style="color:#f92672">=</span> Image<span style="color:#f92672">.</span>open(filename)
-    img <span style="color:#f92672">=</span> img<span style="color:#f92672">.</span>convert(<span style="color:#e6db74">&#39;L&#39;</span>)
-    <span style="color:#66d9ef">print</span>(img<span style="color:#f92672">.</span>size)
-    <span style="color:#66d9ef">return</span> np<span style="color:#f92672">.</span>array(img)
-
-data1 <span style="color:#f92672">=</span> read_to_2d_array(<span style="color:#e6db74">&#34;1.png&#34;</span>)
-data2 <span style="color:#f92672">=</span> read_to_2d_array(<span style="color:#e6db74">&#34;2.png&#34;</span>)
-<span style="color:#75715e"># NOTE: np.uint8(3) - np.uint8(4) = 255 引起的误差让我绝望了</span>
-diff <span style="color:#f92672">=</span> np<span style="color:#f92672">.</span>uint8(np<span style="color:#f92672">.</span>abs(np<span style="color:#f92672">.</span>int16(data1) <span style="color:#f92672">-</span> np<span style="color:#f92672">.</span>int16(data2)))
-
-<span style="color:#f92672">import</span> matplotlib.pyplot <span style="color:#f92672">as</span> plt
-x, y <span style="color:#f92672">=</span> np<span style="color:#f92672">.</span>unique(diff, return_counts<span style="color:#f92672">=</span>True)
-x <span style="color:#f92672">=</span> [f<span style="color:#e6db74">&#34;{e}&#34;</span> <span style="color:#66d9ef">for</span> e <span style="color:#f92672">in</span> x]
-<span style="color:#66d9ef">print</span>(x)
-<span style="color:#66d9ef">print</span>(y)
-plt<span style="color:#f92672">.</span>bar(x, y)
-plt<span style="color:#f92672">.</span>show()
-
-<span style="color:#66d9ef">print</span>(<span style="color:#e6db74">&#34;count of non-zero point&#34;</span>, (diff <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">0</span>)<span style="color:#f92672">.</span>sum())
-
-diff <span style="color:#f92672">=</span> diff <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">0</span>
-Image<span style="color:#f92672">.</span>fromarray(diff, mode<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;1&#39;</span>)<span style="color:#f92672">.</span>save(<span style="color:#e6db74">&#34;diff12.png&#34;</span>, <span style="color:#e6db74">&#34;PNG&#34;</span>)
-</code></pre></div><h2 id="目标消除白点">目标：消除白点</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">import</span> numpy <span style="color:#66d9ef">as</span> np
+</span></span><span style="display:flex;"><span><span style="color:#f92672">from</span> PIL <span style="color:#f92672">import</span> Image
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">read_to_2d_array</span>(filename):
+</span></span><span style="display:flex;"><span>    img <span style="color:#f92672">=</span> Image<span style="color:#f92672">.</span>open(filename)
+</span></span><span style="display:flex;"><span>    img <span style="color:#f92672">=</span> img<span style="color:#f92672">.</span>convert(<span style="color:#e6db74">&#39;L&#39;</span>)
+</span></span><span style="display:flex;"><span>    print(img<span style="color:#f92672">.</span>size)
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> np<span style="color:#f92672">.</span>array(img)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>data1 <span style="color:#f92672">=</span> read_to_2d_array(<span style="color:#e6db74">&#34;1.png&#34;</span>)
+</span></span><span style="display:flex;"><span>data2 <span style="color:#f92672">=</span> read_to_2d_array(<span style="color:#e6db74">&#34;2.png&#34;</span>)
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># NOTE: np.uint8(3) - np.uint8(4) = 255 引起的误差让我绝望了</span>
+</span></span><span style="display:flex;"><span>diff <span style="color:#f92672">=</span> np<span style="color:#f92672">.</span>uint8(np<span style="color:#f92672">.</span>abs(np<span style="color:#f92672">.</span>int16(data1) <span style="color:#f92672">-</span> np<span style="color:#f92672">.</span>int16(data2)))
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> matplotlib.pyplot <span style="color:#66d9ef">as</span> plt
+</span></span><span style="display:flex;"><span>x, y <span style="color:#f92672">=</span> np<span style="color:#f92672">.</span>unique(diff, return_counts<span style="color:#f92672">=</span><span style="color:#66d9ef">True</span>)
+</span></span><span style="display:flex;"><span>x <span style="color:#f92672">=</span> [<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">{</span>e<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#66d9ef">for</span> e <span style="color:#f92672">in</span> x]
+</span></span><span style="display:flex;"><span>print(x)
+</span></span><span style="display:flex;"><span>print(y)
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>bar(x, y)
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>show()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>print(<span style="color:#e6db74">&#34;count of non-zero point&#34;</span>, (diff <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">0</span>)<span style="color:#f92672">.</span>sum())
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>diff <span style="color:#f92672">=</span> diff <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">0</span>
+</span></span><span style="display:flex;"><span>Image<span style="color:#f92672">.</span>fromarray(diff, mode<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;1&#39;</span>)<span style="color:#f92672">.</span>save(<span style="color:#e6db74">&#34;diff12.png&#34;</span>, <span style="color:#e6db74">&#34;PNG&#34;</span>)
+</span></span></code></pre></div><h2 id="目标消除白点">目标：消除白点</h2>
 <p>要达到多份干扰图生成相同的哈希值的效果，就是要消除白点，也就是降采样图像，主要两个方式：</p>
 <ol>
 <li>降低灰度级别。比如 8bit（256级灰度）图像压缩到6bit（64级灰度）图像，原像素点0、1、2、3归为一个像素点0，以此类推。</li>
 <li>降低图像尺寸。比如尺寸同比缩小一倍。</li>
 </ol>
 <p>在有限数据量下测试，32级灰度，10x10 尺寸下，白点消失了。</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">import</span> numpy <span style="color:#f92672">as</span> np
-<span style="color:#f92672">from</span> PIL <span style="color:#f92672">import</span> Image
-
-<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">read_to_2d_array</span>(filename, size<span style="color:#f92672">=</span>None, bit<span style="color:#f92672">=</span><span style="color:#ae81ff">8</span>):
-    img <span style="color:#f92672">=</span> Image<span style="color:#f92672">.</span>open(filename)
-    img <span style="color:#f92672">=</span> img<span style="color:#f92672">.</span>convert(<span style="color:#e6db74">&#39;L&#39;</span>)
-    <span style="color:#66d9ef">if</span> size <span style="color:#f92672">is</span> <span style="color:#f92672">not</span> None:
-        img <span style="color:#f92672">=</span> img<span style="color:#f92672">.</span>resize(size)
-    data <span style="color:#f92672">=</span> np<span style="color:#f92672">.</span>array(img)
-    <span style="color:#66d9ef">if</span> bit <span style="color:#f92672">&lt;</span> <span style="color:#ae81ff">8</span>:
-        data <span style="color:#f92672">=</span> data <span style="color:#f92672">//</span> (<span style="color:#ae81ff">2</span><span style="color:#f92672">**</span>(<span style="color:#ae81ff">8</span><span style="color:#f92672">-</span>bit)) <span style="color:#f92672">*</span> (<span style="color:#ae81ff">2</span><span style="color:#f92672">**</span>(<span style="color:#ae81ff">8</span><span style="color:#f92672">-</span>bit))
-    <span style="color:#66d9ef">return</span> data
-
-size_options <span style="color:#f92672">=</span> [
-    (<span style="color:#ae81ff">64</span>, <span style="color:#ae81ff">64</span>),
-    (<span style="color:#ae81ff">40</span>, <span style="color:#ae81ff">40</span>),
-    (<span style="color:#ae81ff">32</span>, <span style="color:#ae81ff">32</span>),
-    (<span style="color:#ae81ff">20</span>, <span style="color:#ae81ff">20</span>),
-    (<span style="color:#ae81ff">10</span>, <span style="color:#ae81ff">10</span>)
-]
-
-<span style="color:#66d9ef">for</span> bit <span style="color:#f92672">in</span> range(<span style="color:#ae81ff">8</span>, <span style="color:#ae81ff">0</span>, <span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>):
-    <span style="color:#66d9ef">for</span> size <span style="color:#f92672">in</span> size_options:
-        data1 <span style="color:#f92672">=</span> read_to_2d_array(<span style="color:#e6db74">&#34;1.png&#34;</span>, size<span style="color:#f92672">=</span>size, bit<span style="color:#f92672">=</span>bit)
-        data2 <span style="color:#f92672">=</span> read_to_2d_array(<span style="color:#e6db74">&#34;2.png&#34;</span>, size<span style="color:#f92672">=</span>size, bit<span style="color:#f92672">=</span>bit)
-        diff <span style="color:#f92672">=</span> np<span style="color:#f92672">.</span>uint8(np<span style="color:#f92672">.</span>abs(np<span style="color:#f92672">.</span>int16(data1) <span style="color:#f92672">-</span> np<span style="color:#f92672">.</span>int16(data2)))
-        <span style="color:#66d9ef">print</span>(diff<span style="color:#f92672">.</span>shape)
-        <span style="color:#66d9ef">if</span> (diff <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">0</span>)<span style="color:#f92672">.</span>sum() <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>:
-            Image<span style="color:#f92672">.</span>fromarray(data1)<span style="color:#f92672">.</span>save(f<span style="color:#e6db74">&#34;{bit}_{size}_1.png&#34;</span>, <span style="color:#e6db74">&#34;PNG&#34;</span>)
-            Image<span style="color:#f92672">.</span>fromarray(data2)<span style="color:#f92672">.</span>save(f<span style="color:#e6db74">&#34;{bit}_{size}_2.png&#34;</span>, <span style="color:#e6db74">&#34;PNG&#34;</span>)
-        ratio <span style="color:#f92672">=</span> (diff <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">0</span>)<span style="color:#f92672">.</span>sum() <span style="color:#f92672">/</span> (diff<span style="color:#f92672">.</span>shape[<span style="color:#ae81ff">0</span>]<span style="color:#f92672">*</span>diff<span style="color:#f92672">.</span>shape[<span style="color:#ae81ff">1</span>])
-        <span style="color:#66d9ef">print</span>(<span style="color:#e6db74">&#34;bit: {0}, size: {1}, 脏点率：{2}&#34;</span><span style="color:#f92672">.</span>format(bit, size, ratio))
-</code></pre></div><p>参考：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">import</span> numpy <span style="color:#66d9ef">as</span> np
+</span></span><span style="display:flex;"><span><span style="color:#f92672">from</span> PIL <span style="color:#f92672">import</span> Image
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">read_to_2d_array</span>(filename, size<span style="color:#f92672">=</span><span style="color:#66d9ef">None</span>, bit<span style="color:#f92672">=</span><span style="color:#ae81ff">8</span>):
+</span></span><span style="display:flex;"><span>    img <span style="color:#f92672">=</span> Image<span style="color:#f92672">.</span>open(filename)
+</span></span><span style="display:flex;"><span>    img <span style="color:#f92672">=</span> img<span style="color:#f92672">.</span>convert(<span style="color:#e6db74">&#39;L&#39;</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> size <span style="color:#f92672">is</span> <span style="color:#f92672">not</span> <span style="color:#66d9ef">None</span>:
+</span></span><span style="display:flex;"><span>        img <span style="color:#f92672">=</span> img<span style="color:#f92672">.</span>resize(size)
+</span></span><span style="display:flex;"><span>    data <span style="color:#f92672">=</span> np<span style="color:#f92672">.</span>array(img)
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> bit <span style="color:#f92672">&lt;</span> <span style="color:#ae81ff">8</span>:
+</span></span><span style="display:flex;"><span>        data <span style="color:#f92672">=</span> data <span style="color:#f92672">//</span> (<span style="color:#ae81ff">2</span><span style="color:#f92672">**</span>(<span style="color:#ae81ff">8</span><span style="color:#f92672">-</span>bit)) <span style="color:#f92672">*</span> (<span style="color:#ae81ff">2</span><span style="color:#f92672">**</span>(<span style="color:#ae81ff">8</span><span style="color:#f92672">-</span>bit))
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> data
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>size_options <span style="color:#f92672">=</span> [
+</span></span><span style="display:flex;"><span>    (<span style="color:#ae81ff">64</span>, <span style="color:#ae81ff">64</span>),
+</span></span><span style="display:flex;"><span>    (<span style="color:#ae81ff">40</span>, <span style="color:#ae81ff">40</span>),
+</span></span><span style="display:flex;"><span>    (<span style="color:#ae81ff">32</span>, <span style="color:#ae81ff">32</span>),
+</span></span><span style="display:flex;"><span>    (<span style="color:#ae81ff">20</span>, <span style="color:#ae81ff">20</span>),
+</span></span><span style="display:flex;"><span>    (<span style="color:#ae81ff">10</span>, <span style="color:#ae81ff">10</span>)
+</span></span><span style="display:flex;"><span>]
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">for</span> bit <span style="color:#f92672">in</span> range(<span style="color:#ae81ff">8</span>, <span style="color:#ae81ff">0</span>, <span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>):
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">for</span> size <span style="color:#f92672">in</span> size_options:
+</span></span><span style="display:flex;"><span>        data1 <span style="color:#f92672">=</span> read_to_2d_array(<span style="color:#e6db74">&#34;1.png&#34;</span>, size<span style="color:#f92672">=</span>size, bit<span style="color:#f92672">=</span>bit)
+</span></span><span style="display:flex;"><span>        data2 <span style="color:#f92672">=</span> read_to_2d_array(<span style="color:#e6db74">&#34;2.png&#34;</span>, size<span style="color:#f92672">=</span>size, bit<span style="color:#f92672">=</span>bit)
+</span></span><span style="display:flex;"><span>        diff <span style="color:#f92672">=</span> np<span style="color:#f92672">.</span>uint8(np<span style="color:#f92672">.</span>abs(np<span style="color:#f92672">.</span>int16(data1) <span style="color:#f92672">-</span> np<span style="color:#f92672">.</span>int16(data2)))
+</span></span><span style="display:flex;"><span>        print(diff<span style="color:#f92672">.</span>shape)
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> (diff <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">0</span>)<span style="color:#f92672">.</span>sum() <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>:
+</span></span><span style="display:flex;"><span>            Image<span style="color:#f92672">.</span>fromarray(data1)<span style="color:#f92672">.</span>save(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">{</span>bit<span style="color:#e6db74">}</span><span style="color:#e6db74">_</span><span style="color:#e6db74">{</span>size<span style="color:#e6db74">}</span><span style="color:#e6db74">_1.png&#34;</span>, <span style="color:#e6db74">&#34;PNG&#34;</span>)
+</span></span><span style="display:flex;"><span>            Image<span style="color:#f92672">.</span>fromarray(data2)<span style="color:#f92672">.</span>save(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">{</span>bit<span style="color:#e6db74">}</span><span style="color:#e6db74">_</span><span style="color:#e6db74">{</span>size<span style="color:#e6db74">}</span><span style="color:#e6db74">_2.png&#34;</span>, <span style="color:#e6db74">&#34;PNG&#34;</span>)
+</span></span><span style="display:flex;"><span>        ratio <span style="color:#f92672">=</span> (diff <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">0</span>)<span style="color:#f92672">.</span>sum() <span style="color:#f92672">/</span> (diff<span style="color:#f92672">.</span>shape[<span style="color:#ae81ff">0</span>]<span style="color:#f92672">*</span>diff<span style="color:#f92672">.</span>shape[<span style="color:#ae81ff">1</span>])
+</span></span><span style="display:flex;"><span>        print(<span style="color:#e6db74">&#34;bit: </span><span style="color:#e6db74">{0}</span><span style="color:#e6db74">, size: </span><span style="color:#e6db74">{1}</span><span style="color:#e6db74">, 脏点率：</span><span style="color:#e6db74">{2}</span><span style="color:#e6db74">&#34;</span><span style="color:#f92672">.</span>format(bit, size, ratio))
+</span></span></code></pre></div><p>参考：</p>
 <ol>
-<li>相似图片搜索的原理 <a href="http://www.ruanyifeng.com/blog/2011/07/principle_of_similar_image_search.html">http://www.ruanyifeng.com/blog/2011/07/principle_of_similar_image_search.html</a></li>
+<li>相似图片搜索的原理 <a href="http://www.ruanyifeng.com/blog/2011/07/principle_of_similar_image_search.html" target="_blank" rel="noopener noreffer ">http://www.ruanyifeng.com/blog/2011/07/principle_of_similar_image_search.html</a></li>
 </ol>
 <h2 id="总结">总结</h2>
 <p>微信为了保护用户隐私，防止通过头像昵称进行用户匹配，对每次通过头像链接获取的头像内容加入了随机的扰动，像素点扰动幅度范围在 [-10, 10]，大概15%的像素点（两份干扰图的差异）受干扰，图像的差异肉眼难以察觉。</p>
 <p>最终图像哈希用于 SQL JOIN，需要将有些许差异的图像映射成一个值。不考虑相似度算法。</p>
 <p>通过在图像色彩、尺寸上降维，初步解决了这个问题。</p>
-
-                    
-                    <HR width="100%" id="EOF">
-                    <p style="color:#777;">Last modified on 2020-05-14</p>
-                    
-                </div>
-            </div>
-            
-            
-            <nav class="post-pagination">
-
-                
-                <a class="newer-posts" href="https://xujiahua.github.io/posts/20200527-metabase-impala-driver/">
-                    Next<br>Metabase Impala Driver
-                </a>
-                
-                
-                
-                <a class="older-posts" href="https://xujiahua.github.io/posts/20200504-hackintosh/">
-                    Previous<br>NUC8i5BEH Hackintosh
-                </a>
-                
-            </nav>
-            <div class="post-comment-wrapper">
-                
-
-
-
-
-
-
+</div><div class="post-footer" id="post-footer">
+    <div class="post-info">
+        <div class="post-info-line">
+            <div class="post-info-mod">
+                <span>Updated on 2020-05-14</span>
+            </div></div>
+        <div class="post-info-line">
+            <div class="post-info-md"></div>
+            <div class="post-info-share">
+                <span><a href="javascript:void(0);" title="Share on Twitter" data-sharer="twitter" data-url="https://xujiahua.github.io/posts/20200514-wx-avatar/" data-title="微信用户授权头像内容带随机干扰的问题"><i class="fab fa-twitter fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="Share on Facebook" data-sharer="facebook" data-url="https://xujiahua.github.io/posts/20200514-wx-avatar/"><i class="fab fa-facebook-square fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="Share on Hacker News" data-sharer="hackernews" data-url="https://xujiahua.github.io/posts/20200514-wx-avatar/" data-title="微信用户授权头像内容带随机干扰的问题"><i class="fab fa-hacker-news fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="Share on Line" data-sharer="line" data-url="https://xujiahua.github.io/posts/20200514-wx-avatar/" data-title="微信用户授权头像内容带随机干扰的问题"><i data-svg-src="https://cdn.jsdelivr.net/npm/simple-icons@7.3.0/icons/line.svg" aria-hidden="true"></i></a><a href="javascript:void(0);" title="Share on 微博" data-sharer="weibo" data-url="https://xujiahua.github.io/posts/20200514-wx-avatar/" data-title="微信用户授权头像内容带随机干扰的问题"><i class="fab fa-weibo fa-fw" aria-hidden="true"></i></a></span>
             </div>
         </div>
     </div>
+
+    <div class="post-info-more">
+        <section class="post-tags"></section>
+        <section>
+            <span><a href="javascript:void(0);" onclick="window.history.back();">Back</a></span>&nbsp;|&nbsp;<span><a href="/">Home</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav"><a href="/posts/20200504-hackintosh/" class="prev" rel="prev" title="NUC8i5BEH Hackintosh"><i class="fas fa-angle-left fa-fw" aria-hidden="true"></i>NUC8i5BEH Hackintosh</a>
+            <a href="/posts/20200527-metabase-impala-driver/" class="next" rel="next" title="Metabase Impala Driver">Metabase Impala Driver<i class="fas fa-angle-right fa-fw" aria-hidden="true"></i></a></div>
 </div>
+</article></div>
+            </main><footer class="footer">
+        <div class="footer-container"><div class="footer-line">Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.147.3">Hugo</a> | Theme - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.3.0"><i class="far fa-kiss-wink-heart fa-fw" aria-hidden="true"></i> LoveIt</a>
+                </div><div class="footer-line" itemscope itemtype="http://schema.org/CreativeWork"><i class="far fa-copyright fa-fw" aria-hidden="true"></i><span itemprop="copyrightYear">2022 - 2025</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/" target="_blank">Happy Coding</a></span></div>
+        </div>
+    </footer></div>
 
-            </div><div id="single-column-footer">
-Hugo Theme <a href="https://github.com/amazingrise/hugo-theme-diary">Diary</a> by <a href="https://amazingrise.net">Rise</a>
-<br>
-Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopener">Makito</a>'s <a href="https://github.com/SumiMakito/hexo-theme-journal/" target="_blank" rel="noreferrer noopener">Journal.</a> <br>
-<br>
-
-&copy;
-	
-	2021 Happy Coding
-	</div>
-    	</div>
-    <script src="https://xujiahua.github.io//js/journal.js"></script>
-    </body>
+        <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="Back to Top">
+                <i class="fas fa-arrow-up fa-fw" aria-hidden="true"></i>
+            </a><a href="#" id="view-comments" class="fixed-button" title="View Comments">
+                <i class="fas fa-comment fa-fw" aria-hidden="true"></i>
+            </a>
+        </div><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/lazysizes@5.3.2/lazysizes.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/clipboard@2.0.11/dist/clipboard.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/sharer.js@0.5.1/sharer.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"Copy to clipboard","maxShownLines":50},"comment":{}};</script><script type="text/javascript" src="/js/theme.min.js"></script></body>
 </html>

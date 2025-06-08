@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+    <head>
+	<meta name="generator" content="Hugo 0.147.3"><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="robots" content="noodp" />
+        <title>Happy Coding</title><meta name="Description" content=""><meta property="og:url" content="http://localhost:1313/">
+  <meta property="og:site_name" content="Happy Coding">
+  <meta property="og:title" content="Happy Coding">
+  <meta property="og:locale" content="zh_cn">
+  <meta property="og:type" content="website">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Happy Coding">
+<meta name="application-name" content="Happy Coding">
+<meta name="apple-mobile-web-app-title" content="Happy Coding"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="http://localhost:1313/" /><link rel="alternate" href="/index.xml" type="application/rss+xml" title="Happy Coding">
+    <link rel="feed" href="/index.xml" type="application/rss+xml" title="Happy Coding"><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="/lib/fontawesome-free/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="/lib/fontawesome-free/all.min.css"></noscript><link rel="preload" href="/lib/animate/animate.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="/lib/animate/animate.min.css"></noscript><script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "WebSite",
+        "url": "http:\/\/localhost:1313\/","inLanguage": "zh-cn","author": {
+                "@type": "Person",
+                "name": "Happy Coding"
+            },"name": "Happy Coding"
+    }
+    </script></head>
+    <body data-header-desktop="fixed" data-header-mobile="auto"><script type="text/javascript">(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
+
+        <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
+    <div class="header-wrapper">
+        <div class="header-title">
+            <a href="/" title="Happy Coding">Happy Coding</a>
+        </div>
+        <div class="menu">
+            <div class="menu-inner"><a class="menu-item" href="/posts"> Archive </a><a class="menu-item" href="/categories"> Categories </a><a class="menu-item" href="/tags"> Tags </a><a class="menu-item" href="/index.xml"> RSS Feed </a><span class="menu-item delimiter"></span><a href="javascript:void(0);" class="menu-item theme-switch" title="Switch Theme">
+                    <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+                </a></div>
+        </div>
+    </div>
+</header><header class="mobile" id="header-mobile">
+    <div class="header-container">
+        <div class="header-wrapper">
+            <div class="header-title">
+                <a href="/" title="Happy Coding">Happy Coding</a>
+            </div>
+            <div class="menu-toggle" id="menu-toggle-mobile">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="menu" id="menu-mobile"><a class="menu-item" href="/posts" title="">Archive</a><a class="menu-item" href="/categories" title="">Categories</a><a class="menu-item" href="/tags" title="">Tags</a><a class="menu-item" href="/index.xml" title="">RSS Feed</a><a href="javascript:void(0);" class="menu-item theme-switch" title="Switch Theme">
+                <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+            </a></div>
+    </div>
+</header><main class="main">
+                <div class="container"><div class="page home" data-home="posts"><div class="home-profile"><div class="links"></div></div>
+<article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
+        <a href="/posts/20200731-data-computation-tools/">数据处理分析工具一览</a>
+    </h1><div class="post-meta"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Happy Coding</a></span>&nbsp;<span class="post-publish">published on <time datetime="2019-11-29">2019-11-29</time></span></div><div class="content"><p>记得入门数据科学，用的是pandas，结构化数据用DataFrame承载很方便，DateFrame数据清洗完，与Scikit-Learn衔接得很好，就可以进入机器学习环节了。</p>
+<p>后来的Spark也有了DataFrame，当然Spark SQL更加方便了，SQL的表达简洁有力，大数据上做BI报表很方便。</p>
+<p>本文梳理下这些好用的数据计算工具。</p>
+<p>评估一个数据计算工具，主要是考察这些方面的能力：</p>
+<ol>
+<li>分布式计算的能力。Scale Out 横向扩展的能力。</li>
+<li>数据是懒加载的，还是直接读入内存的。</li>
+</ol>
+<h2 id="pandas系列">Pandas系列</h2>
+<h3 id="pandas">Pandas</h3>
+<p><a href="https://pandas.pydata.org/" target="_blank" rel="noopener noreffer ">https://pandas.pydata.org/</a></p>
+<ol>
+<li>先驱者。也有好多学习资料。</li>
+<li>并行能力不行。One can only use one core at a time when doing computation. 这里例子，https://stackoverflow.com/questions/45545110/how-do-you-parallelize-apply-on-pandas-dataframes-making-use-of-all-cores-on-o 以前我也困扰过。因为这个问题，各种并行计算的扩展也出来了。</li>
+<li>Load大数据集也很慢。即使没有计算，也要把所有数据存储到内存中。</li>
+<li>仅供学习使用。</li>
+</ol>
+<h3 id="dask--多核多机上扩展">Dask &ndash; 多核多机上扩展</h3>
+<p><a href="https://dask.org/" target="_blank" rel="noopener noreffer ">Dask</a> is a flexible library for parallel computing in Python that makes scaling out your workflow smooth and simple.</p>
+<ol>
+<li>Dask的原理是master/worker这种结构，使用TCP通信，所以可以支持多机通信。https://www.youtube.com/watch?v=TQM9zIBzNBo&amp;list=UUj9eavqmvwaCyKhIlu2GaoA&amp;index=5</li>
+<li>与Pandas相比，需要多调用一句<code>.compute() </code>。可能会造成困扰。</li>
+</ol>
+<p>信息来源：</p>
+<ol>
+<li>Dask Introduction: <a href="https://www.youtube.com/channel/UCj9eavqmvwaCyKhIlu2GaoA" target="_blank" rel="noopener noreffer ">https://www.youtube.com/channel/UCj9eavqmvwaCyKhIlu2GaoA</a></li>
+<li><a href="https://docs.dask.org/en/latest/why.html" target="_blank" rel="noopener noreffer ">https://docs.dask.org/en/latest/why.html</a></li>
+</ol>
+<h3 id="rapids--gpu上扩展">RAPIDS &ndash; GPU上扩展</h3>
+<p>主要是这两个库cuDF，Dask-cuDF。</p></div><div class="post-footer">
+        <a href="/posts/20200731-data-computation-tools/">Read More</a><div class="post-tags">
+                <i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/spark/">Spark</a>,&nbsp;<a href="/tags/pandas/">Pandas</a>,&nbsp;<a href="/tags/dask/">Dask</a>,&nbsp;<a href="/tags/gpu/">GPU</a></div></div>
+</article><article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
+        <a href="/posts/20191123-ebay-bigdata-techday/">2019 eBay Big Data TechDay</a>
+    </h1><div class="post-meta"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Happy Coding</a></span>&nbsp;<span class="post-publish">published on <time datetime="2019-11-23">2019-11-23</time></span></div><div class="content"><p>（笔记迁移 @ 2020年）</p>
+<p>现场听了下eBay大数据的分享。视频/PPT <a href="https://www.slidestalk.com/ebay" target="_blank" rel="noopener noreffer ">https://www.slidestalk.com/ebay</a></p>
+<p>总体感觉，很棒。</p>
+<ol>
+<li>环境很好。德国中心，提供了星巴克、点心。</li>
+<li>技术氛围好。几百人做大数据呢！而且做得都比较深。</li>
+<li>拥抱开源：基于开源的二次开发，外围开发，平台化（易用性）等工作。</li>
+<li>风控经理演讲水平好棒。</li>
+<li>Spark SQL / Flink Streaming / Spark Streaming / ElasticSearch 这些是目前大数据的主流</li>
+<li>真正投身大数据，最优选择是学习Spark。</li>
+<li>没有中奖，不过拿了小礼物，心里美滋滋。</li>
+</ol>
+<h4 id="应用角度data-driven-payment-risk">【应用角度】Data Driven Payment Risk</h4>
+<ol>
+<li>演讲、台风挺好的。</li>
+<li>内容方面没有很新颖但是很扎实（基于图算法的挖掘其实挺少听见的，是让人眼前一亮的东西，但是我之前正好看过这块了。）。</li>
+<li>基本上是在支付风控这个应用角度。</li>
+<li>如果去PayPal，这块支付风控是可以好好学习的。</li>
+</ol>
+<h4 id="flink-streamingrheos-sql-a-real-time-processing-language">【Flink Streaming】Rheos-SQL: A Real-Time Processing Language</h4>
+<ol>
+<li>两个年轻人联合做的分享。</li>
+<li>基于Flink的，Flink还有SQL功能。Flink这块我没接触。</li>
+<li>扩展SQL语法的思路，加入了一些新功能，比如sqlflow也是这么做的（阿里巴巴）。写SQL就能连Kafka、ES。这点很不错的扩展。</li>
+<li>还做了一个平台。</li>
+</ol>
+<h4 id="spark-streamingdesigning-etl-pipelines-with-structured-streaming-and-delta-lake">【Spark Streaming】Designing ETL pipelines with Structured Streaming and Delta lake</h4>
+<ol>
+<li>干货不多，一些最佳实践（因为没怎么做过streaming，印象不深）。感觉是Delta Lake的推广。</li>
+<li>Delta Lake能替换hive么？</li>
+</ol>
+<h4 id="elasticsearchpronto---elasticsearch-as-a-service-at-ebay">【ElasticSearch】Pronto - ElasticSearch as a service at ebay</h4>
+<ol>
+<li>Kibaba插件开发扩展ELK</li>
+<li>做了一个平台管理ES。</li>
+</ol>
+<h4 id="aibigdatanous---empower-data-analysis-through-augmented-analytics">【AI+BigData】Nous - Empower Data Analysis through Augmented Analytics</h4>
+<ol>
+<li>增强分析。大数据分析+知识图谱，自然语言处理（英文）。这个topic太时髦了。</li>
+<li>演示效果，界面真很好看了。</li>
+<li>风趣的开场白。技术又好。</li>
+<li>英语对话，这么流利。有被刺激到。</li>
+<li>从规则引擎开始</li>
+<li>积累数据，机器学习生成规则</li>
+</ol>
+<h4 id="spark-sqlcarmel---optimizing-sparksql-for-interative-analysis">【Spark SQL】Carmel - Optimizing SparkSQL for Interative Analysis</h4>
+<ol>
+<li>eBay优化Spark sql（改写内部代码）替换TeraData，作为MPP方案。Impala不好吗。。。</li>
+<li>观众提问，SQL on spark没有索引，是不是历史的倒退。有个问题挺好。回答是下推到parquet，列式存储会过滤。</li>
+<li>是大牛，技术做的很深。Druid/Kylin/Spark/Spark SQL。一句话很经典，批处理也可以很快。</li>
+<li>演讲基本上是站着不动，看着PPT疯狂输出信息。</li>
+</ol></div><div class="post-footer">
+        <a href="/posts/20191123-ebay-bigdata-techday/">Read More</a><div class="post-tags">
+                <i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/bigdata/">Bigdata</a></div></div>
+</article><article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
+        <a href="/posts/20191031-quantum-computer/">量子计算——读「古今密码学趣谈」展望未来的密码学</a>
+    </h1><div class="post-meta"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Happy Coding</a></span>&nbsp;<span class="post-publish">published on <time datetime="2019-10-31">2019-10-31</time></span></div><div class="content"><p>（笔记迁移 @ 2020年）</p>
+<p>主要讲了密码学怎么来应对量子计算。量子计算的并行性（N个量子位，能<strong>同时</strong>表示2^N个数字，而同样的比特位，同时只能表示一个2^N以内的数字。太神奇了），将以前指数级别的破解难度降低为了线性级别。RSA、ECC等现代密码学技术都会被轻易攻破。</p>
+<p>量子计算机的历史：</p>
+<ol>
+<li>在美国电话电报公司贝尔实验室工作的数学家肖尔（Peter W.Shor，1959）于1994年发现了快速分解大整数的量子算法！他因此于1998年获得了由国际数学联盟颁发的奈望林纳应用数学奖。</li>
+<li>2001年，美国IBM公司率先研制成功7个量子位的示例型量子计算机。</li>
+<li>2007年2月，加拿大D-Wave System公司宣布研制成功世界上第一台商用16量子位的量子计算机。</li>
+<li>2011年5月30日，D-Wave System公司宣布研制成功128量子位的量子计算机，并且出人意料地以每台 1000万美元的价格公开出售，还提供与传统计算机软件接口的软件工具包。</li>
+<li>2011年9月2日，美国加州大学圣芭芭拉分校的科学家宣布，已通过量子电路成功实现了冯·诺依曼计算机结构，证实了未来量子大规模集成电路指日可待。</li>
+<li>2012 年3月1日，美国IBM公司宣布，找到一种可以提升量子计算机规模的关键技术，从而使大规模量子计算机的实现成为可能</li>
+<li>In 2015, D-Wave&rsquo;s 2X Quantum Computer with more than <strong>1000 qubits</strong> was installed at the Quantum Artificial Intelligence Lab at NASA Ames Research Center.</li>
+<li>January 2017 <strong>2048 qubits</strong></li>
+<li>In 2019, D-Wave announced a <strong>5000 qubit</strong> system available <strong>mid-2020</strong>, using their new Pegasus chip with 15 connections per qubit.</li>
+</ol>
+<p>关于Dwave，客观看待，以下是引用：</p>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="../../images/image-20191031151535708.png"
+        data-srcset="../../images/image-20191031151535708.png, ../../images/image-20191031151535708.png 1.5x, ../../images/image-20191031151535708.png 2x"
+        data-sizes="auto"
+        alt="../../images/image-20191031151535708.png"
+        title="image-20191031151535708" /></p></div><div class="post-footer">
+        <a href="/posts/20191031-quantum-computer/">Read More</a><div class="post-tags">
+                <i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/read/">READ</a></div></div>
+</article><article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
+        <a href="/posts/20191030-dcep-libra/">数字货币资料整理：FB Libra，央行 DCEP</a>
+    </h1><div class="post-meta"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Happy Coding</a></span>&nbsp;<span class="post-publish">published on <time datetime="2019-10-30">2019-10-30</time></span></div><div class="content"><p>（笔记迁移 @ 2020年）</p>
+<p>资料：</p>
+<ol>
+<li>「区块链到底能干嘛」，赏味不足，梁杰ggtalk博客</li>
+<li>「Libra与数字货币展望」，央行_穆长春，得到课程</li>
+<li>「有关DCEP/Libra/支付/金融科技企业」，Mikko，微博：现金（央行发行）- 存款（银行）- 余额（支付机构比如支付宝）- 货币基金之间的（层级）关系。第一次这么系统地去理解金融系统</li>
+<li>Libra白皮书，官网</li>
+<li>「参议院就Facebook的Libra听证会」 <a href="https://www.bilibili.com/video/av59535863/" target="_blank" rel="noopener noreffer ">https://www.bilibili.com/video/av59535863/</a></li>
+</ol>
+<p>Libra：</p>
+<ol>
+<li>Libra是分层架构（混合架构），节点与节点之间是用区块链，节点与用户之间是中心化服务</li>
+</ol>
+<p>央行数字货币DCEP优势：</p>
+<ol>
+<li>DCEP是法币，价值属性等同现金，央行发行，国家信用担保</li>
+<li><strong>离线支付，应该是NFC技术，具体实现细节没有披露</strong></li>
+<li>保护国家货币主权和法币地位</li>
+<li>便携性：现钞发行、运输、存储、防伪等环节成本高，使用DCEP可以规避这一点</li>
+<li>匿名性：（现金支持匿名性，而支付宝、银行都没有隐私可言），DCEP也支持匿名性（一定程度上），具体实现细节见下文</li>
+<li>防止犯罪：反洗钱、反逃税、反恐怖融资。这一点与匿名性有点相悖。文章提到使用大数据来挖掘特征，符合风险特征的会进行身份比对。（原文这么说：所以说，出于反洗钱的考虑，我们对数字钱包也是有分级和限额安排的。比如说你就用一个手机号码注册一个钱包，那你这个钱包当然可以用，但是级别一定是最低的，只能满足日常小额支付需求；但如果你要能上传一下身份证，或者再上传一个银行卡，就可以获得更高级别的数字钱包，如果你还能到柜台去面签一下，那可能就没有限额了。）也就是说小额支持匿名，而大额不行。</li>
+<li>与区块链没有必然联系：央行没有要求使用区块链，央行调研结论也是区块链没法满足高并发需求（Libra是一个双层架构，节点与节点之间是用区块链，节点与用户之间是中心化服务）</li>
+<li>采取的是<strong>双层运营体系</strong>，央行做上层，商业银行做第二层；商业机构向央行全额、100%缴纳准备金，央行的数字货币依然是中央银行负债，由中央银行信用担保，具有无限法偿性：这些是与人民币现金一个路子。</li>
+</ol>
+<p>参考：</p>
+<ol>
+<li>DCEP：中国自己的数字货币 <a href="https://mp.weixin.qq.com/s?__biz=MzA5MDAxMjcwOQ==&amp;mid=2447616917&amp;idx=1&amp;sn=73207944a32667c50ea12d65e209c4c8&amp;chksm=840526dfb372afc947bf188f9154a37b773320a1ab3a2bb8de87fbe5b7a89b8c05934a100b2d&amp;scene=0&amp;xtrack=1" target="_blank" rel="noopener noreffer ">https://mp.weixin.qq.com/s?__biz=MzA5MDAxMjcwOQ==&mid=2447616917&idx=1&sn=73207944a32667c50ea12d65e209c4c8&chksm=840526dfb372afc947bf188f9154a37b773320a1ab3a2bb8de87fbe5b7a89b8c05934a100b2d&scene=0&xtrack=1</a></li>
+</ol>
+<p>区块链的弱点（没法支持零售级别的交易）：</p>
+<ol>
+<li>并发性能低（可扩展性差），共识机制导致的天然劣势，所有节点一起竞争记账权，相当于堵死在一件事上了</li>
+<li>存储的可扩展性差，这个只能定期archive历史数据来解决了。</li>
+<li>安全性只保证了数据不会被篡改，至于匿名，通过大数据是可以破解的</li>
+<li>没有原生的加密机制：公有链匿名性，通过大数据可以挖掘出真实身份</li>
+<li>等待确认太慢，不适合日常使用</li>
+<li>51%算力攻击</li>
+</ol>
+<p>怎么思考区块链：</p>
+<ol>
+<li>去中心化？比中心化还要中心化。更集权。节点自己没法改。无法解决所有者作弊的问题，但对所有者（统治者）是利好的工具（赏味不足的说法，有道理）</li>
+<li>（IT上能）提升效率：一份数据在各个系统流转，那么这份数据就存在区块链数据库上就可以了。</li>
+</ol></div><div class="post-footer">
+        <a href="/posts/20191030-dcep-libra/">Read More</a><div class="post-tags">
+                <i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/read/">READ</a>,&nbsp;<a href="/tags/blockchain/">Blockchain</a></div></div>
+</article><article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
+        <a href="/posts/20190429-docker-rmi/">rm docker image interactively</a>
+    </h1><div class="post-meta"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Happy Coding</a></span>&nbsp;<span class="post-publish">published on <time datetime="2019-04-29">2019-04-29</time></span></div><div class="content"><p><a href="https://github.com/XUJiahua/dockerrmi" target="_blank" rel="noopener noreffer ">写了个工具</a>交互式删除 docker image。</p>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="../../images/show.gif"
+        data-srcset="../../images/show.gif, ../../images/show.gif 1.5x, ../../images/show.gif 2x"
+        data-sizes="auto"
+        alt="../../images/show.gif"
+        title="demo" /></p>
+<p>实在无法忍受先<code>docker images</code>，然后<code>docker rmi</code>的重复操作。
+还比较原始，刚好够自己目前所需。</p>
+<p>想到交互式，是受<code>ncdu</code>的启发。<code>ncdu</code>命令是<code>du</code>命令的交互式版本。</p></div><div class="post-footer">
+        <a href="/posts/20190429-docker-rmi/">Read More</a><div class="post-tags">
+                <i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/docker/">Docker</a></div></div>
+</article><article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
+        <a href="/posts/20190325-blockchain-hackathon/">20190323黑客松总结</a>
+    </h1><div class="post-meta"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Happy Coding</a></span>&nbsp;<span class="post-publish">published on <time datetime="2019-03-25">2019-03-25</time></span></div><div class="content"><h2 id="过程">过程</h2>
+<p>比赛背景见 <a href="https://www.tuoniaox.com/news/p-327352.html" target="_blank" rel="noopener noreffer ">https://www.tuoniaox.com/news/p-327352.html</a> 。
+打算从几个角度来讲下这个比赛过程。</p>
+<h3 id="关于团队">关于团队</h3>
+<p>我们公司3人（我、洪敏、天宇）参加比赛，都是开发背景。
+主办方根据协调，一位来自台湾的社交方向创业者参加进来，英语演讲不错，技术会一点，有过hackathon经验。
+比赛当天晚些时候，又有一位金融领域的伙伴加入进来，报名晚了，当时还没分配到队伍。
+<em>本来还有一位以太坊开发背景的参加，但是比赛当天还在加班。</em>
+最终是一支5人小组。</p>
+<h3 id="产品设计">产品设计</h3>
+<p>团队主体是我们公司三人，花了比较多的时间在选题和创意设计。有想过比如聊天工具、抽奖工具，感觉都一般。我们的眼界还是比较狭窄。</p>
+<p>主办方提供了多个topic，我们选了这个方向——了解客户（KYC）规则 Know-your-customer。因为这块涉及到用户身份，感觉能套在很多场景。</p>
+<ol>
+<li>比赛前一天（周五）定了一个政府中心化KYC数据库的方案，区块链用于授权与审计用。</li>
+<li>比赛当天清晨，改为去中心化的KYC方案，只有企业和用户，IPFS作为去中心化的存储，数据安全由公钥加密保证。区块链同样是用于授权、审计，和存储文件HASH。</li>
+<li>主办方宣讲完毕，与其他组员REVIEW，一致用去中心化的方案，更贴比赛。这个作为我们的基础模型。</li>
+<li>从B2C扩展到B2B，比如银行怎么Know一家向他借钱的酒店或是房屋租赁公司。引入IoT、智能设备采集真实入住率。通过合约，智能设备与C端用户交互，保证真实性。这里，区块链用于一份难以篡改的数据库，可以看出酒店的经营事件。</li>
+<li>分工：我们公司3人开发，他们2人准备演示材料。</li>
+</ol>
+<h3 id="技术实现">技术实现</h3>
+<p>我们没有实际的以太坊开发经验。所以，趟了很多坑，绕了很多弯路。低估了技术复杂度。按时间线：</p>
+<ol>
+<li>当天下午，分析技术提供方提供的SDK（Go），是scryinfo的两个合约封装，一个是数据交换，一个是token交换。没法涵盖我们的设计场景，必须写自己的智能合约。</li>
+<li>智能合约开发很顺利，使用remix+metaMask这个组合。</li>
+<li>开始翻车之旅。</li>
+<li>前端使用web3无法调用合约，还有web3js的版本问题、下载问题。</li>
+<li>使用infura.io提供的免费的以太坊节点服务，发现有些方法没有开放。</li>
+<li>连入主办方提供的以太坊节点，面对跨域（可解决）、还有一些新问题。</li>
+<li>尝试同步一个以太坊测试节点，一个节点需要100G空间，时间和空间都没法满足。</li>
+<li>翻阅SDK源码，尝试套用SDK中使用Go来包装智能合约调用的方式来调用我们的合约。执行合约方法进入无限等待。找SDK提供者一起review代码，也是无解。本以为翻车到此为止，能360度翻回正常轨道。</li>
+<li>最后又想起创建一个私有链。但时间上不允许了。</li>
+<li>紧急魔改代码，用于作品演示。</li>
+<li>UI设计因为时间问题，比较粗暴。</li>
+<li>第二天下午2点前，提交了代码。</li>
+</ol>
+<p>技术上最大的问题，是应用无法调用合约。很多东西都是现学。
+为此，我们几位就睡了几个小时。少壮不努力，老大徒伤悲。留下没有技术的泪水。</p>
+<h3 id="展示">展示</h3>
+<p>因为评委主要是日本人，演讲全程需要英文。
+台湾小伙上，讲了一个故事：</p>
+<ol>
+<li>以自己是一个开酒店的入题。</li>
+<li>基于区块链的KYC解决了C端和B端重复繁琐的资料登记过程。</li>
+<li>酒店初创，需要银行贷款，利用IoT+区块链和扩展的KYC应用，公开经营状况。解决银行对初创酒店的数据信任问题。</li>
+<li>演讲中，意思表达还是有点折扣。不过，已经非常自然了。</li>
+</ol>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="../../images/WechatIMG2.jpeg"
+        data-srcset="../../images/WechatIMG2.jpeg, ../../images/WechatIMG2.jpeg 1.5x, ../../images/WechatIMG2.jpeg 2x"
+        data-sizes="auto"
+        alt="../../images/WechatIMG2.jpeg"
+        title="WechatIMG2" />
+<em>主办方整理的信息图</em></p>
+<p>为了能增加亮点，金融小伙，拿来了之前准备好的树莓派和门锁，放入了演示环节。但是演示过程中，台上调试设备花了些时间，尴尬了几分钟。主持人马上与观众进入互动，避免令人窒息的安静。然后这个智能设备的演示也失败了，我们是唯一这么尴尬的小组。</p>
+<p>这个过程，技术并不重要，合约没调通这个事情显得没那么严重了。重要的是演讲能力、演示效果。重要的是，打动用户，让自己的作品被理解。</p>
+<h2 id="总结">总结</h2>
+<p>在最后的环节，我们也看到了其他队伍的演讲演示。准备得非常充分，都是有备而来，有非常酷的PPT、还有成型的app供下载、非常流畅自然的英文演讲、更贴合主办方业务的产品设计。没有得奖，心服口服。</p>
+<p>功在平时，厚积才能薄发。如果要赢，一定做好充足准备。需要做好这些准备：</p>
+<ol>
+<li>痛点的定位。不能为技术而技术。</li>
+<li>技术储备。</li>
+<li>sales的能力。</li>
+<li>英语。</li>
+<li>最最重要的，还是teamwork，我们需要培育一个更强大的团队。</li>
+</ol></div><div class="post-footer">
+        <a href="/posts/20190325-blockchain-hackathon/">Read More</a><div class="post-tags">
+                <i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/blockchain/">Blockchain</a></div></div>
+</article><ul class="pagination"><li class="page-item ">
+                    <span class="page-link">
+                        <a href="/">1</a>
+                    </span>
+                </li><li class="page-item ">
+                    <span class="page-link" aria-hidden="true">&hellip;</span>
+                </li><li class="page-item ">
+                    <span class="page-link">
+                        <a href="/page/17/">17</a>
+                    </span>
+                </li><li class="page-item ">
+                    <span class="page-link">
+                        <a href="/page/18/">18</a>
+                    </span>
+                </li><li class="page-item active">
+                    <span class="page-link">
+                        <a href="/page/19/">19</a>
+                    </span>
+                </li><li class="page-item ">
+                    <span class="page-link">
+                        <a href="/page/20/">20</a>
+                    </span>
+                </li></ul></div></div>
+            </main><footer class="footer">
+        <div class="footer-container"><div class="footer-line">Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.147.3">Hugo</a> | Theme - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.3.0"><i class="far fa-kiss-wink-heart fa-fw" aria-hidden="true"></i> LoveIt</a>
+                </div><div class="footer-line" itemscope itemtype="http://schema.org/CreativeWork"><i class="far fa-copyright fa-fw" aria-hidden="true"></i><span itemprop="copyrightYear">2022 - 2025</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/" target="_blank">Happy Coding</a></span></div>
+        </div>
+    </footer></div>
+
+        <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="Back to Top">
+                <i class="fas fa-arrow-up fa-fw" aria-hidden="true"></i>
+            </a><a href="#" id="view-comments" class="fixed-button" title="View Comments">
+                <i class="fas fa-comment fa-fw" aria-hidden="true"></i>
+            </a>
+        </div><script type="text/javascript" src="/lib/lazysizes/lazysizes.min.js"></script><script type="text/javascript" src="/lib/clipboard/clipboard.min.js"></script><script type="text/javascript" src="/lib/sharer/sharer.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"Copy to clipboard","maxShownLines":50}};</script><script type="text/javascript" src="/js/theme.min.js"></script></body>
+</html>

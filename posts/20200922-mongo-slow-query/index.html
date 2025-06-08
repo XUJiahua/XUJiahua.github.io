@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+    <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="robots" content="noodp" />
+        <title>20200922 Mongo Slow Query - Happy Coding</title><meta name="Description" content=""><meta property="og:url" content="http://localhost:1313/posts/20200922-mongo-slow-query/">
+  <meta property="og:site_name" content="Happy Coding">
+  <meta property="og:title" content="20200922 Mongo Slow Query">
+  <meta property="og:description" content="花了大量时间在 mongoDB 的客户端上。悲哀。
+以下是 slow query log。
+2020-09-20T01:47:05.216&#43;0800 I COMMAND [conn734394782] command logs.mp.basket command: find { find: “mp.basket”, filter: { merId: “lx20200304155018111111”, _id: { $gt: ObjectId(‘5ed878a7fac9f829eb934ce4’) } }, sort: { _id: 1 } } planSummary: IXSCAN { id: 1 } keysExami ned:11903533 docsExamined:11903533 cursorExhausted:1 keyUpdates:0 writeConflicts:0 numYields:92997 nreturned:0 reslen:120 locks:{ Global: { acquireCount: { r: 185996 } }, Database: { acquireCount: { r: 92998 } }, Collection: { acquireCount: { r: 92998 } } } protocol:op query 12572ms">
+  <meta property="og:locale" content="zh_cn">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2020-09-22T15:38:30+08:00">
+    <meta property="article:modified_time" content="2020-09-22T15:38:30+08:00">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="20200922 Mongo Slow Query">
+  <meta name="twitter:description" content="花了大量时间在 mongoDB 的客户端上。悲哀。
+以下是 slow query log。
+2020-09-20T01:47:05.216&#43;0800 I COMMAND [conn734394782] command logs.mp.basket command: find { find: “mp.basket”, filter: { merId: “lx20200304155018111111”, _id: { $gt: ObjectId(‘5ed878a7fac9f829eb934ce4’) } }, sort: { _id: 1 } } planSummary: IXSCAN { id: 1 } keysExami ned:11903533 docsExamined:11903533 cursorExhausted:1 keyUpdates:0 writeConflicts:0 numYields:92997 nreturned:0 reslen:120 locks:{ Global: { acquireCount: { r: 185996 } }, Database: { acquireCount: { r: 92998 } }, Collection: { acquireCount: { r: 92998 } } } protocol:op query 12572ms">
+<meta name="application-name" content="Happy Coding">
+<meta name="apple-mobile-web-app-title" content="Happy Coding"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="http://localhost:1313/posts/20200922-mongo-slow-query/" /><link rel="prev" href="http://localhost:1313/posts/20200917-pyspark/" /><link rel="next" href="http://localhost:1313/posts/20200923-spark-submit-behind-proxy/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="/lib/fontawesome-free/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="/lib/fontawesome-free/all.min.css"></noscript><link rel="preload" href="/lib/animate/animate.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="/lib/animate/animate.min.css"></noscript><script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "headline": "20200922 Mongo Slow Query",
+        "inLanguage": "zh-cn",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "http:\/\/localhost:1313\/posts\/20200922-mongo-slow-query\/"
+        },"genre": "posts","wordcount":  937 ,
+        "url": "http:\/\/localhost:1313\/posts\/20200922-mongo-slow-query\/","datePublished": "2020-09-22T15:38:30+08:00","dateModified": "2020-09-22T15:38:30+08:00","publisher": {
+            "@type": "Organization",
+            "name": ""},"author": {
+                "@type": "Person",
+                "name": "Happy Coding"
+            },"description": ""
+    }
+    </script></head>
+    <body data-header-desktop="fixed" data-header-mobile="auto"><script type="text/javascript">(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
+
+        <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
+    <div class="header-wrapper">
+        <div class="header-title">
+            <a href="/" title="Happy Coding">Happy Coding</a>
+        </div>
+        <div class="menu">
+            <div class="menu-inner"><a class="menu-item" href="/posts"> Archive </a><a class="menu-item" href="/categories"> Categories </a><a class="menu-item" href="/tags"> Tags </a><a class="menu-item" href="/index.xml"> RSS Feed </a><span class="menu-item delimiter"></span><a href="javascript:void(0);" class="menu-item theme-switch" title="Switch Theme">
+                    <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+                </a></div>
+        </div>
+    </div>
+</header><header class="mobile" id="header-mobile">
+    <div class="header-container">
+        <div class="header-wrapper">
+            <div class="header-title">
+                <a href="/" title="Happy Coding">Happy Coding</a>
+            </div>
+            <div class="menu-toggle" id="menu-toggle-mobile">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="menu" id="menu-mobile"><a class="menu-item" href="/posts" title="">Archive</a><a class="menu-item" href="/categories" title="">Categories</a><a class="menu-item" href="/tags" title="">Tags</a><a class="menu-item" href="/index.xml" title="">RSS Feed</a><a href="javascript:void(0);" class="menu-item theme-switch" title="Switch Theme">
+                <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+            </a></div>
+    </div>
+</header><main class="main">
+                <div class="container"><div class="toc" id="toc-auto">
+            <h2 class="toc-title">Contents</h2>
+            <div class="toc-content" id="toc-content-auto"></div>
+        </div><article class="page single"><h1 class="single-title animate__animated animate__flipInX">20200922 Mongo Slow Query</h1><div class="post-meta">
+            <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Happy Coding</a></span></div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2020-09-22">2020-09-22</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;937 words&nbsp;
+                <i class="far fa-clock fa-fw" aria-hidden="true"></i>&nbsp;5 minutes&nbsp;</div>
+        </div><div class="details toc" id="toc-static"  data-kept="">
+                <div class="details-summary toc-title">
+                    <span>Contents</span>
+                    <span><i class="details-icon fas fa-angle-right" aria-hidden="true"></i></span>
+                </div>
+                <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents"></nav></div>
+            </div><div class="content" id="content"><p>花了大量时间在 mongoDB 的客户端上。悲哀。</p>
+<p>以下是 slow query log。</p>
+<blockquote>
+<p>2020-09-20T01:47:05.216+0800 I COMMAND  [conn734394782] command logs.mp.basket command: find { find: &ldquo;mp.basket&rdquo;, filter: { merId: &ldquo;lx20200304155018111111&rdquo;, _id: { $gt: ObjectId(&lsquo;5ed878a7fac9f829eb934ce4&rsquo;) } }, sort: { _id: 1 } } planSummary: IXSCAN { <em>id: 1 } keysExami
+ned:11903533 docsExamined:11903533 cursorExhausted:1 keyUpdates:0 writeConflicts:0 numYields:92997 nreturned:0 reslen:120 locks:{ Global: { acquireCount: { r: 185996 } }, Database: { acquireCount: { r: 92998 } }, Collection: { acquireCount: { r: 92998 } } } protocol:op</em>
+query 12572ms</p></blockquote>
+<ol>
+<li>[conn734394782] 看了下日志，这个连接有一直复用，初步判断是我的一个应用在进行查询。</li>
+<li>find { find: &ldquo;mp.basket&rdquo;, filter: { merId: &ldquo;lx20200304155018111111&rdquo;, _id: { $gt: ObjectId(&lsquo;5ed878a7fac9f829eb934ce4&rsquo;) } }, sort: { _id: 1 } } 查询请求，应该就是捞数据。</li>
+<li>planSummary: IXSCAN { _id: 1 } 用了 _id 索引，发现没有建 merId 这个索引。</li>
+<li>keysExamined:11903533 docsExamined:11903533 因为 _id 索引，评估将要被scan的数据集差不多是整个collection。</li>
+<li>docsExamined The number of documents in the collection that MongoDB scanned in order to carry out the operation.  <a href="https://docs.mongodb.com/manual/reference/database-profiler/" target="_blank" rel="noopener noreffer ">https://docs.mongodb.com/manual/reference/database-profiler/</a></li>
+<li>numYields:92997 因为内存里没有当前操作需要的数据，所以让渡给其他操作早点完成任务，把内存腾出来给自己用 The number of times the operation yielded to allow other operations to complete. Typically, operations yield when they need access to data that MongoDB has not yet fully read into memory. This allows other operations that have data in memory to complete while MongoDB reads in data for the yielding operation. <a href="https://stackoverflow.com/questions/28762135/meaning-of-variables-in-mongodb-logs" target="_blank" rel="noopener noreffer ">https://stackoverflow.com/questions/28762135/meaning-of-variables-in-mongodb-logs</a></li>
+<li>nreturned:0 结果返回 0 条 返回的条数并不是巨大量级的，所以加merId索引或许是有用的。</li>
+<li>reslen:120 返回结果的大小 When MongoDB writes query profile information to the log, the responseLength value is in a field named reslen. <a href="https://docs.mongodb.com/manual/reference/database-profiler/" target="_blank" rel="noopener noreffer ">https://docs.mongodb.com/manual/reference/database-profiler/</a> The length in bytes of the operation’s result document. A large <a href="https://docs.mongodb.com/manual/reference/database-profiler/#system.profile.responseLength" target="_blank" rel="noopener noreffer "><code>responseLength</code></a> can affect performance.</li>
+<li>12572ms 花了 12s 以上，妥妥慢查询</li>
+</ol>
+<p>同样的查询请求，使用 merId 索引后，从耗时12s到0.002s。这样，112 个慢查询解决了。</p>
+<pre tabindex="0"><code>db.mp.basket.find({ merId: &#34;lx20200304155018111111&#34;, _id: { $gt: ObjectId(&#39;5ed878a7fac9f829eb934ce4&#39;) }}).sort({ _id: 1 })
+// db.mp.basket.find({ merId: &#34;lx20200304155018111111&#34;, _id: { $gt: ObjectId(&#39;5ed878a7fac9f829eb934ce4&#39;) }}).sort({ _id: 1 }).explain()
+</code></pre><p>建索引</p>
+<pre tabindex="0"><code>db.mp.basket.createIndex( { merId: 1 } )
+</code></pre><p>参考：</p>
+<ol>
+<li><a href="https://docs.mongodb.com/manual/reference/method/db.collection.find/#examples" target="_blank" rel="noopener noreffer ">https://docs.mongodb.com/manual/reference/method/db.collection.find/#examples</a></li>
+<li><a href="https://docs.mongodb.com/manual/indexes/index.html" target="_blank" rel="noopener noreffer ">https://docs.mongodb.com/manual/indexes/index.html</a></li>
+<li><a href="https://docs.mongodb.com/manual/reference/database-profiler/" target="_blank" rel="noopener noreffer ">https://docs.mongodb.com/manual/reference/database-profiler/</a></li>
+</ol>
+<p>这个聚合也很慢。不过，使用上索引后，时间下降到了 26s。</p>
+<blockquote>
+<p>2020-09-21T01:11:11.043+0800 I COMMAND  [conn737613659] command logs.mp.basket command: aggregate { aggregate: &ldquo;mp.basket&rdquo;, pipeline: [ { $group: { _id: &ldquo;$merId&rdquo;, count: { $sum: 1 } } }, { $sort: { count: -1 } } ], cursor: {} } cursorid:4685423140589 keyUpdates:0 writeConflicts:0 numYields:111198 reslen:5039 locks:{ Global: { acquireCount: { r: 223774 } }, Database: { acquireCount: { r: 111887 } }, Collection: { acquireCount: { r: 111887 } } } protocol:op_query 35623ms</p></blockquote>
+<pre tabindex="0"><code>db.mp.basket.aggregate( [ { $group: { _id: &#34;$merId&#34;, count: { $sum: 1 } } }, { $sort: { count: -1 } } ])
+</code></pre><p>参考：</p>
+<ol>
+<li><a href="https://docs.mongodb.com/manual/core/aggregation-pipeline/index.html" target="_blank" rel="noopener noreffer ">https://docs.mongodb.com/manual/core/aggregation-pipeline/index.html</a></li>
+</ol>
+<p>getMore 没法优化啊，连查询条件都看不见。</p>
+<p>剩下 63 条慢查询，57 条是 getMore 报错，也没有查询条件啊。翻页操作吧。https://docs.mongodb.com/manual/tutorial/iterate-a-cursor/#cursor-batches</p>
+<blockquote>
+<p><code>find()</code> and <code>aggregate()</code> operations have an initial batch size of 101 documents by default. Subsequent <a href="https://docs.mongodb.com/manual/reference/command/getMore/#dbcmd.getMore" target="_blank" rel="noopener noreffer "><code>getMore</code></a> operations issued against the resulting cursor have no default batch size, so they are limited only by the 16 megabyte message size.</p></blockquote>
+<p>star.kv.mc.item.cf 不应该再使用了啊。8</p>
+<blockquote>
+<p>2020-09-20T07:19:08.552+0800 I COMMAND  [conn735133365] command star.kv.mc.item.cf command: getMore { getMore: 148464145314, collection: &ldquo;kv.mc.item.cf&rdquo; } planSummary: COLLSCAN cursorid:148464145314 keysExamined:0 docsExamined:1500 keyUpdates:0 writeConflicts:0 numYields:65 nreturned:1500 reslen:4196617 locks:{ Global: { acquireCount: { r: 132 } }, Database: { acquireCount: { r: 66 } }, Collection: { acquireCount: { r: 66 } } } protocol:op_query 6586ms</p></blockquote>
+<p>star.kv.mc.top.freshness 这个有在用的。但不是 getMore 这种使用方式啊。</p>
+<blockquote>
+<p>2020-09-20T07:46:13.922+0800 I COMMAND  [conn735209362] command star.kv.mc.top.freshness command: getMore { getMore: 141369078469, collection: &ldquo;kv.mc.top.freshness&rdquo; } planSummary: COLLSCAN cursorid:141369078469 keysExamined:0 docsExamined:5897 keyUpdates:0 writeConflicts:0 numYields:82 nreturned:5897 reslen:4194627 locks:{ Global: { acquireCount: { r: 166 } }, Database: { acquireCount: { r: 83 } }, Collection: { acquireCount: { r: 83 } } } protocol:op_query 6575ms</p></blockquote>
+<p>剩下的 6 条。这三条也比较少。</p>
+<blockquote>
+<p>2020-09-21T01:16:41.497+0800 I COMMAND  [conn737619561] command logs.notifyOrder command: aggregate { aggregate: &ldquo;notifyOrder&rdquo;, pipeline: [ { $match: {} }, { $sample: { size: 248 } }, { $project: { _id: 1 } }, { $sort: { _id: 1 } } ], cursor: {}, allowDiskUse: true } cursorid:3318721817151 keyUpdates:0 writeConflicts:0 numYields:927 reslen:2739 locks:{ Global: { acquireCount: { r: 1860 } }, Database: { acquireCount: { r: 930 } }, Collection: { acquireCount: { r: 930 } } } protocol:op_query 21591ms
+2020-09-21T01:26:36.456+0800 I COMMAND  [conn737629508] command logs.notifyOrder command: aggregate { aggregate: &ldquo;notifyOrder&rdquo;, pipeline: [ { $match: {} }, { $sample: { size: 248 } }, { $project: { _id: 1 } }, { $sort: { _id: 1 } } ], cursor: {}, allowDiskUse: true } cursorid:3317668988116 keyUpdates:0 writeConflicts:0 numYields:841 reslen:2739 locks:{ Global: { acquireCount: { r: 1688 } }, Database: { acquireCount: { r: 844 } }, Collection: { acquireCount: { r: 844 } } } protocol:op_query 69476ms
+2020-09-22T01:16:39.619+0800 I COMMAND  [conn740648219] command logs.notifyOrder command: aggregate { aggregate: &ldquo;notifyOrder&rdquo;, pipeline: [ { $match: {} }, { $sample: { size: 249 } }, { $project: { _id: 1 } }, { $sort: { _id: 1 } } ], cursor: {}, allowDiskUse: true } cursorid:3318740479752 keyUpdates:0 writeConflicts:0 numYields:792 reslen:2739 locks:{ Global: { acquireCount: { r: 1590 } }, Database: { acquireCount: { r: 795 } }, Collection: { acquireCount: { r: 795 } } } protocol:op_query 13692ms</p></blockquote>
+<p>其他，数量很少。</p>
+<blockquote>
+<p>2020-09-20T22:34:21.990+0800 I WRITE    [conn737328017] remove logs.customer.bev.path.v2 query: { dt: &ldquo;2020-09-19&rdquo; } ndeleted:0 keyUpdates:0 writeConflicts:0 numYields:93165 locks:{ Global: { acquireCount: { r: 93166, w: 93166 } }, Database: { acquireCount: { w: 93166 }, acquireWaitCount: { w: 2 }, timeAcquiringMicros: { w: 250196 } }, Collection: { acquireCount: { w: 93166 } } } 24949ms</p>
+<p>2020-09-21T06:58:42.214+0800 I WRITE    [conn738244072] remove logs.customer.bev.path.v2 query: { dt: &ldquo;2020-09-20&rdquo; } ndeleted:0 keyUpdates:0 writeConflicts:0 numYields:94955 locks:{ Global: { acquireCount: { r: 94956, w: 94956 } }, Database: { acquireCount: { w: 94956 }, acquireWaitCount: { w: 3 }, timeAcquiringMicros: { w: 826990 } }, Collection: { acquireCount: { w: 94956 } } } 56258ms</p>
+<p>2020-09-21T06:58:42.229+0800 I COMMAND  [conn738244072] command logs.$cmd command: delete { delete: &ldquo;customer.bev.path.v2&rdquo;, ordered: true, deletes: [ { q: { dt: &ldquo;2020-09-20&rdquo; }, limit: 0 } ] } keyUpdates:0 writeConflicts:0 numYields:0 reslen:100 locks:{ Global: { acquireCount: { r: 94956, w: 94956 } }, Database: { acquireCount: { w: 94956 }, acquireWaitCount: { w: 3 }, timeAcquiringMicros: { w: 826990 } }, Collection: { acquireCount: { w: 94956 } } } protocol:op_query 56289ms</p></blockquote>
+</div><div class="post-footer" id="post-footer">
+    <div class="post-info">
+        <div class="post-info-line">
+            <div class="post-info-mod">
+                <span>Updated on 2020-09-22</span>
+            </div></div>
+        <div class="post-info-line">
+            <div class="post-info-md"></div>
+            <div class="post-info-share">
+                <span><a href="javascript:void(0);" title="Share on Twitter" data-sharer="twitter" data-url="http://localhost:1313/posts/20200922-mongo-slow-query/" data-title="20200922 Mongo Slow Query"><i class="fab fa-twitter fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="Share on Facebook" data-sharer="facebook" data-url="http://localhost:1313/posts/20200922-mongo-slow-query/"><i class="fab fa-facebook-square fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="Share on Hacker News" data-sharer="hackernews" data-url="http://localhost:1313/posts/20200922-mongo-slow-query/" data-title="20200922 Mongo Slow Query"><i class="fab fa-hacker-news fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="Share on Line" data-sharer="line" data-url="http://localhost:1313/posts/20200922-mongo-slow-query/" data-title="20200922 Mongo Slow Query"><i data-svg-src="/lib/simple-icons/icons/line.min.svg" aria-hidden="true"></i></a><a href="javascript:void(0);" title="Share on 微博" data-sharer="weibo" data-url="http://localhost:1313/posts/20200922-mongo-slow-query/" data-title="20200922 Mongo Slow Query"><i class="fab fa-weibo fa-fw" aria-hidden="true"></i></a></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="post-info-more">
+        <section class="post-tags"></section>
+        <section>
+            <span><a href="javascript:void(0);" onclick="window.history.back();">Back</a></span>&nbsp;|&nbsp;<span><a href="/">Home</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav"><a href="/posts/20200917-pyspark/" class="prev" rel="prev" title="pyspark 的启动流程"><i class="fas fa-angle-left fa-fw" aria-hidden="true"></i>pyspark 的启动流程</a>
+            <a href="/posts/20200923-spark-submit-behind-proxy/" class="next" rel="next" title="本地通过代理提交 Spark 任务到集群">本地通过代理提交 Spark 任务到集群<i class="fas fa-angle-right fa-fw" aria-hidden="true"></i></a></div>
+</div>
+</article></div>
+            </main><footer class="footer">
+        <div class="footer-container"><div class="footer-line">Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.147.3">Hugo</a> | Theme - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.3.0"><i class="far fa-kiss-wink-heart fa-fw" aria-hidden="true"></i> LoveIt</a>
+                </div><div class="footer-line" itemscope itemtype="http://schema.org/CreativeWork"><i class="far fa-copyright fa-fw" aria-hidden="true"></i><span itemprop="copyrightYear">2022 - 2025</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/" target="_blank">Happy Coding</a></span></div>
+        </div>
+    </footer></div>
+
+        <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="Back to Top">
+                <i class="fas fa-arrow-up fa-fw" aria-hidden="true"></i>
+            </a><a href="#" id="view-comments" class="fixed-button" title="View Comments">
+                <i class="fas fa-comment fa-fw" aria-hidden="true"></i>
+            </a>
+        </div><script type="text/javascript" src="/lib/lazysizes/lazysizes.min.js"></script><script type="text/javascript" src="/lib/clipboard/clipboard.min.js"></script><script type="text/javascript" src="/lib/sharer/sharer.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"Copy to clipboard","maxShownLines":50},"comment":{}};</script><script type="text/javascript" src="/js/theme.min.js"></script></body>
+</html>

@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+    <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="robots" content="noodp" />
+        <title>pyspark 的启动流程 - Happy Coding</title><meta name="Description" content=""><meta property="og:url" content="http://localhost:1313/posts/20200917-pyspark/">
+  <meta property="og:site_name" content="Happy Coding">
+  <meta property="og:title" content="pyspark 的启动流程">
+  <meta property="og:description" content="Pyspark的执行原理，较scala开发的不同？
+其执行原理是计算任务在每个节点安装的Python或R的环境中执行，结果通过管道输出给Spark Worker，因此效率要比Scala与Java低，
+作为统一的入口，spark-submit 兼容了很多启动方式、资源调度工具。
+如果是 pyspark 启动的（SparkContext._ensure_initialized()），通过 spark-submit 这个命令，启动一个子进程，也就是 PythonGatewayServer 。两者通过 TCP 通信。
+// If we&#39;re running a python app, set the main class to our specific python runner if (args.isPython &amp;&amp; deployMode == CLIENT) { if (args.primaryResource == PYSPARK_SHELL) { args.mainClass = &#34;org.apache.spark.api.python.PythonGatewayServer&#34; } else { // If a python file is provided, add it to the child arguments and list of files to deploy. // Usage: PythonAppRunner &lt;main python file&gt; &lt;extra python files&gt; [app arguments] args.mainClass = &#34;org.apache.spark.deploy.PythonRunner&#34; args.childArgs = ArrayBuffer(localPrimaryResource, localPyFiles) &#43;&#43; args.childArgs } } spark-submit 会创建一个子进程 SparkApplication 内部执行具体程序。">
+  <meta property="og:locale" content="zh_cn">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2020-09-17T09:59:13+08:00">
+    <meta property="article:modified_time" content="2020-09-17T09:59:13+08:00">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="pyspark 的启动流程">
+  <meta name="twitter:description" content="Pyspark的执行原理，较scala开发的不同？
+其执行原理是计算任务在每个节点安装的Python或R的环境中执行，结果通过管道输出给Spark Worker，因此效率要比Scala与Java低，
+作为统一的入口，spark-submit 兼容了很多启动方式、资源调度工具。
+如果是 pyspark 启动的（SparkContext._ensure_initialized()），通过 spark-submit 这个命令，启动一个子进程，也就是 PythonGatewayServer 。两者通过 TCP 通信。
+// If we&#39;re running a python app, set the main class to our specific python runner if (args.isPython &amp;&amp; deployMode == CLIENT) { if (args.primaryResource == PYSPARK_SHELL) { args.mainClass = &#34;org.apache.spark.api.python.PythonGatewayServer&#34; } else { // If a python file is provided, add it to the child arguments and list of files to deploy. // Usage: PythonAppRunner &lt;main python file&gt; &lt;extra python files&gt; [app arguments] args.mainClass = &#34;org.apache.spark.deploy.PythonRunner&#34; args.childArgs = ArrayBuffer(localPrimaryResource, localPyFiles) &#43;&#43; args.childArgs } } spark-submit 会创建一个子进程 SparkApplication 内部执行具体程序。">
+<meta name="application-name" content="Happy Coding">
+<meta name="apple-mobile-web-app-title" content="Happy Coding"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="http://localhost:1313/posts/20200917-pyspark/" /><link rel="prev" href="http://localhost:1313/posts/20200916-py4j/" /><link rel="next" href="http://localhost:1313/posts/20200922-mongo-slow-query/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="/lib/fontawesome-free/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="/lib/fontawesome-free/all.min.css"></noscript><link rel="preload" href="/lib/animate/animate.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="/lib/animate/animate.min.css"></noscript><script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "headline": "pyspark 的启动流程",
+        "inLanguage": "zh-cn",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "http:\/\/localhost:1313\/posts\/20200917-pyspark\/"
+        },"genre": "posts","wordcount":  347 ,
+        "url": "http:\/\/localhost:1313\/posts\/20200917-pyspark\/","datePublished": "2020-09-17T09:59:13+08:00","dateModified": "2020-09-17T09:59:13+08:00","publisher": {
+            "@type": "Organization",
+            "name": ""},"author": {
+                "@type": "Person",
+                "name": "Happy Coding"
+            },"description": ""
+    }
+    </script></head>
+    <body data-header-desktop="fixed" data-header-mobile="auto"><script type="text/javascript">(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
+
+        <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
+    <div class="header-wrapper">
+        <div class="header-title">
+            <a href="/" title="Happy Coding">Happy Coding</a>
+        </div>
+        <div class="menu">
+            <div class="menu-inner"><a class="menu-item" href="/posts"> Archive </a><a class="menu-item" href="/categories"> Categories </a><a class="menu-item" href="/tags"> Tags </a><a class="menu-item" href="/index.xml"> RSS Feed </a><span class="menu-item delimiter"></span><a href="javascript:void(0);" class="menu-item theme-switch" title="Switch Theme">
+                    <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+                </a></div>
+        </div>
+    </div>
+</header><header class="mobile" id="header-mobile">
+    <div class="header-container">
+        <div class="header-wrapper">
+            <div class="header-title">
+                <a href="/" title="Happy Coding">Happy Coding</a>
+            </div>
+            <div class="menu-toggle" id="menu-toggle-mobile">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="menu" id="menu-mobile"><a class="menu-item" href="/posts" title="">Archive</a><a class="menu-item" href="/categories" title="">Categories</a><a class="menu-item" href="/tags" title="">Tags</a><a class="menu-item" href="/index.xml" title="">RSS Feed</a><a href="javascript:void(0);" class="menu-item theme-switch" title="Switch Theme">
+                <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+            </a></div>
+    </div>
+</header><main class="main">
+                <div class="container"><div class="toc" id="toc-auto">
+            <h2 class="toc-title">Contents</h2>
+            <div class="toc-content" id="toc-content-auto"></div>
+        </div><article class="page single"><h1 class="single-title animate__animated animate__flipInX">pyspark 的启动流程</h1><div class="post-meta">
+            <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Happy Coding</a></span></div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2020-09-17">2020-09-17</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;347 words&nbsp;
+                <i class="far fa-clock fa-fw" aria-hidden="true"></i>&nbsp;2 minutes&nbsp;</div>
+        </div><div class="details toc" id="toc-static"  data-kept="">
+                <div class="details-summary toc-title">
+                    <span>Contents</span>
+                    <span><i class="details-icon fas fa-angle-right" aria-hidden="true"></i></span>
+                </div>
+                <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents"></nav></div>
+            </div><div class="content" id="content"><p>Pyspark的执行原理，较scala开发的不同？</p>
+<p>其执行原理是计算任务在每个节点安装的Python或R的环境中执行，结果通过管道输出给Spark Worker，因此效率要比Scala与Java低，</p>
+<p>作为统一的入口，spark-submit 兼容了很多启动方式、资源调度工具。</p>
+<p>如果是 pyspark 启动的（SparkContext._ensure_initialized()），通过 spark-submit 这个命令，启动一个子进程，也就是 PythonGatewayServer 。两者通过 TCP 通信。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-scala" data-lang="scala"><span style="display:flex;"><span>    <span style="color:#75715e">// If we&#39;re running a python app, set the main class to our specific python runner
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>args<span style="color:#f92672">.</span>isPython <span style="color:#f92672">&amp;&amp;</span> deployMode <span style="color:#f92672">==</span> <span style="color:#a6e22e">CLIENT</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>args<span style="color:#f92672">.</span>primaryResource <span style="color:#f92672">==</span> <span style="color:#a6e22e">PYSPARK_SHELL</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>        args<span style="color:#f92672">.</span>mainClass <span style="color:#66d9ef">=</span> <span style="color:#e6db74">&#34;org.apache.spark.api.python.PythonGatewayServer&#34;</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">}</span> <span style="color:#66d9ef">else</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// If a python file is provided, add it to the child arguments and list of files to deploy.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#75715e">// Usage: PythonAppRunner &lt;main python file&gt; &lt;extra python files&gt; [app arguments]
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        args<span style="color:#f92672">.</span>mainClass <span style="color:#66d9ef">=</span> <span style="color:#e6db74">&#34;org.apache.spark.deploy.PythonRunner&#34;</span>
+</span></span><span style="display:flex;"><span>        args<span style="color:#f92672">.</span>childArgs <span style="color:#66d9ef">=</span> <span style="color:#a6e22e">ArrayBuffer</span><span style="color:#f92672">(</span>localPrimaryResource<span style="color:#f92672">,</span> localPyFiles<span style="color:#f92672">)</span> <span style="color:#f92672">++</span> args<span style="color:#f92672">.</span>childArgs
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">}</span>
+</span></span></code></pre></div><p>spark-submit 会创建一个子进程 SparkApplication 内部执行具体程序。</p>
+<p>貌似不是子进程，只是直接执行一个class而已。</p>
+<p>这么多代码，没啥核心逻辑啊。</p>
+<p>核心代码是 Scala。</p>
+<p>还有外包装语言。</p>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="../../images/image-20200917104840668.png"
+        data-srcset="../../images/image-20200917104840668.png, ../../images/image-20200917104840668.png 1.5x, ../../images/image-20200917104840668.png 2x"
+        data-sizes="auto"
+        alt="../../images/image-20200917104840668.png"
+        title="image-20200917104840668" /></p>
+<p>除了 JavaRDD，还有 PythonRDD，底层都是 RDD。这种与语言绑定的RDD，就会触发生成该语言的子进程。</p>
+<p>比较关心 Exectuor 与子进程 Python Worker 之间的交互。</p>
+<p>spark-submit</p>
+<pre tabindex="0"><code>exec &#34;${SPARK_HOME}&#34;/bin/spark-class org.apache.spark.deploy.SparkSubmit &#34;$@&#34;
+</code></pre><p>生成这个命令。</p>
+<pre tabindex="0"><code>$ ./bin/pyspark
+/Users/jiahua/Downloads/spark-2.4.7-bin-hadoop2.7/bin/spark-class org.apache.spark.deploy.SparkSubmit pyspark-shell-main --name PySparkShell
+</code></pre><p>spark-class</p>
+<p>生成一条java命令么？然后用exec 执行这条命令</p>
+<pre tabindex="0"><code>java -Xmx128m $SPARK_LAUNCHER_OPTS -cp &#34;$LAUNCH_CLASSPATH&#34; org.apache.spark.launcher.Main &#34;$@&#34;
+</code></pre><p>生成了这条。是 org.apache.spark.launcher.Main 里面准备的。直接就进入了 python 终端。终端里怎么启动的 sc 的？？？</p>
+<pre tabindex="0"><code>env PYSPARK_SUBMIT_ARGS=&#34;--name&#34; &#34;PySparkShell&#34; &#34;pyspark-shell&#34; python
+</code></pre><p>Launcher 的 class 是 org.apache.spark.launcher.Main 。org.apache.spark.deploy.SparkSubmit &ldquo;$@&rdquo; 作为参数被带进去了。</p>
+<p>org.apache.spark.launcher.Main：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span>  <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">main</span>(String<span style="color:#f92672">[]</span> argsArray) <span style="color:#66d9ef">throws</span> Exception {
+</span></span><span style="display:flex;"><span>    checkArgument(argsArray.<span style="color:#a6e22e">length</span> <span style="color:#f92672">&gt;</span> 0, <span style="color:#e6db74">&#34;Not enough arguments: missing class name.&#34;</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    List<span style="color:#f92672">&lt;</span>String<span style="color:#f92672">&gt;</span> args <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> ArrayList<span style="color:#f92672">&lt;&gt;</span>(Arrays.<span style="color:#a6e22e">asList</span>(argsArray));
+</span></span><span style="display:flex;"><span>    String className <span style="color:#f92672">=</span> args.<span style="color:#a6e22e">remove</span>(0);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">boolean</span> printLaunchCommand <span style="color:#f92672">=</span> <span style="color:#f92672">!</span>isEmpty(System.<span style="color:#a6e22e">getenv</span>(<span style="color:#e6db74">&#34;SPARK_PRINT_LAUNCH_COMMAND&#34;</span>));
+</span></span><span style="display:flex;"><span>    AbstractCommandBuilder builder;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> (className.<span style="color:#a6e22e">equals</span>(<span style="color:#e6db74">&#34;org.apache.spark.deploy.SparkSubmit&#34;</span>)) {
+</span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">try</span> {
+</span></span><span style="display:flex;"><span>        builder <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> SparkSubmitCommandBuilder(args);
+</span></span></code></pre></div><p>中间是怎么跑起来一个 JVM 进程的？参数确实是环境变量里的。一个 python 启动了点啥？</p>
+<pre tabindex="0"><code>Python 3.7.6 (default, Jan  8 2020, 13:42:34)
+Type &#39;copyright&#39;, &#39;credits&#39; or &#39;license&#39; for more information
+IPython 7.12.0 -- An enhanced Interactive Python. Type &#39;?&#39; for help.
+/Library/Java/JavaVirtualMachines/jdk1.8.0_221.jdk/Contents/Home/jre/bin/java -cp /Users/jiahua/Downloads/spark-2.4.7-bin-hadoop2.7/conf/:/Users/jiahua/Downloads/spark-2.4.7-bin-hadoop2.7/jars/* -Xmx1g org.apache.spark.deploy.SparkSubmit --name PySparkShell pyspark-shell
+SPARK_HOME=/Users/jiahua/Downloads/spark-2.4.7-bin-hadoop2.7
+SPARK_CONF_DIR=/Users/jiahua/Downloads/spark-2.4.7-bin-hadoop2.7/conf
+_PYSPARK_DRIVER_CONN_INFO_PATH=/var/folders/_y/dy2wrnjs7gb1jw293h181gmm0000gn/T/tmp1foaslid/tmp9p_wrq_6
+PYSPARK_PYTHON=ipython
+PYSPARK_DRIVER_PYTHON=ipython
+PYSPARK_SUBMIT_ARGS=&#34;--name&#34; &#34;PySparkShell&#34; &#34;pyspark-shell&#34;
+SPARK_ENV_LOADED=1
+_SPARK_CMD_USAGE=Usage: ./bin/pyspark [options]
+SPARK_SCALA_VERSION=2.12
+20/09/17 17:55:55 WARN NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
+Using Spark&#39;s default log4j profile: org/apache/spark/log4j-defaults.properties
+Setting default log level to &#34;WARN&#34;.
+To adjust logging level use sc.setLogLevel(newLevel). For SparkR, use setLogLevel(newLevel).
+Welcome to
+      ____              __
+     / __/__  ___ _____/ /__
+    _\ \/ _ \/ _ `/ __/  &#39;_/
+   /__ / .__/\_,_/_/ /_/\_\   version 2.4.7
+      /_/
+
+Using Python version 3.7.6 (default, Jan  8 2020 13:42:34)
+SparkSession available as &#39;spark&#39;.
+</code></pre><p>Pyspark 里有个 PYTHONSTARTUP 变量。python会自动启动这个脚本。http://witkowskibartosz.com/blog/pythonstartup_what_it_is_and_how_to_use_it.html#.X2M0pJMzZTY</p>
+<pre tabindex="0"><code>export PYTHONSTARTUP=&#34;${SPARK_HOME}/python/pyspark/shell.py&#34;
+</code></pre><p>不了解一些语言本身的特性，还真被绕晕了。</p>
+<p>spark-submit 也只是包装。spark-class 是核心。org.apache.spark.launcher.Main 会生成新的运行脚本，然后在 spark-class 里执行。其他方法也是spark-submit的包装。</p>
+<pre tabindex="0"><code>$ ./bin/run-example SparkPi
+
+/Library/Java/JavaVirtualMachines/jdk1.8.0_221.jdk/Contents/Home/jre/bin/java -cp /Users/jiahua/Downloads/spark-2.4.7-bin-hadoop2.7/conf/:/Users/jiahua/Downloads/spark-2.4.7-bin-hadoop2.7/jars/* -Xmx1g org.apache.spark.deploy.SparkSubmit --jars /Users/jiahua/Downloads/spark-2.4.7-bin-hadoop2.7/examples/jars/spark-examples_2.11-2.4.7.jar,/Users/jiahua/Downloads/spark-2.4.7-bin-hadoop2.7/examples/jars/scopt_2.11-3.7.0.jar --class org.apache.spark.examples.SparkPi spark-internal
+</code></pre></div><div class="post-footer" id="post-footer">
+    <div class="post-info">
+        <div class="post-info-line">
+            <div class="post-info-mod">
+                <span>Updated on 2020-09-17</span>
+            </div></div>
+        <div class="post-info-line">
+            <div class="post-info-md"></div>
+            <div class="post-info-share">
+                <span><a href="javascript:void(0);" title="Share on Twitter" data-sharer="twitter" data-url="http://localhost:1313/posts/20200917-pyspark/" data-title="pyspark 的启动流程"><i class="fab fa-twitter fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="Share on Facebook" data-sharer="facebook" data-url="http://localhost:1313/posts/20200917-pyspark/"><i class="fab fa-facebook-square fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="Share on Hacker News" data-sharer="hackernews" data-url="http://localhost:1313/posts/20200917-pyspark/" data-title="pyspark 的启动流程"><i class="fab fa-hacker-news fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="Share on Line" data-sharer="line" data-url="http://localhost:1313/posts/20200917-pyspark/" data-title="pyspark 的启动流程"><i data-svg-src="/lib/simple-icons/icons/line.min.svg" aria-hidden="true"></i></a><a href="javascript:void(0);" title="Share on 微博" data-sharer="weibo" data-url="http://localhost:1313/posts/20200917-pyspark/" data-title="pyspark 的启动流程"><i class="fab fa-weibo fa-fw" aria-hidden="true"></i></a></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="post-info-more">
+        <section class="post-tags"></section>
+        <section>
+            <span><a href="javascript:void(0);" onclick="window.history.back();">Back</a></span>&nbsp;|&nbsp;<span><a href="/">Home</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav"><a href="/posts/20200916-py4j/" class="prev" rel="prev" title="20200916 Py4j"><i class="fas fa-angle-left fa-fw" aria-hidden="true"></i>20200916 Py4j</a>
+            <a href="/posts/20200922-mongo-slow-query/" class="next" rel="next" title="20200922 Mongo Slow Query">20200922 Mongo Slow Query<i class="fas fa-angle-right fa-fw" aria-hidden="true"></i></a></div>
+</div>
+</article></div>
+            </main><footer class="footer">
+        <div class="footer-container"><div class="footer-line">Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.147.3">Hugo</a> | Theme - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.3.0"><i class="far fa-kiss-wink-heart fa-fw" aria-hidden="true"></i> LoveIt</a>
+                </div><div class="footer-line" itemscope itemtype="http://schema.org/CreativeWork"><i class="far fa-copyright fa-fw" aria-hidden="true"></i><span itemprop="copyrightYear">2022 - 2025</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/" target="_blank">Happy Coding</a></span></div>
+        </div>
+    </footer></div>
+
+        <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="Back to Top">
+                <i class="fas fa-arrow-up fa-fw" aria-hidden="true"></i>
+            </a><a href="#" id="view-comments" class="fixed-button" title="View Comments">
+                <i class="fas fa-comment fa-fw" aria-hidden="true"></i>
+            </a>
+        </div><script type="text/javascript" src="/lib/lazysizes/lazysizes.min.js"></script><script type="text/javascript" src="/lib/clipboard/clipboard.min.js"></script><script type="text/javascript" src="/lib/sharer/sharer.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"Copy to clipboard","maxShownLines":50},"comment":{}};</script><script type="text/javascript" src="/js/theme.min.js"></script></body>
+</html>

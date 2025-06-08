@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+    <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="robots" content="noodp" />
+        <title>Clojure core.async vs Go - Happy Coding</title><meta name="Description" content=""><meta property="og:url" content="http://localhost:1313/posts/20200819-clojure-core-async/">
+  <meta property="og:site_name" content="Happy Coding">
+  <meta property="og:title" content="Clojure core.async vs Go">
+  <meta property="og:description" content="进程、线程、协程 进程有内存地址空间。
+进程内可以有多个线程（操作系统线程），线程切换，会有用户态到系统态的切换，是比较“重”的操作。
+线程想开多少就开多少，只是 OS 线程切换的开销会很大。多线程能提高CPU利用率，但是过多，超过CPU极限就会产生额外开销。适度，就像吃饭一样。
+协程是轻量级线程、绿色线程，由开发语言runtime/lib来维护。M个协程对应到N个线程。
+Golang Java 的多线程是 OS 的多线程，在 Go 中通常情况下是被包裹在 goroutine 和 scheduler 后面的，没见过直接操作线程的。
+Clojure (core.async) Why thread 就是因为没实现抢占式调度。
+参考：
+6.5 调度器 https://draveness.me/golang/docs/part3-runtime/ch06-concurrency/golang-goroutine/ Mastering Concurrent Processes with core.async https://www.braveclojure.com/core-async/#thread Go&#43;（放弃了） https://github.com/goplus/gop
+package main import &#34;time&#34; func plus1(i float32) float32 { return i &#43; 1 } func double(i float32) float32 { return i * 2 } func main() { a := []float32{1, 2, 3.4} ch1 := make(chan float32) ch2 := make(chan float32) ch3 := make(chan float32) // double go func(in, out chan float32) { for e := range in { out &lt;- double(e) } close(out) }(ch1, ch2) // plus1 go func(in, out chan float32) { for e := range in { out &lt;- plus1(e) } close(out) }(ch2, ch3) // println go func(in chan float32) { for e := range in { println(e) } }(ch3) // read for _, e := range a { ch1 &lt;- e } close(ch1) time.Sleep(time.Second) } 用Go&#43;运行不了的。类型系统并没有消失，bug多。这个项目的意义是啥？">
+  <meta property="og:locale" content="zh_cn">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2020-08-19T16:37:34+08:00">
+    <meta property="article:modified_time" content="2020-08-19T16:37:34+08:00">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Clojure core.async vs Go">
+  <meta name="twitter:description" content="进程、线程、协程 进程有内存地址空间。
+进程内可以有多个线程（操作系统线程），线程切换，会有用户态到系统态的切换，是比较“重”的操作。
+线程想开多少就开多少，只是 OS 线程切换的开销会很大。多线程能提高CPU利用率，但是过多，超过CPU极限就会产生额外开销。适度，就像吃饭一样。
+协程是轻量级线程、绿色线程，由开发语言runtime/lib来维护。M个协程对应到N个线程。
+Golang Java 的多线程是 OS 的多线程，在 Go 中通常情况下是被包裹在 goroutine 和 scheduler 后面的，没见过直接操作线程的。
+Clojure (core.async) Why thread 就是因为没实现抢占式调度。
+参考：
+6.5 调度器 https://draveness.me/golang/docs/part3-runtime/ch06-concurrency/golang-goroutine/ Mastering Concurrent Processes with core.async https://www.braveclojure.com/core-async/#thread Go&#43;（放弃了） https://github.com/goplus/gop
+package main import &#34;time&#34; func plus1(i float32) float32 { return i &#43; 1 } func double(i float32) float32 { return i * 2 } func main() { a := []float32{1, 2, 3.4} ch1 := make(chan float32) ch2 := make(chan float32) ch3 := make(chan float32) // double go func(in, out chan float32) { for e := range in { out &lt;- double(e) } close(out) }(ch1, ch2) // plus1 go func(in, out chan float32) { for e := range in { out &lt;- plus1(e) } close(out) }(ch2, ch3) // println go func(in chan float32) { for e := range in { println(e) } }(ch3) // read for _, e := range a { ch1 &lt;- e } close(ch1) time.Sleep(time.Second) } 用Go&#43;运行不了的。类型系统并没有消失，bug多。这个项目的意义是啥？">
+<meta name="application-name" content="Happy Coding">
+<meta name="apple-mobile-web-app-title" content="Happy Coding"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="http://localhost:1313/posts/20200819-clojure-core-async/" /><link rel="prev" href="http://localhost:1313/posts/20200818-impala-sql-tuning/" /><link rel="next" href="http://localhost:1313/posts/20200825-hadoop-alternatives/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="/lib/fontawesome-free/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="/lib/fontawesome-free/all.min.css"></noscript><link rel="preload" href="/lib/animate/animate.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="/lib/animate/animate.min.css"></noscript><script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "headline": "Clojure core.async vs Go",
+        "inLanguage": "zh-cn",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "http:\/\/localhost:1313\/posts\/20200819-clojure-core-async\/"
+        },"genre": "posts","wordcount":  154 ,
+        "url": "http:\/\/localhost:1313\/posts\/20200819-clojure-core-async\/","datePublished": "2020-08-19T16:37:34+08:00","dateModified": "2020-08-19T16:37:34+08:00","publisher": {
+            "@type": "Organization",
+            "name": ""},"author": {
+                "@type": "Person",
+                "name": "Happy Coding"
+            },"description": ""
+    }
+    </script></head>
+    <body data-header-desktop="fixed" data-header-mobile="auto"><script type="text/javascript">(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
+
+        <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
+    <div class="header-wrapper">
+        <div class="header-title">
+            <a href="/" title="Happy Coding">Happy Coding</a>
+        </div>
+        <div class="menu">
+            <div class="menu-inner"><a class="menu-item" href="/posts"> Archive </a><a class="menu-item" href="/categories"> Categories </a><a class="menu-item" href="/tags"> Tags </a><a class="menu-item" href="/index.xml"> RSS Feed </a><span class="menu-item delimiter"></span><a href="javascript:void(0);" class="menu-item theme-switch" title="Switch Theme">
+                    <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+                </a></div>
+        </div>
+    </div>
+</header><header class="mobile" id="header-mobile">
+    <div class="header-container">
+        <div class="header-wrapper">
+            <div class="header-title">
+                <a href="/" title="Happy Coding">Happy Coding</a>
+            </div>
+            <div class="menu-toggle" id="menu-toggle-mobile">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="menu" id="menu-mobile"><a class="menu-item" href="/posts" title="">Archive</a><a class="menu-item" href="/categories" title="">Categories</a><a class="menu-item" href="/tags" title="">Tags</a><a class="menu-item" href="/index.xml" title="">RSS Feed</a><a href="javascript:void(0);" class="menu-item theme-switch" title="Switch Theme">
+                <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+            </a></div>
+    </div>
+</header><main class="main">
+                <div class="container"><div class="toc" id="toc-auto">
+            <h2 class="toc-title">Contents</h2>
+            <div class="toc-content" id="toc-content-auto"></div>
+        </div><article class="page single"><h1 class="single-title animate__animated animate__flipInX">Clojure core.async vs Go</h1><div class="post-meta">
+            <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Happy Coding</a></span></div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2020-08-19">2020-08-19</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;154 words&nbsp;
+                <i class="far fa-clock fa-fw" aria-hidden="true"></i>&nbsp;One minute&nbsp;</div>
+        </div><div class="details toc" id="toc-static"  data-kept="">
+                <div class="details-summary toc-title">
+                    <span>Contents</span>
+                    <span><i class="details-icon fas fa-angle-right" aria-hidden="true"></i></span>
+                </div>
+                <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#进程线程协程">进程、线程、协程</a></li>
+    <li><a href="#golang">Golang</a></li>
+    <li><a href="#clojure-coreasync">Clojure (core.async)</a></li>
+    <li><a href="#go放弃了">Go+（放弃了）</a></li>
+  </ul>
+</nav></div>
+            </div><div class="content" id="content"><h2 id="进程线程协程">进程、线程、协程</h2>
+<p>进程有内存地址空间。</p>
+<p>进程内可以有多个线程（操作系统线程），线程切换，会有用户态到系统态的切换，是比较“重”的操作。</p>
+<p>线程想开多少就开多少，只是 OS 线程切换的开销会很大。多线程能提高CPU利用率，但是过多，超过CPU极限就会产生额外开销。适度，就像吃饭一样。</p>
+<p>协程是轻量级线程、绿色线程，由开发语言runtime/lib来维护。M个协程对应到N个线程。</p>
+<h2 id="golang">Golang</h2>
+<p>Java 的多线程是 OS 的多线程，在 Go 中通常情况下是被包裹在 goroutine 和 scheduler 后面的，没见过直接操作线程的。</p>
+<h2 id="clojure-coreasync">Clojure (core.async)</h2>
+<p>Why thread 就是因为没实现抢占式调度。</p>
+<p>参考：</p>
+<ol>
+<li>6.5 调度器 <a href="https://draveness.me/golang/docs/part3-runtime/ch06-concurrency/golang-goroutine/" target="_blank" rel="noopener noreffer ">https://draveness.me/golang/docs/part3-runtime/ch06-concurrency/golang-goroutine/</a></li>
+<li>Mastering Concurrent Processes with core.async <a href="https://www.braveclojure.com/core-async/#thread" target="_blank" rel="noopener noreffer ">https://www.braveclojure.com/core-async/#thread</a></li>
+</ol>
+<h2 id="go放弃了">Go+（放弃了）</h2>
+<p><a href="https://github.com/goplus/gop" target="_blank" rel="noopener noreffer ">https://github.com/goplus/gop</a></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#f92672">package</span> <span style="color:#a6e22e">main</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> <span style="color:#e6db74">&#34;time&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">plus1</span>(<span style="color:#a6e22e">i</span> <span style="color:#66d9ef">float32</span>) <span style="color:#66d9ef">float32</span> {
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">i</span> <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">double</span>(<span style="color:#a6e22e">i</span> <span style="color:#66d9ef">float32</span>) <span style="color:#66d9ef">float32</span> {
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">i</span> <span style="color:#f92672">*</span> <span style="color:#ae81ff">2</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">main</span>() {
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">a</span> <span style="color:#f92672">:=</span> []<span style="color:#66d9ef">float32</span>{<span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">3.4</span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">ch1</span> <span style="color:#f92672">:=</span> make(<span style="color:#66d9ef">chan</span> <span style="color:#66d9ef">float32</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">ch2</span> <span style="color:#f92672">:=</span> make(<span style="color:#66d9ef">chan</span> <span style="color:#66d9ef">float32</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">ch3</span> <span style="color:#f92672">:=</span> make(<span style="color:#66d9ef">chan</span> <span style="color:#66d9ef">float32</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// double</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">go</span> <span style="color:#66d9ef">func</span>(<span style="color:#a6e22e">in</span>, <span style="color:#a6e22e">out</span> <span style="color:#66d9ef">chan</span> <span style="color:#66d9ef">float32</span>) {
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">e</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">range</span> <span style="color:#a6e22e">in</span> {
+</span></span><span style="display:flex;"><span>			<span style="color:#a6e22e">out</span> <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">double</span>(<span style="color:#a6e22e">e</span>)
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>		close(<span style="color:#a6e22e">out</span>)
+</span></span><span style="display:flex;"><span>	}(<span style="color:#a6e22e">ch1</span>, <span style="color:#a6e22e">ch2</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// plus1</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">go</span> <span style="color:#66d9ef">func</span>(<span style="color:#a6e22e">in</span>, <span style="color:#a6e22e">out</span> <span style="color:#66d9ef">chan</span> <span style="color:#66d9ef">float32</span>) {
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">e</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">range</span> <span style="color:#a6e22e">in</span> {
+</span></span><span style="display:flex;"><span>			<span style="color:#a6e22e">out</span> <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">plus1</span>(<span style="color:#a6e22e">e</span>)
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>		close(<span style="color:#a6e22e">out</span>)
+</span></span><span style="display:flex;"><span>	}(<span style="color:#a6e22e">ch2</span>, <span style="color:#a6e22e">ch3</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// println</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">go</span> <span style="color:#66d9ef">func</span>(<span style="color:#a6e22e">in</span> <span style="color:#66d9ef">chan</span> <span style="color:#66d9ef">float32</span>) {
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">e</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">range</span> <span style="color:#a6e22e">in</span> {
+</span></span><span style="display:flex;"><span>			println(<span style="color:#a6e22e">e</span>)
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>	}(<span style="color:#a6e22e">ch3</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// read</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">e</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">range</span> <span style="color:#a6e22e">a</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">ch1</span> <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">e</span>
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	close(<span style="color:#a6e22e">ch1</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Sleep</span>(<span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Second</span>)
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>用Go+运行不了的。类型系统并没有消失，bug多。这个项目的意义是啥？</p>
+</div><div class="post-footer" id="post-footer">
+    <div class="post-info">
+        <div class="post-info-line">
+            <div class="post-info-mod">
+                <span>Updated on 2020-08-19</span>
+            </div></div>
+        <div class="post-info-line">
+            <div class="post-info-md"></div>
+            <div class="post-info-share">
+                <span><a href="javascript:void(0);" title="Share on Twitter" data-sharer="twitter" data-url="http://localhost:1313/posts/20200819-clojure-core-async/" data-title="Clojure core.async vs Go"><i class="fab fa-twitter fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="Share on Facebook" data-sharer="facebook" data-url="http://localhost:1313/posts/20200819-clojure-core-async/"><i class="fab fa-facebook-square fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="Share on Hacker News" data-sharer="hackernews" data-url="http://localhost:1313/posts/20200819-clojure-core-async/" data-title="Clojure core.async vs Go"><i class="fab fa-hacker-news fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="Share on Line" data-sharer="line" data-url="http://localhost:1313/posts/20200819-clojure-core-async/" data-title="Clojure core.async vs Go"><i data-svg-src="/lib/simple-icons/icons/line.min.svg" aria-hidden="true"></i></a><a href="javascript:void(0);" title="Share on 微博" data-sharer="weibo" data-url="http://localhost:1313/posts/20200819-clojure-core-async/" data-title="Clojure core.async vs Go"><i class="fab fa-weibo fa-fw" aria-hidden="true"></i></a></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="post-info-more">
+        <section class="post-tags"></section>
+        <section>
+            <span><a href="javascript:void(0);" onclick="window.history.back();">Back</a></span>&nbsp;|&nbsp;<span><a href="/">Home</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav"><a href="/posts/20200818-impala-sql-tuning/" class="prev" rel="prev" title="Impala SQL Tuning"><i class="fas fa-angle-left fa-fw" aria-hidden="true"></i>Impala SQL Tuning</a>
+            <a href="/posts/20200825-hadoop-alternatives/" class="next" rel="next" title="Hadoop/Spark Alternatives">Hadoop/Spark Alternatives<i class="fas fa-angle-right fa-fw" aria-hidden="true"></i></a></div>
+</div>
+</article></div>
+            </main><footer class="footer">
+        <div class="footer-container"><div class="footer-line">Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.147.3">Hugo</a> | Theme - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.3.0"><i class="far fa-kiss-wink-heart fa-fw" aria-hidden="true"></i> LoveIt</a>
+                </div><div class="footer-line" itemscope itemtype="http://schema.org/CreativeWork"><i class="far fa-copyright fa-fw" aria-hidden="true"></i><span itemprop="copyrightYear">2022 - 2025</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/" target="_blank">Happy Coding</a></span></div>
+        </div>
+    </footer></div>
+
+        <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="Back to Top">
+                <i class="fas fa-arrow-up fa-fw" aria-hidden="true"></i>
+            </a><a href="#" id="view-comments" class="fixed-button" title="View Comments">
+                <i class="fas fa-comment fa-fw" aria-hidden="true"></i>
+            </a>
+        </div><script type="text/javascript" src="/lib/lazysizes/lazysizes.min.js"></script><script type="text/javascript" src="/lib/clipboard/clipboard.min.js"></script><script type="text/javascript" src="/lib/sharer/sharer.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"Copy to clipboard","maxShownLines":50},"comment":{}};</script><script type="text/javascript" src="/js/theme.min.js"></script></body>
+</html>

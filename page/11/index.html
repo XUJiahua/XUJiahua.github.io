@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+    <head>
+	<meta name="generator" content="Hugo 0.147.3"><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="robots" content="noodp" />
+        <title>Happy Coding</title><meta name="Description" content=""><meta property="og:url" content="http://localhost:1313/">
+  <meta property="og:site_name" content="Happy Coding">
+  <meta property="og:title" content="Happy Coding">
+  <meta property="og:locale" content="zh_cn">
+  <meta property="og:type" content="website">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Happy Coding">
+<meta name="application-name" content="Happy Coding">
+<meta name="apple-mobile-web-app-title" content="Happy Coding"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="http://localhost:1313/" /><link rel="alternate" href="/index.xml" type="application/rss+xml" title="Happy Coding">
+    <link rel="feed" href="/index.xml" type="application/rss+xml" title="Happy Coding"><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="/lib/fontawesome-free/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="/lib/fontawesome-free/all.min.css"></noscript><link rel="preload" href="/lib/animate/animate.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="/lib/animate/animate.min.css"></noscript><script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "WebSite",
+        "url": "http:\/\/localhost:1313\/","inLanguage": "zh-cn","author": {
+                "@type": "Person",
+                "name": "Happy Coding"
+            },"name": "Happy Coding"
+    }
+    </script></head>
+    <body data-header-desktop="fixed" data-header-mobile="auto"><script type="text/javascript">(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
+
+        <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
+    <div class="header-wrapper">
+        <div class="header-title">
+            <a href="/" title="Happy Coding">Happy Coding</a>
+        </div>
+        <div class="menu">
+            <div class="menu-inner"><a class="menu-item" href="/posts"> Archive </a><a class="menu-item" href="/categories"> Categories </a><a class="menu-item" href="/tags"> Tags </a><a class="menu-item" href="/index.xml"> RSS Feed </a><span class="menu-item delimiter"></span><a href="javascript:void(0);" class="menu-item theme-switch" title="Switch Theme">
+                    <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+                </a></div>
+        </div>
+    </div>
+</header><header class="mobile" id="header-mobile">
+    <div class="header-container">
+        <div class="header-wrapper">
+            <div class="header-title">
+                <a href="/" title="Happy Coding">Happy Coding</a>
+            </div>
+            <div class="menu-toggle" id="menu-toggle-mobile">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="menu" id="menu-mobile"><a class="menu-item" href="/posts" title="">Archive</a><a class="menu-item" href="/categories" title="">Categories</a><a class="menu-item" href="/tags" title="">Tags</a><a class="menu-item" href="/index.xml" title="">RSS Feed</a><a href="javascript:void(0);" class="menu-item theme-switch" title="Switch Theme">
+                <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+            </a></div>
+    </div>
+</header><main class="main">
+                <div class="container"><div class="page home" data-home="posts"><div class="home-profile"><div class="links"></div></div>
+<article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
+        <a href="/posts/20200630-influxdb/">20200630 Influxdb</a>
+    </h1><div class="post-meta"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Happy Coding</a></span>&nbsp;<span class="post-publish">published on <time datetime="2020-06-30">2020-06-30</time></span></div><div class="content"><h3 id="概念">概念</h3>
+<h4 id="database">database</h4>
+<p>数据库</p>
+<h4 id="measurement">measurement</h4>
+<p>指标名称。对应数据库的表。</p>
+<h4 id="point">point</h4>
+<p>一条记录。包含measurement, time, tags, fields</p>
+<h4 id="time">time</h4>
+<p>时间序列数据库，以time为主键。</p>
+<p>写入时不指定，InfluxDB自动生成。</p>
+<h4 id="tags">tags</h4>
+<p>对应table column。</p>
+<p>维度数据，会索引。</p>
+<h4 id="fields">fields</h4>
+<p>对应table column。</p>
+<p>指标数据，不会索引。至少有一个。</p>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="../../images/image-20200702152618124.png"
+        data-srcset="../../images/image-20200702152618124.png, ../../images/image-20200702152618124.png 1.5x, ../../images/image-20200702152618124.png 2x"
+        data-sizes="auto"
+        alt="../../images/image-20200702152618124.png"
+        title="image-20200702152618124" /></p>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="../../images/image-20200702152846953.png"
+        data-srcset="../../images/image-20200702152846953.png, ../../images/image-20200702152846953.png 1.5x, ../../images/image-20200702152846953.png 2x"
+        data-sizes="auto"
+        alt="../../images/image-20200702152846953.png"
+        title="image-20200702152846953" /></p>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="../../images/image-20200707094723021.png"
+        data-srcset="../../images/image-20200707094723021.png, ../../images/image-20200707094723021.png 1.5x, ../../images/image-20200707094723021.png 2x"
+        data-sizes="auto"
+        alt="../../images/image-20200707094723021.png"
+        title="image-20200707094723021" /></p></div><div class="post-footer">
+        <a href="/posts/20200630-influxdb/">Read More</a></div>
+</article><article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
+        <a href="/posts/20200630-kv-store/">GopherCon 2017: Marty Schoch - Building a High-Performance Key/Value Store in Go</a>
+    </h1><div class="post-meta"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Happy Coding</a></span>&nbsp;<span class="post-publish">published on <time datetime="2020-06-30">2020-06-30</time></span></div><div class="content"><p>基础知识教程。教你写个KV数据库。这里有用mmap，但是更主流的是使用LSM Tree。</p>
+<p><a href="https://www.youtube.com/watch?v=ttebJcN5bgQ" target="_blank" rel="noopener noreffer ">GopherCon 2017: Marty Schoch - Building a High-Performance Key/Value Store in Go</a> In this talk we explore the internals of a high-performance key/value store written in Go. The audience will learn the basic design used to store and retrieve data, as well the techniques used to achieve high performance.</p>
+<p>里面有很多数据结构的知识。</p>
+<p>读，每个segment是排序好的，使用二分查找。多个segment，先查最新的segment。</p>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="../../images/image-20200630104640578.png"
+        data-srcset="../../images/image-20200630104640578.png, ../../images/image-20200630104640578.png 1.5x, ../../images/image-20200630104640578.png 2x"
+        data-sizes="auto"
+        alt="../../images/image-20200630104640578.png"
+        title="image-20200630104640578" /></p>
+<p>迭代，使用最小堆？</p>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="../../images/image-20200630104826903.png"
+        data-srcset="../../images/image-20200630104826903.png, ../../images/image-20200630104826903.png 1.5x, ../../images/image-20200630104826903.png 2x"
+        data-sizes="auto"
+        alt="../../images/image-20200630104826903.png"
+        title="image-20200630104826903" /></p></div><div class="post-footer">
+        <a href="/posts/20200630-kv-store/">Read More</a></div>
+</article><article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
+        <a href="/posts/20200629-hive/">Hive 常用语句</a>
+    </h1><div class="post-meta"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Happy Coding</a></span>&nbsp;<span class="post-publish">published on <time datetime="2020-06-29">2020-06-29</time></span></div><div class="content"><h3 id="基本概念">基本概念</h3>
+<p>文件 CSV、JSON</p>
+<p>元数据</p>
+<p>分区</p>
+<p>Hive：</p>
+<ol>
+<li>MapReduce的抽象，关注SQL，而不是写Mapper/Reducer。</li>
+<li>文件的schema映射。CSV格式到表结构，JSON格式到表结构，还有正则等格式。</li>
+</ol>
+<p>原始文件，可以直接被当做一张表来处理。使用SQL来处理数据，不再需要面向过程编程。使用集合、声明的思想、方式做开发。</p>
+<p>Impala没法直接使用，需要将其转储为其他格式。</p>
+<p>HDFS存储原始数据，MySQL存储元数据。</p>
+<pre tabindex="0"><code>select * from ods_dks_yz_order;
+</code></pre><pre tabindex="0"><code>show partitions ods_dks_yz_order;
+</code></pre><p>有时候通过HDFS命令直接同步了数据文件，而没有更新元数据，使用如下命令同步下。</p>
+<pre tabindex="0"><code>MSCK REPAIR TABLE ods_dks_yz_order;
+</code></pre><p>或是就是使用LOAD命令加载数据，这样同时上传文件并更新元数据。</p>
+<p>hive-hcatalog-core.jar放入${HIVE_HOME}/auxlib目录。需要重启HiveServer。</p>
+<pre tabindex="0"><code>ansible all -i hosts.ivt -m shell -a &#34;ln -s /opt/cloudera/parcels/CDH-6.3.2-1.cdh6.3.2.p0.1605554/jars/hive-hcatalog-core-2.1.1-cdh6.3.2.jar /opt/cloudera/parcels/CDH/lib/hive/auxlib/hive-hcatalog-core-2.1.1-cdh6.3.2.jar&#34;
+</code></pre><p>参考：</p>
+<ol>
+<li>Class org.apache.hive.hcatalog.data.JsonSerDe not found <a href="https://www.cnblogs.com/lfm601508022/p/9188819.html" target="_blank" rel="noopener noreffer ">https://www.cnblogs.com/lfm601508022/p/9188819.html</a></li>
+</ol>
+<h3 id="分区">分区</h3>
+<p>静态分区</p>
+<p>动态分区</p></div><div class="post-footer">
+        <a href="/posts/20200629-hive/">Read More</a></div>
+</article><article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
+        <a href="/posts/20200628-hive-json/">20200628 Hive Json</a>
+    </h1><div class="post-meta"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Happy Coding</a></span>&nbsp;<span class="post-publish">published on <time datetime="2020-06-28">2020-06-28</time></span></div><div class="content"><p>每日同步json文件，建Hive表。</p>
+<p>测试数据 comments.json：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-json" data-lang="json"><span style="display:flex;"><span>{ <span style="color:#f92672">&#34;blogID&#34;</span> : <span style="color:#e6db74">&#34;FJY26J1333&#34;</span>, <span style="color:#f92672">&#34;date&#34;</span> : <span style="color:#e6db74">&#34;2012-04-01&#34;</span>, <span style="color:#f92672">&#34;name&#34;</span> : <span style="color:#e6db74">&#34;vpxnksu&#34;</span>, <span style="color:#f92672">&#34;comment&#34;</span> : <span style="color:#e6db74">&#34;good stuff&#34;</span>, <span style="color:#f92672">&#34;contact&#34;</span> : { <span style="color:#f92672">&#34;email&#34;</span> : <span style="color:#e6db74">&#34;vpxnksu@gmail.com&#34;</span>, <span style="color:#f92672">&#34;website&#34;</span> : <span style="color:#e6db74">&#34;vpxnksu.wordpress.com&#34;</span> } }
+</span></span><span style="display:flex;"><span>{ <span style="color:#f92672">&#34;blogID&#34;</span> : <span style="color:#e6db74">&#34;VSAUMDFGSD&#34;</span>, <span style="color:#f92672">&#34;date&#34;</span> : <span style="color:#e6db74">&#34;2012-04-01&#34;</span>, <span style="color:#f92672">&#34;name&#34;</span> : <span style="color:#e6db74">&#34;yhftrcx&#34;</span>, <span style="color:#f92672">&#34;comment&#34;</span> : <span style="color:#e6db74">&#34;another comment&#34;</span>}
+</span></span></code></pre></div><p>上传数据到HDFS，写入表：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#66d9ef">LOAD</span> <span style="color:#66d9ef">DATA</span> INPATH <span style="color:#e6db74">&#39;/user/hive/john/comments.json&#39;</span> OVERWRITE <span style="color:#66d9ef">INTO</span> <span style="color:#66d9ef">TABLE</span> comments;
+</span></span></code></pre></div><p>建外部表：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#66d9ef">CREATE</span>  <span style="color:#66d9ef">EXTERNAL</span>  <span style="color:#66d9ef">TABLE</span> comments
+</span></span><span style="display:flex;"><span>(
+</span></span><span style="display:flex;"><span>blogID STRING,
+</span></span><span style="display:flex;"><span><span style="color:#f92672">`</span>date<span style="color:#f92672">`</span> STRING,
+</span></span><span style="display:flex;"><span>name STRING,
+</span></span><span style="display:flex;"><span><span style="color:#f92672">`</span><span style="color:#66d9ef">comment</span><span style="color:#f92672">`</span> STRING,
+</span></span><span style="display:flex;"><span>contact STRUCT<span style="color:#f92672">&lt;</span>email:STRING, website:STRING<span style="color:#f92672">&gt;</span>
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">ROW</span> FORMAT SERDE <span style="color:#e6db74">&#39;org.apache.hive.hcatalog.data.JsonSerDe&#39;</span>
+</span></span><span style="display:flex;"><span>STORED <span style="color:#66d9ef">AS</span> TEXTFILE
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">LOCATION</span> <span style="color:#e6db74">&#39;/user/hive/john/test/comments&#39;</span>;
+</span></span></code></pre></div><pre tabindex="0"><code>select contact.email, contact.website from comments4
+</code></pre><h4 id="生成-schema">生成 schema</h4>
+<p>查询：</p>
+<p>为何嵌套的结构查不出来？</p>
+<h4 id="hive-hcatalog-core-包引用">hive-hcatalog-core 包引用</h4>
+<p>把包放这里：$HIVE_HOME/</p>
+<h3 id="嵌套结构怎么处理">嵌套结构怎么处理</h3>
+<p>参考：</p>
+<ol>
+<li>Hive Plays Well with JSON <a href="https://pkghosh.wordpress.com/2012/05/06/hive-plays-well-with-json/" target="_blank" rel="noopener noreffer ">https://pkghosh.wordpress.com/2012/05/06/hive-plays-well-with-json/</a></li>
+<li>How do you make a HIVE table out of JSON data? <a href="https://stackoverflow.com/questions/11479247/how-do-you-make-a-hive-table-out-of-json-data" target="_blank" rel="noopener noreffer ">https://stackoverflow.com/questions/11479247/how-do-you-make-a-hive-table-out-of-json-data</a></li>
+<li>HIVE Row Formats和SerDe <a href="https://www.jianshu.com/p/ea569e499019" target="_blank" rel="noopener noreffer ">https://www.jianshu.com/p/ea569e499019</a></li>
+</ol></div><div class="post-footer">
+        <a href="/posts/20200628-hive-json/">Read More</a></div>
+</article><article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
+        <a href="/posts/20200615-metabase-customer-isolation/">Metabase 客户隔离</a>
+    </h1><div class="post-meta"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Happy Coding</a></span>&nbsp;<span class="post-publish">published on <time datetime="2020-06-15">2020-06-15</time></span>&nbsp;<span class="post-category">included in <a href="/categories/metabase/"><i class="far fa-folder fa-fw" aria-hidden="true"></i>Metabase</a></span></div><div class="content"><p>之前有讨论，在不改动代码的情况下，可以使用分组功能来做客户隔离。但是该方案面临的问题是，每个客户一套模板，模板可维护性低。</p>
+<p>问题的关键就是如何共享SQL模板并客户隔离。需要改动源代码。</p>
+<h3 id="目标">目标</h3>
+<ol>
+<li>代码复用。同一套SQL代码。不用copy/paste，好维护。一个dashboard所有客户都能看。</li>
+<li>客户隔离，保证数据安全。不同客户只能看到自己的数据。</li>
+</ol>
+<h3 id="实现">实现</h3>
+<p>执行dashboard/chart中SQL代码时，动态插入客户隔离标识。</p>
+<p>首先来看下一次SQL Query的生命周期。</p>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="../../images/image-20200616151301507.png"
+        data-srcset="../../images/image-20200616151301507.png, ../../images/image-20200616151301507.png 1.5x, ../../images/image-20200616151301507.png 2x"
+        data-sizes="auto"
+        alt="../../images/image-20200616151301507.png"
+        title="image-20200616151301507" /></p>
+<p>找了个比较接近的处理逻辑，<code>substitute-parameters</code>用于将<code>{ {xxx} }</code>替换为widget中选的值。模仿之，SQL中定义一个<code>##client_id##</code>占位符，写了一个<code>substitute-placeholder</code>方法使用用户的<code>client-id</code>替代占位符。</p>
+<p>code: <a href="https://github.com/XUJiahua/metabase/pull/4/files" target="_blank" rel="noopener noreffer ">https://github.com/XUJiahua/metabase/pull/4/files</a></p>
+<h3 id="demo">DEMO</h3>
+<p>效果</p>
+<p>使用Sample Data数据集测试。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#66d9ef">select</span> <span style="color:#f92672">*</span> <span style="color:#66d9ef">from</span> PEOPLE
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">where</span> <span style="color:#66d9ef">STATE</span><span style="color:#f92672">=</span><span style="color:#960050;background-color:#1e0010">{{</span><span style="color:#66d9ef">STATE</span><span style="color:#960050;background-color:#1e0010">}}</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">and</span> <span style="color:#66d9ef">SOURCE</span><span style="color:#f92672">=##</span>client_id<span style="color:#f92672">##</span>
+</span></span></code></pre></div><p>返回的SQL中，可见占位符被替换为Google。</p>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="../../images/image-20200616150506812.png"
+        data-srcset="../../images/image-20200616150506812.png, ../../images/image-20200616150506812.png 1.5x, ../../images/image-20200616150506812.png 2x"
+        data-sizes="auto"
+        alt="../../images/image-20200616150506812.png"
+        title="image-20200616150506812" /></p>
+<p>因为还没有集成SSO系统，<code>client-id</code>临时用<code>first-name</code>来代替。</p>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="../../images/image-20200616150614876.png"
+        data-srcset="../../images/image-20200616150614876.png, ../../images/image-20200616150614876.png 1.5x, ../../images/image-20200616150614876.png 2x"
+        data-sizes="auto"
+        alt="../../images/image-20200616150614876.png"
+        title="image-20200616150614876" /></p></div><div class="post-footer">
+        <a href="/posts/20200615-metabase-customer-isolation/">Read More</a><div class="post-tags">
+                <i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/metabase/">Metabase</a></div></div>
+</article><article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
+        <a href="/posts/20200611-phash/">使用 Perceptual hashing 去除微信头像内容干扰</a>
+    </h1><div class="post-meta"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Happy Coding</a></span>&nbsp;<span class="post-publish">published on <time datetime="2020-06-11">2020-06-11</time></span></div><div class="content"><p>本文是<a href="https://xujiahua.github.io/posts/20200514-wx-avatar/" target="_blank" rel="noopener noreffer ">「微信用户授权头像内容带随机干扰的问题」</a>的延续。本文对效果进行量化，并找到一个phash库，达到了更好的效果。</p>
+<h2 id="实验框架">实验框架</h2>
+<p>相关脚本<a href="https://github.com/XUJiahua/phash_test" target="_blank" rel="noopener noreffer ">点此</a>。</p>
+<h3 id="实验数据">实验数据</h3>
+<p>10 组微信头像，每组 10万个头像。</p>
+<p>准备 10万 微信头像链接，重复下载10次：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>./download.sh
+</span></span></code></pre></div><h3 id="实验期望">实验期望</h3>
+<p>期望目标：</p>
+<ol>
+<li>1 个头像链接对应 1 个特征：期望特征抽取算法能够剥离微信对头像内容加入的干扰。不然使用密码学哈希算法，1 个头像链接下载 10 次可能就对应 10 个特征了。</li>
+<li>1 个特征对应 1 个头像链接。跟哈希算法一样，希望哈希冲突尽可能小。</li>
+</ol>
+<h2 id="实验">实验</h2>
+<h3 id="图像降维方法">图像降维方法</h3>
+<p>延续上文中在有限数据下得出的规则，图像降维到：32级灰度，10x10 尺寸。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>python extract_feature_p2.py
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>echo <span style="color:#e6db74">&#34;file,feature&#34;</span> &gt; header.csv
+</span></span><span style="display:flex;"><span>cat header.csv download_1.csv download_2.csv download_3.csv download_4.csv download_5.csv download_6.csv download_7.csv download_8.csv download_9.csv download_10.csv &gt; data.csv
+</span></span></code></pre></div><p>两个指标分析如下：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>csvsql --query <span style="color:#e6db74">&#34;select avg(cnt) as expect1 from (select file, count(distinct feature) as cnt from &#39;data&#39; group by file)&#34;</span> data.csv
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>expect1
+</span></span><span style="display:flex;"><span>2.186088754189832
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>csvsql --query <span style="color:#e6db74">&#34;select avg(cnt) as expect1 from (select feature, count(distinct file) as cnt from &#39;data&#39; group by feature)&#34;</span> data.csv
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>expect1
+</span></span><span style="display:flex;"><span>1.0051170602511927
+</span></span></code></pre></div><p>每个头像链接，重复下载 10 次的情况下，平均有生成 2.18 个特征。</p></div><div class="post-footer">
+        <a href="/posts/20200611-phash/">Read More</a></div>
+</article><ul class="pagination"><li class="page-item ">
+                    <span class="page-link">
+                        <a href="/">1</a>
+                    </span>
+                </li><li class="page-item ">
+                    <span class="page-link" aria-hidden="true">&hellip;</span>
+                </li><li class="page-item ">
+                    <span class="page-link">
+                        <a href="/page/9/">9</a>
+                    </span>
+                </li><li class="page-item ">
+                    <span class="page-link">
+                        <a href="/page/10/">10</a>
+                    </span>
+                </li><li class="page-item active">
+                    <span class="page-link">
+                        <a href="/page/11/">11</a>
+                    </span>
+                </li><li class="page-item ">
+                    <span class="page-link">
+                        <a href="/page/12/">12</a>
+                    </span>
+                </li><li class="page-item ">
+                    <span class="page-link">
+                        <a href="/page/13/">13</a>
+                    </span>
+                </li><li class="page-item ">
+                    <span class="page-link" aria-hidden="true">&hellip;</span>
+                </li><li class="page-item ">
+                    <span class="page-link">
+                        <a href="/page/20/">20</a>
+                    </span>
+                </li></ul></div></div>
+            </main><footer class="footer">
+        <div class="footer-container"><div class="footer-line">Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.147.3">Hugo</a> | Theme - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.3.0"><i class="far fa-kiss-wink-heart fa-fw" aria-hidden="true"></i> LoveIt</a>
+                </div><div class="footer-line" itemscope itemtype="http://schema.org/CreativeWork"><i class="far fa-copyright fa-fw" aria-hidden="true"></i><span itemprop="copyrightYear">2022 - 2025</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/" target="_blank">Happy Coding</a></span></div>
+        </div>
+    </footer></div>
+
+        <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="Back to Top">
+                <i class="fas fa-arrow-up fa-fw" aria-hidden="true"></i>
+            </a><a href="#" id="view-comments" class="fixed-button" title="View Comments">
+                <i class="fas fa-comment fa-fw" aria-hidden="true"></i>
+            </a>
+        </div><script type="text/javascript" src="/lib/lazysizes/lazysizes.min.js"></script><script type="text/javascript" src="/lib/clipboard/clipboard.min.js"></script><script type="text/javascript" src="/lib/sharer/sharer.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"Copy to clipboard","maxShownLines":50}};</script><script type="text/javascript" src="/js/theme.min.js"></script></body>
+</html>

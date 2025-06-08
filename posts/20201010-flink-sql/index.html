@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+    <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="robots" content="noodp" />
+        <title>Flink SQL 工程化 - Happy Coding</title><meta name="Description" content=""><meta property="og:url" content="http://localhost:1313/posts/20201010-flink-sql/">
+  <meta property="og:site_name" content="Happy Coding">
+  <meta property="og:title" content="Flink SQL 工程化">
+  <meta property="og:description" content="目标 达到这样的预期效果：
+开发工作：编写 SQL 建表语句（输入表 Source、维度表、输出表 Sink），INSERT INTO 语句用于构建计算任务。或是 YAML 文件维护。No Java/Scala, No Maven, No JAR. 改造 ./bin/sql-client.sh 及其内核的 flink-sql-client 项目，用于方面提交上述 SQL 任务。 参考
+SQL Client https://ci.apache.org/projects/flink/flink-docs-release-1.11/dev/table/sqlClient.html Flink SQL Demo: Building an End-to-End Streaming Application https://flink.apache.org/2020/07/28/flink-sql-demo-building-e2e-streaming-application.html SQL Client 的本质还是 TableEnvironment https://ci.apache.org/projects/flink/flink-docs-release-1.11/dev/table/common.html 工作 Flink SQL
+DDL 相当于定义 POJO class。有Source，也有Sink，也有维度表。
+DML 相当于 Transformation。
+一直聚合，确实会有重复的 KEY，最后显示都是 GROUP BY KEY，取值都是 MAX(xxx)
+The entire process can be completed using standard SQL syntax, without a line of Java or Scala code.">
+  <meta property="og:locale" content="zh_cn">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2020-10-10T10:10:05+08:00">
+    <meta property="article:modified_time" content="2020-10-10T10:10:05+08:00">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Flink SQL 工程化">
+  <meta name="twitter:description" content="目标 达到这样的预期效果：
+开发工作：编写 SQL 建表语句（输入表 Source、维度表、输出表 Sink），INSERT INTO 语句用于构建计算任务。或是 YAML 文件维护。No Java/Scala, No Maven, No JAR. 改造 ./bin/sql-client.sh 及其内核的 flink-sql-client 项目，用于方面提交上述 SQL 任务。 参考
+SQL Client https://ci.apache.org/projects/flink/flink-docs-release-1.11/dev/table/sqlClient.html Flink SQL Demo: Building an End-to-End Streaming Application https://flink.apache.org/2020/07/28/flink-sql-demo-building-e2e-streaming-application.html SQL Client 的本质还是 TableEnvironment https://ci.apache.org/projects/flink/flink-docs-release-1.11/dev/table/common.html 工作 Flink SQL
+DDL 相当于定义 POJO class。有Source，也有Sink，也有维度表。
+DML 相当于 Transformation。
+一直聚合，确实会有重复的 KEY，最后显示都是 GROUP BY KEY，取值都是 MAX(xxx)
+The entire process can be completed using standard SQL syntax, without a line of Java or Scala code.">
+<meta name="application-name" content="Happy Coding">
+<meta name="apple-mobile-web-app-title" content="Happy Coding"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="http://localhost:1313/posts/20201010-flink-sql/" /><link rel="prev" href="http://localhost:1313/posts/20201009-mit-6.824-distributed-systems/" /><link rel="next" href="http://localhost:1313/posts/20201015-go-memory-model/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="/lib/fontawesome-free/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="/lib/fontawesome-free/all.min.css"></noscript><link rel="preload" href="/lib/animate/animate.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="/lib/animate/animate.min.css"></noscript><script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "headline": "Flink SQL 工程化",
+        "inLanguage": "zh-cn",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "http:\/\/localhost:1313\/posts\/20201010-flink-sql\/"
+        },"genre": "posts","wordcount":  320 ,
+        "url": "http:\/\/localhost:1313\/posts\/20201010-flink-sql\/","datePublished": "2020-10-10T10:10:05+08:00","dateModified": "2020-10-10T10:10:05+08:00","publisher": {
+            "@type": "Organization",
+            "name": ""},"author": {
+                "@type": "Person",
+                "name": "Happy Coding"
+            },"description": ""
+    }
+    </script></head>
+    <body data-header-desktop="fixed" data-header-mobile="auto"><script type="text/javascript">(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
+
+        <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
+    <div class="header-wrapper">
+        <div class="header-title">
+            <a href="/" title="Happy Coding">Happy Coding</a>
+        </div>
+        <div class="menu">
+            <div class="menu-inner"><a class="menu-item" href="/posts"> Archive </a><a class="menu-item" href="/categories"> Categories </a><a class="menu-item" href="/tags"> Tags </a><a class="menu-item" href="/index.xml"> RSS Feed </a><span class="menu-item delimiter"></span><a href="javascript:void(0);" class="menu-item theme-switch" title="Switch Theme">
+                    <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+                </a></div>
+        </div>
+    </div>
+</header><header class="mobile" id="header-mobile">
+    <div class="header-container">
+        <div class="header-wrapper">
+            <div class="header-title">
+                <a href="/" title="Happy Coding">Happy Coding</a>
+            </div>
+            <div class="menu-toggle" id="menu-toggle-mobile">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="menu" id="menu-mobile"><a class="menu-item" href="/posts" title="">Archive</a><a class="menu-item" href="/categories" title="">Categories</a><a class="menu-item" href="/tags" title="">Tags</a><a class="menu-item" href="/index.xml" title="">RSS Feed</a><a href="javascript:void(0);" class="menu-item theme-switch" title="Switch Theme">
+                <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+            </a></div>
+    </div>
+</header><main class="main">
+                <div class="container"><div class="toc" id="toc-auto">
+            <h2 class="toc-title">Contents</h2>
+            <div class="toc-content" id="toc-content-auto"></div>
+        </div><article class="page single"><h1 class="single-title animate__animated animate__flipInX">Flink SQL 工程化</h1><div class="post-meta">
+            <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Happy Coding</a></span></div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2020-10-10">2020-10-10</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;320 words&nbsp;
+                <i class="far fa-clock fa-fw" aria-hidden="true"></i>&nbsp;2 minutes&nbsp;</div>
+        </div><div class="details toc" id="toc-static"  data-kept="">
+                <div class="details-summary toc-title">
+                    <span>Contents</span>
+                    <span><i class="details-icon fas fa-angle-right" aria-hidden="true"></i></span>
+                </div>
+                <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#目标">目标</a></li>
+    <li><a href="#工作">工作</a>
+      <ul>
+        <li><a href="#sql-client-是什么">SQL Client 是什么</a></li>
+        <li><a href="#flink-sql-提交任务后怎么追踪任务">Flink SQL 提交任务后，怎么追踪任务</a></li>
+        <li><a href="#调试-flink-sql-client-项目">调试 flink-sql-client 项目</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav></div>
+            </div><div class="content" id="content"><h2 id="目标">目标</h2>
+<p>达到这样的预期效果：</p>
+<ol>
+<li>开发工作：编写 SQL 建表语句（输入表 Source、维度表、输出表 Sink），INSERT INTO 语句用于构建计算任务。或是 YAML 文件维护。No Java/Scala, No Maven, No JAR.</li>
+<li>改造 ./bin/sql-client.sh 及其内核的 flink-sql-client 项目，用于方面提交上述 SQL 任务。</li>
+</ol>
+<p>参考</p>
+<ol>
+<li>SQL Client <a href="https://ci.apache.org/projects/flink/flink-docs-release-1.11/dev/table/sqlClient.html" target="_blank" rel="noopener noreffer ">https://ci.apache.org/projects/flink/flink-docs-release-1.11/dev/table/sqlClient.html</a></li>
+<li>Flink SQL Demo: Building an End-to-End Streaming Application <a href="https://flink.apache.org/2020/07/28/flink-sql-demo-building-e2e-streaming-application.html" target="_blank" rel="noopener noreffer ">https://flink.apache.org/2020/07/28/flink-sql-demo-building-e2e-streaming-application.html</a></li>
+<li>SQL Client 的本质还是 TableEnvironment <a href="https://ci.apache.org/projects/flink/flink-docs-release-1.11/dev/table/common.html" target="_blank" rel="noopener noreffer ">https://ci.apache.org/projects/flink/flink-docs-release-1.11/dev/table/common.html</a></li>
+</ol>
+<h2 id="工作">工作</h2>
+<p>Flink SQL</p>
+<p>DDL 相当于定义 POJO class。有Source，也有Sink，也有维度表。</p>
+<p>DML 相当于 Transformation。</p>
+<p>一直聚合，确实会有重复的 KEY，最后显示都是 GROUP BY KEY，取值都是 MAX(xxx)</p>
+<p>The entire process can be completed using standard SQL syntax, without a line of Java or Scala code.</p>
+<ol>
+<li>还有一个问题就是 kafka connector，消费的offset是怎么智能处理的，不会导致我重复消费之前的数据。</li>
+<li>所有的建表操作都是在./sql-client.sh里完成的，怎么把它维护成一个任务呢？DDL、DML都做成脚本。一个任务该怎么组织。</li>
+<li>如果只要写SQL，所以主要任务就是建一个Flink集群（on K8S），还有一套提交SQL任务的脚本。</li>
+<li>Time，State（比如分组统计，这些需要State的支持，重头开发，非常费劲的）</li>
+<li>目前为止，对 time 的处理还不够深刻。processing time, event time。</li>
+</ol>
+<h3 id="sql-client-是什么">SQL Client 是什么</h3>
+<p>Flink 任务的主流提交方式是 JAR 包。我想直接用 SQL 提交。</p>
+<p>Flink’s Table &amp; SQL API makes it possible to work with queries written in the SQL language, but these queries need to be embedded within a table program that is written in either Java or Scala. Moreover, these programs need to be packaged with a build tool before being submitted to a cluster. This more or less limits the usage of Flink to Java/Scala programmers.</p>
+<p>必须打包成一个 JAR 包，这个有点费劲啊。</p>
+<p>The <em>SQL Client</em> aims to provide an easy way of writing, debugging, and submitting table programs to a Flink cluster without a single line of Java or Scala code.</p>
+<p><em>SQL Client 的方式就是不写J</em>ava/Scala，不用maven打包，只写SQL</p>
+<h3 id="flink-sql-提交任务后怎么追踪任务">Flink SQL 提交任务后，怎么追踪任务</h3>
+<p>The SQL Client does not track the status of the running Flink job after submission. The CLI process can be shutdown after the submission without affecting the detached query. Flink’s <a href="https://ci.apache.org/projects/flink/flink-docs-release-1.11/dev/restart_strategies.html" target="_blank" rel="noopener noreffer ">restart strategy</a> takes care of the fault-tolerance. A query can be cancelled using Flink’s web interface, command-line, or REST API.</p>
+<p>在 SQL Client 里提交的 INSERT INTO 会触发 Flink JOB，但是呢，Client 对其是失控的。只能使用 Web UI，命令行，REST API 来控制。</p>
+<p>看着是，SQL Client 可以用来提交 SQL Flink 任务，但是呢，需要其他方式管理任务，创建任务与管理任务是两套。</p>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="../../images/1DB39B2D-4C2A-436A-BECE-894DE6450610.png"
+        data-srcset="../../images/1DB39B2D-4C2A-436A-BECE-894DE6450610.png, ../../images/1DB39B2D-4C2A-436A-BECE-894DE6450610.png 1.5x, ../../images/1DB39B2D-4C2A-436A-BECE-894DE6450610.png 2x"
+        data-sizes="auto"
+        alt="../../images/1DB39B2D-4C2A-436A-BECE-894DE6450610.png"
+        title="1DB39B2D-4C2A-436A-BECE-894DE6450610" /></p>
+<h3 id="调试-flink-sql-client-项目">调试 flink-sql-client 项目</h3>
+<p>怎么在 IDE 里调试 sql-client，我把一些依赖的包copy到源码目录，还是没法启动啊</p>
+<p>(base) ➜ flink-sql-client git:(master) ✗ ./bin/sql-client.sh embedded</p>
+<p>Error: Could not find or load main class org.apache.flink.table.client.SqlClient</p>
+<p>下午讨论下。</p>
+<ol>
+<li>code review 监控系统 Flink 部分。新规则怎么快速构建呢，除了交易监控，还有优惠券等等的监控啊。</li>
+<li>停机问题。停机一会，不影响吧，我们关注事件时间，而不是处理时间。重启后，之前的事件还是会处理的。</li>
+<li>他们的思路是代码为主，配置为辅。我的思路是配置为主，参数、阈值作为维度表参与。一目了然。review SQL 比 review Java 快。</li>
+<li>写 SQL 为何就费时费力呢？事件表、维度表，要统计的东西，很方便啊。也比较直观。Java 代码，不断重构抽象，都不直观了。</li>
+<li>现在 Flink 集群是怎么部署的。</li>
+<li>未来我们要容器化，容器化 Flink，应用容器化都要做。</li>
+<li>Flink SQL 不稳定，有多不稳定。最终都是翻译到 TableEnvironment 代码去的。</li>
+</ol>
+</div><div class="post-footer" id="post-footer">
+    <div class="post-info">
+        <div class="post-info-line">
+            <div class="post-info-mod">
+                <span>Updated on 2020-10-10</span>
+            </div></div>
+        <div class="post-info-line">
+            <div class="post-info-md"></div>
+            <div class="post-info-share">
+                <span><a href="javascript:void(0);" title="Share on Twitter" data-sharer="twitter" data-url="http://localhost:1313/posts/20201010-flink-sql/" data-title="Flink SQL 工程化"><i class="fab fa-twitter fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="Share on Facebook" data-sharer="facebook" data-url="http://localhost:1313/posts/20201010-flink-sql/"><i class="fab fa-facebook-square fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="Share on Hacker News" data-sharer="hackernews" data-url="http://localhost:1313/posts/20201010-flink-sql/" data-title="Flink SQL 工程化"><i class="fab fa-hacker-news fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="Share on Line" data-sharer="line" data-url="http://localhost:1313/posts/20201010-flink-sql/" data-title="Flink SQL 工程化"><i data-svg-src="/lib/simple-icons/icons/line.min.svg" aria-hidden="true"></i></a><a href="javascript:void(0);" title="Share on 微博" data-sharer="weibo" data-url="http://localhost:1313/posts/20201010-flink-sql/" data-title="Flink SQL 工程化"><i class="fab fa-weibo fa-fw" aria-hidden="true"></i></a></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="post-info-more">
+        <section class="post-tags"></section>
+        <section>
+            <span><a href="javascript:void(0);" onclick="window.history.back();">Back</a></span>&nbsp;|&nbsp;<span><a href="/">Home</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav"><a href="/posts/20201009-mit-6.824-distributed-systems/" class="prev" rel="prev" title="20201009 MIT 6"><i class="fas fa-angle-left fa-fw" aria-hidden="true"></i>20201009 MIT 6</a>
+            <a href="/posts/20201015-go-memory-model/" class="next" rel="next" title="Go Memory Model">Go Memory Model<i class="fas fa-angle-right fa-fw" aria-hidden="true"></i></a></div>
+</div>
+</article></div>
+            </main><footer class="footer">
+        <div class="footer-container"><div class="footer-line">Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.147.3">Hugo</a> | Theme - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.3.0"><i class="far fa-kiss-wink-heart fa-fw" aria-hidden="true"></i> LoveIt</a>
+                </div><div class="footer-line" itemscope itemtype="http://schema.org/CreativeWork"><i class="far fa-copyright fa-fw" aria-hidden="true"></i><span itemprop="copyrightYear">2022 - 2025</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/" target="_blank">Happy Coding</a></span></div>
+        </div>
+    </footer></div>
+
+        <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="Back to Top">
+                <i class="fas fa-arrow-up fa-fw" aria-hidden="true"></i>
+            </a><a href="#" id="view-comments" class="fixed-button" title="View Comments">
+                <i class="fas fa-comment fa-fw" aria-hidden="true"></i>
+            </a>
+        </div><script type="text/javascript" src="/lib/lazysizes/lazysizes.min.js"></script><script type="text/javascript" src="/lib/clipboard/clipboard.min.js"></script><script type="text/javascript" src="/lib/sharer/sharer.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"Copy to clipboard","maxShownLines":50},"comment":{}};</script><script type="text/javascript" src="/js/theme.min.js"></script></body>
+</html>

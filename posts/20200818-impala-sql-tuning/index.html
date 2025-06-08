@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+    <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="robots" content="noodp" />
+        <title>Impala SQL Tuning - Happy Coding</title><meta name="Description" content=""><meta property="og:url" content="http://localhost:1313/posts/20200818-impala-sql-tuning/">
+  <meta property="og:site_name" content="Happy Coding">
+  <meta property="og:title" content="Impala SQL Tuning">
+  <meta property="og:description" content="一个上百行的SQL Query调优思路。
+Hue 可视化查询计划 Hue 上打开可视化的查询计划，看每个阶段的耗时。从最耗时的阶段开始分析。
+预期的数据读取量与实际的数据读取量 查看最耗时的Node。比如查看实际的字节读取数，是否与预期不一致。进而分析SQL是否有问题。
+LEFT JOIN INNER JOIN 对于查询条件放在哪里不敏感。
+LEFT/RIGHT JOIN 就有关系。
+参考：
+SQL JOIN - WHERE clause vs. ON clause https://stackoverflow.com/a/20981676 案例 左表：事实表
+右表：日期维度表
+想用LEFT JOIN发现左表读取量特别大。（过滤条件放 ON 结果都是错的。LEFT JOIN 的逻辑参考上文链接）
+SELECT COUNT(1) FROM product.dw_dm_mp_track_session LEFT OUTER JOIN product.dwd_dim_date_with_timestamp ON dw_dm_mp_track_session.dt=dwd_dim_date_with_timestamp.dt WHERE dwd_dim_date_with_timestamp.dt &gt;= &#39;2020-08-01&#39; AND dwd_dim_date_with_timestamp.dt&lt;= &#39;2020-08-17&#39;">
+  <meta property="og:locale" content="zh_cn">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2020-08-18T11:23:52+08:00">
+    <meta property="article:modified_time" content="2020-08-18T11:23:52+08:00">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Impala SQL Tuning">
+  <meta name="twitter:description" content="一个上百行的SQL Query调优思路。
+Hue 可视化查询计划 Hue 上打开可视化的查询计划，看每个阶段的耗时。从最耗时的阶段开始分析。
+预期的数据读取量与实际的数据读取量 查看最耗时的Node。比如查看实际的字节读取数，是否与预期不一致。进而分析SQL是否有问题。
+LEFT JOIN INNER JOIN 对于查询条件放在哪里不敏感。
+LEFT/RIGHT JOIN 就有关系。
+参考：
+SQL JOIN - WHERE clause vs. ON clause https://stackoverflow.com/a/20981676 案例 左表：事实表
+右表：日期维度表
+想用LEFT JOIN发现左表读取量特别大。（过滤条件放 ON 结果都是错的。LEFT JOIN 的逻辑参考上文链接）
+SELECT COUNT(1) FROM product.dw_dm_mp_track_session LEFT OUTER JOIN product.dwd_dim_date_with_timestamp ON dw_dm_mp_track_session.dt=dwd_dim_date_with_timestamp.dt WHERE dwd_dim_date_with_timestamp.dt &gt;= &#39;2020-08-01&#39; AND dwd_dim_date_with_timestamp.dt&lt;= &#39;2020-08-17&#39;">
+<meta name="application-name" content="Happy Coding">
+<meta name="apple-mobile-web-app-title" content="Happy Coding"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="http://localhost:1313/posts/20200818-impala-sql-tuning/" /><link rel="prev" href="http://localhost:1313/posts/20200817-data-project-ci/" /><link rel="next" href="http://localhost:1313/posts/20200819-clojure-core-async/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="/lib/fontawesome-free/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="/lib/fontawesome-free/all.min.css"></noscript><link rel="preload" href="/lib/animate/animate.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="/lib/animate/animate.min.css"></noscript><script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "headline": "Impala SQL Tuning",
+        "inLanguage": "zh-cn",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "http:\/\/localhost:1313\/posts\/20200818-impala-sql-tuning\/"
+        },"genre": "posts","wordcount":  97 ,
+        "url": "http:\/\/localhost:1313\/posts\/20200818-impala-sql-tuning\/","datePublished": "2020-08-18T11:23:52+08:00","dateModified": "2020-08-18T11:23:52+08:00","publisher": {
+            "@type": "Organization",
+            "name": ""},"author": {
+                "@type": "Person",
+                "name": "Happy Coding"
+            },"description": ""
+    }
+    </script></head>
+    <body data-header-desktop="fixed" data-header-mobile="auto"><script type="text/javascript">(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
+
+        <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
+    <div class="header-wrapper">
+        <div class="header-title">
+            <a href="/" title="Happy Coding">Happy Coding</a>
+        </div>
+        <div class="menu">
+            <div class="menu-inner"><a class="menu-item" href="/posts"> Archive </a><a class="menu-item" href="/categories"> Categories </a><a class="menu-item" href="/tags"> Tags </a><a class="menu-item" href="/index.xml"> RSS Feed </a><span class="menu-item delimiter"></span><a href="javascript:void(0);" class="menu-item theme-switch" title="Switch Theme">
+                    <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+                </a></div>
+        </div>
+    </div>
+</header><header class="mobile" id="header-mobile">
+    <div class="header-container">
+        <div class="header-wrapper">
+            <div class="header-title">
+                <a href="/" title="Happy Coding">Happy Coding</a>
+            </div>
+            <div class="menu-toggle" id="menu-toggle-mobile">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="menu" id="menu-mobile"><a class="menu-item" href="/posts" title="">Archive</a><a class="menu-item" href="/categories" title="">Categories</a><a class="menu-item" href="/tags" title="">Tags</a><a class="menu-item" href="/index.xml" title="">RSS Feed</a><a href="javascript:void(0);" class="menu-item theme-switch" title="Switch Theme">
+                <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+            </a></div>
+    </div>
+</header><main class="main">
+                <div class="container"><div class="toc" id="toc-auto">
+            <h2 class="toc-title">Contents</h2>
+            <div class="toc-content" id="toc-content-auto"></div>
+        </div><article class="page single"><h1 class="single-title animate__animated animate__flipInX">Impala SQL Tuning</h1><div class="post-meta">
+            <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Happy Coding</a></span></div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2020-08-18">2020-08-18</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;97 words&nbsp;
+                <i class="far fa-clock fa-fw" aria-hidden="true"></i>&nbsp;One minute&nbsp;</div>
+        </div><div class="details toc" id="toc-static"  data-kept="">
+                <div class="details-summary toc-title">
+                    <span>Contents</span>
+                    <span><i class="details-icon fas fa-angle-right" aria-hidden="true"></i></span>
+                </div>
+                <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#hue-可视化查询计划">Hue 可视化查询计划</a></li>
+    <li><a href="#预期的数据读取量与实际的数据读取量">预期的数据读取量与实际的数据读取量</a></li>
+    <li><a href="#left-join">LEFT JOIN</a>
+      <ul>
+        <li><a href="#案例">案例</a></li>
+      </ul>
+    </li>
+    <li><a href="#其他">其他</a></li>
+  </ul>
+</nav></div>
+            </div><div class="content" id="content"><p>一个上百行的SQL Query调优思路。</p>
+<h2 id="hue-可视化查询计划">Hue 可视化查询计划</h2>
+<p>Hue 上打开可视化的查询计划，看每个阶段的耗时。从最耗时的阶段开始分析。</p>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="../../images/image-20200818112714313.png"
+        data-srcset="../../images/image-20200818112714313.png, ../../images/image-20200818112714313.png 1.5x, ../../images/image-20200818112714313.png 2x"
+        data-sizes="auto"
+        alt="../../images/image-20200818112714313.png"
+        title="image-20200818112714313" /></p>
+<h2 id="预期的数据读取量与实际的数据读取量">预期的数据读取量与实际的数据读取量</h2>
+<p>查看最耗时的Node。比如查看实际的字节读取数，是否与预期不一致。进而分析SQL是否有问题。</p>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="../../images/image-20200818140706271.png"
+        data-srcset="../../images/image-20200818140706271.png, ../../images/image-20200818140706271.png 1.5x, ../../images/image-20200818140706271.png 2x"
+        data-sizes="auto"
+        alt="../../images/image-20200818140706271.png"
+        title="image-20200818140706271" /></p>
+<h2 id="left-join">LEFT JOIN</h2>
+<p>INNER JOIN 对于查询条件放在哪里不敏感。</p>
+<p>LEFT/RIGHT JOIN 就有关系。</p>
+<p>参考：</p>
+<ol>
+<li>SQL JOIN - WHERE clause vs. ON clause <a href="https://stackoverflow.com/a/20981676" target="_blank" rel="noopener noreffer ">https://stackoverflow.com/a/20981676</a></li>
+</ol>
+<h3 id="案例">案例</h3>
+<p>左表：事实表</p>
+<p>右表：日期维度表</p>
+<p>想用LEFT JOIN发现左表读取量特别大。（过滤条件放 ON 结果都是错的。LEFT JOIN 的逻辑参考上文链接）</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-SQL" data-lang="SQL"><span style="display:flex;"><span><span style="color:#66d9ef">SELECT</span> <span style="color:#66d9ef">COUNT</span>(<span style="color:#ae81ff">1</span>) 
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">FROM</span> product.dw_dm_mp_track_session 
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">LEFT</span> <span style="color:#66d9ef">OUTER</span> <span style="color:#66d9ef">JOIN</span> product.dwd_dim_date_with_timestamp 
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">ON</span> dw_dm_mp_track_session.dt<span style="color:#f92672">=</span>dwd_dim_date_with_timestamp.dt
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">WHERE</span> dwd_dim_date_with_timestamp.dt <span style="color:#f92672">&gt;=</span> <span style="color:#e6db74">&#39;2020-08-01&#39;</span> 
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">AND</span> dwd_dim_date_with_timestamp.dt<span style="color:#f92672">&lt;=</span> <span style="color:#e6db74">&#39;2020-08-17&#39;</span>
+</span></span></code></pre></div><p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="../../images/image-20200818151126999.png"
+        data-srcset="../../images/image-20200818151126999.png, ../../images/image-20200818151126999.png 1.5x, ../../images/image-20200818151126999.png 2x"
+        data-sizes="auto"
+        alt="../../images/image-20200818151126999.png"
+        title="image-20200818151126999" /></p>
+<p>使用 INNER JOIN 就可以大量减少 IO 了。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-SQL" data-lang="SQL"><span style="display:flex;"><span><span style="color:#66d9ef">SELECT</span> <span style="color:#66d9ef">COUNT</span>(<span style="color:#ae81ff">1</span>) 
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">FROM</span> product.dw_dm_mp_track_session 
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">INNER</span> <span style="color:#66d9ef">JOIN</span> product.dwd_dim_date_with_timestamp 
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">ON</span> dw_dm_mp_track_session.dt<span style="color:#f92672">=</span>dwd_dim_date_with_timestamp.dt
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">WHERE</span> dwd_dim_date_with_timestamp.dt <span style="color:#f92672">&gt;=</span> <span style="color:#e6db74">&#39;2020-08-01&#39;</span> 
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">AND</span> dwd_dim_date_with_timestamp.dt<span style="color:#f92672">&lt;=</span> <span style="color:#e6db74">&#39;2020-08-17&#39;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">-- OR INNER JOIN 对查询条件的位置（AND、WHERE）无感
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">SELECT</span> <span style="color:#66d9ef">COUNT</span>(<span style="color:#ae81ff">1</span>) 
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">FROM</span> product.dw_dm_mp_track_session 
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">INNER</span> <span style="color:#66d9ef">JOIN</span> product.dwd_dim_date_with_timestamp 
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">ON</span> dw_dm_mp_track_session.dt<span style="color:#f92672">=</span>dwd_dim_date_with_timestamp.dt
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">AND</span> dwd_dim_date_with_timestamp.dt <span style="color:#f92672">&gt;=</span> <span style="color:#e6db74">&#39;2020-08-01&#39;</span> 
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">AND</span> dwd_dim_date_with_timestamp.dt<span style="color:#f92672">&lt;=</span> <span style="color:#e6db74">&#39;2020-08-17&#39;</span>
+</span></span></code></pre></div><p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="../../images/image-20200818151447889.png"
+        data-srcset="../../images/image-20200818151447889.png, ../../images/image-20200818151447889.png 1.5x, ../../images/image-20200818151447889.png 2x"
+        data-sizes="auto"
+        alt="../../images/image-20200818151447889.png"
+        title="image-20200818151447889" /></p>
+<h2 id="其他">其他</h2>
+<p>很神奇，impala不会用到8~10几台机器。还是原来的5台。</p>
+</div><div class="post-footer" id="post-footer">
+    <div class="post-info">
+        <div class="post-info-line">
+            <div class="post-info-mod">
+                <span>Updated on 2020-08-18</span>
+            </div></div>
+        <div class="post-info-line">
+            <div class="post-info-md"></div>
+            <div class="post-info-share">
+                <span><a href="javascript:void(0);" title="Share on Twitter" data-sharer="twitter" data-url="http://localhost:1313/posts/20200818-impala-sql-tuning/" data-title="Impala SQL Tuning"><i class="fab fa-twitter fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="Share on Facebook" data-sharer="facebook" data-url="http://localhost:1313/posts/20200818-impala-sql-tuning/"><i class="fab fa-facebook-square fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="Share on Hacker News" data-sharer="hackernews" data-url="http://localhost:1313/posts/20200818-impala-sql-tuning/" data-title="Impala SQL Tuning"><i class="fab fa-hacker-news fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="Share on Line" data-sharer="line" data-url="http://localhost:1313/posts/20200818-impala-sql-tuning/" data-title="Impala SQL Tuning"><i data-svg-src="/lib/simple-icons/icons/line.min.svg" aria-hidden="true"></i></a><a href="javascript:void(0);" title="Share on 微博" data-sharer="weibo" data-url="http://localhost:1313/posts/20200818-impala-sql-tuning/" data-title="Impala SQL Tuning"><i class="fab fa-weibo fa-fw" aria-hidden="true"></i></a></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="post-info-more">
+        <section class="post-tags"></section>
+        <section>
+            <span><a href="javascript:void(0);" onclick="window.history.back();">Back</a></span>&nbsp;|&nbsp;<span><a href="/">Home</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav"><a href="/posts/20200817-data-project-ci/" class="prev" rel="prev" title="大数据项目持续集成"><i class="fas fa-angle-left fa-fw" aria-hidden="true"></i>大数据项目持续集成</a>
+            <a href="/posts/20200819-clojure-core-async/" class="next" rel="next" title="Clojure core.async vs Go">Clojure core.async vs Go<i class="fas fa-angle-right fa-fw" aria-hidden="true"></i></a></div>
+</div>
+</article></div>
+            </main><footer class="footer">
+        <div class="footer-container"><div class="footer-line">Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.147.3">Hugo</a> | Theme - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.3.0"><i class="far fa-kiss-wink-heart fa-fw" aria-hidden="true"></i> LoveIt</a>
+                </div><div class="footer-line" itemscope itemtype="http://schema.org/CreativeWork"><i class="far fa-copyright fa-fw" aria-hidden="true"></i><span itemprop="copyrightYear">2022 - 2025</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/" target="_blank">Happy Coding</a></span></div>
+        </div>
+    </footer></div>
+
+        <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="Back to Top">
+                <i class="fas fa-arrow-up fa-fw" aria-hidden="true"></i>
+            </a><a href="#" id="view-comments" class="fixed-button" title="View Comments">
+                <i class="fas fa-comment fa-fw" aria-hidden="true"></i>
+            </a>
+        </div><script type="text/javascript" src="/lib/lazysizes/lazysizes.min.js"></script><script type="text/javascript" src="/lib/clipboard/clipboard.min.js"></script><script type="text/javascript" src="/lib/sharer/sharer.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"Copy to clipboard","maxShownLines":50},"comment":{}};</script><script type="text/javascript" src="/js/theme.min.js"></script></body>
+</html>

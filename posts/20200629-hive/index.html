@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+    <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="robots" content="noodp" />
+        <title>Hive 常用语句 - Happy Coding</title><meta name="Description" content=""><meta property="og:url" content="http://localhost:1313/posts/20200629-hive/">
+  <meta property="og:site_name" content="Happy Coding">
+  <meta property="og:title" content="Hive 常用语句">
+  <meta property="og:description" content="基本概念 文件 CSV、JSON
+元数据
+分区
+Hive：
+MapReduce的抽象，关注SQL，而不是写Mapper/Reducer。 文件的schema映射。CSV格式到表结构，JSON格式到表结构，还有正则等格式。 原始文件，可以直接被当做一张表来处理。使用SQL来处理数据，不再需要面向过程编程。使用集合、声明的思想、方式做开发。
+Impala没法直接使用，需要将其转储为其他格式。
+HDFS存储原始数据，MySQL存储元数据。
+select * from ods_dks_yz_order; show partitions ods_dks_yz_order; 有时候通过HDFS命令直接同步了数据文件，而没有更新元数据，使用如下命令同步下。
+MSCK REPAIR TABLE ods_dks_yz_order; 或是就是使用LOAD命令加载数据，这样同时上传文件并更新元数据。
+hive-hcatalog-core.jar放入${HIVE_HOME}/auxlib目录。需要重启HiveServer。
+ansible all -i hosts.ivt -m shell -a &#34;ln -s /opt/cloudera/parcels/CDH-6.3.2-1.cdh6.3.2.p0.1605554/jars/hive-hcatalog-core-2.1.1-cdh6.3.2.jar /opt/cloudera/parcels/CDH/lib/hive/auxlib/hive-hcatalog-core-2.1.1-cdh6.3.2.jar&#34; 参考：
+Class org.apache.hive.hcatalog.data.JsonSerDe not found https://www.cnblogs.com/lfm601508022/p/9188819.html 分区 静态分区
+动态分区">
+  <meta property="og:locale" content="zh_cn">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2020-06-29T11:01:03+08:00">
+    <meta property="article:modified_time" content="2020-06-29T11:01:03+08:00">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Hive 常用语句">
+  <meta name="twitter:description" content="基本概念 文件 CSV、JSON
+元数据
+分区
+Hive：
+MapReduce的抽象，关注SQL，而不是写Mapper/Reducer。 文件的schema映射。CSV格式到表结构，JSON格式到表结构，还有正则等格式。 原始文件，可以直接被当做一张表来处理。使用SQL来处理数据，不再需要面向过程编程。使用集合、声明的思想、方式做开发。
+Impala没法直接使用，需要将其转储为其他格式。
+HDFS存储原始数据，MySQL存储元数据。
+select * from ods_dks_yz_order; show partitions ods_dks_yz_order; 有时候通过HDFS命令直接同步了数据文件，而没有更新元数据，使用如下命令同步下。
+MSCK REPAIR TABLE ods_dks_yz_order; 或是就是使用LOAD命令加载数据，这样同时上传文件并更新元数据。
+hive-hcatalog-core.jar放入${HIVE_HOME}/auxlib目录。需要重启HiveServer。
+ansible all -i hosts.ivt -m shell -a &#34;ln -s /opt/cloudera/parcels/CDH-6.3.2-1.cdh6.3.2.p0.1605554/jars/hive-hcatalog-core-2.1.1-cdh6.3.2.jar /opt/cloudera/parcels/CDH/lib/hive/auxlib/hive-hcatalog-core-2.1.1-cdh6.3.2.jar&#34; 参考：
+Class org.apache.hive.hcatalog.data.JsonSerDe not found https://www.cnblogs.com/lfm601508022/p/9188819.html 分区 静态分区
+动态分区">
+<meta name="application-name" content="Happy Coding">
+<meta name="apple-mobile-web-app-title" content="Happy Coding"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="http://localhost:1313/posts/20200629-hive/" /><link rel="prev" href="http://localhost:1313/posts/20200628-hive-json/" /><link rel="next" href="http://localhost:1313/posts/20200630-kv-store/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="/lib/fontawesome-free/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="/lib/fontawesome-free/all.min.css"></noscript><link rel="preload" href="/lib/animate/animate.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="/lib/animate/animate.min.css"></noscript><script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "headline": "Hive 常用语句",
+        "inLanguage": "zh-cn",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "http:\/\/localhost:1313\/posts\/20200629-hive\/"
+        },"genre": "posts","wordcount":  45 ,
+        "url": "http:\/\/localhost:1313\/posts\/20200629-hive\/","datePublished": "2020-06-29T11:01:03+08:00","dateModified": "2020-06-29T11:01:03+08:00","publisher": {
+            "@type": "Organization",
+            "name": ""},"author": {
+                "@type": "Person",
+                "name": "Happy Coding"
+            },"description": ""
+    }
+    </script></head>
+    <body data-header-desktop="fixed" data-header-mobile="auto"><script type="text/javascript">(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
+
+        <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
+    <div class="header-wrapper">
+        <div class="header-title">
+            <a href="/" title="Happy Coding">Happy Coding</a>
+        </div>
+        <div class="menu">
+            <div class="menu-inner"><a class="menu-item" href="/posts"> Archive </a><a class="menu-item" href="/categories"> Categories </a><a class="menu-item" href="/tags"> Tags </a><a class="menu-item" href="/index.xml"> RSS Feed </a><span class="menu-item delimiter"></span><a href="javascript:void(0);" class="menu-item theme-switch" title="Switch Theme">
+                    <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+                </a></div>
+        </div>
+    </div>
+</header><header class="mobile" id="header-mobile">
+    <div class="header-container">
+        <div class="header-wrapper">
+            <div class="header-title">
+                <a href="/" title="Happy Coding">Happy Coding</a>
+            </div>
+            <div class="menu-toggle" id="menu-toggle-mobile">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="menu" id="menu-mobile"><a class="menu-item" href="/posts" title="">Archive</a><a class="menu-item" href="/categories" title="">Categories</a><a class="menu-item" href="/tags" title="">Tags</a><a class="menu-item" href="/index.xml" title="">RSS Feed</a><a href="javascript:void(0);" class="menu-item theme-switch" title="Switch Theme">
+                <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+            </a></div>
+    </div>
+</header><main class="main">
+                <div class="container"><div class="toc" id="toc-auto">
+            <h2 class="toc-title">Contents</h2>
+            <div class="toc-content" id="toc-content-auto"></div>
+        </div><article class="page single"><h1 class="single-title animate__animated animate__flipInX">Hive 常用语句</h1><div class="post-meta">
+            <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Happy Coding</a></span></div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2020-06-29">2020-06-29</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;45 words&nbsp;
+                <i class="far fa-clock fa-fw" aria-hidden="true"></i>&nbsp;One minute&nbsp;</div>
+        </div><div class="details toc" id="toc-static"  data-kept="">
+                <div class="details-summary toc-title">
+                    <span>Contents</span>
+                    <span><i class="details-icon fas fa-angle-right" aria-hidden="true"></i></span>
+                </div>
+                <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li><a href="#基本概念">基本概念</a></li>
+        <li><a href="#分区">分区</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav></div>
+            </div><div class="content" id="content"><h3 id="基本概念">基本概念</h3>
+<p>文件 CSV、JSON</p>
+<p>元数据</p>
+<p>分区</p>
+<p>Hive：</p>
+<ol>
+<li>MapReduce的抽象，关注SQL，而不是写Mapper/Reducer。</li>
+<li>文件的schema映射。CSV格式到表结构，JSON格式到表结构，还有正则等格式。</li>
+</ol>
+<p>原始文件，可以直接被当做一张表来处理。使用SQL来处理数据，不再需要面向过程编程。使用集合、声明的思想、方式做开发。</p>
+<p>Impala没法直接使用，需要将其转储为其他格式。</p>
+<p>HDFS存储原始数据，MySQL存储元数据。</p>
+<pre tabindex="0"><code>select * from ods_dks_yz_order;
+</code></pre><pre tabindex="0"><code>show partitions ods_dks_yz_order;
+</code></pre><p>有时候通过HDFS命令直接同步了数据文件，而没有更新元数据，使用如下命令同步下。</p>
+<pre tabindex="0"><code>MSCK REPAIR TABLE ods_dks_yz_order;
+</code></pre><p>或是就是使用LOAD命令加载数据，这样同时上传文件并更新元数据。</p>
+<p>hive-hcatalog-core.jar放入${HIVE_HOME}/auxlib目录。需要重启HiveServer。</p>
+<pre tabindex="0"><code>ansible all -i hosts.ivt -m shell -a &#34;ln -s /opt/cloudera/parcels/CDH-6.3.2-1.cdh6.3.2.p0.1605554/jars/hive-hcatalog-core-2.1.1-cdh6.3.2.jar /opt/cloudera/parcels/CDH/lib/hive/auxlib/hive-hcatalog-core-2.1.1-cdh6.3.2.jar&#34;
+</code></pre><p>参考：</p>
+<ol>
+<li>Class org.apache.hive.hcatalog.data.JsonSerDe not found <a href="https://www.cnblogs.com/lfm601508022/p/9188819.html" target="_blank" rel="noopener noreffer ">https://www.cnblogs.com/lfm601508022/p/9188819.html</a></li>
+</ol>
+<h3 id="分区">分区</h3>
+<p>静态分区</p>
+<p>动态分区</p>
+</div><div class="post-footer" id="post-footer">
+    <div class="post-info">
+        <div class="post-info-line">
+            <div class="post-info-mod">
+                <span>Updated on 2020-06-29</span>
+            </div></div>
+        <div class="post-info-line">
+            <div class="post-info-md"></div>
+            <div class="post-info-share">
+                <span><a href="javascript:void(0);" title="Share on Twitter" data-sharer="twitter" data-url="http://localhost:1313/posts/20200629-hive/" data-title="Hive 常用语句"><i class="fab fa-twitter fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="Share on Facebook" data-sharer="facebook" data-url="http://localhost:1313/posts/20200629-hive/"><i class="fab fa-facebook-square fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="Share on Hacker News" data-sharer="hackernews" data-url="http://localhost:1313/posts/20200629-hive/" data-title="Hive 常用语句"><i class="fab fa-hacker-news fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="Share on Line" data-sharer="line" data-url="http://localhost:1313/posts/20200629-hive/" data-title="Hive 常用语句"><i data-svg-src="/lib/simple-icons/icons/line.min.svg" aria-hidden="true"></i></a><a href="javascript:void(0);" title="Share on 微博" data-sharer="weibo" data-url="http://localhost:1313/posts/20200629-hive/" data-title="Hive 常用语句"><i class="fab fa-weibo fa-fw" aria-hidden="true"></i></a></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="post-info-more">
+        <section class="post-tags"></section>
+        <section>
+            <span><a href="javascript:void(0);" onclick="window.history.back();">Back</a></span>&nbsp;|&nbsp;<span><a href="/">Home</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav"><a href="/posts/20200628-hive-json/" class="prev" rel="prev" title="20200628 Hive Json"><i class="fas fa-angle-left fa-fw" aria-hidden="true"></i>20200628 Hive Json</a>
+            <a href="/posts/20200630-kv-store/" class="next" rel="next" title="GopherCon 2017: Marty Schoch - Building a High-Performance Key/Value Store in Go">GopherCon 2017: Marty Schoch - Building a High-Performance Key/Value Store in Go<i class="fas fa-angle-right fa-fw" aria-hidden="true"></i></a></div>
+</div>
+</article></div>
+            </main><footer class="footer">
+        <div class="footer-container"><div class="footer-line">Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.147.3">Hugo</a> | Theme - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.3.0"><i class="far fa-kiss-wink-heart fa-fw" aria-hidden="true"></i> LoveIt</a>
+                </div><div class="footer-line" itemscope itemtype="http://schema.org/CreativeWork"><i class="far fa-copyright fa-fw" aria-hidden="true"></i><span itemprop="copyrightYear">2022 - 2025</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/" target="_blank">Happy Coding</a></span></div>
+        </div>
+    </footer></div>
+
+        <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="Back to Top">
+                <i class="fas fa-arrow-up fa-fw" aria-hidden="true"></i>
+            </a><a href="#" id="view-comments" class="fixed-button" title="View Comments">
+                <i class="fas fa-comment fa-fw" aria-hidden="true"></i>
+            </a>
+        </div><script type="text/javascript" src="/lib/lazysizes/lazysizes.min.js"></script><script type="text/javascript" src="/lib/clipboard/clipboard.min.js"></script><script type="text/javascript" src="/lib/sharer/sharer.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"Copy to clipboard","maxShownLines":50},"comment":{}};</script><script type="text/javascript" src="/js/theme.min.js"></script></body>
+</html>

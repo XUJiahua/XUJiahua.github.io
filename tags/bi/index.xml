@@ -4,35 +4,23 @@
     <title>BI on Happy Coding</title>
     <link>https://xujiahua.github.io/tags/bi/</link>
     <description>Recent content in BI on Happy Coding</description>
-    <generator>Hugo -- gohugo.io</generator>
+    <generator>Hugo</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Fri, 10 Apr 2020 16:41:53 +0800</lastBuildDate><atom:link href="https://xujiahua.github.io/tags/bi/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Fri, 10 Apr 2020 16:41:53 +0800</lastBuildDate>
+    <atom:link href="https://xujiahua.github.io/tags/bi/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Metabase &#43; Spark SQL</title>
       <link>https://xujiahua.github.io/posts/20200410-metabase-spark-sql/</link>
       <pubDate>Fri, 10 Apr 2020 16:41:53 +0800</pubDate>
-      
       <guid>https://xujiahua.github.io/posts/20200410-metabase-spark-sql/</guid>
-      <description>这是大数据 BI 平台的第二步，BI 工具的搭建。假设已经配置好 Spark SQL JDBC Server，并启用了Kerberos。参考 https://xujiahua.github.io/posts/20200410-spark-thrift-server-cdh/
-这里，我们选择了开源产品 Metabase。
-最终，大数据 BI 平台，是由 1) 以Metabase作为BI可视化，2) 由HDFS（分布式文件存储） + parquet（列式数据存储格式）+ Hive metastore（SQL表结构信息维护） + Spark SQL（批处理引擎）组合的OLAP数据库组成。
-Metabase 简介 Metabase is the easy, open source way for everyone in your company to ask questions and learn from data.
-https://www.metabase.com/
-数据库支持  BigQuery Druid Google Analytics H2 MongoDB MySQL/MariaDB PostgreSQL Presto Amazon Redshift Snowflake Spark SQL SQLite SQL Server  https://www.metabase.com/docs/latest/faq/setup/which-databases-does-metabase-support.html
-这里有我们需要的Spark SQL，我们的大数据集群可以支持。比较遗憾的是没有Impala。
-Metabase 安装 MySQL 使用MySQL作为元数据存储。复用之前CDH的MySQL实例。</description>
+      <description>&lt;p&gt;这是大数据 BI 平台的第二步，BI 工具的搭建。假设已经配置好 Spark SQL JDBC Server，并启用了Kerberos。参考  &lt;a href=&#34;https://xujiahua.github.io/posts/20200410-spark-thrift-server-cdh/&#34; target=&#34;_blank&#34; rel=&#34;noopener noreffer &#34;&gt;https://xujiahua.github.io/posts/20200410-spark-thrift-server-cdh/&lt;/a&gt;&lt;/p&gt;&#xA;&lt;p&gt;这里，我们选择了开源产品 Metabase。&lt;/p&gt;&#xA;&lt;p&gt;最终，大数据 BI 平台，是由 1) 以Metabase作为BI可视化，2) 由HDFS（分布式文件存储） + parquet（列式数据存储格式）+ Hive metastore（SQL表结构信息维护） + Spark SQL（批处理引擎）组合的OLAP数据库组成。&lt;/p&gt;&#xA;&lt;h2 id=&#34;metabase-简介&#34;&gt;Metabase 简介&lt;/h2&gt;&#xA;&lt;p&gt;Metabase is the easy, open source way for everyone in your company to ask questions and learn from data.&lt;/p&gt;&#xA;&lt;p&gt;&lt;a href=&#34;https://www.metabase.com/&#34; target=&#34;_blank&#34; rel=&#34;noopener noreffer &#34;&gt;https://www.metabase.com/&lt;/a&gt;&lt;/p&gt;&#xA;&lt;h3 id=&#34;数据库支持&#34;&gt;数据库支持&lt;/h3&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;BigQuery&lt;/li&gt;&#xA;&lt;li&gt;Druid&lt;/li&gt;&#xA;&lt;li&gt;Google Analytics&lt;/li&gt;&#xA;&lt;li&gt;H2&lt;/li&gt;&#xA;&lt;li&gt;MongoDB&lt;/li&gt;&#xA;&lt;li&gt;MySQL/MariaDB&lt;/li&gt;&#xA;&lt;li&gt;PostgreSQL&lt;/li&gt;&#xA;&lt;li&gt;Presto&lt;/li&gt;&#xA;&lt;li&gt;Amazon Redshift&lt;/li&gt;&#xA;&lt;li&gt;Snowflake&lt;/li&gt;&#xA;&lt;li&gt;Spark SQL&lt;/li&gt;&#xA;&lt;li&gt;SQLite&lt;/li&gt;&#xA;&lt;li&gt;SQL Server&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;p&gt;&lt;a href=&#34;https://www.metabase.com/docs/latest/faq/setup/which-databases-does-metabase-support.html&#34; target=&#34;_blank&#34; rel=&#34;noopener noreffer &#34;&gt;https://www.metabase.com/docs/latest/faq/setup/which-databases-does-metabase-support.html&lt;/a&gt;&lt;/p&gt;</description>
     </item>
-    
     <item>
       <title>CDH6 启用 Spark Thrift Server</title>
       <link>https://xujiahua.github.io/posts/20200410-spark-thrift-server-cdh/</link>
       <pubDate>Fri, 10 Apr 2020 10:07:16 +0800</pubDate>
-      
       <guid>https://xujiahua.github.io/posts/20200410-spark-thrift-server-cdh/</guid>
-      <description>很遗憾，CDH版本的Spark阉割了Thrift Server。（可能与自家产品Impala有竞争关系的原因。）
-参考 https://docs.cloudera.com/documentation/enterprise/6/6.3/topics/spark.html#spark__d99299e107
-# ll /opt/cloudera/parcels/CDH/lib/spark/sbin/ total 84 -rwxr-xr-x 1 root root 2803 Nov 9 00:05 slaves.sh -rwxr-xr-x 1 root root 1429 Nov 9 00:05 spark-config.sh -rwxr-xr-x 1 root root 5689 Nov 9 00:05 spark-daemon.sh -rwxr-xr-x 1 root root 1262 Nov 9 00:05 spark-daemons.sh -rwxr-xr-x 1 root root 1190 Nov 9 00:05 start-all.sh -rwxr-xr-x 1 root root 1274 Nov 9 00:05 start-history-server.sh -rwxr-xr-x 1 root root 2050 Nov 9 00:05 start-master.</description>
+      <description>&lt;p&gt;很遗憾，CDH版本的Spark阉割了Thrift Server。（可能与自家产品Impala有竞争关系的原因。）&lt;/p&gt;&#xA;&lt;p&gt;参考 &lt;a href=&#34;https://docs.cloudera.com/documentation/enterprise/6/6.3/topics/spark.html#spark__d99299e107&#34; target=&#34;_blank&#34; rel=&#34;noopener noreffer &#34;&gt;https://docs.cloudera.com/documentation/enterprise/6/6.3/topics/spark.html#spark__d99299e107&lt;/a&gt;&lt;/p&gt;&#xA;&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;# ll /opt/cloudera/parcels/CDH/lib/spark/sbin/&#xA;total 84&#xA;-rwxr-xr-x 1 root root 2803 Nov  9 00:05 slaves.sh&#xA;-rwxr-xr-x 1 root root 1429 Nov  9 00:05 spark-config.sh&#xA;-rwxr-xr-x 1 root root 5689 Nov  9 00:05 spark-daemon.sh&#xA;-rwxr-xr-x 1 root root 1262 Nov  9 00:05 spark-daemons.sh&#xA;-rwxr-xr-x 1 root root 1190 Nov  9 00:05 start-all.sh&#xA;-rwxr-xr-x 1 root root 1274 Nov  9 00:05 start-history-server.sh&#xA;-rwxr-xr-x 1 root root 2050 Nov  9 00:05 start-master.sh&#xA;-rwxr-xr-x 1 root root 1877 Nov  9 00:05 start-mesos-dispatcher.sh&#xA;-rwxr-xr-x 1 root root 1423 Nov  9 00:05 start-mesos-shuffle-service.sh&#xA;-rwxr-xr-x 1 root root 1279 Nov  9 00:05 start-shuffle-service.sh&#xA;-rwxr-xr-x 1 root root 3151 Nov  9 00:05 start-slave.sh&#xA;-rwxr-xr-x 1 root root 1527 Nov  9 00:05 start-slaves.sh&#xA;-rwxr-xr-x 1 root root 1478 Nov  9 00:05 stop-all.sh&#xA;-rwxr-xr-x 1 root root 1056 Nov  9 00:05 stop-history-server.sh&#xA;-rwxr-xr-x 1 root root 1080 Nov  9 00:05 stop-master.sh&#xA;-rwxr-xr-x 1 root root 1227 Nov  9 00:05 stop-mesos-dispatcher.sh&#xA;-rwxr-xr-x 1 root root 1084 Nov  9 00:05 stop-mesos-shuffle-service.sh&#xA;-rwxr-xr-x 1 root root 1067 Nov  9 00:05 stop-shuffle-service.sh&#xA;-rwxr-xr-x 1 root root 1557 Nov  9 00:05 stop-slave.sh&#xA;-rwxr-xr-x 1 root root 1064 Nov  9 00:05 stop-slaves.sh&#xA;&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;可见，没有Thrift Server的启动脚本。&lt;/p&gt;</description>
     </item>
-    
   </channel>
 </rss>

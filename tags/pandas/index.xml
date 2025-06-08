@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Pandas on Happy Coding</title>
+    <link>http://localhost:1313/tags/pandas/</link>
+    <description>Recent content in Pandas on Happy Coding</description>
+    <generator>Hugo</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Fri, 29 Nov 2019 14:47:34 +0800</lastBuildDate>
+    <atom:link href="http://localhost:1313/tags/pandas/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>数据处理分析工具一览</title>
+      <link>http://localhost:1313/posts/20200731-data-computation-tools/</link>
+      <pubDate>Fri, 29 Nov 2019 14:47:34 +0800</pubDate>
+      <guid>http://localhost:1313/posts/20200731-data-computation-tools/</guid>
+      <description>&lt;p&gt;记得入门数据科学，用的是pandas，结构化数据用DataFrame承载很方便，DateFrame数据清洗完，与Scikit-Learn衔接得很好，就可以进入机器学习环节了。&lt;/p&gt;&#xA;&lt;p&gt;后来的Spark也有了DataFrame，当然Spark SQL更加方便了，SQL的表达简洁有力，大数据上做BI报表很方便。&lt;/p&gt;&#xA;&lt;p&gt;本文梳理下这些好用的数据计算工具。&lt;/p&gt;&#xA;&lt;p&gt;评估一个数据计算工具，主要是考察这些方面的能力：&lt;/p&gt;&#xA;&lt;ol&gt;&#xA;&lt;li&gt;分布式计算的能力。Scale Out 横向扩展的能力。&lt;/li&gt;&#xA;&lt;li&gt;数据是懒加载的，还是直接读入内存的。&lt;/li&gt;&#xA;&lt;/ol&gt;&#xA;&lt;h2 id=&#34;pandas系列&#34;&gt;Pandas系列&lt;/h2&gt;&#xA;&lt;h3 id=&#34;pandas&#34;&gt;Pandas&lt;/h3&gt;&#xA;&lt;p&gt;&lt;a href=&#34;https://pandas.pydata.org/&#34; target=&#34;_blank&#34; rel=&#34;noopener noreffer &#34;&gt;https://pandas.pydata.org/&lt;/a&gt;&lt;/p&gt;&#xA;&lt;ol&gt;&#xA;&lt;li&gt;先驱者。也有好多学习资料。&lt;/li&gt;&#xA;&lt;li&gt;并行能力不行。One can only use one core at a time when doing computation. 这里例子，https://stackoverflow.com/questions/45545110/how-do-you-parallelize-apply-on-pandas-dataframes-making-use-of-all-cores-on-o 以前我也困扰过。因为这个问题，各种并行计算的扩展也出来了。&lt;/li&gt;&#xA;&lt;li&gt;Load大数据集也很慢。即使没有计算，也要把所有数据存储到内存中。&lt;/li&gt;&#xA;&lt;li&gt;仅供学习使用。&lt;/li&gt;&#xA;&lt;/ol&gt;&#xA;&lt;h3 id=&#34;dask--多核多机上扩展&#34;&gt;Dask &amp;ndash; 多核多机上扩展&lt;/h3&gt;&#xA;&lt;p&gt;&lt;a href=&#34;https://dask.org/&#34; target=&#34;_blank&#34; rel=&#34;noopener noreffer &#34;&gt;Dask&lt;/a&gt; is a flexible library for parallel computing in Python that makes scaling out your workflow smooth and simple.&lt;/p&gt;&#xA;&lt;ol&gt;&#xA;&lt;li&gt;Dask的原理是master/worker这种结构，使用TCP通信，所以可以支持多机通信。https://www.youtube.com/watch?v=TQM9zIBzNBo&amp;amp;list=UUj9eavqmvwaCyKhIlu2GaoA&amp;amp;index=5&lt;/li&gt;&#xA;&lt;li&gt;与Pandas相比，需要多调用一句&lt;code&gt;.compute() &lt;/code&gt;。可能会造成困扰。&lt;/li&gt;&#xA;&lt;/ol&gt;&#xA;&lt;p&gt;信息来源：&lt;/p&gt;&#xA;&lt;ol&gt;&#xA;&lt;li&gt;Dask Introduction: &lt;a href=&#34;https://www.youtube.com/channel/UCj9eavqmvwaCyKhIlu2GaoA&#34; target=&#34;_blank&#34; rel=&#34;noopener noreffer &#34;&gt;https://www.youtube.com/channel/UCj9eavqmvwaCyKhIlu2GaoA&lt;/a&gt;&lt;/li&gt;&#xA;&lt;li&gt;&lt;a href=&#34;https://docs.dask.org/en/latest/why.html&#34; target=&#34;_blank&#34; rel=&#34;noopener noreffer &#34;&gt;https://docs.dask.org/en/latest/why.html&lt;/a&gt;&lt;/li&gt;&#xA;&lt;/ol&gt;&#xA;&lt;h3 id=&#34;rapids--gpu上扩展&#34;&gt;RAPIDS &amp;ndash; GPU上扩展&lt;/h3&gt;&#xA;&lt;p&gt;主要是这两个库cuDF，Dask-cuDF。&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

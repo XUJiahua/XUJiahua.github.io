@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+    <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="robots" content="noodp" />
+        <title>Spark存储表结构动态分区 - Happy Coding</title><meta name="Description" content=""><meta property="og:url" content="http://localhost:1313/posts/20200519-spark-dynamic-partition/">
+  <meta property="og:site_name" content="Happy Coding">
+  <meta property="og:title" content="Spark存储表结构动态分区">
+  <meta property="og:description" content="历史数据，动态分区就很有用。
+搜了下Spark的issue，找到了答案。 [https://issues.apache.org/jira/browse/HIVE-2918?jql=summary%20~%20%22hive.exec.max.dynamic.partitions*%22%20OR%20description%20~%20%22hive.exec.max.dynamic.partitions*%22%20ORDER%20BY%20lastViewed%20DESC](https://issues.apache.org/jira/browse/HIVE-2918?jql=summary ~ “hive.exec.max.dynamic.partitions*” OR description ~ “hive.exec.max.dynamic.partitions*” ORDER BY lastViewed DESC)
+使用Hive动态分区创建出现这个问题，不知道怎么解决。
+Error while processing statement: FAILED: Execution Error, return code 2 from org.apache.hadoop.hive.ql.exec.mr.MapRedTask Spark动态分区的陷阱。
+Spark 动态分区的语法。
+// Create SparkSession with Hive dynamic partitioning enabled val spark: SparkSession = SparkSession .builder() .appName(&#34;StatsAnalyzer&#34;) .enableHiveSupport() .config(&#34;hive.exec.dynamic.partition&#34;, &#34;true&#34;) .config(&#34;hive.exec.dynamic.partition.mode&#34;, &#34;nonstrict&#34;) .getOrCreate() // Register the dataframe as a Hive table impressionsDF.createOrReplaceTempView(&#34;impressions_dataframe&#34;) // Create the output Hive table spark.sql( s&#34;&#34;&#34; |CREATE EXTERNAL TABLE stats ( | ad STRING, | impressions INT, | clicks INT |) PARTITIONED BY (country STRING, year INT, month INT, day INT) |ROW FORMAT DELIMITED FIELDS TERMINATED BY &#39;\t&#39; LINES TERMINATED BY &#39;\n&#39; &#34;&#34;&#34;.stripMargin ) // Write the data into disk as Hive partitions spark.sql( s&#34;&#34;&#34; |INSERT OVERWRITE TABLE stats |PARTITION(country = &#39;US&#39;, year = 2017, month = 3, day) |SELECT ad, SUM(impressions), SUM(clicks), day |FROM impressions_dataframe |GROUP BY ad &#34;&#34;&#34;.stripMargin ) https://medium.com/a-muggles-pensieve/writing-into-dynamic-partitions-using-spark-2e2b818a007a">
+  <meta property="og:locale" content="zh_cn">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2020-05-19T15:18:13+08:00">
+    <meta property="article:modified_time" content="2020-05-19T15:18:13+08:00">
+    <meta property="article:tag" content="Spark">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Spark存储表结构动态分区">
+  <meta name="twitter:description" content="历史数据，动态分区就很有用。
+搜了下Spark的issue，找到了答案。 [https://issues.apache.org/jira/browse/HIVE-2918?jql=summary%20~%20%22hive.exec.max.dynamic.partitions*%22%20OR%20description%20~%20%22hive.exec.max.dynamic.partitions*%22%20ORDER%20BY%20lastViewed%20DESC](https://issues.apache.org/jira/browse/HIVE-2918?jql=summary ~ “hive.exec.max.dynamic.partitions*” OR description ~ “hive.exec.max.dynamic.partitions*” ORDER BY lastViewed DESC)
+使用Hive动态分区创建出现这个问题，不知道怎么解决。
+Error while processing statement: FAILED: Execution Error, return code 2 from org.apache.hadoop.hive.ql.exec.mr.MapRedTask Spark动态分区的陷阱。
+Spark 动态分区的语法。
+// Create SparkSession with Hive dynamic partitioning enabled val spark: SparkSession = SparkSession .builder() .appName(&#34;StatsAnalyzer&#34;) .enableHiveSupport() .config(&#34;hive.exec.dynamic.partition&#34;, &#34;true&#34;) .config(&#34;hive.exec.dynamic.partition.mode&#34;, &#34;nonstrict&#34;) .getOrCreate() // Register the dataframe as a Hive table impressionsDF.createOrReplaceTempView(&#34;impressions_dataframe&#34;) // Create the output Hive table spark.sql( s&#34;&#34;&#34; |CREATE EXTERNAL TABLE stats ( | ad STRING, | impressions INT, | clicks INT |) PARTITIONED BY (country STRING, year INT, month INT, day INT) |ROW FORMAT DELIMITED FIELDS TERMINATED BY &#39;\t&#39; LINES TERMINATED BY &#39;\n&#39; &#34;&#34;&#34;.stripMargin ) // Write the data into disk as Hive partitions spark.sql( s&#34;&#34;&#34; |INSERT OVERWRITE TABLE stats |PARTITION(country = &#39;US&#39;, year = 2017, month = 3, day) |SELECT ad, SUM(impressions), SUM(clicks), day |FROM impressions_dataframe |GROUP BY ad &#34;&#34;&#34;.stripMargin ) https://medium.com/a-muggles-pensieve/writing-into-dynamic-partitions-using-spark-2e2b818a007a">
+<meta name="application-name" content="Happy Coding">
+<meta name="apple-mobile-web-app-title" content="Happy Coding"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="http://localhost:1313/posts/20200519-spark-dynamic-partition/" /><link rel="prev" href="http://localhost:1313/posts/20200514-wx-avatar/" /><link rel="next" href="http://localhost:1313/posts/20200527-metabase-impala-driver/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="/lib/fontawesome-free/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="/lib/fontawesome-free/all.min.css"></noscript><link rel="preload" href="/lib/animate/animate.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="/lib/animate/animate.min.css"></noscript><script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "headline": "Spark存储表结构动态分区",
+        "inLanguage": "zh-cn",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "http:\/\/localhost:1313\/posts\/20200519-spark-dynamic-partition\/"
+        },"genre": "posts","keywords": "Spark","wordcount":  298 ,
+        "url": "http:\/\/localhost:1313\/posts\/20200519-spark-dynamic-partition\/","datePublished": "2020-05-19T15:18:13+08:00","dateModified": "2020-05-19T15:18:13+08:00","publisher": {
+            "@type": "Organization",
+            "name": ""},"author": {
+                "@type": "Person",
+                "name": "Happy Coding"
+            },"description": ""
+    }
+    </script></head>
+    <body data-header-desktop="fixed" data-header-mobile="auto"><script type="text/javascript">(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
+
+        <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
+    <div class="header-wrapper">
+        <div class="header-title">
+            <a href="/" title="Happy Coding">Happy Coding</a>
+        </div>
+        <div class="menu">
+            <div class="menu-inner"><a class="menu-item" href="/posts"> Archive </a><a class="menu-item" href="/categories"> Categories </a><a class="menu-item" href="/tags"> Tags </a><a class="menu-item" href="/index.xml"> RSS Feed </a><span class="menu-item delimiter"></span><a href="javascript:void(0);" class="menu-item theme-switch" title="Switch Theme">
+                    <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+                </a></div>
+        </div>
+    </div>
+</header><header class="mobile" id="header-mobile">
+    <div class="header-container">
+        <div class="header-wrapper">
+            <div class="header-title">
+                <a href="/" title="Happy Coding">Happy Coding</a>
+            </div>
+            <div class="menu-toggle" id="menu-toggle-mobile">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="menu" id="menu-mobile"><a class="menu-item" href="/posts" title="">Archive</a><a class="menu-item" href="/categories" title="">Categories</a><a class="menu-item" href="/tags" title="">Tags</a><a class="menu-item" href="/index.xml" title="">RSS Feed</a><a href="javascript:void(0);" class="menu-item theme-switch" title="Switch Theme">
+                <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+            </a></div>
+    </div>
+</header><main class="main">
+                <div class="container"><div class="toc" id="toc-auto">
+            <h2 class="toc-title">Contents</h2>
+            <div class="toc-content" id="toc-content-auto"></div>
+        </div><article class="page single"><h1 class="single-title animate__animated animate__flipInX">Spark存储表结构动态分区</h1><div class="post-meta">
+            <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Happy Coding</a></span></div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2020-05-19">2020-05-19</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;298 words&nbsp;
+                <i class="far fa-clock fa-fw" aria-hidden="true"></i>&nbsp;2 minutes&nbsp;</div>
+        </div><div class="details toc" id="toc-static"  data-kept="">
+                <div class="details-summary toc-title">
+                    <span>Contents</span>
+                    <span><i class="details-icon fas fa-angle-right" aria-hidden="true"></i></span>
+                </div>
+                <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents"></nav></div>
+            </div><div class="content" id="content"><p>历史数据，动态分区就很有用。</p>
+<p>搜了下Spark的issue，找到了答案。 [https://issues.apache.org/jira/browse/HIVE-2918?jql=summary%20~%20%22hive.exec.max.dynamic.partitions*%22%20OR%20description%20~%20%22hive.exec.max.dynamic.partitions*%22%20ORDER%20BY%20lastViewed%20DESC](<a href="https://issues.apache.org/jira/browse/HIVE-2918?jql=summary" target="_blank" rel="noopener noreffer ">https://issues.apache.org/jira/browse/HIVE-2918?jql=summary</a> ~ &ldquo;hive.exec.max.dynamic.partitions*&rdquo; OR description ~ &ldquo;hive.exec.max.dynamic.partitions*&rdquo; ORDER BY lastViewed DESC)</p>
+<p>使用Hive动态分区创建出现这个问题，不知道怎么解决。</p>
+<ul>
+<li>Error while processing statement: FAILED: Execution Error, return code 2 from org.apache.hadoop.hive.ql.exec.mr.MapRedTask</li>
+</ul>
+<p>Spark动态分区的陷阱。</p>
+<p>Spark 动态分区的语法。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-scala" data-lang="scala"><span style="display:flex;"><span><span style="color:#75715e">// Create SparkSession with Hive dynamic partitioning enabled
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">val</span> spark<span style="color:#66d9ef">:</span> <span style="color:#66d9ef">SparkSession</span> <span style="color:#f92672">=</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">SparkSession</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">.</span>builder<span style="color:#f92672">()</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">.</span>appName<span style="color:#f92672">(</span><span style="color:#e6db74">&#34;StatsAnalyzer&#34;</span><span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">.</span>enableHiveSupport<span style="color:#f92672">()</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">.</span>config<span style="color:#f92672">(</span><span style="color:#e6db74">&#34;hive.exec.dynamic.partition&#34;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;true&#34;</span><span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">.</span>config<span style="color:#f92672">(</span><span style="color:#e6db74">&#34;hive.exec.dynamic.partition.mode&#34;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;nonstrict&#34;</span><span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">.</span>getOrCreate<span style="color:#f92672">()</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Register the dataframe as a Hive table
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>impressionsDF<span style="color:#f92672">.</span>createOrReplaceTempView<span style="color:#f92672">(</span><span style="color:#e6db74">&#34;impressions_dataframe&#34;</span><span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Create the output Hive table
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>spark<span style="color:#f92672">.</span>sql<span style="color:#f92672">(</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">s&#34;&#34;&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      |CREATE EXTERNAL TABLE stats (
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      |   ad            STRING,
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      |   impressions   INT,
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      |   clicks        INT
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      |) PARTITIONED BY (country STRING, year INT, month INT, day INT)
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      |ROW FORMAT DELIMITED FIELDS TERMINATED BY &#39;\t&#39; LINES TERMINATED BY &#39;\n&#39;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    &#34;&#34;&#34;</span><span style="color:#f92672">.</span>stripMargin
+</span></span><span style="display:flex;"><span><span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Write the data into disk as Hive partitions
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>spark<span style="color:#f92672">.</span>sql<span style="color:#f92672">(</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">s&#34;&#34;&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      |INSERT OVERWRITE TABLE stats 
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      |PARTITION(country = &#39;US&#39;, year = 2017, month = 3, day)
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      |SELECT ad, SUM(impressions), SUM(clicks), day
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      |FROM impressions_dataframe
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      |GROUP BY ad
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    &#34;&#34;&#34;</span><span style="color:#f92672">.</span>stripMargin
+</span></span><span style="display:flex;"><span><span style="color:#f92672">)</span>
+</span></span></code></pre></div><p><a href="https://medium.com/a-muggles-pensieve/writing-into-dynamic-partitions-using-spark-2e2b818a007a" target="_blank" rel="noopener noreffer ">https://medium.com/a-muggles-pensieve/writing-into-dynamic-partitions-using-spark-2e2b818a007a</a></p>
+<p>动态分区的个数超过上限1000。hive.exec.max.dynamic.partitions</p>
+<blockquote>
+<p>Traceback (most recent call last):
+File &ldquo;<!-- raw HTML omitted -->&rdquo;, line 18, in <!-- raw HTML omitted -->
+File &ldquo;/opt/cloudera/parcels/CDH-6.3.2-1.cdh6.3.2.p0.1605554/lib/spark/python/pyspark/sql/session.py&rdquo;, line 778, in sql
+return DataFrame(self._jsparkSession.sql(sqlQuery), self._wrapped)
+File &ldquo;/opt/cloudera/parcels/CDH-6.3.2-1.cdh6.3.2.p0.1605554/lib/spark/python/lib/py4j-0.10.7-src.zip/py4j/java_gateway.py&rdquo;, line 1257, in <strong>call</strong>
+File &ldquo;/opt/cloudera/parcels/CDH-6.3.2-1.cdh6.3.2.p0.1605554/lib/spark/python/pyspark/sql/utils.py&rdquo;, line 69, in deco
+raise AnalysisException(s.split(&rsquo;: &lsquo;, 1)[1], stackTrace)
+pyspark.sql.utils.AnalysisException: u&rsquo;org.apache.hadoop.hive.ql.metadata.HiveException: Number of dynamic partitions created is 2663, which is more than 1000. To solve this try to set hive.exec.max.dynamic.partitions to at least 2663.;&rsquo;</p></blockquote>
+<p><code>.config(&quot;hive.exec.max.dynamic.partitions&quot;, &quot;10000&quot;)</code> 指令并没有生效。</p>
+<p>While users control hive.exec.dynamic.partition.mode, there is no way to change the default value of hive.exec.max.dynamic.partitions of HiveCilent with SET command. (&ndash;hiveconf 也是没用的)  <a href="https://github.com/apache/spark/pull/17223" target="_blank" rel="noopener noreffer ">https://github.com/apache/spark/pull/17223</a></p>
+<p>Since Spark 2.0.0, SET hive config commands do not pass the values to HiveClient. 不准SET，理解。但是&ndash;conf也没用么？？？TODO</p>
+<p>就是明确不能这么改。</p>
+<p>需要在指令中加入。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>pyspark <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>--conf spark.hadoop.hive.exec.dynamic.partition<span style="color:#f92672">=</span>true <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>--conf spark.hadoop.hive.exec.dynamic.partition.mode<span style="color:#f92672">=</span>nonstrict <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>--conf spark.hadoop.hive.exec.max.dynamic.partitions<span style="color:#f92672">=</span><span style="color:#ae81ff">10000</span>
+</span></span></code></pre></div><p>打印hive配置信息。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>print([(k, v) <span style="color:#66d9ef">for</span> k, v <span style="color:#f92672">in</span> spark<span style="color:#f92672">.</span>sparkContext<span style="color:#f92672">.</span>getConf()<span style="color:#f92672">.</span>getAll() <span style="color:#66d9ef">if</span> <span style="color:#e6db74">&#39;hive&#39;</span> <span style="color:#f92672">in</span> k])
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># [(u&#39;spark.hadoop.hive.exec.dynamic.partition.mode&#39;, u&#39;nonstrict&#39;), (u&#39;spark.hadoop.hive.exec.max.dynamic.partitions&#39;, u&#39;10000&#39;), (u&#39;spark.hadoop.hive.exec.dynamic.partition&#39;, u&#39;true&#39;)]</span>
+</span></span></code></pre></div><p>TODO：下面这种方式指定失效了，可能是因为spark.hadoop前缀没指定？？？</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>spark <span style="color:#f92672">=</span> SparkSession \
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">.</span>builder \
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">.</span>appName(<span style="color:#e6db74">&#34;temptest&#34;</span>) \
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">.</span>enableHiveSupport() \
+</span></span><span style="display:flex;"><span>        		<span style="color:#f92672">.</span>config(<span style="color:#e6db74">&#34;hive.exec.dynamic.partition&#34;</span>, <span style="color:#e6db74">&#34;true&#34;</span>) \
+</span></span><span style="display:flex;"><span>        		<span style="color:#f92672">.</span>config(<span style="color:#e6db74">&#34;hive.exec.dynamic.partition.mode&#34;</span>, <span style="color:#e6db74">&#34;nonstrict&#34;</span>) \
+</span></span><span style="display:flex;"><span>        		<span style="color:#f92672">.</span>config(<span style="color:#e6db74">&#34;hive.exec.max.dynamic.partitions&#34;</span>, <span style="color:#e6db74">&#34;10000&#34;</span>) \
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">.</span>getOrCreate()
+</span></span></code></pre></div></div><div class="post-footer" id="post-footer">
+    <div class="post-info">
+        <div class="post-info-line">
+            <div class="post-info-mod">
+                <span>Updated on 2020-05-19</span>
+            </div></div>
+        <div class="post-info-line">
+            <div class="post-info-md"></div>
+            <div class="post-info-share">
+                <span><a href="javascript:void(0);" title="Share on Twitter" data-sharer="twitter" data-url="http://localhost:1313/posts/20200519-spark-dynamic-partition/" data-title="Spark存储表结构动态分区" data-hashtags="Spark"><i class="fab fa-twitter fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="Share on Facebook" data-sharer="facebook" data-url="http://localhost:1313/posts/20200519-spark-dynamic-partition/" data-hashtag="Spark"><i class="fab fa-facebook-square fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="Share on Hacker News" data-sharer="hackernews" data-url="http://localhost:1313/posts/20200519-spark-dynamic-partition/" data-title="Spark存储表结构动态分区"><i class="fab fa-hacker-news fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="Share on Line" data-sharer="line" data-url="http://localhost:1313/posts/20200519-spark-dynamic-partition/" data-title="Spark存储表结构动态分区"><i data-svg-src="/lib/simple-icons/icons/line.min.svg" aria-hidden="true"></i></a><a href="javascript:void(0);" title="Share on 微博" data-sharer="weibo" data-url="http://localhost:1313/posts/20200519-spark-dynamic-partition/" data-title="Spark存储表结构动态分区"><i class="fab fa-weibo fa-fw" aria-hidden="true"></i></a></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="post-info-more">
+        <section class="post-tags"><i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/spark/">Spark</a></section>
+        <section>
+            <span><a href="javascript:void(0);" onclick="window.history.back();">Back</a></span>&nbsp;|&nbsp;<span><a href="/">Home</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav"><a href="/posts/20200514-wx-avatar/" class="prev" rel="prev" title="微信用户授权头像内容带随机干扰的问题"><i class="fas fa-angle-left fa-fw" aria-hidden="true"></i>微信用户授权头像内容带随机干扰的问题</a>
+            <a href="/posts/20200527-metabase-impala-driver/" class="next" rel="next" title="Metabase Impala Driver">Metabase Impala Driver<i class="fas fa-angle-right fa-fw" aria-hidden="true"></i></a></div>
+</div>
+</article></div>
+            </main><footer class="footer">
+        <div class="footer-container"><div class="footer-line">Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.147.3">Hugo</a> | Theme - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.3.0"><i class="far fa-kiss-wink-heart fa-fw" aria-hidden="true"></i> LoveIt</a>
+                </div><div class="footer-line" itemscope itemtype="http://schema.org/CreativeWork"><i class="far fa-copyright fa-fw" aria-hidden="true"></i><span itemprop="copyrightYear">2022 - 2025</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/" target="_blank">Happy Coding</a></span></div>
+        </div>
+    </footer></div>
+
+        <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="Back to Top">
+                <i class="fas fa-arrow-up fa-fw" aria-hidden="true"></i>
+            </a><a href="#" id="view-comments" class="fixed-button" title="View Comments">
+                <i class="fas fa-comment fa-fw" aria-hidden="true"></i>
+            </a>
+        </div><script type="text/javascript" src="/lib/lazysizes/lazysizes.min.js"></script><script type="text/javascript" src="/lib/clipboard/clipboard.min.js"></script><script type="text/javascript" src="/lib/sharer/sharer.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"Copy to clipboard","maxShownLines":50},"comment":{}};</script><script type="text/javascript" src="/js/theme.min.js"></script></body>
+</html>

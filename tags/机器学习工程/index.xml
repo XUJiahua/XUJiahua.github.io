@@ -4,19 +4,16 @@
     <title>机器学习工程 on Happy Coding</title>
     <link>https://xujiahua.github.io/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E5%B7%A5%E7%A8%8B/</link>
     <description>Recent content in 机器学习工程 on Happy Coding</description>
-    <generator>Hugo -- gohugo.io</generator>
+    <generator>Hugo</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Thu, 16 Apr 2020 11:33:18 +0800</lastBuildDate><atom:link href="https://xujiahua.github.io/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E5%B7%A5%E7%A8%8B/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Thu, 16 Apr 2020 11:33:18 +0800</lastBuildDate>
+    <atom:link href="https://xujiahua.github.io/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E5%B7%A5%E7%A8%8B/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>机器学习在线推理部署方案：Cortex</title>
       <link>https://xujiahua.github.io/posts/20200416-cortex/</link>
       <pubDate>Thu, 16 Apr 2020 11:33:18 +0800</pubDate>
-      
       <guid>https://xujiahua.github.io/posts/20200416-cortex/</guid>
-      <description>Cortex 介绍 官方网站：Deploy machine learning models in production https://www.cortex.dev/
-GitHub https://github.com/cortexlabs/cortex
- The CLI sends configuration and code to the cluster every time you run cortex deploy. Each model is loaded into a Docker container, along with any Python packages and request handling code. The model is exposed as a web service using Elastic Load Balancing (ELB), TensorFlow Serving, and ONNX Runtime. The containers are orchestrated on Elastic Kubernetes Service (EKS) while logs and metrics are streamed to CloudWatch.</description>
+      <description>&lt;h2 id=&#34;cortex-介绍&#34;&gt;Cortex 介绍&lt;/h2&gt;&#xA;&lt;p&gt;官方网站：Deploy machine learning models in production &lt;a href=&#34;https://www.cortex.dev/&#34; target=&#34;_blank&#34; rel=&#34;noopener noreffer &#34;&gt;https://www.cortex.dev/&lt;/a&gt;&lt;/p&gt;&#xA;&lt;p&gt;GitHub &lt;a href=&#34;https://github.com/cortexlabs/cortex&#34; target=&#34;_blank&#34; rel=&#34;noopener noreffer &#34;&gt;https://github.com/cortexlabs/cortex&lt;/a&gt;&lt;/p&gt;&#xA;&lt;blockquote&gt;&#xA;&lt;p&gt;The CLI sends configuration and code to the cluster every time you run &lt;code&gt;cortex deploy&lt;/code&gt;. Each model is loaded into a Docker container, along with any Python packages and request handling code. The model is exposed as a web service using Elastic Load Balancing (ELB), TensorFlow Serving, and ONNX Runtime. The containers are orchestrated on Elastic Kubernetes Service (EKS) while logs and metrics are streamed to CloudWatch.&lt;/p&gt;</description>
     </item>
-    
   </channel>
 </rss>

@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+    <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="robots" content="noodp" />
+        <title>Detectron2体验 - Happy Coding</title><meta name="Description" content=""><meta property="og:url" content="http://localhost:1313/posts/20200404-detectron2/">
+  <meta property="og:site_name" content="Happy Coding">
+  <meta property="og:title" content="Detectron2体验">
+  <meta property="og:description" content="Facebook开源的目标检测库 https://github.com/facebookresearch/detectron2
+类似库：
+Detectron：Facebook开源。是Detectron2前身，使用Caffe2，不再维护。Detectron2使用PyTorch重写。 https://github.com/facebookresearch/detectron maskrcnn-benchmark：Facebook开源。不再维护，绑定在PyTorch 1.0了。 https://github.com/facebookresearch/maskrcnn-benchmark mmDetection：香港中文大学-商汤联合实验室维护。 https://github.com/open-mmlab/mmdetection SimpleDet： https://github.com/TuSimple/simpledet 参考文章：目标检测三大开源神器：Detectron2/mmDetectron/SimpleDet https://mp.weixin.qq.com/s/jH2xz5l9QnCfWhpaY2rHcA
+Detectron2不止目标检测功能。 Detectron2 is Facebooks new vision library that allows us to easily use and create object detection, instance segmentation, keypoint detection and panoptic segmentation models. It has a simple, modular design that makes it easy to rewrite a script for another data-set.
+准备工作 CUDA/CuDNN 安装 电脑上已经有Nvidia 1080Ti显卡了。
+安装CUDA 10.1工具包（可以理解为Nvidia GPU开放的编程接口，https://zh.wikipedia.org/wiki/CUDA）。例如，我选择了Ubuntu 18.04 本地包。">
+  <meta property="og:locale" content="zh_cn">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2020-04-04T12:57:37+08:00">
+    <meta property="article:modified_time" content="2020-04-04T12:57:37+08:00">
+    <meta property="article:tag" content="Pytorch">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Detectron2体验">
+  <meta name="twitter:description" content="Facebook开源的目标检测库 https://github.com/facebookresearch/detectron2
+类似库：
+Detectron：Facebook开源。是Detectron2前身，使用Caffe2，不再维护。Detectron2使用PyTorch重写。 https://github.com/facebookresearch/detectron maskrcnn-benchmark：Facebook开源。不再维护，绑定在PyTorch 1.0了。 https://github.com/facebookresearch/maskrcnn-benchmark mmDetection：香港中文大学-商汤联合实验室维护。 https://github.com/open-mmlab/mmdetection SimpleDet： https://github.com/TuSimple/simpledet 参考文章：目标检测三大开源神器：Detectron2/mmDetectron/SimpleDet https://mp.weixin.qq.com/s/jH2xz5l9QnCfWhpaY2rHcA
+Detectron2不止目标检测功能。 Detectron2 is Facebooks new vision library that allows us to easily use and create object detection, instance segmentation, keypoint detection and panoptic segmentation models. It has a simple, modular design that makes it easy to rewrite a script for another data-set.
+准备工作 CUDA/CuDNN 安装 电脑上已经有Nvidia 1080Ti显卡了。
+安装CUDA 10.1工具包（可以理解为Nvidia GPU开放的编程接口，https://zh.wikipedia.org/wiki/CUDA）。例如，我选择了Ubuntu 18.04 本地包。">
+<meta name="application-name" content="Happy Coding">
+<meta name="apple-mobile-web-app-title" content="Happy Coding"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="http://localhost:1313/posts/20200404-detectron2/" /><link rel="prev" href="http://localhost:1313/posts/20200403-docker-logging/" /><link rel="next" href="http://localhost:1313/posts/20200410-spark-thrift-server-cdh/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="/lib/fontawesome-free/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="/lib/fontawesome-free/all.min.css"></noscript><link rel="preload" href="/lib/animate/animate.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="/lib/animate/animate.min.css"></noscript><script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "headline": "Detectron2体验",
+        "inLanguage": "zh-cn",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "http:\/\/localhost:1313\/posts\/20200404-detectron2\/"
+        },"genre": "posts","keywords": "Pytorch","wordcount":  503 ,
+        "url": "http:\/\/localhost:1313\/posts\/20200404-detectron2\/","datePublished": "2020-04-04T12:57:37+08:00","dateModified": "2020-04-04T12:57:37+08:00","publisher": {
+            "@type": "Organization",
+            "name": ""},"author": {
+                "@type": "Person",
+                "name": "Happy Coding"
+            },"description": ""
+    }
+    </script></head>
+    <body data-header-desktop="fixed" data-header-mobile="auto"><script type="text/javascript">(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
+
+        <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
+    <div class="header-wrapper">
+        <div class="header-title">
+            <a href="/" title="Happy Coding">Happy Coding</a>
+        </div>
+        <div class="menu">
+            <div class="menu-inner"><a class="menu-item" href="/posts"> Archive </a><a class="menu-item" href="/categories"> Categories </a><a class="menu-item" href="/tags"> Tags </a><a class="menu-item" href="/index.xml"> RSS Feed </a><span class="menu-item delimiter"></span><a href="javascript:void(0);" class="menu-item theme-switch" title="Switch Theme">
+                    <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+                </a></div>
+        </div>
+    </div>
+</header><header class="mobile" id="header-mobile">
+    <div class="header-container">
+        <div class="header-wrapper">
+            <div class="header-title">
+                <a href="/" title="Happy Coding">Happy Coding</a>
+            </div>
+            <div class="menu-toggle" id="menu-toggle-mobile">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="menu" id="menu-mobile"><a class="menu-item" href="/posts" title="">Archive</a><a class="menu-item" href="/categories" title="">Categories</a><a class="menu-item" href="/tags" title="">Tags</a><a class="menu-item" href="/index.xml" title="">RSS Feed</a><a href="javascript:void(0);" class="menu-item theme-switch" title="Switch Theme">
+                <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+            </a></div>
+    </div>
+</header><main class="main">
+                <div class="container"><div class="toc" id="toc-auto">
+            <h2 class="toc-title">Contents</h2>
+            <div class="toc-content" id="toc-content-auto"></div>
+        </div><article class="page single"><h1 class="single-title animate__animated animate__flipInX">Detectron2体验</h1><div class="post-meta">
+            <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Happy Coding</a></span></div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2020-04-04">2020-04-04</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;503 words&nbsp;
+                <i class="far fa-clock fa-fw" aria-hidden="true"></i>&nbsp;3 minutes&nbsp;</div>
+        </div><div class="details toc" id="toc-static"  data-kept="">
+                <div class="details-summary toc-title">
+                    <span>Contents</span>
+                    <span><i class="details-icon fas fa-angle-right" aria-hidden="true"></i></span>
+                </div>
+                <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#准备工作">准备工作</a>
+      <ul>
+        <li><a href="#cudacudnn-安装">CUDA/CuDNN 安装</a></li>
+        <li><a href="#pytorch-安装">Pytorch 安装</a></li>
+      </ul>
+    </li>
+    <li><a href="#detectron2">Detectron2</a>
+      <ul>
+        <li><a href="#安装">安装</a></li>
+        <li><a href="#体验预训练模型">体验（预训练模型）</a></li>
+        <li><a href="#重新训练">重新训练</a></li>
+        <li><a href="#其他教程">其他教程</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav></div>
+            </div><div class="content" id="content"><p>Facebook开源的目标检测库 <a href="https://github.com/facebookresearch/detectron2" target="_blank" rel="noopener noreffer ">https://github.com/facebookresearch/detectron2</a></p>
+<p>类似库：</p>
+<ol>
+<li>Detectron：Facebook开源。是Detectron2前身，使用Caffe2，不再维护。Detectron2使用PyTorch重写。 <a href="https://github.com/facebookresearch/detectron" target="_blank" rel="noopener noreffer ">https://github.com/facebookresearch/detectron</a></li>
+<li>maskrcnn-benchmark：Facebook开源。不再维护，绑定在PyTorch 1.0了。 <a href="https://github.com/facebookresearch/maskrcnn-benchmark" target="_blank" rel="noopener noreffer ">https://github.com/facebookresearch/maskrcnn-benchmark</a></li>
+<li>mmDetection：香港中文大学-商汤联合实验室维护。 <a href="https://github.com/open-mmlab/mmdetection" target="_blank" rel="noopener noreffer ">https://github.com/open-mmlab/mmdetection</a></li>
+<li>SimpleDet： <a href="https://github.com/TuSimple/simpledet" target="_blank" rel="noopener noreffer ">https://github.com/TuSimple/simpledet</a></li>
+</ol>
+<p>参考文章：目标检测三大开源神器：Detectron2/mmDetectron/SimpleDet  <a href="https://mp.weixin.qq.com/s/jH2xz5l9QnCfWhpaY2rHcA" target="_blank" rel="noopener noreffer ">https://mp.weixin.qq.com/s/jH2xz5l9QnCfWhpaY2rHcA</a></p>
+<p>Detectron2不止目标检测功能。 Detectron2 is Facebooks new vision library that allows us to easily use and create object detection, instance segmentation, keypoint detection and panoptic segmentation models. It has a simple, modular design that makes it easy to rewrite a script for another data-set.</p>
+<h2 id="准备工作">准备工作</h2>
+<h3 id="cudacudnn-安装">CUDA/CuDNN 安装</h3>
+<p>电脑上已经有Nvidia 1080Ti显卡了。</p>
+<p>安装CUDA 10.1工具包（可以理解为Nvidia GPU开放的编程接口，https://zh.wikipedia.org/wiki/CUDA）。例如，我选择了Ubuntu 18.04 本地包。</p>
+<p><a href="https://developer.nvidia.com/cuda-10.1-download-archive-base" target="_blank" rel="noopener noreffer ">https://developer.nvidia.com/cuda-10.1-download-archive-base</a></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ sudo dpkg -i cuda-repo-ubuntu1804-10-1-local-10.1.105-418.39_1.0-1_amd64.deb
+</span></span><span style="display:flex;"><span>$ sudo apt-key add /var/cuda-repo-10-1-local-10.1.105-418.39/7fa2af80.pub
+</span></span><span style="display:flex;"><span>$ sudo apt-get update
+</span></span><span style="display:flex;"><span>$ sudo apt-get install cuda
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>$ local ll /usr/local/cuda
+</span></span><span style="display:flex;"><span>lrwxrwxrwx <span style="color:#ae81ff">1</span> root root <span style="color:#ae81ff">9</span> Apr  <span style="color:#ae81ff">4</span> 15:31 /usr/local/cuda -&gt; cuda-10.1
+</span></span></code></pre></div><p>安装CuDNN 7.6.4（<a href="https://developer.nvidia.com/cudnn" target="_blank" rel="noopener noreffer ">NVIDIA cuDNN</a> is a GPU-accelerated library of primitives for deep neural networks.），对应CUDA 10.1版本。下载需要先登录。</p>
+<p>下载 <a href="https://developer.nvidia.com/rdp/cudnn-archive" target="_blank" rel="noopener noreffer ">https://developer.nvidia.com/rdp/cudnn-archive</a></p>
+<p>安装教程 <a href="https://docs.nvidia.com/deeplearning/sdk/cudnn-install/index.html" target="_blank" rel="noopener noreffer ">https://docs.nvidia.com/deeplearning/sdk/cudnn-install/index.html</a></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e"># Install the runtime library</span>
+</span></span><span style="display:flex;"><span>sudo dpkg -i libcudnn7_7.6.4.38-1+cuda10.1_amd64.deb
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Install the developer library</span>
+</span></span><span style="display:flex;"><span>sudo dpkg -i libcudnn7-dev_7.6.4.38-1+cuda10.1_amd64.deb
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Install the code samples and the cuDNN Library User Guide</span>
+</span></span><span style="display:flex;"><span>sudo dpkg -i libcudnn7-doc_7.6.4.38-1+cuda10.1_amd64.deb
+</span></span></code></pre></div><p>验证安装参考  <a href="https://docs.nvidia.com/deeplearning/sdk/cudnn-install/index.html#verify" target="_blank" rel="noopener noreffer ">https://docs.nvidia.com/deeplearning/sdk/cudnn-install/index.html#verify</a>。</p>
+<p>PS：遇到一些奇怪的问题，重启就好了。</p>
+<h3 id="pytorch-安装">Pytorch 安装</h3>
+<p>安装pytorch，速度很慢，建议科学上网。参考：https://pytorch.org/get-started/locally/</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e"># create virtual env</span>
+</span></span><span style="display:flex;"><span>conda create --name pytorch_workspace python<span style="color:#f92672">=</span>3.6 -y
+</span></span><span style="display:flex;"><span>conda activate pytorch_workspace
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># install</span>
+</span></span><span style="display:flex;"><span>conda install pytorch torchvision cudatoolkit<span style="color:#f92672">=</span>10.1 -c pytorch
+</span></span></code></pre></div><h2 id="detectron2">Detectron2</h2>
+<h3 id="安装">安装</h3>
+<p>参考 <a href="https://github.com/facebookresearch/detectron2/blob/master/INSTALL.md" target="_blank" rel="noopener noreffer ">https://github.com/facebookresearch/detectron2/blob/master/INSTALL.md</a></p>
+<pre tabindex="0"><code>pip install detectron2 -f https://dl.fbaipublicfiles.com/detectron2/wheels/cu101/index.html
+</code></pre><p>确认安装没问题。几个CUDA的指标都是10.1。</p>
+<pre tabindex="0"><code>$ python -m detectron2.utils.collect_env
+------------------------  ------------------------------------------------------------------------------------------
+sys.platform              linux
+Python                    3.6.10 |Anaconda, Inc.| (default, Mar 25 2020, 23:51:54) [GCC 7.3.0]
+numpy                     1.18.1
+detectron2                0.1.1 @/home/john/anaconda3/envs/pytorch_workspace/lib/python3.6/site-packages/detectron2
+detectron2 compiler       GCC 7.3
+detectron2 CUDA compiler  10.1
+detectron2 arch flags     sm_35, sm_37, sm_50, sm_52, sm_60, sm_61, sm_70, sm_75
+DETECTRON2_ENV_MODULE     &lt;not set&gt;
+PyTorch                   1.4.0 @/home/john/anaconda3/envs/pytorch_workspace/lib/python3.6/site-packages/torch
+PyTorch debug build       False
+CUDA available            True
+GPU 0,1                   GeForce GTX 1080 Ti
+CUDA_HOME                 /usr/local/cuda
+NVCC                      Cuda compilation tools, release 10.1, V10.1.105
+Pillow                    7.0.0
+torchvision               0.5.0 @/home/john/anaconda3/envs/pytorch_workspace/lib/python3.6/site-packages/torchvision
+torchvision arch flags    sm_35, sm_50, sm_60, sm_70, sm_75
+cv2                       4.2.0
+------------------------  ------------------------------------------------------------------------------------------
+PyTorch built with:
+  - GCC 7.3
+  - Intel(R) Math Kernel Library Version 2020.0.0 Product Build 20191122 for Intel(R) 64 architecture applications
+  - Intel(R) MKL-DNN v0.21.1 (Git Hash 7d2fd500bc78936d1d648ca713b901012f470dbc)
+  - OpenMP 201511 (a.k.a. OpenMP 4.5)
+  - NNPACK is enabled
+  - CUDA Runtime 10.1
+  - NVCC architecture flags: -gencode;arch=compute_37,code=sm_37;-gencode;arch=compute_50,code=sm_50;-gencode;arch=compute_60,code=sm_60;-gencode;arch=compute_61,code=sm_61;-gencode;arch=compute_70,code=sm_70;-gencode;arch=compute_75,code=sm_75;-gencode;arch=compute_37,code=compute_37
+  - CuDNN 7.6.3
+  - Magma 2.5.1
+  - Build settings: BLAS=MKL, BUILD_NAMEDTENSOR=OFF, BUILD_TYPE=Release, CXX_FLAGS= -Wno-deprecated -fvisibility-inlines-hidden -fopenmp -DUSE_FBGEMM -DUSE_QNNPACK -DUSE_PYTORCH_QNNPACK -O2 -fPIC -Wno-narrowing -Wall -Wextra -Wno-missing-field-initializers -Wno-type-limits -Wno-array-bounds -Wno-unknown-pragmas -Wno-sign-compare -Wno-unused-parameter -Wno-unused-variable -Wno-unused-function -Wno-unused-result -Wno-strict-overflow -Wno-strict-aliasing -Wno-error=deprecated-declarations -Wno-stringop-overflow -Wno-error=pedantic -Wno-error=redundant-decls -Wno-error=old-style-cast -fdiagnostics-color=always -faligned-new -Wno-unused-but-set-variable -Wno-maybe-uninitialized -fno-math-errno -fno-trapping-math -Wno-stringop-overflow, DISABLE_NUMA=1, PERF_WITH_AVX=1, PERF_WITH_AVX2=1, PERF_WITH_AVX512=1, USE_CUDA=ON, USE_EXCEPTION_PTR=1, USE_GFLAGS=OFF, USE_GLOG=OFF, USE_MKL=ON, USE_MKLDNN=ON, USE_MPI=OFF, USE_NCCL=ON, USE_NNPACK=ON, USE_OPENMP=ON, USE_STATIC_DISPATCH=OFF,
+</code></pre><h4 id="常见问题">常见问题</h4>
+<p>找不到<code>libcudart.so.10.0</code>。</p>
+<pre tabindex="0"><code>ImportError: libcudart.so.10.0: cannot open shared object file: No such file or directory
+</code></pre><p>因为notebook里，CUDA的版本定为10.0，detectron2的安装版本也是依赖10.0的。</p>
+<h3 id="体验预训练模型">体验（预训练模型）</h3>
+<p>参考 <a href="https://github.com/facebookresearch/detectron2/blob/master/GETTING_STARTED.md" target="_blank" rel="noopener noreffer ">https://github.com/facebookresearch/detectron2/blob/master/GETTING_STARTED.md</a></p>
+<h4 id="图像推理">图像推理</h4>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e"># GPU</span>
+</span></span><span style="display:flex;"><span>python demo.py --config-file ../configs/COCO-InstanceSegmentation/mask_rcnn_R_50_FPN_3x.yaml <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>  --input images/*.jpg <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>  --opts MODEL.WEIGHTS detectron2://COCO-InstanceSegmentation/mask_rcnn_R_50_FPN_3x/137849600/model_final_f10217.pkl
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># CPU</span>
+</span></span><span style="display:flex;"><span>python demo.py --config-file ../configs/COCO-InstanceSegmentation/mask_rcnn_R_50_FPN_3x.yaml <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>  --input images/*.jpg <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>  --opts MODEL.DEVICE cpu <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>  MODEL.WEIGHTS detectron2://COCO-InstanceSegmentation/mask_rcnn_R_50_FPN_3x/137849600/model_final_f10217.pkl
+</span></span></code></pre></div><p>GPU推理：</p>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="../../images/detectron2_image_gpu_inference.png"
+        data-srcset="../../images/detectron2_image_gpu_inference.png, ../../images/detectron2_image_gpu_inference.png 1.5x, ../../images/detectron2_image_gpu_inference.png 2x"
+        data-sizes="auto"
+        alt="../../images/detectron2_image_gpu_inference.png"
+        title="detectron2_image_gpu_inference" /></p>
+<p>CPU推理：</p>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="../../images/detectron2_image_cpu_inference.png"
+        data-srcset="../../images/detectron2_image_cpu_inference.png, ../../images/detectron2_image_cpu_inference.png 1.5x, ../../images/detectron2_image_cpu_inference.png 2x"
+        data-sizes="auto"
+        alt="../../images/detectron2_image_cpu_inference.png"
+        title="detectron2_image_cpu_inference" /></p>
+<p>GPU推理一张图大概0.2s。如果使用CPU推理，就是2s这个级别了。图中没有显示的是，CPU推理一张图，需要占用一半的CPU核心。</p>
+<h4 id="视频推理">视频推理</h4>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>python demo.py --config-file ../configs/COCO-InstanceSegmentation/mask_rcnn_R_50_FPN_3x.yaml <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>  --video-input driving.mp4 <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>  --opts MODEL.WEIGHTS detectron2://COCO-InstanceSegmentation/mask_rcnn_R_50_FPN_3x/137849600/model_final_f10217.pkl
+</span></span></code></pre></div><p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="../../images/detectron2_video_gpu_inference.png"
+        data-srcset="../../images/detectron2_video_gpu_inference.png, ../../images/detectron2_video_gpu_inference.png 1.5x, ../../images/detectron2_video_gpu_inference.png 2x"
+        data-sizes="auto"
+        alt="../../images/detectron2_video_gpu_inference.png"
+        title="detectron2_video_gpu_inference" /></p>
+<p>使用GPU，视频效果不流畅。也好理解：按照图像推理0.2秒一张图计，1秒处理5张。也就是视觉上1秒看到5次画面变化，明显是不流畅的，视频至少要满足1秒24个帧（frame）吧（允悲）。还有改进空间，可以看到，GPU没被充分利用，完全可以通过并行处理多个frame，来提高流畅性。</p>
+<h3 id="重新训练">重新训练</h3>
+<p>todo</p>
+<h3 id="其他教程">其他教程</h3>
+<p>使用Docker体验Detectron2（CPU） <a href="https://mc.ai/detectron2-the-basic-end-to-end-tutorial/" target="_blank" rel="noopener noreffer ">https://mc.ai/detectron2-the-basic-end-to-end-tutorial/</a></p>
+<p>code <a href="https://github.com/ylashin/detectron2-tutorial" target="_blank" rel="noopener noreffer ">https://github.com/ylashin/detectron2-tutorial</a></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e"># 启动容器</span>
+</span></span><span style="display:flex;"><span>$ docker run --name detectron2_cpu -p 5000:5000 -d ylashin/detectron2:latest
+</span></span></code></pre></div><h4 id="容器内下载模型失败">容器内下载模型失败</h4>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e"># 容器内下载模型，非常容易失败</span>
+</span></span><span style="display:flex;"><span>$ docker logs detectron2_cpu
+</span></span><span style="display:flex;"><span>model_final_f6e8b1.pkl:   6%|▌         | 14.2M/243M <span style="color:#f92672">[</span>10:18&lt;2:45:55, 23.0kB/s<span style="color:#f92672">]</span>
+</span></span><span style="display:flex;"><span>Failed to download https://dl.fbaipublicfiles.com/detectron2/COCO-Detection/faster_rcnn_R_101_FPN_3x/137851257/model_final_f6e8b1.pkl
+</span></span></code></pre></div><p>需要科学地手动下载 <a href="https://dl.fbaipublicfiles.com/detectron2/COCO-Detection/faster_rcnn_R_101_FPN_3x/137851257/model_final_f6e8b1.pkl" target="_blank" rel="noopener noreffer ">https://dl.fbaipublicfiles.com/detectron2/COCO-Detection/faster_rcnn_R_101_FPN_3x/137851257/model_final_f6e8b1.pkl</a></p>
+<p>并挂载到容器内，<code>/root/.torch/fvcore_cache/detectron2/COCO-Detection/faster_rcnn_R_101_FPN_3x/137851257/model_final_f6e8b1.pkl</code></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ docker run --name detectron2_cpu <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>	-v <span style="color:#e6db74">`</span>pwd<span style="color:#e6db74">`</span>/model_final_f6e8b1.pkl:/root/.torch/fvcore_cache/detectron2/COCO-Detection/faster_rcnn_R_101_FPN_3x/137851257/model_final_f6e8b1.pkl <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>	-p 5000:5000 -d ylashin/detectron2:latest
+</span></span></code></pre></div><p>我就想看看CPU该有多慢。。</p>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="../../images/image-20200405175053605.png"
+        data-srcset="../../images/image-20200405175053605.png, ../../images/image-20200405175053605.png 1.5x, ../../images/image-20200405175053605.png 2x"
+        data-sizes="auto"
+        alt="../../images/image-20200405175053605.png"
+        title="image-20200405175053605" /></p>
+</div><div class="post-footer" id="post-footer">
+    <div class="post-info">
+        <div class="post-info-line">
+            <div class="post-info-mod">
+                <span>Updated on 2020-04-04</span>
+            </div></div>
+        <div class="post-info-line">
+            <div class="post-info-md"></div>
+            <div class="post-info-share">
+                <span><a href="javascript:void(0);" title="Share on Twitter" data-sharer="twitter" data-url="http://localhost:1313/posts/20200404-detectron2/" data-title="Detectron2体验" data-hashtags="Pytorch"><i class="fab fa-twitter fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="Share on Facebook" data-sharer="facebook" data-url="http://localhost:1313/posts/20200404-detectron2/" data-hashtag="Pytorch"><i class="fab fa-facebook-square fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="Share on Hacker News" data-sharer="hackernews" data-url="http://localhost:1313/posts/20200404-detectron2/" data-title="Detectron2体验"><i class="fab fa-hacker-news fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="Share on Line" data-sharer="line" data-url="http://localhost:1313/posts/20200404-detectron2/" data-title="Detectron2体验"><i data-svg-src="/lib/simple-icons/icons/line.min.svg" aria-hidden="true"></i></a><a href="javascript:void(0);" title="Share on 微博" data-sharer="weibo" data-url="http://localhost:1313/posts/20200404-detectron2/" data-title="Detectron2体验"><i class="fab fa-weibo fa-fw" aria-hidden="true"></i></a></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="post-info-more">
+        <section class="post-tags"><i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/pytorch/">Pytorch</a></section>
+        <section>
+            <span><a href="javascript:void(0);" onclick="window.history.back();">Back</a></span>&nbsp;|&nbsp;<span><a href="/">Home</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav"><a href="/posts/20200403-docker-logging/" class="prev" rel="prev" title="Docker日志驱动小结"><i class="fas fa-angle-left fa-fw" aria-hidden="true"></i>Docker日志驱动小结</a>
+            <a href="/posts/20200410-spark-thrift-server-cdh/" class="next" rel="next" title="CDH6 启用 Spark Thrift Server">CDH6 启用 Spark Thrift Server<i class="fas fa-angle-right fa-fw" aria-hidden="true"></i></a></div>
+</div>
+</article></div>
+            </main><footer class="footer">
+        <div class="footer-container"><div class="footer-line">Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.147.3">Hugo</a> | Theme - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.3.0"><i class="far fa-kiss-wink-heart fa-fw" aria-hidden="true"></i> LoveIt</a>
+                </div><div class="footer-line" itemscope itemtype="http://schema.org/CreativeWork"><i class="far fa-copyright fa-fw" aria-hidden="true"></i><span itemprop="copyrightYear">2022 - 2025</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/" target="_blank">Happy Coding</a></span></div>
+        </div>
+    </footer></div>
+
+        <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="Back to Top">
+                <i class="fas fa-arrow-up fa-fw" aria-hidden="true"></i>
+            </a><a href="#" id="view-comments" class="fixed-button" title="View Comments">
+                <i class="fas fa-comment fa-fw" aria-hidden="true"></i>
+            </a>
+        </div><script type="text/javascript" src="/lib/lazysizes/lazysizes.min.js"></script><script type="text/javascript" src="/lib/clipboard/clipboard.min.js"></script><script type="text/javascript" src="/lib/sharer/sharer.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"Copy to clipboard","maxShownLines":50},"comment":{}};</script><script type="text/javascript" src="/js/theme.min.js"></script></body>
+</html>

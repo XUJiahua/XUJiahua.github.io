@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+    <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="robots" content="noodp" />
+        <title>docker run 中 namespace/cgroup 的使用 - Happy Coding</title><meta name="Description" content=""><meta property="og:url" content="http://localhost:1313/posts/20200908-docker-linux-namespace/">
+  <meta property="og:site_name" content="Happy Coding">
+  <meta property="og:title" content="docker run 中 namespace/cgroup 的使用">
+  <meta property="og:description" content="namespace Linux 有六大 Namespace（不算 cgroup namespace）。namespace 的作用是为进程在内核层做内核资源隔离。
+因为 Docker Image 就是容器要挂载的文件系统，mount namespace（CLONE_NEWNS）默认是开启的，
+$ docker run --help --pid string PID namespace to use --userns string User namespace to use --uts string UTS namespace to use --network network Connect a container to a network --ipc string IPC mode to use –pid 对应 CLONE_NEWPID 。
+默认情况下，启动容器，容器会有独立的 PID namespace。
+$ docker run -it busybox sh / # ps PID USER TIME COMMAND 1 root 0:00 sh 6 root 0:00 ps 使用 host 的 namespace。">
+  <meta property="og:locale" content="zh_cn">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2020-09-08T09:19:45+08:00">
+    <meta property="article:modified_time" content="2020-09-08T09:19:45+08:00">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="docker run 中 namespace/cgroup 的使用">
+  <meta name="twitter:description" content="namespace Linux 有六大 Namespace（不算 cgroup namespace）。namespace 的作用是为进程在内核层做内核资源隔离。
+因为 Docker Image 就是容器要挂载的文件系统，mount namespace（CLONE_NEWNS）默认是开启的，
+$ docker run --help --pid string PID namespace to use --userns string User namespace to use --uts string UTS namespace to use --network network Connect a container to a network --ipc string IPC mode to use –pid 对应 CLONE_NEWPID 。
+默认情况下，启动容器，容器会有独立的 PID namespace。
+$ docker run -it busybox sh / # ps PID USER TIME COMMAND 1 root 0:00 sh 6 root 0:00 ps 使用 host 的 namespace。">
+<meta name="application-name" content="Happy Coding">
+<meta name="apple-mobile-web-app-title" content="Happy Coding"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="http://localhost:1313/posts/20200908-docker-linux-namespace/" /><link rel="prev" href="http://localhost:1313/posts/20200907-docker-bridge-net-sim/" /><link rel="next" href="http://localhost:1313/posts/20200909-docker-series/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="/lib/fontawesome-free/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="/lib/fontawesome-free/all.min.css"></noscript><link rel="preload" href="/lib/animate/animate.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="/lib/animate/animate.min.css"></noscript><script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "headline": "docker run 中 namespace/cgroup 的使用",
+        "inLanguage": "zh-cn",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "http:\/\/localhost:1313\/posts\/20200908-docker-linux-namespace\/"
+        },"genre": "posts","wordcount":  817 ,
+        "url": "http:\/\/localhost:1313\/posts\/20200908-docker-linux-namespace\/","datePublished": "2020-09-08T09:19:45+08:00","dateModified": "2020-09-08T09:19:45+08:00","publisher": {
+            "@type": "Organization",
+            "name": ""},"author": {
+                "@type": "Person",
+                "name": "Happy Coding"
+            },"description": ""
+    }
+    </script></head>
+    <body data-header-desktop="fixed" data-header-mobile="auto"><script type="text/javascript">(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
+
+        <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
+    <div class="header-wrapper">
+        <div class="header-title">
+            <a href="/" title="Happy Coding">Happy Coding</a>
+        </div>
+        <div class="menu">
+            <div class="menu-inner"><a class="menu-item" href="/posts"> Archive </a><a class="menu-item" href="/categories"> Categories </a><a class="menu-item" href="/tags"> Tags </a><a class="menu-item" href="/index.xml"> RSS Feed </a><span class="menu-item delimiter"></span><a href="javascript:void(0);" class="menu-item theme-switch" title="Switch Theme">
+                    <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+                </a></div>
+        </div>
+    </div>
+</header><header class="mobile" id="header-mobile">
+    <div class="header-container">
+        <div class="header-wrapper">
+            <div class="header-title">
+                <a href="/" title="Happy Coding">Happy Coding</a>
+            </div>
+            <div class="menu-toggle" id="menu-toggle-mobile">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="menu" id="menu-mobile"><a class="menu-item" href="/posts" title="">Archive</a><a class="menu-item" href="/categories" title="">Categories</a><a class="menu-item" href="/tags" title="">Tags</a><a class="menu-item" href="/index.xml" title="">RSS Feed</a><a href="javascript:void(0);" class="menu-item theme-switch" title="Switch Theme">
+                <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+            </a></div>
+    </div>
+</header><main class="main">
+                <div class="container"><div class="toc" id="toc-auto">
+            <h2 class="toc-title">Contents</h2>
+            <div class="toc-content" id="toc-content-auto"></div>
+        </div><article class="page single"><h1 class="single-title animate__animated animate__flipInX">docker run 中 namespace/cgroup 的使用</h1><div class="post-meta">
+            <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Happy Coding</a></span></div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2020-09-08">2020-09-08</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;817 words&nbsp;
+                <i class="far fa-clock fa-fw" aria-hidden="true"></i>&nbsp;4 minutes&nbsp;</div>
+        </div><div class="details toc" id="toc-static"  data-kept="">
+                <div class="details-summary toc-title">
+                    <span>Contents</span>
+                    <span><i class="details-icon fas fa-angle-right" aria-hidden="true"></i></span>
+                </div>
+                <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#namespace">namespace</a>
+      <ul>
+        <li><a href="#pid">&ndash;pid</a></li>
+        <li><a href="#network">&ndash;network</a></li>
+        <li><a href="#userns">&ndash;userns</a></li>
+        <li><a href="#uts">&ndash;uts</a></li>
+        <li><a href="#ipc">&ndash;ipc</a></li>
+      </ul>
+    </li>
+    <li><a href="#cgroup">cgroup</a>
+      <ul>
+        <li><a href="#内存">内存</a></li>
+      </ul>
+    </li>
+    <li><a href="#参考">参考</a></li>
+  </ul>
+</nav></div>
+            </div><div class="content" id="content"><h2 id="namespace">namespace</h2>
+<p>Linux 有六大 Namespace（不算 cgroup namespace）。namespace 的作用是为进程在内核层做内核资源隔离。</p>
+<p>因为 Docker Image 就是容器要挂载的文件系统，mount namespace（CLONE_NEWNS）默认是开启的，</p>
+<pre tabindex="0"><code>$ docker run --help
+      --pid string                     PID namespace to use
+      --userns string                  User namespace to use
+      --uts string                     UTS namespace to use
+      --network network                Connect a container to a network
+      --ipc string                     IPC mode to use
+</code></pre><h3 id="pid">&ndash;pid</h3>
+<p>对应 CLONE_NEWPID 。</p>
+<p>默认情况下，启动容器，容器会有独立的 PID namespace。</p>
+<pre tabindex="0"><code>$ docker run -it busybox sh
+/ # ps
+PID   USER     TIME  COMMAND
+    1 root      0:00 sh
+    6 root      0:00 ps
+</code></pre><p>使用 host 的 namespace。</p>
+<pre tabindex="0"><code>$ docker run --pid=host -it busybox sh
+/ # ps
+PID   USER     TIME  COMMAND
+    1 root      0:05 /lib/systemd/systemd --system --deserialize 18
+    2 root      0:00 [kthreadd]
+    4 root      0:00 [kworker/0:0H]
+    6 root      0:00 [mm_percpu_wq]
+    7 root      0:00 [ksoftirqd/0]
+    8 root      0:39 [rcu_sched]
+    9 root      0:00 [rcu_bh]
+   10 root      0:00 [migration/0]
+</code></pre><p>使用其他容器的 namespace。先启动一个 mysqld 容器。</p>
+<pre tabindex="0"><code>$ docker run -p 3306:3306 -e MYSQL_ROOT_PASSWORD=root -d mysql:5
+
+$ docker ps
+CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS              PORTS                               NAMES
+85fa62779aad        mysql:5             &#34;docker-entrypoint.s…&#34;   10 days ago         Up 10 days          0.0.0.0:3306-&gt;3306/tcp, 33060/tcp   goofy_chebyshev
+</code></pre><p>使用其他容器 PID NS的格式 <code>--pid=container:&lt;name|id&gt;</code>。</p>
+<pre tabindex="0"><code>$ docker run --pid=container:85fa62779aad -it busybox sh
+/ # ps
+PID   USER     TIME  COMMAND
+    1 999       1:41 mysqld
+  154 root      0:00 sh
+  161 root      0:00 ps
+</code></pre><h3 id="network">&ndash;network</h3>
+<p>对应 CLONE_NEWNET Network namespace。</p>
+<p>选择项：</p>
+<blockquote>
+<p>&ndash;network=&ldquo;bridge&rdquo; : Connect a container to a network
+&lsquo;bridge&rsquo;: create a network stack on the default Docker bridge
+&rsquo;none&rsquo;: no networking
+&lsquo;container:&lt;name|id&gt;&rsquo;: reuse another container&rsquo;s network stack
+&lsquo;host&rsquo;: use the Docker host network stack
+&lsquo;<!-- raw HTML omitted -->|<!-- raw HTML omitted -->&rsquo;: connect to a user-defined network</p></blockquote>
+<p>docker 默认网络一览。</p>
+<pre tabindex="0"><code>$ docker network ls
+NETWORK ID          NAME                DRIVER              SCOPE
+1606665681ff        bridge              bridge              local
+c61808e357ca        host                host                local
+84826bbdb601        none                null                local
+</code></pre><p>先看下 host 的网络。</p>
+<pre tabindex="0"><code>$ ifconfig
+docker0: flags=4163&lt;UP,BROADCAST,RUNNING,MULTICAST&gt;  mtu 1500
+        inet 172.17.0.1  netmask 255.255.0.0  broadcast 172.17.255.255
+        
+enp0s3: flags=4163&lt;UP,BROADCAST,RUNNING,MULTICAST&gt;  mtu 1500
+        inet 10.0.2.15  netmask 255.255.255.0  broadcast 10.0.2.255
+
+enp0s8: flags=4163&lt;UP,BROADCAST,RUNNING,MULTICAST&gt;  mtu 1500
+        inet 192.168.33.10  netmask 255.255.255.0  broadcast 192.168.33.255
+
+lo: flags=73&lt;UP,LOOPBACK,RUNNING&gt;  mtu 65536
+        inet 127.0.0.1  netmask 255.0.0.0
+</code></pre><p><code>docker run</code> 默认启动配置为 bridge 网络，并有独立的 NET Namespace，bridge给分配了独立的 eth0 IP。（可以自建新的 bridge 网络）</p>
+<pre tabindex="0"><code>$ docker run -it busybox sh
+/ # ifconfig
+eth0      Link encap:Ethernet  HWaddr 02:42:AC:11:00:03
+          inet addr:172.17.0.3  Bcast:172.17.255.255  Mask:255.255.0.0
+          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
+          RX packets:8 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:0 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:0
+          RX bytes:842 (842.0 B)  TX bytes:0 (0.0 B)
+
+lo        Link encap:Local Loopback
+          inet addr:127.0.0.1  Mask:255.0.0.0
+          UP LOOPBACK RUNNING  MTU:65536  Metric:1
+          RX packets:0 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:0 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:1000
+          RX bytes:0 (0.0 B)  TX bytes:0 (0.0 B)
+</code></pre><p>none 网络也会有独立的 NET namespace。用户可以自己手动配置网络。</p>
+<pre tabindex="0"><code>$ docker run --network=none -it busybox sh
+/ # ifconfig
+lo        Link encap:Local Loopback
+          inet addr:127.0.0.1  Mask:255.0.0.0
+          UP LOOPBACK RUNNING  MTU:65536  Metric:1
+          RX packets:0 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:0 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:1000
+          RX bytes:0 (0.0 B)  TX bytes:0 (0.0 B)
+</code></pre><p>host 网络复用 host 的NET namespace。</p>
+<pre tabindex="0"><code>$ docker run --network=host -it busybox sh
+/ # ifconfig
+
+docker0: flags=4163&lt;UP,BROADCAST,RUNNING,MULTICAST&gt;  mtu 1500
+        inet 172.17.0.1  netmask 255.255.0.0  broadcast 172.17.255.255
+        
+enp0s3: flags=4163&lt;UP,BROADCAST,RUNNING,MULTICAST&gt;  mtu 1500
+        inet 10.0.2.15  netmask 255.255.255.0  broadcast 10.0.2.255
+
+enp0s8: flags=4163&lt;UP,BROADCAST,RUNNING,MULTICAST&gt;  mtu 1500
+        inet 192.168.33.10  netmask 255.255.255.0  broadcast 192.168.33.255
+
+lo: flags=73&lt;UP,LOOPBACK,RUNNING&gt;  mtu 65536
+        inet 127.0.0.1  netmask 255.0.0.0
+</code></pre><p>复用 container 的 NET namespace。</p>
+<pre tabindex="0"><code>$ docker run --network=container:85fa62779aad -it busybox sh
+/ # ifconfig
+eth0      Link encap:Ethernet  HWaddr 02:42:AC:11:00:02
+          inet addr:172.17.0.2  Bcast:172.17.255.255  Mask:255.255.0.0
+          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
+          RX packets:295 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:0 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:0
+          RX bytes:29709 (29.0 KiB)  TX bytes:0 (0.0 B)
+
+lo        Link encap:Local Loopback
+          inet addr:127.0.0.1  Mask:255.0.0.0
+          UP LOOPBACK RUNNING  MTU:65536  Metric:1
+          RX packets:0 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:0 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:1000
+          RX bytes:0 (0.0 B)  TX bytes:0 (0.0 B)
+
+$ docker inspect 85fa62779aad | grep IPAddress
+            &#34;SecondaryIPAddresses&#34;: null,
+            &#34;IPAddress&#34;: &#34;172.17.0.2&#34;,
+                    &#34;IPAddress&#34;: &#34;172.17.0.2&#34;,
+</code></pre><h3 id="userns">&ndash;userns</h3>
+<p>对应 CLONE_NEWUSER。</p>
+<p>默认是没有隔离的。需要配置 dockerd 让容器默认 user namespace 隔离 <a href="https://docs.docker.com/engine/security/userns-remap/" target="_blank" rel="noopener noreffer ">https://docs.docker.com/engine/security/userns-remap/</a></p>
+<p>因为没有隔离，不管复用 host 与否，user namespace 都与 host 一致。</p>
+<pre tabindex="0"><code>$ readlink /proc/$$/ns/user
+user:[4026531837]
+
+$ docker run --userns=host -it busybox sh
+/ # readlink /proc/$$/ns/user
+user:[4026531837]
+</code></pre><h3 id="uts">&ndash;uts</h3>
+<p>对应 CLONE_NEWUTS。</p>
+<h3 id="ipc">&ndash;ipc</h3>
+<p>对应 CLONE_NEWIPC。</p>
+<h2 id="cgroup">cgroup</h2>
+<p>cgroup 的作用是限制资源使用。</p>
+<pre tabindex="0"><code>$ docker run --help | grep cpu
+      --cpu-period int                 Limit CPU CFS (Completely Fair Scheduler) period
+      --cpu-quota int                  Limit CPU CFS (Completely Fair Scheduler) quota
+      --cpu-rt-period int              Limit CPU real-time period in microseconds
+      --cpu-rt-runtime int             Limit CPU real-time runtime in microseconds
+  -c, --cpu-shares int                 CPU shares (relative weight)
+      --cpus decimal                   Number of CPUs
+      --cpuset-cpus string             CPUs in which to allow execution (0-3, 0,1)
+      --cpuset-mems string             MEMs in which to allow execution (0-3, 0,1)
+      
+$ docker run --help | grep mem
+  -m, --memory bytes                   Memory limit
+      --memory-reservation bytes       Memory soft limit
+      --memory-swap bytes              Swap limit equal to memory plus swap: &#39;-1&#39; to enable unlimited swap
+      --memory-swappiness int          Tune container memory swappiness (0 to 100) (default -1)
+</code></pre><h3 id="内存">内存</h3>
+<p>docker run 默认启动，容器默认可使用全部内存。</p>
+<pre tabindex="0"><code>$ free -g
+              total        used        free      shared  buff/cache   available
+Mem:              9           1           5           0           3           8
+Swap:             0           0           0
+
+$ docker run -it busybox sh
+
+/ # free -g
+              total        used        free      shared  buff/cache   available
+Mem:              9           1           5           0           3           8
+Swap:             0           0           0
+</code></pre><pre tabindex="0"><code>$ docker run -m=300M --memory-swap=-1 -it busybox sh
+</code></pre><h2 id="参考">参考</h2>
+<ol>
+<li><a href="https://docs.docker.com/engine/reference/run/" target="_blank" rel="noopener noreffer ">https://docs.docker.com/engine/reference/run/</a></li>
+<li><a href="https://docs.docker.com/engine/security/userns-remap/" target="_blank" rel="noopener noreffer ">https://docs.docker.com/engine/security/userns-remap/</a></li>
+</ol>
+</div><div class="post-footer" id="post-footer">
+    <div class="post-info">
+        <div class="post-info-line">
+            <div class="post-info-mod">
+                <span>Updated on 2020-09-08</span>
+            </div></div>
+        <div class="post-info-line">
+            <div class="post-info-md"></div>
+            <div class="post-info-share">
+                <span><a href="javascript:void(0);" title="Share on Twitter" data-sharer="twitter" data-url="http://localhost:1313/posts/20200908-docker-linux-namespace/" data-title="docker run 中 namespace/cgroup 的使用"><i class="fab fa-twitter fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="Share on Facebook" data-sharer="facebook" data-url="http://localhost:1313/posts/20200908-docker-linux-namespace/"><i class="fab fa-facebook-square fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="Share on Hacker News" data-sharer="hackernews" data-url="http://localhost:1313/posts/20200908-docker-linux-namespace/" data-title="docker run 中 namespace/cgroup 的使用"><i class="fab fa-hacker-news fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="Share on Line" data-sharer="line" data-url="http://localhost:1313/posts/20200908-docker-linux-namespace/" data-title="docker run 中 namespace/cgroup 的使用"><i data-svg-src="/lib/simple-icons/icons/line.min.svg" aria-hidden="true"></i></a><a href="javascript:void(0);" title="Share on 微博" data-sharer="weibo" data-url="http://localhost:1313/posts/20200908-docker-linux-namespace/" data-title="docker run 中 namespace/cgroup 的使用"><i class="fab fa-weibo fa-fw" aria-hidden="true"></i></a></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="post-info-more">
+        <section class="post-tags"></section>
+        <section>
+            <span><a href="javascript:void(0);" onclick="window.history.back();">Back</a></span>&nbsp;|&nbsp;<span><a href="/">Home</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav"><a href="/posts/20200907-docker-bridge-net-sim/" class="prev" rel="prev" title="使用 ip/iptables 命令模拟 Docker bridge 网络"><i class="fas fa-angle-left fa-fw" aria-hidden="true"></i>使用 ip/iptables 命令模拟 Docker bridge 网络</a>
+            <a href="/posts/20200909-docker-series/" class="next" rel="next" title="Docker/Kubernetes 系列目录">Docker/Kubernetes 系列目录<i class="fas fa-angle-right fa-fw" aria-hidden="true"></i></a></div>
+</div>
+</article></div>
+            </main><footer class="footer">
+        <div class="footer-container"><div class="footer-line">Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.147.3">Hugo</a> | Theme - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.3.0"><i class="far fa-kiss-wink-heart fa-fw" aria-hidden="true"></i> LoveIt</a>
+                </div><div class="footer-line" itemscope itemtype="http://schema.org/CreativeWork"><i class="far fa-copyright fa-fw" aria-hidden="true"></i><span itemprop="copyrightYear">2022 - 2025</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/" target="_blank">Happy Coding</a></span></div>
+        </div>
+    </footer></div>
+
+        <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="Back to Top">
+                <i class="fas fa-arrow-up fa-fw" aria-hidden="true"></i>
+            </a><a href="#" id="view-comments" class="fixed-button" title="View Comments">
+                <i class="fas fa-comment fa-fw" aria-hidden="true"></i>
+            </a>
+        </div><script type="text/javascript" src="/lib/lazysizes/lazysizes.min.js"></script><script type="text/javascript" src="/lib/clipboard/clipboard.min.js"></script><script type="text/javascript" src="/lib/sharer/sharer.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"Copy to clipboard","maxShownLines":50},"comment":{}};</script><script type="text/javascript" src="/js/theme.min.js"></script></body>
+</html>

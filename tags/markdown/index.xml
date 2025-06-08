@@ -1,27 +1,19 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>markdown on Happy Coding</title>
+    <title>Markdown on Happy Coding</title>
     <link>https://xujiahua.github.io/tags/markdown/</link>
-    <description>Recent content in markdown on Happy Coding</description>
-    <generator>Hugo -- gohugo.io</generator>
+    <description>Recent content in Markdown on Happy Coding</description>
+    <generator>Hugo</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Mon, 12 Apr 2021 17:25:00 +0800</lastBuildDate><atom:link href="https://xujiahua.github.io/tags/markdown/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 12 Apr 2021 17:25:00 +0800</lastBuildDate>
+    <atom:link href="https://xujiahua.github.io/tags/markdown/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>从 Notion 导出 markdown 到 hugo 项目</title>
       <link>https://xujiahua.github.io/posts/notion-markdown-hugo-78139407-85c5-4a75-b288-b54d5c3df34b/</link>
       <pubDate>Mon, 12 Apr 2021 17:25:00 +0800</pubDate>
-      
       <guid>https://xujiahua.github.io/posts/notion-markdown-hugo-78139407-85c5-4a75-b288-b54d5c3df34b/</guid>
-      <description>目的 好久没更新博客了，最近半年使用 Notion，体验很棒。
-之前写博客的过程：使用 Typora 编辑 markdown，使用 Hugo 生成静态页面，上传到 github 使用 github pages serving。参考：
-Github pages重新开始：使用Hugo、Typora
-怎么把我 Notion 中的文章同步到我的博客呢。这是本文目的。
-主要是写了一个 notion-mk 的程序将 notion 文章导出到 hugo 工作目录。后面的工作与之前保持一致。
-notion -- notion-mk(todo) --&amp;gt; hugo directory -- hugo generate --&amp;gt; static html/js/css WIP 代码如下：
-XUJiahua/notion-md
-功能  Download images Notion extract to markdown markdown hugo compatiable image location? remove title from markdown, now #&amp;hellip; support category support tag table of content at the beginning  使用 将要发布的文档添加到这个 list 页面</description>
+      <description>&lt;h2 id=&#34;目的&#34;&gt;目的&lt;/h2&gt;&#xA;&lt;p&gt;好久没更新博客了，最近半年使用 Notion，体验很棒。&lt;/p&gt;&#xA;&lt;p&gt;之前写博客的过程：使用 Typora 编辑 markdown，使用 Hugo 生成静态页面，上传到 github 使用 github pages serving。参考：&lt;/p&gt;&#xA;&lt;p&gt;&lt;a href=&#34;https://xujiahua.github.io/posts/20200310-github-pages-restart/&#34; target=&#34;_blank&#34; rel=&#34;noopener noreffer &#34;&gt;Github pages重新开始：使用Hugo、Typora&lt;/a&gt;&lt;/p&gt;&#xA;&lt;p&gt;怎么把我 Notion 中的文章同步到我的博客呢。这是本文目的。&lt;/p&gt;&#xA;&lt;p&gt;主要是写了一个 notion-mk 的程序将 notion 文章导出到 hugo 工作目录。后面的工作与之前保持一致。&lt;/p&gt;&#xA;&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;notion -- notion-mk(todo) --&amp;gt; hugo directory &#xA;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;-- hugo generate --&amp;gt; static html/js/css&#xA;&lt;/code&gt;&lt;/pre&gt;&lt;h2 id=&#34;wip&#34;&gt;WIP&lt;/h2&gt;&#xA;&lt;p&gt;代码如下：&lt;/p&gt;&#xA;&lt;p&gt;&lt;a href=&#34;https://github.com/XUJiahua/notion-md&#34; target=&#34;_blank&#34; rel=&#34;noopener noreffer &#34;&gt;XUJiahua/notion-md&lt;/a&gt;&lt;/p&gt;&#xA;&lt;h3 id=&#34;功能&#34;&gt;功能&lt;/h3&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;&lt;input checked=&#34;&#34; disabled=&#34;&#34; type=&#34;checkbox&#34;&gt; Download images&lt;/li&gt;&#xA;&lt;li&gt;&lt;input checked=&#34;&#34; disabled=&#34;&#34; type=&#34;checkbox&#34;&gt; Notion extract to markdown&lt;/li&gt;&#xA;&lt;li&gt;&lt;input checked=&#34;&#34; disabled=&#34;&#34; type=&#34;checkbox&#34;&gt; markdown hugo compatiable&lt;/li&gt;&#xA;&lt;li&gt;&lt;input checked=&#34;&#34; disabled=&#34;&#34; type=&#34;checkbox&#34;&gt; image location?&lt;/li&gt;&#xA;&lt;li&gt;&lt;input checked=&#34;&#34; disabled=&#34;&#34; type=&#34;checkbox&#34;&gt; remove title from markdown, now #&amp;hellip;&lt;/li&gt;&#xA;&lt;li&gt;&lt;input checked=&#34;&#34; disabled=&#34;&#34; type=&#34;checkbox&#34;&gt; support category&lt;/li&gt;&#xA;&lt;li&gt;&lt;input checked=&#34;&#34; disabled=&#34;&#34; type=&#34;checkbox&#34;&gt; support tag&lt;/li&gt;&#xA;&lt;li&gt;&lt;input disabled=&#34;&#34; type=&#34;checkbox&#34;&gt; table of content at the beginning&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;h3 id=&#34;使用&#34;&gt;使用&lt;/h3&gt;&#xA;&lt;p&gt;将要发布的文档添加到这个 list 页面&lt;/p&gt;</description>
     </item>
-    
   </channel>
 </rss>

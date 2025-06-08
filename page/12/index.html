@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+    <head>
+	<meta name="generator" content="Hugo 0.147.3"><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="robots" content="noodp" />
+        <title>Happy Coding</title><meta name="Description" content=""><meta property="og:url" content="http://localhost:1313/">
+  <meta property="og:site_name" content="Happy Coding">
+  <meta property="og:title" content="Happy Coding">
+  <meta property="og:locale" content="zh_cn">
+  <meta property="og:type" content="website">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Happy Coding">
+<meta name="application-name" content="Happy Coding">
+<meta name="apple-mobile-web-app-title" content="Happy Coding"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="http://localhost:1313/" /><link rel="alternate" href="/index.xml" type="application/rss+xml" title="Happy Coding">
+    <link rel="feed" href="/index.xml" type="application/rss+xml" title="Happy Coding"><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="/lib/fontawesome-free/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="/lib/fontawesome-free/all.min.css"></noscript><link rel="preload" href="/lib/animate/animate.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="/lib/animate/animate.min.css"></noscript><script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "WebSite",
+        "url": "http:\/\/localhost:1313\/","inLanguage": "zh-cn","author": {
+                "@type": "Person",
+                "name": "Happy Coding"
+            },"name": "Happy Coding"
+    }
+    </script></head>
+    <body data-header-desktop="fixed" data-header-mobile="auto"><script type="text/javascript">(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
+
+        <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
+    <div class="header-wrapper">
+        <div class="header-title">
+            <a href="/" title="Happy Coding">Happy Coding</a>
+        </div>
+        <div class="menu">
+            <div class="menu-inner"><a class="menu-item" href="/posts"> Archive </a><a class="menu-item" href="/categories"> Categories </a><a class="menu-item" href="/tags"> Tags </a><a class="menu-item" href="/index.xml"> RSS Feed </a><span class="menu-item delimiter"></span><a href="javascript:void(0);" class="menu-item theme-switch" title="Switch Theme">
+                    <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+                </a></div>
+        </div>
+    </div>
+</header><header class="mobile" id="header-mobile">
+    <div class="header-container">
+        <div class="header-wrapper">
+            <div class="header-title">
+                <a href="/" title="Happy Coding">Happy Coding</a>
+            </div>
+            <div class="menu-toggle" id="menu-toggle-mobile">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="menu" id="menu-mobile"><a class="menu-item" href="/posts" title="">Archive</a><a class="menu-item" href="/categories" title="">Categories</a><a class="menu-item" href="/tags" title="">Tags</a><a class="menu-item" href="/index.xml" title="">RSS Feed</a><a href="javascript:void(0);" class="menu-item theme-switch" title="Switch Theme">
+                <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+            </a></div>
+    </div>
+</header><main class="main">
+                <div class="container"><div class="page home" data-home="posts"><div class="home-profile"><div class="links"></div></div>
+<article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
+        <a href="/posts/20200609-metabase-sso-login/">Metabase SSO 登录</a>
+    </h1><div class="post-meta"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Happy Coding</a></span>&nbsp;<span class="post-publish">published on <time datetime="2020-06-09">2020-06-09</time></span>&nbsp;<span class="post-category">included in <a href="/categories/metabase/"><i class="far fa-folder fa-fw" aria-hidden="true"></i>Metabase</a></span></div><div class="content"><p>探讨如何将 Metabase 融入业务系统（SaaS 服务）。</p>
+<p>为何需要集成 Metabase 到业务系统中呢？一般，通用的数据需求都做到SaaS服务中了。而现实情况是，客户是有很多定制化数据需求的。使用 Metabase 制作报表，直接跳过前后端开发，快速满足客户需求。</p>
+<p>（最终极地，进一步提高生产效率，把 Metabase 的组件化能力内化到 SaaS 服务中才是正道。）</p>
+<p>试分析下 Metabase 提供的方案，以及适配我们的场景，分析该怎么改。</p>
+<h2 id="分析现存方案">分析现存方案</h2>
+<p>开源版本的 Metabase 支持两种第三方登录：</p>
+<ol>
+<li>LDAP: Allows users within your LDAP directory to log in to Metabase with their LDAP credentials, and allows automatic mapping of LDAP groups to Metabase groups.</li>
+<li>Sign in with Google: Allows users with <strong>existing Metabase accounts</strong> to login with a Google account that <strong>matches their email address</strong> in addition to their Metabase username and password.</li>
+</ol>
+<p>企业版本：</p></div><div class="post-footer">
+        <a href="/posts/20200609-metabase-sso-login/">Read More</a><div class="post-tags">
+                <i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/metabase/">Metabase</a></div></div>
+</article><article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
+        <a href="/posts/20200605-metabase-field-filter/">Metabase 日期筛选控件实践</a>
+    </h1><div class="post-meta"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Happy Coding</a></span>&nbsp;<span class="post-publish">published on <time datetime="2020-06-05">2020-06-05</time></span>&nbsp;<span class="post-category">included in <a href="/categories/metabase/"><i class="far fa-folder fa-fw" aria-hidden="true"></i>Metabase</a></span></div><div class="content"><p>Metabase Dashboard 可以是动态的，常用的是指定时间范围筛选，查看这个时间段的指标。</p>
+<h2 id="简单示范">简单示范</h2>
+<p>使用 SAMPLE DATASET 数据库。定义一个Question：在某一时间段，订单数是多少。使用以下 SQL模板。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#66d9ef">select</span> <span style="color:#66d9ef">count</span>(<span style="color:#ae81ff">1</span>) <span style="color:#66d9ef">FROM</span> ORDERS
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">WHERE</span> <span style="color:#ae81ff">1</span><span style="color:#f92672">=</span><span style="color:#ae81ff">1</span> 
+</span></span><span style="display:flex;"><span>[[<span style="color:#66d9ef">AND</span> <span style="color:#960050;background-color:#1e0010">{{</span>CREATED_AT<span style="color:#960050;background-color:#1e0010">}}</span> ]]
+</span></span></code></pre></div><p>在<code>Variables</code>侧栏选择如下：</p>
+<ol>
+<li>Variable type：Field Filter。（其他选项，Text/Number/Date 都是单值，没有范围。）</li>
+<li>Field to map to：选择对应的数据表字段，这里使用<code>ORDERS</code>表的<code>CREATED_AT</code>字段。</li>
+<li>Filter widget type：Date Range。<strong>注意，只有日期类型（<code>date</code>/ <code>timestamp</code>）有这些选择。</strong>（其他选项，大同小异，都会生成对应SQL语句。）</li>
+</ol>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="../../images/image-20200605151107271.png"
+        data-srcset="../../images/image-20200605151107271.png, ../../images/image-20200605151107271.png 1.5x, ../../images/image-20200605151107271.png 2x"
+        data-sizes="auto"
+        alt="../../images/image-20200605151107271.png"
+        title="image-20200605151107271" /></p>
+<p>在日期控件中选择时间范围，实际执行的SQL语句如下。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#66d9ef">select</span> <span style="color:#66d9ef">count</span>(<span style="color:#ae81ff">1</span>) <span style="color:#66d9ef">FROM</span> ORDERS
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">WHERE</span> <span style="color:#ae81ff">1</span><span style="color:#f92672">=</span><span style="color:#ae81ff">1</span> 
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">AND</span> <span style="color:#66d9ef">CAST</span>(<span style="color:#e6db74">&#34;PUBLIC&#34;</span>.<span style="color:#e6db74">&#34;ORDERS&#34;</span>.<span style="color:#e6db74">&#34;CREATED_AT&#34;</span> <span style="color:#66d9ef">AS</span> date) <span style="color:#66d9ef">BETWEEN</span> date <span style="color:#e6db74">&#39;2020-06-03&#39;</span> <span style="color:#66d9ef">AND</span> date <span style="color:#e6db74">&#39;2020-06-04&#39;</span>
+</span></span></code></pre></div><p>打开浏览器开发者工具就能看到。</p>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="../../images/image-20200605151454671.png"
+        data-srcset="../../images/image-20200605151454671.png, ../../images/image-20200605151454671.png 1.5x, ../../images/image-20200605151454671.png 2x"
+        data-sizes="auto"
+        alt="../../images/image-20200605151454671.png"
+        title="image-20200605151454671" /></p>
+<p>可以看到，生成了这个过滤条件：<code>CAST(&quot;PUBLIC&quot;.&quot;ORDERS&quot;.&quot;CREATED_AT&quot; AS date) BETWEEN date '2020-06-03' AND date '2020-06-04'</code>替代了。</p>
+<p>column <code>CREATED_AT</code> 被转为<code>date</code>类型。因为日期控件的日期精度只到年月日，没有时分秒，实际使用中确实也没必要时分秒。</p>
+<p>不同的数据库，支持的数据类型是不同的，比如<code>Impala</code>就不支持<code>date</code>类型。Metabase 用如下语句达到相同效果（由各个数据库驱动负责实现），将<code>timestamp</code>类型的精度截断到年月日：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#66d9ef">CAST</span>(from_unixtime(unix_timestamp(from_timestamp(<span style="color:#66d9ef">CAST</span>(<span style="color:#f92672">`</span><span style="color:#66d9ef">table</span><span style="color:#f92672">`</span>.<span style="color:#f92672">`</span><span style="color:#66d9ef">column</span><span style="color:#f92672">`</span> <span style="color:#66d9ef">AS</span> <span style="color:#66d9ef">timestamp</span>), <span style="color:#e6db74">&#39;yyyy-MM-dd&#39;</span>), <span style="color:#e6db74">&#39;yyyy-MM-dd&#39;</span>)) <span style="color:#66d9ef">AS</span> <span style="color:#66d9ef">timestamp</span>) <span style="color:#66d9ef">BETWEEN</span> to_timestamp(<span style="color:#e6db74">&#39;2020-05-25 00:00:00&#39;</span>, <span style="color:#e6db74">&#39;yyyy-MM-dd HH:mm:ss&#39;</span>) <span style="color:#66d9ef">AND</span> to_timestamp(<span style="color:#e6db74">&#39;2020-05-31 00:00:00&#39;</span>, <span style="color:#e6db74">&#39;yyyy-MM-dd HH:mm:ss&#39;</span>) 
+</span></span></code></pre></div><p>参考：</p></div><div class="post-footer">
+        <a href="/posts/20200605-metabase-field-filter/">Read More</a><div class="post-tags">
+                <i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/metabase/">Metabase</a>,&nbsp;<a href="/tags/impala/">Impala</a></div></div>
+</article><article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
+        <a href="/posts/20200604-clojure-repl-debug/">使用 REPL 调试 Clojure 项目（Metabase）</a>
+    </h1><div class="post-meta"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Happy Coding</a></span>&nbsp;<span class="post-publish">published on <time datetime="2020-06-04">2020-06-04</time></span>&nbsp;<span class="post-category">included in <a href="/categories/metabase/"><i class="far fa-folder fa-fw" aria-hidden="true"></i>Metabase</a></span></div><div class="content"><h2 id="开发工具">开发工具</h2>
+<h3 id="intellij-idea--cursive">Intellij IDEA + Cursive</h3>
+<p>安装 IDEA 社区版即可，并安装插件 Cursive。</p>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="../../images/image-20200604161831382.png"
+        data-srcset="../../images/image-20200604161831382.png, ../../images/image-20200604161831382.png 1.5x, ../../images/image-20200604161831382.png 2x"
+        data-sizes="auto"
+        alt="../../images/image-20200604161831382.png"
+        title="image-20200604161831382" /></p>
+<h4 id="cursive-插件按键冲突">Cursive 插件按键冲突</h4>
+<p>比如我会用组合键<code>⌘ + [</code>浏览代码，与 Cursive 插件的按键冲突。可以取消 Cursive 的这个组合键。</p>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="../../images/image-20200604162732892.png"
+        data-srcset="../../images/image-20200604162732892.png, ../../images/image-20200604162732892.png 1.5x, ../../images/image-20200604162732892.png 2x"
+        data-sizes="auto"
+        alt="../../images/image-20200604162732892.png"
+        title="image-20200604162732892" /></p>
+<h3 id="emacs">Emacs</h3>
+<p><em>Added 2020-07-10</em></p>
+<p>参考：<a href="https://www.braveclojure.com/basic-emacs/" target="_blank" rel="noopener noreffer ">How to Use Emacs, an Excellent Clojure Editor</a></p>
+<p><em>实践<code>Metabase</code>代码库失败：在REPL中执行(-main)直接挂了，待研究。TBD</em></p>
+<h2 id="实践">实践</h2>
+<h3 id="metabase">Metabase</h3>
+<p>接触 Clojure 是因为 Metabase 这个项目 <a href="https://github.com/metabase/metabase" target="_blank" rel="noopener noreffer ">https://github.com/metabase/metabase</a> 。以 Metabase 为例，说明如何调试 Clojure 项目。</p>
+<p>Metabase 由前后端两部分组成，后端是由 Clojure 写的 REST API 项目。启动前端工程，需要在前端界面上触发 API 请求。</p></div><div class="post-footer">
+        <a href="/posts/20200604-clojure-repl-debug/">Read More</a><div class="post-tags">
+                <i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/clojure/">Clojure</a>,&nbsp;<a href="/tags/metabase/">Metabase</a></div></div>
+</article><article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
+        <a href="/posts/20200531-clojure/">Clojure</a>
+    </h1><div class="post-meta"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Happy Coding</a></span>&nbsp;<span class="post-publish">published on <time datetime="2020-05-31">2020-05-31</time></span></div><div class="content"><h2 id="核心数据结构">核心数据结构</h2>
+<h3 id="基础类型">基础类型</h3>
+<p>• Strings
+• Integers
+• Ratios
+• Decimals
+• Keywords • Characters • Booleans</p>
+<h3 id="list">List</h3>
+<p>可以理解为链表。同一个List内元素可以是任何类型。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-clojure" data-lang="clojure"><span style="display:flex;"><span><span style="color:#f92672">&#39;</span>(<span style="color:#ae81ff">1</span> <span style="color:#ae81ff">2</span> <span style="color:#e6db74">&#34;jam&#34;</span> <span style="color:#e6db74">:marmalade-jar</span>)
+</span></span><span style="display:flex;"><span><span style="color:#75715e">;; -&gt; (1 2 &#34;jam&#34; :marmalade-jar)</span>
+</span></span></code></pre></div><p>其形式跟表达式一样，都是<code>()</code>。为了防止被求值，前面加上<code>'</code>。</p>
+<p>常用方法：</p>
+<p>first/rest + 递归</p>
+<h3 id="vector">Vector</h3>
+<p>数组，可以index access。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-clojure" data-lang="clojure"><span style="display:flex;"><span>[<span style="color:#e6db74">:jar1</span> <span style="color:#ae81ff">1</span> <span style="color:#ae81ff">2</span> <span style="color:#ae81ff">3</span> <span style="color:#e6db74">:jar2</span>]
+</span></span><span style="display:flex;"><span><span style="color:#75715e">;; -&gt; [:jar1 1 2 3 :jar2]</span>
+</span></span></code></pre></div><p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="../../images/image-20200531111452025.png"
+        data-srcset="../../images/image-20200531111452025.png, ../../images/image-20200531111452025.png 1.5x, ../../images/image-20200531111452025.png 2x"
+        data-sizes="auto"
+        alt="../../images/image-20200531111452025.png"
+        title="image-20200531111452025" /></p>
+<h3 id="map">Map</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-clojure" data-lang="clojure"><span style="display:flex;"><span>{<span style="color:#e6db74">:jam1</span> <span style="color:#e6db74">&#34;strawberry&#34;</span> <span style="color:#e6db74">:jam2</span> <span style="color:#e6db74">&#34;blackberry&#34;</span>}
+</span></span><span style="display:flex;"><span><span style="color:#75715e">;; -&gt; {:jam2 &#34;blackberry&#34;, :jam1 &#34;strawberry&#34;}</span>
+</span></span></code></pre></div><h3 id="set">Set</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-clojure" data-lang="clojure"><span style="display:flex;"><span><span style="color:#f92672">#</span>{<span style="color:#e6db74">:red</span> <span style="color:#e6db74">:blue</span> <span style="color:#e6db74">:white</span> <span style="color:#e6db74">:pink</span>}
+</span></span><span style="display:flex;"><span><span style="color:#75715e">;; -&gt; #{:white :red :blue :pink}</span>
+</span></span></code></pre></div><h2 id="控制逻辑">控制逻辑</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-clojure" data-lang="clojure"><span style="display:flex;"><span>(<span style="color:#66d9ef">defn </span>iftest [x]
+</span></span><span style="display:flex;"><span>  (<span style="color:#66d9ef">if </span>x <span style="color:#e6db74">&#34;is true&#34;</span> <span style="color:#e6db74">&#34;is false&#34;</span>))
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>(<span style="color:#a6e22e">iftest</span> true)
+</span></span><span style="display:flex;"><span>(<span style="color:#a6e22e">iftest</span> false)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>(<span style="color:#66d9ef">defn </span>whentest [x]
+</span></span><span style="display:flex;"><span>  (when x <span style="color:#e6db74">&#34;is true&#34;</span>))
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>(<span style="color:#a6e22e">whentest</span> true)
+</span></span><span style="display:flex;"><span>(<span style="color:#a6e22e">whentest</span> false)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>(<span style="color:#66d9ef">defn </span>condtest [x]
+</span></span><span style="display:flex;"><span>  (<span style="color:#a6e22e">cond</span>
+</span></span><span style="display:flex;"><span>    (= x <span style="color:#e6db74">&#34;a&#34;</span>) <span style="color:#e6db74">&#34;is a&#34;</span>
+</span></span><span style="display:flex;"><span>    (= x <span style="color:#e6db74">&#34;b&#34;</span>) <span style="color:#e6db74">&#34;is b&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">:else</span> <span style="color:#e6db74">&#34;what?&#34;</span>))
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>(<span style="color:#a6e22e">condtest</span> <span style="color:#e6db74">&#34;a&#34;</span>)
+</span></span><span style="display:flex;"><span>(<span style="color:#a6e22e">condtest</span> <span style="color:#e6db74">&#34;b&#34;</span>)
+</span></span><span style="display:flex;"><span>(<span style="color:#a6e22e">condtest</span> <span style="color:#e6db74">&#34;c&#34;</span>)
+</span></span></code></pre></div><p>if = if / else</p></div><div class="post-footer">
+        <a href="/posts/20200531-clojure/">Read More</a></div>
+</article><article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
+        <a href="/posts/20200529-bi_project/">记一次数据项目经历</a>
+    </h1><div class="post-meta"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Happy Coding</a></span>&nbsp;<span class="post-publish">published on <time datetime="2020-05-29">2020-05-29</time></span></div><div class="content"><p>分享下 4月、5月（特别是5月，5/1假期后基本上全身心投入）在忙的这个数据项目经历，工作面覆盖陪同拜访客户、开会、需求分析、提供方案、数据清洗、数据分析、数据基础设施的搭建开发、帮甲方IT调试代码等环节，累到头秃。</p>
+<p>（本文刻意隐去客户信息。）</p>
+<h2 id="需求背景">需求背景</h2>
+<p>客户需求是做一个聚合小程序（此处脑补下麦当劳的微信小程序「i麦当劳」），用于广告投放，比如微信系APP的弹屏广告。应用本身不复杂，只是罗列客户其他小程序、H5应用和一些广告链接，让用户选择。</p>
+<p>投放效果需要数据量化，我们做了前后端的数据埋点，尽可能收集用户的行为记录。</p>
+<p>客户花钱投广告，是为了企业销售额等指标的提升。我们也对接了客户的订单数据，多方数据进行交叉分析。</p>
+<p>数据量化的结果，也就是数据报告，以日报、周报、月报的形式体现。</p>
+<h2 id="技术细节">技术细节</h2>
+<p>下文就以数据的生命周期来讲，数据是怎么从毛料，到精修，最后到报表的。</p>
+<h3 id="数据采集">数据采集</h3>
+<p>工作重点：</p>
+<ol>
+<li>定义数据对接规范，或是理解别人的规范。</li>
+<li>与自家开发做好数据对接。把握数据质量。</li>
+<li>与甲方开发做好数据对接。把握数据质量。（为了加快数据对接速度，又是写示例代码、又是帮他们定位中文编码问题。体验真是酸爽。还是自家小伙伴靠谱。）</li>
+<li>数据质量很重要。数据质量决定了后续工作是否需要反复。</li>
+</ol>
+<h4 id="1-前端应用埋点">1. 前端应用埋点</h4>
+<p>用于收集聚合小程序的用户行为记录。</p>
+<p>整体架构还是沿用几年前的，唯一变化的就是埋点的规范，因为需求的不同而变化。基本上如下逻辑：</p>
+<ol>
+<li>前端应用开发主动在代码中加入用户行为埋点。</li>
+<li>埋点 SDK 异步地将数据上传到服务器。多台服务器通过 DNS 解析来负载均衡。</li>
+<li>WEB 服务器使用的是 openresty，有一些 lua 脚本，用于处理 cookie，和格式化存储行为日志。</li>
+<li>之后数据通过Filebeat、Kafka、StreamSets等软件分发到Hadoop集群、实时处理任务。</li>
+</ol>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="../../images/image-20200512145610312.png"
+        data-srcset="../../images/image-20200512145610312.png, ../../images/image-20200512145610312.png 1.5x, ../../images/image-20200512145610312.png 2x"
+        data-sizes="auto"
+        alt="../../images/image-20200512145610312.png"
+        title="image-20200512145610312" /></p>
+<h4 id="2-sftp-文件同步">2. SFTP 文件同步</h4>
+<p>用于接收甲方的订单数据（二期、三期项目还有其他类型数据）。</p>
+<p>根据双方约定时间收取文件，将文件存入Hadoop集群。</p>
+<h4 id="3-微信公众号授权">3. 微信公众号授权</h4>
+<p>客户授权后，我们获取到了公众号的粉丝关注记录（由后端开发请求微信服务器取到数据并写入Kafka集群）。同样，也存放到了Hadoop集群。</p>
+<h3 id="etl-与-数据仓库">ETL 与 数据仓库</h3>
+<p>工作重点：</p>
+<ol>
+<li>承上启下的工作。以方便数据分析为出发点，反过来检验数据质量。</li>
+<li>字符串类型的时间转为时间戳类型。BI 工具需要。</li>
+<li>基于数据金字塔模型、维度分析模型建模。</li>
+<li>数据仓库未来可以考虑 ClickHouse。Hadoop体系数据粒度是文件，更新历史数据中的某条记录，得更新所在的整个文件！</li>
+</ol>
+<h4 id="1-etl">1. ETL</h4>
+<p>经过数据采集阶段，毛料数据以文件形式存储于Hadoop集群。本阶段主要将毛料数据抽取成表（实际还是文件存储）。</p>
+<p>技术上使用 Hive/Spark 框架写SQL。Hive SQL实在太慢了，所以一般使用Spark做清洗，Hive更多地是用其metastore组件，维护表结构信息。</p>
+<p>因为Spark（SQL）脚本得用Python写。抽象了一个清洗脚本模板，填空：</p>
+<ol>
+<li>可选填清洗前执行的SQL。比如建表DDL。</li>
+<li>可选填毛料数据的解析schema。（直接依靠框架采样推理出schema，与实际schema比，可能缺字段，程序会崩。schema也没必要手写。一个技巧就是准备一条最全的数据记录，让Spark推理，把schema存下来使用。）</li>
+<li>填核心的清洗逻辑。</li>
+</ol>
+<h4 id="2-数据仓库">2. 数据仓库</h4>
+<p>数据是有层次结构的。以用户行为记录为例：</p></div><div class="post-footer">
+        <a href="/posts/20200529-bi_project/">Read More</a></div>
+</article><article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
+        <a href="/posts/20200528-metabase-impala-type/">Metabase Impala Driver 0528更新日志</a>
+    </h1><div class="post-meta"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Happy Coding</a></span>&nbsp;<span class="post-publish">published on <time datetime="2020-05-28">2020-05-28</time></span>&nbsp;<span class="post-category">included in <a href="/categories/metabase/"><i class="far fa-folder fa-fw" aria-hidden="true"></i>Metabase</a></span></div><div class="content"><p>体验过程中还是碰到不少问题。</p>
+<h2 id="1-timestamp-类型没有过滤器样式">1. TIMESTAMP 类型没有过滤器样式</h2>
+<h3 id="现象">现象</h3>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="../../images/image-20200528173609294.png"
+        data-srcset="../../images/image-20200528173609294.png, ../../images/image-20200528173609294.png 1.5x, ../../images/image-20200528173609294.png 2x"
+        data-sizes="auto"
+        alt="../../images/image-20200528173609294.png"
+        title="image-20200528173609294" /></p>
+<p>连 SparkSQL 没这个问题。同样是TIMESTAMP类型，表现不同。</p>
+<h3 id="初步分析">初步分析</h3>
+<p>在数据库中查看存储的字段信息，Impala/SparkSQL对比看，发现 Impala 数据库下的字段 base_type 都是 <code>type/*</code>。而 database_type，Impala 都是大写的，比如TIMESTAMP，而不是timestamp。所以，并不仅仅是TIMESTAMP类型没有过滤器样式。</p>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="../../images/image-20200528173915594.png"
+        data-srcset="../../images/image-20200528173915594.png, ../../images/image-20200528173915594.png 1.5x, ../../images/image-20200528173915594.png 2x"
+        data-sizes="auto"
+        alt="../../images/image-20200528173915594.png"
+        title="image-20200528173915594" /></p>
+<p>Metabase 数据库类型会映射为 Clojure类型，数据库类型的名称是大小写敏感的。所以不能复用hive-like中的实现（都是小写的），而且Hive与Impala的类型还是有些不同的。</p>
+<h3 id="hive-impala的数据类型异同">Hive Impala的数据类型异同</h3>
+<p>以 Hive Data Types 为基准。</p>
+<table>
+  <thead>
+      <tr>
+          <th>Type Name</th>
+          <th>Type Catgory</th>
+          <th>Comment</th>
+          <th>Impala Support?</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>TINYINT</td>
+          <td>Numeric Types</td>
+          <td></td>
+          <td>Yes</td>
+      </tr>
+      <tr>
+          <td>SMALLINT</td>
+          <td>Numeric Types</td>
+          <td></td>
+          <td>Yes</td>
+      </tr>
+      <tr>
+          <td>INT</td>
+          <td>Numeric Types</td>
+          <td></td>
+          <td>Yes</td>
+      </tr>
+      <tr>
+          <td>BIGINT</td>
+          <td>Numeric Types</td>
+          <td></td>
+          <td>Yes</td>
+      </tr>
+      <tr>
+          <td>FLOAT</td>
+          <td>Numeric Types</td>
+          <td></td>
+          <td>Yes</td>
+      </tr>
+      <tr>
+          <td>DOUBLE</td>
+          <td>Numeric Types</td>
+          <td></td>
+          <td>Yes</td>
+      </tr>
+      <tr>
+          <td>DOUBLE PRECISION</td>
+          <td>Numeric Types</td>
+          <td>alias for DOUBLE, only available starting with Hive 2.2.0</td>
+          <td>No</td>
+      </tr>
+      <tr>
+          <td>DECIMAL</td>
+          <td>Numeric Types</td>
+          <td>Introduced in Hive 0.11.0 with a precision of 38 digits<!-- raw HTML omitted -->Hive 0.13.0 introduced user-definable precision and scale</td>
+          <td>Yes</td>
+      </tr>
+      <tr>
+          <td>NUMERIC</td>
+          <td>Numeric Types</td>
+          <td>same as DECIMAL, starting with Hive 3.0.0</td>
+          <td>No</td>
+      </tr>
+      <tr>
+          <td>TIMESTAMP</td>
+          <td>Date/Time Types</td>
+          <td>available starting with Hive 0.8.0</td>
+          <td>Yes</td>
+      </tr>
+      <tr>
+          <td>DATE</td>
+          <td>Date/Time Types</td>
+          <td>available starting with Hive 0.12.0</td>
+          <td>No</td>
+      </tr>
+      <tr>
+          <td>INTERVAL</td>
+          <td>Date/Time Types</td>
+          <td>available starting with Hive 1.2.0</td>
+          <td>No</td>
+      </tr>
+      <tr>
+          <td>STRING</td>
+          <td>String Types</td>
+          <td></td>
+          <td>Yes</td>
+      </tr>
+      <tr>
+          <td>VARCHAR</td>
+          <td>String Types</td>
+          <td>available starting with Hive 0.12.0</td>
+          <td>Yes</td>
+      </tr>
+      <tr>
+          <td>CHAR</td>
+          <td>String Types</td>
+          <td>available starting with Hive 0.13.0</td>
+          <td>Yes</td>
+      </tr>
+      <tr>
+          <td>BOOLEAN</td>
+          <td>Misc Types</td>
+          <td></td>
+          <td>Yes</td>
+      </tr>
+      <tr>
+          <td>BINARY</td>
+          <td>Misc Types</td>
+          <td>available starting with Hive 0.8.0</td>
+          <td>No</td>
+      </tr>
+      <tr>
+          <td>arrays: ARRAY&lt;data_type&gt;</td>
+          <td>Complex Types</td>
+          <td></td>
+          <td>Yes</td>
+      </tr>
+      <tr>
+          <td>maps: MAP&lt;primitive_type, data_type&gt;</td>
+          <td>Complex Types</td>
+          <td></td>
+          <td>Yes</td>
+      </tr>
+      <tr>
+          <td>structs: STRUCT&lt;col_name : data_type [COMMENT col_comment], &hellip;&gt;</td>
+          <td>Complex Types</td>
+          <td></td>
+          <td>Yes</td>
+      </tr>
+      <tr>
+          <td>union: UNIONTYPE&lt;data_type, data_type, &hellip;&gt;</td>
+          <td>Complex Types</td>
+          <td></td>
+          <td>No</td>
+      </tr>
+  </tbody>
+</table>
+<p>参考：</p></div><div class="post-footer">
+        <a href="/posts/20200528-metabase-impala-type/">Read More</a><div class="post-tags">
+                <i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/impala/">Impala</a>,&nbsp;<a href="/tags/metabase/">Metabase</a></div></div>
+</article><ul class="pagination"><li class="page-item ">
+                    <span class="page-link">
+                        <a href="/">1</a>
+                    </span>
+                </li><li class="page-item ">
+                    <span class="page-link" aria-hidden="true">&hellip;</span>
+                </li><li class="page-item ">
+                    <span class="page-link">
+                        <a href="/page/10/">10</a>
+                    </span>
+                </li><li class="page-item ">
+                    <span class="page-link">
+                        <a href="/page/11/">11</a>
+                    </span>
+                </li><li class="page-item active">
+                    <span class="page-link">
+                        <a href="/page/12/">12</a>
+                    </span>
+                </li><li class="page-item ">
+                    <span class="page-link">
+                        <a href="/page/13/">13</a>
+                    </span>
+                </li><li class="page-item ">
+                    <span class="page-link">
+                        <a href="/page/14/">14</a>
+                    </span>
+                </li><li class="page-item ">
+                    <span class="page-link" aria-hidden="true">&hellip;</span>
+                </li><li class="page-item ">
+                    <span class="page-link">
+                        <a href="/page/20/">20</a>
+                    </span>
+                </li></ul></div></div>
+            </main><footer class="footer">
+        <div class="footer-container"><div class="footer-line">Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.147.3">Hugo</a> | Theme - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.3.0"><i class="far fa-kiss-wink-heart fa-fw" aria-hidden="true"></i> LoveIt</a>
+                </div><div class="footer-line" itemscope itemtype="http://schema.org/CreativeWork"><i class="far fa-copyright fa-fw" aria-hidden="true"></i><span itemprop="copyrightYear">2022 - 2025</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/" target="_blank">Happy Coding</a></span></div>
+        </div>
+    </footer></div>
+
+        <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="Back to Top">
+                <i class="fas fa-arrow-up fa-fw" aria-hidden="true"></i>
+            </a><a href="#" id="view-comments" class="fixed-button" title="View Comments">
+                <i class="fas fa-comment fa-fw" aria-hidden="true"></i>
+            </a>
+        </div><script type="text/javascript" src="/lib/lazysizes/lazysizes.min.js"></script><script type="text/javascript" src="/lib/clipboard/clipboard.min.js"></script><script type="text/javascript" src="/lib/sharer/sharer.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"Copy to clipboard","maxShownLines":50}};</script><script type="text/javascript" src="/js/theme.min.js"></script></body>
+</html>

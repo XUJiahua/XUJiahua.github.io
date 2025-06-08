@@ -1,428 +1,58 @@
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
-  <channel>
-    <title>Happy Coding</title>
-    <link>https://xujiahua.github.io/</link>
-    <description>Recent content on Happy Coding</description>
-    <generator>Hugo -- gohugo.io</generator>
-    <language>zh-cn</language>
-    <lastBuildDate>Sun, 25 Apr 2021 16:35:55 +0800</lastBuildDate>
-    
-        <atom:link href="https://xujiahua.github.io/index.xml" rel="self" type="application/rss+xml" />
-    
-    
-    
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+    <channel>
+        <title>Happy Coding</title>
+        <link>https://xujiahua.github.io/</link>
+        <description>Happy Coding</description>
+        <generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Sun, 08 Jun 2025 11:06:22 &#43;0800</lastBuildDate>
+            <atom:link href="https://xujiahua.github.io/index.xml" rel="self" type="application/rss+xml" />
         <item>
-        <title>K8s 认证授权流程及 EKS 用户管理</title>
-        <link>https://xujiahua.github.io/posts/k8s-eks-ea3b5d29-0425-494e-8d9e-149f1654a41f/</link>
-        <pubDate>Sun, 25 Apr 2021 16:35:55 +0800</pubDate>
-        
-        <guid>https://xujiahua.github.io/posts/k8s-eks-ea3b5d29-0425-494e-8d9e-149f1654a41f/</guid>
-        <description>Happy Coding https://xujiahua.github.io/posts/k8s-eks-ea3b5d29-0425-494e-8d9e-149f1654a41f/ -&lt;p&gt;编辑于2020年12月，Google Docs 导入。&lt;/p&gt;
-&lt;p&gt;目前使用 Rancher 管理集群及结合 LDAP 用户管理。支持多云的场景。&lt;/p&gt;
-&lt;p&gt;本文只做知识记录。&lt;/p&gt;
-&lt;h1 id=&#34;kubernetes-authentication--authorization&#34;&gt;Kubernetes Authentication &amp;amp; Authorization&lt;/h1&gt;
-&lt;h2 id=&#34;kubernetes-背景知识&#34;&gt;Kubernetes 背景知识&lt;/h2&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image2-372a0c63-083e-4dc5-bc10-7160ff72595a.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
-&lt;p&gt;整体架构，来源：&lt;a href=&#34;https://medium.com/@kumargaurav1247/components-of-kubernetes-architecture-6feea4d5c712&#34;&gt;Components of Kubernetes Architecture | by Gaurav Gupta&lt;/a&gt;&lt;/p&gt;
-&lt;p&gt;比较典型的 Master-Slave 架构。而 apiserver 是核心中的核心。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image7-75649d28-a26a-491c-8162-939f91a7a311.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
-&lt;p&gt;apiserver 架构，来源：？？？&lt;/p&gt;
-&lt;p&gt;单单 apiserver 本身，可以理解为一个后端连接 etcd 作为数据库的，仅仅执行 CRUD 操作的 API 服务。CRUD 的对象，就是我们说的 API Resource，比如 Pod, Service 等内置资源，还有开发者自定义的资源。&lt;/p&gt;
-&lt;p&gt;具体的工作由各种 controllers （包括 kubelet ）来执行。这些 controllers 通过 watch apiserver，其本质是 etcd 的 watch 功能，能及时获得新的指令。&lt;/p&gt;
-&lt;p&gt;这个机制，形成了 Kubernetes 可以声明式地进行部署应用的能力。也叫做控制器模式。&lt;/p&gt;
-&lt;h2 id=&#34;authentication&#34;&gt;Authentication&lt;/h2&gt;
-&lt;p&gt;不管是通过 kubectl，还是直接访问 kubernetes-apiserver，对 kubernetes-apiserver 的 API 的访问都是受保护的，也就是，访问首先需要认证请求方。&lt;/p&gt;
-&lt;p&gt;一个“用户”从集群获取 API Resource，需要经过 Authentication/ Authorization/ AdmissionControl 这三大步骤。Authentication/ Authorization/ AdmissionControl 是高度模块化的，可以按需自定义开发。（如图，Authentication 模块使用积木拼图表示）&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image3-65a5f382-ee6c-4219-a2c3-806ab07d6c6a.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
-&lt;h3 id=&#34;定义用户&#34;&gt;定义“用户”&lt;/h3&gt;
-&lt;p&gt;在 Kubernetes 下有两类“用户”：&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;human user：比如使用 kubectl/helm 等命令操作集群的用户。&lt;/li&gt;
-&lt;li&gt;service account：其他非人用户。Kubernetes 中 Pod 访问 kubernetes-apiserver 也是需要认证的。&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;值得注意的是，Kubernetes 有 ServiceAccount API Resource，ServiceAccount 由 Kubernetes 自己管理。ServiceAccount 是 namespaced（单个 namespace 范围内可见），其包含 Secret API Resource，Secret 包含了用于认证 apiserver 的 Token。&lt;/p&gt;
-&lt;p&gt;&lt;em&gt;Service accounts are users managed by the Kubernetes API. They are bound to specific namespaces, and created automatically by the API server or manually through API calls.&lt;/em&gt; &lt;em&gt;&lt;strong&gt;Service accounts are tied to a set of credentials stored as Secrets, which are mounted into pods allowing in-cluster processes to talk to the Kubernetes API.&lt;/strong&gt;&lt;/em&gt;&lt;/p&gt;
-&lt;p&gt;使用命令查看 serviceaccount 及 secret。&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;$ kubectl describe serviceaccounts default
-Name:                default
-Namespace:           default
-Labels:              &amp;lt;none&amp;gt;
-Annotations:         &amp;lt;none&amp;gt;
-Image pull secrets:  &amp;lt;none&amp;gt;
-Mountable secrets:   default-token-5j9r6
-Tokens:              default-token-5j9r6
-Events:              &amp;lt;none&amp;gt;
-
-$ kubectl describe secret default-token-5j9r6
-Name:         default-token-5j9r6
-Namespace:    default
-Labels:       &amp;lt;none&amp;gt;
-Annotations:  kubernetes.io/service-account.name: default
-              kubernetes.io/service-account.uid: 2825782d-7d3d-4090-a4f9-014c5c137ede
-
-Type:  kubernetes.io/service-account-token
-
-Data
-====
-ca.crt:     1025 bytes
-namespace:  7 bytes
-token:      eyJhbGciOiJSUzI1NiIsImtpZCI6ImNONzV6eWFBSm50NkIxV3BSWGtsMG1OYk5jTVJoX1dxS083a0g3LU9JcVkifQ.eyJpc3MiOiJrdWJlcm5ldGVzL3NlcnZpY2VhY2NvdWIiwi[MASKED]
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;而没有 User API Resource（没法直接通过 kubectl 创建），Kubernetes 假设有一个与集群独立的第三方维护用户信息。&lt;strong&gt;比较特殊的是，使用集群 CA 签发的证书也可以进行用户认证，username 就是证书中的 common name。&lt;/strong&gt;&lt;/p&gt;
-&lt;p&gt;&lt;em&gt;Even though a normal user cannot be added via an API call, any user that presents a valid certificate signed by the cluster&amp;rsquo;s certificate authority (CA) is considered authenticated. In this configuration, Kubernetes determines the username from the common name field in the &amp;lsquo;subject&amp;rsquo; of the cert (e.g., &amp;ldquo;/CN=bob&amp;rdquo;). From there, the role based access control (RBAC) sub-system would determine whether the user is authorized to perform a specific operation on a resource. For more details, refer to the normal users topic in certificate request for more details about this.&lt;/em&gt;&lt;/p&gt;
-&lt;p&gt;虽然没有 user API Resource，但 apiserver 内部是有 user/group 的概念的。以下是从代码中找到的内置 user/group。在 system:masters 这个组内的用户，具有整个集群管理员的权限。&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;// well-known user and group names
-const (
-	SystemPrivilegedGroup = &amp;quot;system:masters&amp;quot;
-	NodesGroup            = &amp;quot;system:nodes&amp;quot;
-	AllUnauthenticated    = &amp;quot;system:unauthenticated&amp;quot;
-	AllAuthenticated      = &amp;quot;system:authenticated&amp;quot;
-
-	Anonymous     = &amp;quot;system:anonymous&amp;quot;
-	APIServerUser = &amp;quot;system:apiserver&amp;quot;
-
-	// core kubernetes process identities
-	KubeProxy             = &amp;quot;system:kube-proxy&amp;quot;
-	KubeControllerManager = &amp;quot;system:kube-controller-manager&amp;quot;
-	KubeScheduler         = &amp;quot;system:kube-scheduler&amp;quot;
-)
-&lt;/code&gt;&lt;/pre&gt;&lt;h3 id=&#34;认证策略&#34;&gt;认证策略&lt;/h3&gt;
-&lt;p&gt;对于 ServiceAccount 的认证，使用 Service Account Token 方式认证。&lt;/p&gt;
-&lt;p&gt;对于 normal user，有如下多种方式，选择一种即可（选择多种，apiserver 会尝试多种认证方式，直到有一种方式认证成功，即结束）：&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;strong&gt;X509 Client Certs：上文有涉及。阿里云的托管集群，默认使用这种方式。&lt;/strong&gt;&lt;/li&gt;
-&lt;li&gt;Static Token File：静态文件，revoke 不方便，不建议使用。Currently, tokens last indefinitely, and the token list cannot be changed without restarting API server.&lt;/li&gt;
-&lt;li&gt;Bearer Token：怎么生成的不清楚。举例：Authorization: Bearer 31ada4fd-adec-460c-809a-9e56ceb75269&lt;/li&gt;
-&lt;li&gt;Bootstrap Tokens：存储在 kube-system namespace 下的 secret，一定程度手动维护。a dynamically-managed Bearer token type called a Bootstrap Token. These tokens are stored as Secrets in the kube-system namespace, where they can be dynamically managed and created. Controller Manager contains a TokenCleaner controller that deletes bootstrap tokens as they expire.&lt;/li&gt;
-&lt;li&gt;OpenID Connect Tokens：需要选择 OAuth2 providers，比如使用 Google Auth。&lt;/li&gt;
-&lt;li&gt;&lt;strong&gt;Webhook Token Authentication：EKS 使用这种，后文重点讲解。&lt;/strong&gt;&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;&lt;strong&gt;Authentication 如果失败，返回 401。如果成功，其重要输出就是 username。&lt;/strong&gt;&lt;/p&gt;
-&lt;h2 id=&#34;kubernetes-authorization-rbac&#34;&gt;Kubernetes Authorization (RBAC)&lt;/h2&gt;
-&lt;p&gt;我们就以 RBAC 举例讲 Kubernetes Authorization。集群一般会通过配置 RBAC 来控制权限。&lt;/p&gt;
-&lt;p&gt;接上一步 Kubernetes Authentication 的成功结果，得到了 username。在 Authorization 阶段，就是与 RBAC 权限对照，检查 username 是否有权限访问资源。&lt;/p&gt;
-&lt;h3 id=&#34;default-clusterrolerole&#34;&gt;Default ClusterRole/Role&lt;/h3&gt;
-&lt;p&gt;Kubernetes 内置了4 种面向用户的 ClusterRole。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image6-ad33efd6-773a-4881-aec7-7cd28b19da81.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
-&lt;p&gt;来源：&lt;a href=&#34;https://kubernetes.io/docs/reference/access-authn-authz/rbac/#user-facing-roles&#34;&gt;https://kubernetes.io/docs/reference/access-authn-authz/rbac/#user-facing-roles&lt;/a&gt;&lt;/p&gt;
-&lt;p&gt;示例，将 edit 这个 ClusterRole，赋予用户 integ-user。&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;kind: RoleBinding
-apiVersion: rbac.authorization.k8s.io/v1beta1
-metadata:
-  name: integ-role-binding
-  namespace: argo
-subjects:
-- kind: User
-  name: integ-user
-roleRef:
-  kind: ClusterRole
-  name: edit
-  apiGroup: rbac.authorization.k8s.io
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;更精细的权限管理，需要自定义 ClusterRole/Role。&lt;/p&gt;
-&lt;p&gt;示例，定义一个 ClusterRole，其有对 workflows 这个资源的所有权限。其中 workflows 是定义自 argoproj.io 的资源。&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;kind: ClusterRole
-apiVersion: rbac.authorization.k8s.io/v1beta1
-metadata:
-  name: workflow-edit-role
-  labels:
-    rbac.authorization.k8s.io/aggregate-to-edit: &amp;quot;true&amp;quot;
-rules:
-  - apiGroups:
-      - &amp;quot;argoproj.io&amp;quot;
-    resources:
-      - &amp;quot;workflows&amp;quot;
-    verbs:
-      - &amp;quot;create&amp;quot;
-      - &amp;quot;delete&amp;quot;
-      - &amp;quot;describe&amp;quot;
-      - &amp;quot;get&amp;quot;
-      - &amp;quot;list&amp;quot;
-      - &amp;quot;patch&amp;quot;
-      - &amp;quot;update&amp;quot;
-      - &amp;quot;watch&amp;quot;
-&lt;/code&gt;&lt;/pre&gt;&lt;h2 id=&#34;admission-control&#34;&gt;Admission Control&lt;/h2&gt;
-&lt;p&gt;Authentication &amp;amp; Authorization 通过后，request 进入 Admission Control 流程。&lt;/p&gt;
-&lt;p&gt;Admission Control 主要是两个功能：&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;改写 request&lt;/li&gt;
-&lt;li&gt;验证 request&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;Admission Control 默认有如下功能：&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;NamespaceLifecycle, LimitRanger, ServiceAccount, TaintNodesByCondition, Priority, DefaultTolerationSeconds, DefaultStorageClass, StorageObjectInUseProtection, PersistentVolumeClaimResize, RuntimeClass, CertificateApproval, CertificateSigning, CertificateSubjectRestriction, DefaultIngressClass, MutatingAdmissionWebhook, ValidatingAdmissionWebhook, &lt;strong&gt;ResourceQuota&lt;/strong&gt;, &amp;hellip;&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;p&gt;以 ResourceQuota 为例，用于检查 request 中的申请的资源没有超过 namespace 的限额，这是验证 request 的例子：&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;This admission controller will observe the incoming request and ensure that it does not violate any of the constraints enumerated in the ResourceQuota object in a Namespace. If you are using ResourceQuota objects in your Kubernetes deployment, you MUST use this admission controller to enforce quota constraints.&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;p&gt;以 DefaultStorageClass 为例，创建 PVC 对象的 request 不指定 StorageClass，如果有默认的 StorageClass，改写 request，添加 StorageClass。&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;This admission controller observes creation of PersistentVolumeClaim objects that do not request any specific storage class and automatically adds a default storage class to them. This way, users that do not request any special storage class do not need to care about them at all and they will get the default one.&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;p&gt;Admission Control 也提供了接口，方便开发者自定义开发组件。这里不再详细展开。&lt;/p&gt;
-&lt;p&gt;参考：&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;a href=&#34;https://kubernetes.io/docs/reference/access-authn-authz/admission-controllers/&#34;&gt;Using Admission Controllers&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;https://kubernetes.io/docs/reference/access-authn-authz/extensible-admission-controllers/&#34;&gt;Dynamic Admission Control&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-&lt;h1 id=&#34;eks-authentication&#34;&gt;EKS Authentication&lt;/h1&gt;
-&lt;p&gt;AWS EKS 是 AWS 提供的 Kubernetes 托管服务。在认证这块，EKS 结合了 AWS IAM，可以复用 IAM 的用户体系。&lt;/p&gt;
-&lt;h2 id=&#34;iam-简介&#34;&gt;IAM 简介&lt;/h2&gt;
-&lt;p&gt;&lt;em&gt;AWS Identity and Access Management (IAM) enables you to manage access to AWS services and resources securely. Using IAM, you can create and manage AWS users and groups, and use permissions to allow and deny their access to AWS resources.&lt;/em&gt; &lt;em&gt;&lt;a href=&#34;https://aws.amazon.com/iam/&#34;&gt;https://aws.amazon.com/iam/&lt;/a&gt;&lt;/em&gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image11-9df8ca2d-74ed-4795-b43f-382c62bdbce9.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
-&lt;p&gt;IAM 用于管理 IAM 用户访问 AWS 资源的权限控制。所谓 AWS 资源，就是 AWS 中的各种服务能力。&lt;/p&gt;
-&lt;p&gt;为什么是 IAM 用户，而不是账号。一般地，一个组织或是公司，AWS 主账号（AWS account root user）注册后，会创建 IAM user/group 并分配权限来进行日常管理工作。而不是直接使用 AWS 主账号，这样安全风险是比较大的，一个组织内全用一个账号是不合理的。&lt;/p&gt;
-&lt;h3 id=&#34;iam-重要概念&#34;&gt;IAM 重要概念&lt;/h3&gt;
-&lt;ol&gt;
-&lt;li&gt;IAM policy：访问权限规则，也就是对 AWS 资源的操作权限。可以赋予给 user/group/role。&lt;/li&gt;
-&lt;li&gt;IAM user：用户。可以加入 group 间接得到 policy（建议，便于管理），也可以直接配置得到 policy。&lt;/li&gt;
-&lt;li&gt;IAM group：用户组。可以把相同职能属性的 user 分为一个 group。&lt;/li&gt;
-&lt;li&gt;IAM role：role 被直接赋予 user 或是通过 group 间接赋予 user，只代表 user 可以承担（assume）这个 role。user 使用 role 上的权限，需要有 assume role 的操作。
-&lt;img src=&#34;../../images/image5-fffffd86-35f2-4b41-aa95-ebe5d042b334.png&#34; alt=&#34;&#34;&gt;
-&lt;img src=&#34;../../images/image13-1a221b8f-1fdb-457b-89ca-209ceb5f3094.png&#34; alt=&#34;&#34;&gt;&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;如果把 IAM group 比作是 role 的话，IAM 也是 RBAC 模型。&lt;/p&gt;
-&lt;p&gt;一个 role 的例子。一个 IAM user 被赋予了对 S3 受限的权限，比如说只能读。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image9-d49a7b78-ba93-4465-903e-2e36da2f7055.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
-&lt;p&gt;一个受限制的用户，被赋予了IAM Admin Role （Role本身被赋予了有 Admin 权限的 policy）之后，就有了不受限制的权限了。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image10-8bc32a68-80e8-4286-8bd7-a47fd73517a7.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
-&lt;h2 id=&#34;aws-iam-authenticator-模块&#34;&gt;aws-iam-authenticator 模块&lt;/h2&gt;
-&lt;p&gt;EKS 默认安装。&lt;/p&gt;
-&lt;p&gt;通过 aws-iam-authenticator 这个模块，我们可以使用 IAM user 或是 assume IAM role 来登录 EKS 集群。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image4-3e2db7a2-da2e-47b6-b2ef-6d4578e5533e.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
-&lt;p&gt;以 kubectl get pods 为例细细梳理整个流程：&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;kubectl 调用 aws 或是 aws-iam-authenticator 命令行获取 IAM Identity Token。这个在图中没有体现，大体是 aws cmd &amp;lt;&amp;ndash; aws access key/secret &amp;ndash;&amp;gt; IAM。&lt;/li&gt;
-&lt;li&gt;kubectl 带着 token 和 get pods 这个 action 请求 apiserver。这就是 Client -&amp;gt; EKS API Server 部分。&lt;/li&gt;
-&lt;li&gt;apiserver 使用 token 进行 &lt;strong&gt;Authentication&lt;/strong&gt;。EKS API Server 是配置了 webhook 的方式调用 aws-iam-authenticator server。&lt;/li&gt;
-&lt;li&gt;aws-iam-authenticator server 连接 IAM 服务进行 token 验证。验证通过后，得到 IAM Identity，也就是 IAM user/role。&lt;/li&gt;
-&lt;li&gt;aws-iam-authenticator server 获取 IAM Identity 对应的 Kubernetes user。&lt;/li&gt;
-&lt;li&gt;&lt;strong&gt;Authentication&lt;/strong&gt; 环节结束，得到 Kubernetes user。&lt;/li&gt;
-&lt;li&gt;其中，aws-iam-authenticator server 使用 &lt;strong&gt;aws-auth&lt;/strong&gt; 这个 ConfigMap 存储 IAM Identity 与 Kubernetes user 的映射关系。&lt;/li&gt;
-&lt;li&gt;其中，aws-iam-authenticator server 是安装在 master node 上。&lt;/li&gt;
-&lt;li&gt;apiserver 使用 &lt;strong&gt;Authentication&lt;/strong&gt; 环节得到的 Kubernetes user 和请求中的 action，也就是 get pods 进入 &lt;strong&gt;Authorization&lt;/strong&gt; 环节。&lt;/li&gt;
-&lt;li&gt;具体地说，get pods，pods 是 API Resource，get 是 action。&lt;/li&gt;
-&lt;li&gt;获取与 Kubernetes user 绑定的 Role，检查用户是否有权限操作 get pods。&lt;/li&gt;
-&lt;li&gt;&lt;strong&gt;Authorization&lt;/strong&gt; 环节通过，也就是权限验证通过，笼统地说，apiserver 就会把 pods 资源返回给客户端了。&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;我们已经知道了 configmap/aws-auth 维护了 Kubernetes user 与 IAM user/role 的映射关系。一个一个用户添加不是个好办法，建议直接映射 IAM role。使用 mapRoles，而不是 mapUsers。&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;&lt;em&gt;The Advantage of using Role to access the cluster instead of specifying directly IAM users is that it will be easier to manage: we won’t have to update the ConfigMap each time we want to add or remove users, we will just need to add or remove users from the IAM Group and we just configure the ConfigMap to allow the IAM Role associated to the IAM Group.&lt;/em&gt;&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;p&gt;值得说明，创建 EKS cluster 的 IAM 实体，自动被赋予 system:masters 的权限，也就是集群管理员的权限。&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;When you create an Amazon EKS cluster, the IAM entity user or role, such as a federated user that creates the cluster, is automatically granted system:masters permissions in the cluster&amp;rsquo;s RBAC configuration in the control plane. This IAM entity does not appear in the ConfigMap, or any other visible configuration, so make sure to keep track of which IAM entity originally created the cluster. To grant additional AWS users or roles the ability to interact with your cluster, you must edit the aws-auth ConfigMap within Kubernetes.&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;h1 id=&#34;实战&#34;&gt;实战&lt;/h1&gt;
-&lt;p&gt;我们分三个组：&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;admin 管理员权限。&lt;/li&gt;
-&lt;li&gt;integration 一个或多个 namespace 的写权限，用于例行变更部署。&lt;/li&gt;
-&lt;li&gt;developer 一个或多个 namespace 的读权限，用于查看 dashboard，查看容器日志，排查一般问题。&lt;/li&gt;
-&lt;/ol&gt;
-&lt;h2 id=&#34;改动效果&#34;&gt;改动效果&lt;/h2&gt;
-&lt;p&gt;需要操作修改的地方有：&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;IAM 下创建三个 group，每个 group 对应一个 role。user 可以按需创建，加入合适的 group 中。&lt;/li&gt;
-&lt;li&gt;aws-auth 这个 configmap 更新。&lt;/li&gt;
-&lt;li&gt;RBAC 配置。&lt;/li&gt;
-&lt;/ol&gt;
-&lt;h3 id=&#34;iam&#34;&gt;IAM&lt;/h3&gt;
-&lt;p&gt;IAM 控制台可见：&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image1-bfb7e86d-dcdd-4de9-b539-ebca0978a76c.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
-&lt;p&gt;group 与 role 关联。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image8-132e0e54-827c-4c16-8056-fda664e0224b.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
-&lt;p&gt;每个 group 都有对应的 role。这个 role 用于映射到 Kubernetes user。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image12-5770a022-a78e-45c5-a902-779a171e000d.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
-&lt;h3 id=&#34;aws-auth&#34;&gt;aws-auth&lt;/h3&gt;
-&lt;p&gt;aws-auth 应该有如下三项：rolearn 从 IAM 获取，username 自定义，与后面的 RBAC 权限控制保持一致即可。&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;$ kubectl get cm -n kube-system aws-auth -o yaml
-
-apiVersion: v1
-data:
-  mapRoles: |
-...
-    - rolearn: arn:aws:iam::xxxxxx:role/k8sDev
-      username: dev-user
-    - rolearn: arn:aws:iam::xxxxxx:role/k8sInteg
-      username: integ-user
-    - groups:
-      - system:masters
-      rolearn: arn:aws:iam::xxxxxx:role/k8sAdmin
-      username: admin
-...
-  mapUsers: |
-    []
-kind: ConfigMap
-...
-&lt;/code&gt;&lt;/pre&gt;&lt;h3 id=&#34;rbac&#34;&gt;RBAC&lt;/h3&gt;
-&lt;pre&gt;&lt;code&gt;kind: RoleBinding
-apiVersion: rbac.authorization.k8s.io/v1beta1
-metadata:
-  name: dev-role-binding
-  namespace: evonet
-subjects:
-- kind: User
-  name: dev-user
-roleRef:
-  kind: ClusterRole
-  name: view
-  apiGroup: rbac.authorization.k8s.io
-&lt;/code&gt;&lt;/pre&gt;&lt;pre&gt;&lt;code&gt;kind: RoleBinding
-apiVersion: rbac.authorization.k8s.io/v1beta1
-metadata:
-  name: integ-role-binding
-  namespace: evonet
-subjects:
-- kind: User
-  name: integ-user
-roleRef:
-  kind: ClusterRole
-  name: edit
-  apiGroup: rbac.authorization.k8s.io
-&lt;/code&gt;&lt;/pre&gt;&lt;h2 id=&#34;过程&#34;&gt;过程&lt;/h2&gt;
-&lt;p&gt;参考：&lt;a href=&#34;https://www.eksworkshop.com/beginner/091_iam-groups/&#34;&gt;Using IAM Groups to manage Kubernetes access&lt;/a&gt;&lt;/p&gt;
-&lt;p&gt;按需，略有改动。&lt;/p&gt;
-&lt;h2 id=&#34;本地配置使用&#34;&gt;本地配置使用&lt;/h2&gt;
-&lt;p&gt;主要是创建或是修改几个文件：&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;~/.aws/config&lt;/li&gt;
-&lt;li&gt;~/.aws/credentials&lt;/li&gt;
-&lt;li&gt;~/.kube/config （使用 export KUBECONFIG=&amp;lt;/your/path/to/kubeconfig&amp;gt; 暴露环境变量可使用任意位置）&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;注意：以上都是软件默认配置路径。&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;替换以下的 &amp;lt;aws_access_key_id&amp;gt; &amp;lt;aws_secret_access_key&amp;gt;。&lt;/li&gt;
-&lt;li&gt;如果是 admin role：role_arn替换为 arn:aws:iam::xxxxxx:role/k8sAdmin&lt;/li&gt;
-&lt;li&gt;如果是 integ role：role_arn=arn:aws:iam::xxxxxx:role/k8sInteg&lt;/li&gt;
-&lt;/ol&gt;
-&lt;pre&gt;&lt;code&gt;$ cat ~/.aws/config
-[default]
-role_arn=arn:aws:iam::101606529841:role/k8sDev
-# role_arn=arn:aws:iam::101606529841:role/k8sInteg
-source_profile=default
-
-$ cat ~/.aws/credentials
-[default]
-aws_access_key_id = &amp;lt;aws_access_key_id&amp;gt;
-aws_secret_access_key = &amp;lt;aws_secret_access_key&amp;gt;
-
-$ cat ~/.kube/config
-apiVersion: v1
-clusters:
-- cluster:
-    certificate-authority-data: xxxxxx
-    server: xxxxxx
-  name: xxxxxx
-contexts:
-- context:
-    cluster: xxxxxx
-    user: xxxxxx
-  name: xxxxxx
-current-context: xxxxxx
-kind: Config
-preferences: {}
-users:
-- name: xxxxxx
-  user:
-    exec:
-      apiVersion: client.authentication.k8s.io/v1alpha1
-      args:
-      - --region
-      - ap-northeast-1
-      - eks
-      - get-token
-      - --cluster-name
-      - eks-try-2020-2
-      command: aws
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;aws 配置是关键。&lt;/p&gt;
-&lt;p&gt;role_arn 一定要指定，然后 role_arn 也是需要 source_profile 的，两者都指定下即可。&lt;/p&gt;
-&lt;p&gt;也就是说，role 的使用一定要显式地使用。如果不显式，默认就是没有role，没有权限，非 cluster 创建者，就没有权限去访问了。&lt;/p&gt;
-&lt;p&gt;aws cli 的配置文件，得参考如下。&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;&lt;a href=&#34;https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-quickstart.html&#34;&gt;Configuration basics - AWS Command Line Interface&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;查看下配置 &lt;a href=&#34;https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-files.html&#34;&gt;Configuration and credential file settings - AWS Command Line Interface&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;named profile，这里我们使用 default profile 即可，不需要指定 profile。 &lt;a href=&#34;https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-profiles.html&#34;&gt;https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-profiles.html&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;使用 IAM role &lt;a href=&#34;https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-role.html&#34;&gt;https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-role.html&lt;/a&gt;&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;kubeconfig 使用默认生成的即可。credentials 也可以使用 aws configure 来设置认证信息。只要新增 role_arn 即可。应该是最简设置了。&lt;/p&gt;
-&lt;h1 id=&#34;参考&#34;&gt;参考&lt;/h1&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;a href=&#34;https://kubernetes.io/docs/concepts/security/controlling-access/&#34;&gt;Controlling Access to the Kubernetes API&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;https://kubernetes.io/docs/reference/access-authn-authz/authentication/&#34;&gt;Authenticating&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;https://github.com/kubernetes-sigs/aws-iam-authenticator&#34;&gt;kubernetes-sigs/aws-iam-authenticator: A tool to use AWS IAM credentials to authenticate to a Kubernetes cluster&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;https://programmer.group/how-to-deeply-understand-the-implementation-mechanism-of-eks-iam-authenticator.html&#34;&gt;How to Deeply Understand the Implementation Mechanism of EKS IAM Authenticator&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;IAM user 映射为 Kubernetes user &lt;a href=&#34;https://www.eksworkshop.com/beginner/090_rbac/&#34;&gt;Intro to RBAC&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;IAM group/role 映射为 Kubernetes user &lt;a href=&#34;https://www.eksworkshop.com/beginner/091_iam-groups/&#34;&gt;Using IAM Groups to manage Kubernetes access&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;Create a kubeconfig for Amazon EKS &lt;a href=&#34;https://docs.aws.amazon.com/eks/latest/userguide/create-kubeconfig.html#create-kubeconfig-automatically&#34;&gt;https://docs.aws.amazon.com/eks/latest/userguide/create-kubeconfig.html#create-kubeconfig-automatically&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;https://www.eksworkshop.com/beginner/091_iam-groups/&#34;&gt;Using IAM Groups to manage Kubernetes access&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;https://docs.aws.amazon.com/eks/latest/userguide/add-user-role.html&#34;&gt;Managing users or IAM roles for your cluster - Amazon EKS&lt;/a&gt; 是上面那个 tutorial 的浓缩版&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;https://docs.aws.amazon.com/IAM/latest/UserGuide/introduction.html&#34;&gt;https://docs.aws.amazon.com/IAM/latest/UserGuide/introduction.html&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-- https://xujiahua.github.io/posts/k8s-eks-ea3b5d29-0425-494e-8d9e-149f1654a41f/ - </description>
-        </item>
-    
-    
-    
-        <item>
-        <title>eksctl: NodeCreationFailure: Instances failed to join the kubernetes cluster</title>
-        <link>https://xujiahua.github.io/posts/eksctl-nodecreationfailure-instances-failed-to-join-the-kubernetes-cluster-0393476e-6e53-42f7-8222-842ffd0e8358/</link>
-        <pubDate>Sun, 25 Apr 2021 13:18:00 +0800</pubDate>
-        
-        <guid>https://xujiahua.github.io/posts/eksctl-nodecreationfailure-instances-failed-to-join-the-kubernetes-cluster-0393476e-6e53-42f7-8222-842ffd0e8358/</guid>
-        <description>Happy Coding https://xujiahua.github.io/posts/eksctl-nodecreationfailure-instances-failed-to-join-the-kubernetes-cluster-0393476e-6e53-42f7-8222-842ffd0e8358/ -&lt;p&gt;eksctl 创建集群失败了。第一次遇到这个错。&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;2021-04-25 01:59:24 [ℹ]  waiting for CloudFormation stack &amp;quot;eksctl-eks-prod-evocloud-tyo-nodegroup-mng-1&amp;quot;
-2021-04-25 01:59:25 [✖]  unexpected status &amp;quot;ROLLBACK_IN_PROGRESS&amp;quot; while waiting for CloudFormation stack &amp;quot;eksctl-eks-prod-evocloud-tyo-nodegroup-mng-1&amp;quot;
+    <title>K8s 认证授权流程及 EKS 用户管理</title>
+    <link>https://xujiahua.github.io/posts/k8s-eks-ea3b5d29-0425-494e-8d9e-149f1654a41f/</link>
+    <pubDate>Sun, 25 Apr 2021 16:35:55 &#43;0800</pubDate>
+    <author>Happy Coding</author>
+    <guid>https://xujiahua.github.io/posts/k8s-eks-ea3b5d29-0425-494e-8d9e-149f1654a41f/</guid>
+    <description><![CDATA[<p>编辑于2020年12月，Google Docs 导入。</p>
+<p>目前使用 Rancher 管理集群及结合 LDAP 用户管理。支持多云的场景。</p>
+<p>本文只做知识记录。</p>
+<h1 id="kubernetes-authentication--authorization">Kubernetes Authentication &amp; Authorization</h1>
+<h2 id="kubernetes-背景知识">Kubernetes 背景知识</h2>
+<p></p>
+<p>整体架构，来源：<a href="https://medium.com/@kumargaurav1247/components-of-kubernetes-architecture-6feea4d5c712" target="_blank" rel="noopener noreffer ">Components of Kubernetes Architecture | by Gaurav Gupta</a></p>
+<p>比较典型的 Master-Slave 架构。而 apiserver 是核心中的核心。</p>
+<p></p>
+<p>apiserver 架构，来源：？？？</p>
+<p>单单 apiserver 本身，可以理解为一个后端连接 etcd 作为数据库的，仅仅执行 CRUD 操作的 API 服务。CRUD 的对象，就是我们说的 API Resource，比如 Pod, Service 等内置资源，还有开发者自定义的资源。</p>
+<p>具体的工作由各种 controllers （包括 kubelet ）来执行。这些 controllers 通过 watch apiserver，其本质是 etcd 的 watch 功能，能及时获得新的指令。</p>]]></description>
+</item>
+<item>
+    <title>eksctl: NodeCreationFailure: Instances failed to join the kubernetes cluster</title>
+    <link>https://xujiahua.github.io/posts/eksctl-nodecreationfailure-instances-failed-to-join-the-kubernetes-cluster-0393476e-6e53-42f7-8222-842ffd0e8358/</link>
+    <pubDate>Sun, 25 Apr 2021 13:18:00 &#43;0800</pubDate>
+    <author>Happy Coding</author>
+    <guid>https://xujiahua.github.io/posts/eksctl-nodecreationfailure-instances-failed-to-join-the-kubernetes-cluster-0393476e-6e53-42f7-8222-842ffd0e8358/</guid>
+    <description><![CDATA[<p>eksctl 创建集群失败了。第一次遇到这个错。</p>
+<pre tabindex="0"><code>2021-04-25 01:59:24 [ℹ]  waiting for CloudFormation stack &#34;eksctl-eks-prod-evocloud-tyo-nodegroup-mng-1&#34;
+2021-04-25 01:59:25 [✖]  unexpected status &#34;ROLLBACK_IN_PROGRESS&#34; while waiting for CloudFormation stack &#34;eksctl-eks-prod-evocloud-tyo-nodegroup-mng-1&#34;
 2021-04-25 01:59:25 [ℹ]  fetching stack events in attempt to troubleshoot the root cause of the failure
-2021-04-25 01:59:25 [✖]  AWS::EKS::Nodegroup/ManagedNodeGroup: CREATE_FAILED – &amp;quot;Nodegroup mng-1 failed to stabilize: [{Code: NodeCreationFailure,Message: Instances failed to join the kubernetes cluster,ResourceIds: [i-09df0fc7408f36801]}]&amp;quot;
+2021-04-25 01:59:25 [✖]  AWS::EKS::Nodegroup/ManagedNodeGroup: CREATE_FAILED – &#34;Nodegroup mng-1 failed to stabilize: [{Code: NodeCreationFailure,Message: Instances failed to join the kubernetes cluster,ResourceIds: [i-09df0fc7408f36801]}]&#34;
 2021-04-25 01:59:25 [!]  1 error(s) occurred and cluster hasn&#39;t been created properly, you may wish to check CloudFormation console
-&lt;/code&gt;&lt;/pre&gt;&lt;h2 id=&#34;分析&#34;&gt;分析&lt;/h2&gt;
-&lt;p&gt;在 CloudFormation 控制台查看详细日志。无法加入到 K8s 集群。然后没有进一步的信息了。&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;Nodegroup mng-1 failed to stabilize: [{Code: NodeCreationFailure,Message: Instances failed to join the kubernetes cluster,ResourceIds: [i-0c4e4c2a6dd9457b1]}]
-&lt;img src=&#34;../../images/Untitled-4b60f8d2-6792-46a8-95ab-b315de21ada4.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;p&gt;定位到这份文档。&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;NodeCreationFailure: Your launched instances are unable to register with your Amazon EKS cluster. Common causes of this failure are insufficient node IAM role permissions or lack of outbound internet access for the nodes. Your nodes must be able to access the internet using a public IP address to function properly. For more information, see VPC IP addressing. Your nodes must also have ports open to the internet. For more information, see Amazon EKS security group considerations.&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;p&gt;&lt;a href=&#34;https://docs.aws.amazon.com/eks/latest/userguide/troubleshooting.html#troubleshoot-managed-node-groups&#34;&gt;Amazon EKS troubleshooting&lt;/a&gt;&lt;/p&gt;
-&lt;p&gt;K8s 的主机是设置为分配在 Private 子网段的，而且数据中心也给配置了 NAT 网关。我的猜测是安全组没开放或是哪边配置出错了。&lt;/p&gt;
-&lt;h2 id=&#34;验证&#34;&gt;验证&lt;/h2&gt;
-&lt;p&gt;在 Private 子网段创建了一个实例。&lt;/p&gt;
-&lt;p&gt;为了访问这个实例，我又在 Public 子网段创建了一个实例。&lt;/p&gt;
-&lt;p&gt;两个实例都配置了公钥登录的方式。&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;$ sftp -i test_network_access.pem.txt ubuntu@18.179.136.90
-Connected to ubuntu@18.179.136.90.
-sftp&amp;gt; put test_network_access.pem.txt
-Uploading test_network_access.pem.txt to /home/ubuntu/test_network_access.pem.txt
-test_network_access.pem.txt                                                                                                                                                                                                                 100% 1704    20.0KB/s   00:00
-
-$ ssh -i test_network_access.pem.txt ubuntu@18.179.136.90
-
-$ ssh -i test_network_access.pem.txt ubuntu@10.105.24.215
-
-$ curl ip.sb
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;果然是无法访问外网。&lt;/p&gt;
-&lt;p&gt;后面数据中心同事反馈，NAT 的可用区路由表有点问题。&lt;/p&gt;
-- https://xujiahua.github.io/posts/eksctl-nodecreationfailure-instances-failed-to-join-the-kubernetes-cluster-0393476e-6e53-42f7-8222-842ffd0e8358/ - </description>
-        </item>
-    
-    
-    
-        <item>
-        <title>metabase-quick 小结</title>
-        <link>https://xujiahua.github.io/posts/metabase-quick-71d491f9-972e-4305-9f93-1af388b5ca9b/</link>
-        <pubDate>Wed, 21 Apr 2021 18:03:00 +0800</pubDate>
-        
-        <guid>https://xujiahua.github.io/posts/metabase-quick-71d491f9-972e-4305-9f93-1af388b5ca9b/</guid>
-        <description>Happy Coding https://xujiahua.github.io/posts/metabase-quick-71d491f9-972e-4305-9f93-1af388b5ca9b/ -&lt;p&gt;对 metabase-quick 这个工具进行简单小结。&lt;/p&gt;
-&lt;p&gt;简单来说，metabase-quick 是个命令行工具，使用 Metabase 的 UI，写 SQL分析本地的 csv 文件，并进行可视化。功能与 Metabase 一样，设置上简化了。&lt;/p&gt;
-&lt;p&gt;肝了几天，熬了几个晚上，终于有了 v0.1 MVP 版本。&lt;/p&gt;
-&lt;p&gt;&lt;a href=&#34;https://github.com/XUJiahua/metabase-quick&#34;&gt;XUJiahua/metabase-quick&lt;/a&gt;&lt;/p&gt;
-&lt;h2 id=&#34;使用&#34;&gt;使用&lt;/h2&gt;
-&lt;p&gt;Releases 页面下载自己平台的二进制文件。&lt;/p&gt;
-&lt;p&gt;&lt;a href=&#34;https://github.com/XUJiahua/metabase-quick/releases&#34;&gt;Releases · XUJiahua/metabase-quick&lt;/a&gt;&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;$ ./metabase-quick-darwin dataset/iris.csv
+</code></pre><h2 id="分析">分析</h2>
+<p>在 CloudFormation 控制台查看详细日志。无法加入到 K8s 集群。然后没有进一步的信息了。</p>]]></description>
+</item>
+<item>
+    <title>metabase-quick 小结</title>
+    <link>https://xujiahua.github.io/posts/metabase-quick-71d491f9-972e-4305-9f93-1af388b5ca9b/</link>
+    <pubDate>Wed, 21 Apr 2021 18:03:00 &#43;0800</pubDate>
+    <author>Happy Coding</author>
+    <guid>https://xujiahua.github.io/posts/metabase-quick-71d491f9-972e-4305-9f93-1af388b5ca9b/</guid>
+    <description><![CDATA[<p>对 metabase-quick 这个工具进行简单小结。</p>
+<p>简单来说，metabase-quick 是个命令行工具，使用 Metabase 的 UI，写 SQL分析本地的 csv 文件，并进行可视化。功能与 Metabase 一样，设置上简化了。</p>
+<p>肝了几天，熬了几个晚上，终于有了 v0.1 MVP 版本。</p>
+<p><a href="https://github.com/XUJiahua/metabase-quick" target="_blank" rel="noopener noreffer ">XUJiahua/metabase-quick</a></p>
+<h2 id="使用">使用</h2>
+<p>Releases 页面下载自己平台的二进制文件。</p>
+<p><a href="https://github.com/XUJiahua/metabase-quick/releases" target="_blank" rel="noopener noreffer ">Releases · XUJiahua/metabase-quick</a></p>
+<pre tabindex="0"><code>$ ./metabase-quick-darwin dataset/iris.csv
 INFO: load file dataset/iris.csv in 0.00393911 seconds
 You can visit database engine via below command:
 mysql --host=127.0.0.1 --port=53045 default -u root
@@ -431,80 +61,19 @@ INFO: NewConnection: client 1
 open http://localhost:53046
 
 incoming query: select * from iris
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;会自动打开网页，点击 Native query。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/Untitled-7e93bf42-098c-414a-bf8f-18fc6c03da11.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
-&lt;p&gt;写SQL，可视化，都是 Metabase 的能力。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/Untitled-5062e806-329c-453f-a500-9da997fb3eaf.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
-&lt;h2 id=&#34;源起&#34;&gt;源起&lt;/h2&gt;
-&lt;p&gt;当时手头正好有份指标数据需要做对比分析，觉得可以用 Metabase 试试。但是 Metabase 还得安装到本地，进行一系列的设置：创建用户、加入一个数据源、导入数据。然后才是我想要做的数据分析！&lt;/p&gt;
-&lt;p&gt;我只是要分析一份没多大的 CSV 文件而已啊。我需要一个“用完就走”的工具。&lt;/p&gt;
-&lt;p&gt;惦记着 Metabase 的简洁美观，也没找到适合的分析 CSV 的工具，那就自己做一个吧。（可能 Excel 更合适，但一直没习惯使用。。。）&lt;/p&gt;
-&lt;p&gt;其他命令行工具最大的问题就是没有交互。&lt;/p&gt;
-&lt;h2 id=&#34;工作量分析&#34;&gt;工作量分析&lt;/h2&gt;
-&lt;p&gt;大体思路如下：&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;不需要考虑用户认证与权限体系。&lt;/li&gt;
-&lt;li&gt;复用部分前端。&lt;strong&gt;至于是哪部分，需要根据工作量及产出来权衡。&lt;/strong&gt;&lt;/li&gt;
-&lt;li&gt;使用 Go 重写部分后端 API。至于是哪些 API 重写，由前端复用程度决定。因为是命令行工具以及跨平台，使用 Go 语言。&lt;/li&gt;
-&lt;li&gt;Go 程序内置一个 SQL 引擎，比如 sqlite。&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;因为之前有过对 Metabase 魔改的经历，对 Metabase 代码是有一定熟悉度的。其实现最复杂也是对用户最有用的功能是 MBQL，在二维表格界面上交互式设置 filter、group by、新增字段等操作。简洁，交互性好。但是把这部分后端重写，特别是看到 Clojure 一团乱麻样的代码，有点头大。光看代码就得花很久。&lt;/p&gt;
-&lt;p&gt;经过调研，SQL editor 需要的后端 API 比较简单。因为是前端由用户直接写好 SQL，就没有必要在后端根据 MBQL 生成 SQL 了。SQL 直接发给 SQL 存储引擎，将数据结果交给前端即可。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/Untitled-5062e806-329c-453f-a500-9da997fb3eaf.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
-&lt;p&gt;修改过的前端代码使用以下 branch 维护。&lt;/p&gt;
-&lt;p&gt;&lt;a href=&#34;https://github.com/xujiahua/metabase/tree/metabase-quick&#34;&gt;XUJiahua/metabase&lt;/a&gt;&lt;/p&gt;
-&lt;p&gt;是基于 v0.38.4 这个 tag，进行了部分微调，主要是禁用了一些 API 的请求，更换了首页入口。&lt;/p&gt;
-&lt;p&gt;&lt;a href=&#34;https://github.com/metabase/metabase/compare/v0.38.4...XUJiahua:metabase-quick?expand=1&#34;&gt;metabase/metabase&lt;/a&gt;&lt;/p&gt;
-&lt;p&gt;React/Clojure 我不常用，但是通过查看前后端代码的 routes 和 middleware 代码，基本能找到关键之处。&lt;/p&gt;
-&lt;h2 id=&#34;优化空间&#34;&gt;优化空间&lt;/h2&gt;
-&lt;h3 id=&#34;支持更多的-metabase-api&#34;&gt;支持更多的 Metabase API&lt;/h3&gt;
-&lt;p&gt;这样可以更大范围地复用 Metabase 前端代码。可以使用到与原版 Metabase 一样的功能。&lt;/p&gt;
-&lt;p&gt;特别是 MBQL，交互式筛选数据的能力。&lt;/p&gt;
-&lt;p&gt;XRAY，根据一些常见的统计知识以及内置的分析策略，自动化生成 dashboard 的能力。&lt;/p&gt;
-&lt;h3 id=&#34;更多的存储引擎支持&#34;&gt;更多的存储引擎支持&lt;/h3&gt;
-&lt;p&gt;目前使用的是开源库的内存数据库。考虑到如果有大尺寸的 CSV 文件进行聚合操作，列式存储引擎的效果会更好。&lt;/p&gt;
-&lt;h3 id=&#34;缩小前端产物大小&#34;&gt;缩小前端产物大小&lt;/h3&gt;
-&lt;p&gt;可执行文件大小为 68M，其中 44M 是前端产物。&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;$ du -h frontend_client
-12K	frontend_client/inline_js
- 41M	frontend_client/app/dist
-792K	frontend_client/app/img
-656K	frontend_client/app/fonts/lato-v16-latin
-656K	frontend_client/app/fonts
-180K	frontend_client/app/assets/geojson
-136K	frontend_client/app/assets/img/alerts
-860K	frontend_client/app/assets/img
-1.0M	frontend_client/app/assets
- 43M	frontend_client/app
- 44M	frontend_client
-
-
-$ ls -lhS frontend_client/app/dist | head
-total 83960
--rw-r--r--  1 jiahua  staff    11M Apr 23 22:54 vendor.bundle.js.map
--rw-r--r--  1 jiahua  staff    10M Apr 23 22:54 vendor.bundle.js
--rw-r--r--  1 jiahua  staff   7.0M Apr 23 22:54 app-main.bundle.js
--rw-r--r--  1 jiahua  staff   4.4M Apr 23 22:54 app-main.bundle.js.map
--rw-r--r--  1 jiahua  staff   4.1M Apr 23 22:54 0.bundle.js.map
--rw-r--r--  1 jiahua  staff   3.4M Apr 23 22:54 0.bundle.js
--rw-r--r--  1 jiahua  staff   135K Apr 23 22:54 2.bundle.js.map
--rw-r--r--  1 jiahua  staff   110K Apr 23 22:54 2.bundle.js
--rw-r--r--  1 jiahua  staff   108K Apr 23 22:54 styles.bundle.css
-&lt;/code&gt;&lt;/pre&gt;- https://xujiahua.github.io/posts/metabase-quick-71d491f9-972e-4305-9f93-1af388b5ca9b/ - </description>
-        </item>
-    
-    
-    
-        <item>
-        <title>使用 redis-benchmark 压测自建的 kv 存储引擎</title>
-        <link>https://xujiahua.github.io/posts/redis-benchmark-kv-a3e78900-612a-4d04-b2aa-fc6f0908b431/</link>
-        <pubDate>Mon, 19 Apr 2021 10:24:00 +0800</pubDate>
-        
-        <guid>https://xujiahua.github.io/posts/redis-benchmark-kv-a3e78900-612a-4d04-b2aa-fc6f0908b431/</guid>
-        <description>Happy Coding https://xujiahua.github.io/posts/redis-benchmark-kv-a3e78900-612a-4d04-b2aa-fc6f0908b431/ -&lt;p&gt;给自建 kv 存储引擎做性能测试不难，使用 redis-benchmark 压测的目的是，测试结果能与 redis-server 的结果做横向对比。&lt;/p&gt;
-&lt;h2 id=&#34;redis-benchmark&#34;&gt;redis-benchmark&lt;/h2&gt;
-&lt;p&gt;redis-benchmark 支持如下指令的 benchmark。其中 GET/SET 指令可用于 kv 存储引擎的压测。&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;redis-benchmark -q
+</code></pre><p>会自动打开网页，点击 Native query。</p>
+<p></p>]]></description>
+</item>
+<item>
+    <title>使用 redis-benchmark 压测自建的 kv 存储引擎</title>
+    <link>https://xujiahua.github.io/posts/redis-benchmark-kv-a3e78900-612a-4d04-b2aa-fc6f0908b431/</link>
+    <pubDate>Mon, 19 Apr 2021 10:24:00 &#43;0800</pubDate>
+    <author>Happy Coding</author>
+    <guid>https://xujiahua.github.io/posts/redis-benchmark-kv-a3e78900-612a-4d04-b2aa-fc6f0908b431/</guid>
+    <description><![CDATA[<p>给自建 kv 存储引擎做性能测试不难，使用 redis-benchmark 压测的目的是，测试结果能与 redis-server 的结果做横向对比。</p>
+<h2 id="redis-benchmark">redis-benchmark</h2>
+<p>redis-benchmark 支持如下指令的 benchmark。其中 GET/SET 指令可用于 kv 存储引擎的压测。</p>
+<pre tabindex="0"><code>redis-benchmark -q
 PING_INLINE: 102669.41 requests per second, p50=0.247 msec
 PING_MBULK: 102880.66 requests per second, p50=0.231 msec
 SET: 101936.80 requests per second, p50=0.239 msec
@@ -525,659 +94,149 @@ LRANGE_300 (first 300 elements): 11193.19 requests per second, p50=2.135 msec
 LRANGE_500 (first 450 elements): 7649.94 requests per second, p50=3.159 msec
 LRANGE_600 (first 600 elements): 5884.78 requests per second, p50=4.103 msec
 MSET (10 keys): 93283.58 requests per second, p50=0.423 msec
-&lt;/code&gt;&lt;/pre&gt;&lt;h2 id=&#34;redcon&#34;&gt;redcon&lt;/h2&gt;
-&lt;p&gt;Redis compatible server framework for &lt;strong&gt;Go&lt;/strong&gt;.&lt;/p&gt;
-&lt;p&gt;&lt;a href=&#34;https://github.com/tidwall/redcon&#34;&gt;tidwall/redcon&lt;/a&gt;&lt;/p&gt;
-&lt;p&gt;这个库兼容了 redis-server 的协议。个人要做的是封装下对存储引擎的调用。&lt;/p&gt;
-&lt;p&gt;只要兼容了服务端协议，就可以使用 redis-benchmark, redis-cli 等工具去连接了。&lt;/p&gt;
-&lt;h2 id=&#34;测试结果&#34;&gt;测试结果&lt;/h2&gt;
-&lt;h3 id=&#34;redis-server&#34;&gt;redis-server&lt;/h3&gt;
-&lt;pre&gt;&lt;code&gt;$ redis-benchmark -t set,get --csv
-&amp;quot;test&amp;quot;,&amp;quot;rps&amp;quot;,&amp;quot;avg_latency_ms&amp;quot;,&amp;quot;min_latency_ms&amp;quot;,&amp;quot;p50_latency_ms&amp;quot;,&amp;quot;p95_latency_ms&amp;quot;,&amp;quot;p99_latency_ms&amp;quot;,&amp;quot;max_latency_ms&amp;quot;
-&amp;quot;SET&amp;quot;,&amp;quot;82850.04&amp;quot;,&amp;quot;0.322&amp;quot;,&amp;quot;0.144&amp;quot;,&amp;quot;0.295&amp;quot;,&amp;quot;0.455&amp;quot;,&amp;quot;0.655&amp;quot;,&amp;quot;1.999&amp;quot;
-&amp;quot;GET&amp;quot;,&amp;quot;82236.84&amp;quot;,&amp;quot;0.321&amp;quot;,&amp;quot;0.160&amp;quot;,&amp;quot;0.295&amp;quot;,&amp;quot;0.495&amp;quot;,&amp;quot;0.655&amp;quot;,&amp;quot;2.007&amp;quot;
-&lt;/code&gt;&lt;/pre&gt;&lt;h3 id=&#34;go-hashmap&#34;&gt;go hashmap&lt;/h3&gt;
-&lt;p&gt;内置的 map。&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;$ redis-benchmark -t set,get --csv
-&amp;quot;test&amp;quot;,&amp;quot;rps&amp;quot;,&amp;quot;avg_latency_ms&amp;quot;,&amp;quot;min_latency_ms&amp;quot;,&amp;quot;p50_latency_ms&amp;quot;,&amp;quot;p95_latency_ms&amp;quot;,&amp;quot;p99_latency_ms&amp;quot;,&amp;quot;max_latency_ms&amp;quot;
-&amp;quot;SET&amp;quot;,&amp;quot;73421.44&amp;quot;,&amp;quot;0.356&amp;quot;,&amp;quot;0.144&amp;quot;,&amp;quot;0.311&amp;quot;,&amp;quot;0.535&amp;quot;,&amp;quot;1.111&amp;quot;,&amp;quot;2.511&amp;quot;
-&amp;quot;GET&amp;quot;,&amp;quot;79681.27&amp;quot;,&amp;quot;0.329&amp;quot;,&amp;quot;0.152&amp;quot;,&amp;quot;0.303&amp;quot;,&amp;quot;0.463&amp;quot;,&amp;quot;0.575&amp;quot;,&amp;quot;0.935&amp;quot;
-&lt;/code&gt;&lt;/pre&gt;&lt;h3 id=&#34;goleveldb&#34;&gt;goleveldb&lt;/h3&gt;
-&lt;p&gt;&lt;a href=&#34;https://github.com/syndtr/goleveldb&#34;&gt;syndtr/goleveldb&lt;/a&gt;&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;$ redis-benchmark -t set,get --csv
-&amp;quot;test&amp;quot;,&amp;quot;rps&amp;quot;,&amp;quot;avg_latency_ms&amp;quot;,&amp;quot;min_latency_ms&amp;quot;,&amp;quot;p50_latency_ms&amp;quot;,&amp;quot;p95_latency_ms&amp;quot;,&amp;quot;p99_latency_ms&amp;quot;,&amp;quot;max_latency_ms&amp;quot;
-&amp;quot;SET&amp;quot;,&amp;quot;57636.89&amp;quot;,&amp;quot;0.475&amp;quot;,&amp;quot;0.096&amp;quot;,&amp;quot;0.439&amp;quot;,&amp;quot;0.679&amp;quot;,&amp;quot;1.007&amp;quot;,&amp;quot;3.687&amp;quot;
-&amp;quot;GET&amp;quot;,&amp;quot;79302.14&amp;quot;,&amp;quot;0.333&amp;quot;,&amp;quot;0.152&amp;quot;,&amp;quot;0.303&amp;quot;,&amp;quot;0.471&amp;quot;,&amp;quot;0.687&amp;quot;,”2.711&amp;quot;
-&lt;/code&gt;&lt;/pre&gt;&lt;h3 id=&#34;bitcask自制土炮版&#34;&gt;bitcask（自制土炮版）&lt;/h3&gt;
-&lt;p&gt;性能差了一大截。&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;$ redis-benchmark -t set,get --csv
-&amp;quot;test&amp;quot;,&amp;quot;rps&amp;quot;,&amp;quot;avg_latency_ms&amp;quot;,&amp;quot;min_latency_ms&amp;quot;,&amp;quot;p50_latency_ms&amp;quot;,&amp;quot;p95_latency_ms&amp;quot;,&amp;quot;p99_latency_ms&amp;quot;,&amp;quot;max_latency_ms&amp;quot;
-&amp;quot;SET&amp;quot;,&amp;quot;44662.79&amp;quot;,&amp;quot;1.033&amp;quot;,&amp;quot;0.040&amp;quot;,&amp;quot;1.167&amp;quot;,&amp;quot;1.535&amp;quot;,&amp;quot;2.367&amp;quot;,&amp;quot;36.095&amp;quot;
-&amp;quot;GET&amp;quot;,&amp;quot;52137.64&amp;quot;,&amp;quot;0.523&amp;quot;,&amp;quot;0.088&amp;quot;,&amp;quot;0.503&amp;quot;,&amp;quot;0.687&amp;quot;,&amp;quot;1.199&amp;quot;,&amp;quot;6.327&amp;quot;
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;可视化对比 p99_latency_ms 这个指标：&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/Untitled-47e16126-1acc-4d64-ab5a-b5ee281fa1cb.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
-&lt;h2 id=&#34;总结&#34;&gt;总结&lt;/h2&gt;
-&lt;p&gt;使用 redis-benchmark 作为性能测试框架。在相同的测试用例下，通过对照比较其他存储引擎的测试结果，了解自己需要进步的空间。&lt;/p&gt;
-- https://xujiahua.github.io/posts/redis-benchmark-kv-a3e78900-612a-4d04-b2aa-fc6f0908b431/ - </description>
-        </item>
-    
-    
-    
-        <item>
-        <title>从 Notion 导出 markdown 到 hugo 项目</title>
-        <link>https://xujiahua.github.io/posts/notion-markdown-hugo-78139407-85c5-4a75-b288-b54d5c3df34b/</link>
-        <pubDate>Mon, 12 Apr 2021 17:25:00 +0800</pubDate>
-        
-        <guid>https://xujiahua.github.io/posts/notion-markdown-hugo-78139407-85c5-4a75-b288-b54d5c3df34b/</guid>
-        <description>Happy Coding https://xujiahua.github.io/posts/notion-markdown-hugo-78139407-85c5-4a75-b288-b54d5c3df34b/ -&lt;h2 id=&#34;目的&#34;&gt;目的&lt;/h2&gt;
-&lt;p&gt;好久没更新博客了，最近半年使用 Notion，体验很棒。&lt;/p&gt;
-&lt;p&gt;之前写博客的过程：使用 Typora 编辑 markdown，使用 Hugo 生成静态页面，上传到 github 使用 github pages serving。参考：&lt;/p&gt;
-&lt;p&gt;&lt;a href=&#34;https://xujiahua.github.io/posts/20200310-github-pages-restart/&#34;&gt;Github pages重新开始：使用Hugo、Typora&lt;/a&gt;&lt;/p&gt;
-&lt;p&gt;怎么把我 Notion 中的文章同步到我的博客呢。这是本文目的。&lt;/p&gt;
-&lt;p&gt;主要是写了一个 notion-mk 的程序将 notion 文章导出到 hugo 工作目录。后面的工作与之前保持一致。&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;notion -- notion-mk(todo) --&amp;gt; hugo directory 
-																		-- hugo generate --&amp;gt; static html/js/css
-&lt;/code&gt;&lt;/pre&gt;&lt;h2 id=&#34;wip&#34;&gt;WIP&lt;/h2&gt;
-&lt;p&gt;代码如下：&lt;/p&gt;
-&lt;p&gt;&lt;a href=&#34;https://github.com/XUJiahua/notion-md&#34;&gt;XUJiahua/notion-md&lt;/a&gt;&lt;/p&gt;
-&lt;h3 id=&#34;功能&#34;&gt;功能&lt;/h3&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;input checked=&#34;&#34; disabled=&#34;&#34; type=&#34;checkbox&#34;&gt; Download images&lt;/li&gt;
-&lt;li&gt;&lt;input checked=&#34;&#34; disabled=&#34;&#34; type=&#34;checkbox&#34;&gt; Notion extract to markdown&lt;/li&gt;
-&lt;li&gt;&lt;input checked=&#34;&#34; disabled=&#34;&#34; type=&#34;checkbox&#34;&gt; markdown hugo compatiable&lt;/li&gt;
-&lt;li&gt;&lt;input checked=&#34;&#34; disabled=&#34;&#34; type=&#34;checkbox&#34;&gt; image location?&lt;/li&gt;
-&lt;li&gt;&lt;input checked=&#34;&#34; disabled=&#34;&#34; type=&#34;checkbox&#34;&gt; remove title from markdown, now #&amp;hellip;&lt;/li&gt;
-&lt;li&gt;&lt;input checked=&#34;&#34; disabled=&#34;&#34; type=&#34;checkbox&#34;&gt; support category&lt;/li&gt;
-&lt;li&gt;&lt;input checked=&#34;&#34; disabled=&#34;&#34; type=&#34;checkbox&#34;&gt; support tag&lt;/li&gt;
-&lt;li&gt;&lt;input disabled=&#34;&#34; type=&#34;checkbox&#34;&gt; table of content at the beginning&lt;/li&gt;
-&lt;/ul&gt;
-&lt;h3 id=&#34;使用&#34;&gt;使用&lt;/h3&gt;
-&lt;p&gt;将要发布的文档添加到这个 list 页面&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/Untitled-02741d53-086d-436b-aac8-87e41738754d.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
-&lt;p&gt;触发命令&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;notion-md -i cab2ea6d530341769e5dc9a269a1097e -t ${TOKEN} -o /Users/jiahua/hugo-blogger/content/posts -p ../../images/ -v
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;其中 TOKEN 获取位置如下：&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/Untitled-eb9ff680-4294-4e6f-9e98-9874bb0b7498.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
-&lt;p&gt;生成 markdown 和图像文件到对应的目录：&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;$ git status
-On branch master
-Your branch is ahead of &#39;origin/master&#39; by 1 commit.
-  (use &amp;quot;git push&amp;quot; to publish your local commits)
-
-Untracked files:
-  (use &amp;quot;git add &amp;lt;file&amp;gt;...&amp;quot; to include in what will be committed)
-	content/posts/Notion-markdown-hugo-78139407-85c5-4a75-b288-b54d5c3df34b.md
-	content/posts/redis-benchmark-kv-a3e78900-612a-4d04-b2aa-fc6f0908b431.md
-	static/images/Untitled-02741d53-086d-436b-aac8-87e41738754d.png
-	static/images/Untitled-eb9ff680-4294-4e6f-9e98-9874bb0b7498.png
-
-nothing added to commit but untracked files present (use &amp;quot;git add&amp;quot; to track)
-&lt;/code&gt;&lt;/pre&gt;&lt;h3 id=&#34;ci&#34;&gt;CI&lt;/h3&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;input disabled=&#34;&#34; type=&#34;checkbox&#34;&gt; Github Action (notion to hugo markdown)&lt;/li&gt;
-&lt;li&gt;&lt;input disabled=&#34;&#34; type=&#34;checkbox&#34;&gt; Github Action (hugo to static page)&lt;/li&gt;
-&lt;/ul&gt;
-&lt;h2 id=&#34;参考资料&#34;&gt;参考资料&lt;/h2&gt;
-&lt;h3 id=&#34;sdk&#34;&gt;SDK&lt;/h3&gt;
-&lt;p&gt;Notion 官方还未提供 API，有好事者逆向抓包后，准备了非官方 API 库。&lt;/p&gt;
-&lt;p&gt;我不需要从抓包开始做了。站在前人的肩膀上。&lt;/p&gt;
-&lt;p&gt;Go&lt;/p&gt;
-&lt;p&gt;&lt;a href=&#34;https://github.com/kjk/notionapi&#34;&gt;kjk/notionapi&lt;/a&gt;&lt;/p&gt;
-&lt;p&gt;Python&lt;/p&gt;
-&lt;p&gt;&lt;a href=&#34;https://github.com/jamalex/notion-py&#34;&gt;jamalex/notion-py&lt;/a&gt;&lt;/p&gt;
-&lt;h3 id=&#34;参考教程&#34;&gt;参考教程&lt;/h3&gt;
-&lt;p&gt;&lt;a href=&#34;https://arnaudvalensi.github.io/blog/making-a-blog-using-notion-gatsby-and-github-pages/&#34;&gt;Making a Blog Using Notion, Gatsby, and Github Pages | Arnaud Valensi&lt;/a&gt;&lt;/p&gt;
-&lt;p&gt;&lt;a href=&#34;https://presstige.io/p/Using-Notion-API-Go-client-2567fcfa8f7a4ed4bdf6f6ec9298d34a&#34;&gt;Using Notion API Go client&lt;/a&gt;&lt;/p&gt;
-- https://xujiahua.github.io/posts/notion-markdown-hugo-78139407-85c5-4a75-b288-b54d5c3df34b/ - </description>
-        </item>
-    
-    
-    
-        <item>
-        <title>kubectl 怎么念</title>
-        <link>https://xujiahua.github.io/posts/kubectl-4f270b11-8ad4-47c5-b20c-6f340f5ccad1/</link>
-        <pubDate>Tue, 09 Mar 2021 19:41:00 +0800</pubDate>
-        
-        <guid>https://xujiahua.github.io/posts/kubectl-4f270b11-8ad4-47c5-b20c-6f340f5ccad1/</guid>
-        <description>Happy Coding https://xujiahua.github.io/posts/kubectl-4f270b11-8ad4-47c5-b20c-6f340f5ccad1/ -&lt;p&gt;念法很多。就选这个吧。我也一直这么念的。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/20210309_194055-35576ceb-cf98-47bb-9cf1-e18f61826b22.jpg&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
-- https://xujiahua.github.io/posts/kubectl-4f270b11-8ad4-47c5-b20c-6f340f5ccad1/ - </description>
-        </item>
-    
-    
-    
-        <item>
-        <title>pandasql库解析</title>
-        <link>https://xujiahua.github.io/posts/20200916-pandas-sql/</link>
-        <pubDate>Wed, 16 Sep 2020 10:48:11 +0800</pubDate>
-        
-        <guid>https://xujiahua.github.io/posts/20200916-pandas-sql/</guid>
-        <description>Happy Coding https://xujiahua.github.io/posts/20200916-pandas-sql/ -&lt;p&gt;对 Pandas 库没有原生 SQL 支持表示遗憾，今天看到这么一个库 &lt;a href=&#34;https://github.com/yhat/pandasql&#34;&gt;https://github.com/yhat/pandasql&lt;/a&gt; 。&lt;/p&gt;
-&lt;p&gt;它的思路比较简单粗暴，先把 pandas Dataframe 存储到一个关系型数据库（sqlite/postgresql），最后 SQL query 的结果其实是查询关系型数据库返回的结果，封装成 Dataframe 来呈现。其中数据库操作使用 sqlalchemy 这个库。&lt;/p&gt;
-&lt;p&gt;学到的知识点：locals()，globals() 这两个方法。&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;The globals() method returns the dictionary of the current global symbol table. &lt;a href=&#34;https://www.programiz.com/python-programming/methods/built-in/globals&#34;&gt;https://www.programiz.com/python-programming/methods/built-in/globals&lt;/a&gt;&lt;/p&gt;
-&lt;p&gt;The locals() method updates and returns a dictionary of the current local symbol table. &lt;a href=&#34;https://www.programiz.com/python-programming/methods/built-in/locals&#34;&gt;https://www.programiz.com/python-programming/methods/built-in/locals&lt;/a&gt;&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;p&gt;如下代码，meat 是一个 Dataframe 变量，为何 SQL query 里能直接引用这个变量。&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;$ python
-&amp;gt;&amp;gt;&amp;gt; from pandasql import sqldf, load_meat, load_births
-&amp;gt;&amp;gt;&amp;gt; pysqldf = lambda q: sqldf(q, globals())
-&amp;gt;&amp;gt;&amp;gt; meat = load_meat()
-&amp;gt;&amp;gt;&amp;gt; print pysqldf(&amp;quot;SELECT * FROM meat LIMIT 10;&amp;quot;).head()
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;因为可以从 globals() 里通过符号 meat 拿到这个变量。&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;$ python
-&amp;gt;&amp;gt;&amp;gt; a=4
-&amp;gt;&amp;gt;&amp;gt; globals()[&#39;a&#39;]
-4
-&lt;/code&gt;&lt;/pre&gt;- https://xujiahua.github.io/posts/20200916-pandas-sql/ - </description>
-        </item>
-    
-    
-    
-        <item>
-        <title>Docker/Kubernetes 系列目录</title>
-        <link>https://xujiahua.github.io/posts/20200909-docker-series/</link>
-        <pubDate>Wed, 09 Sep 2020 09:52:37 +0800</pubDate>
-        
-        <guid>https://xujiahua.github.io/posts/20200909-docker-series/</guid>
-        <description>Happy Coding https://xujiahua.github.io/posts/20200909-docker-series/ -&lt;p&gt;不定时更新中。&lt;/p&gt;
-&lt;h2 id=&#34;docker&#34;&gt;Docker&lt;/h2&gt;
-&lt;h3 id=&#34;基础&#34;&gt;基础&lt;/h3&gt;
-&lt;ol&gt;
-&lt;li&gt;&lt;a href=&#34;https://docs.docker.com/get-started/&#34;&gt;Docker 入门&lt;/a&gt;，官方 get started 边看边实践&lt;/li&gt;
-&lt;li&gt;Docker 如何改变软件开发协作&lt;/li&gt;
-&lt;li&gt;Dockerfile 最佳实践&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;https://xujiahua.github.io/posts/20200321-docker-network/&#34;&gt;Docker Network小结&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;https://xujiahua.github.io/posts/20200403-docker-logging/&#34;&gt;Docker 日志驱动小结&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;https://xujiahua.github.io/posts/20200402-use-fluentd/&#34;&gt;使用 fluentd 收集 Docker 日志&lt;/a&gt;&lt;/li&gt;
-&lt;/ol&gt;
-&lt;h3 id=&#34;进阶&#34;&gt;进阶&lt;/h3&gt;
-&lt;ol&gt;
-&lt;li&gt;&lt;a href=&#34;https://xujiahua.github.io/posts/20200901-linux-namespace/&#34;&gt;Linux namespace 介绍&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;https://xujiahua.github.io/posts/20200907-docker-bridge-net-sim/&#34;&gt;使用 ip/iptables 命令模拟 Docker bridge 网络&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;Linux cgroup 介绍&lt;/li&gt;
-&lt;li&gt;Docker 中 namespace/cgroup 的体现&lt;/li&gt;
-&lt;li&gt;Union file system&lt;/li&gt;
-&lt;li&gt;容器网络模型标准 Container Network Model (CNM) 与其实现 libnetwork &lt;a href=&#34;https://github.com/moby/libnetwork/blob/master/docs/design.md&#34;&gt;https://github.com/moby/libnetwork/blob/master/docs/design.md&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;CNI 标准，不再使用 docker 自带的网络驱动，docker run &amp;ndash;net=none&lt;/li&gt;
-&lt;li&gt;libcontainer/containerd/runc&lt;/li&gt;
-&lt;/ol&gt;
-&lt;h2 id=&#34;kubernetes&#34;&gt;Kubernetes&lt;/h2&gt;
-&lt;h3 id=&#34;基础-1&#34;&gt;基础&lt;/h3&gt;
-&lt;ol&gt;
-&lt;li&gt;k8s 虚拟机体验 &lt;a href=&#34;https://github.com/XUJiahua/k8s-try&#34;&gt;https://github.com/XUJiahua/k8s-try&lt;/a&gt;&lt;/li&gt;
-&lt;/ol&gt;
-&lt;h2 id=&#34;参考链接&#34;&gt;参考链接&lt;/h2&gt;
-&lt;ol&gt;
-&lt;li&gt;官方文档 &lt;a href=&#34;https://docs.docker.com/&#34;&gt;https://docs.docker.com/&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;Docker — 从入门到实践 &lt;a href=&#34;https://www.yuque.com/grasilife/docker/readme&#34;&gt;https://www.yuque.com/grasilife/docker/readme&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;Golang UK Conf. 2016 - Liz Rice - What is a container, really? Let&amp;rsquo;s write one in Go from scratch &lt;a href=&#34;https://www.youtube.com/watch?v=HPuvDm8IC-4&#34;&gt;https://www.youtube.com/watch?v=HPuvDm8IC-4&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;Linux containers from scratch - diyC &lt;a href=&#34;https://wvi.cz/diyC/&#34;&gt;https://wvi.cz/diyC/&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;Kubernetes for Full-Stack Developers &lt;a href=&#34;https://www.digitalocean.com/community/curriculums/kubernetes-for-full-stack-developers&#34;&gt;https://www.digitalocean.com/community/curriculums/kubernetes-for-full-stack-developers&lt;/a&gt;&lt;/li&gt;
-&lt;/ol&gt;
-&lt;h2 id=&#34;参考书籍&#34;&gt;参考书籍&lt;/h2&gt;
-&lt;ol&gt;
-&lt;li&gt;Docker技术入门与实战（第3版）（2018）&lt;/li&gt;
-&lt;li&gt;Docker 进阶与实战（2016） - 华为 Docker 实践小组&lt;/li&gt;
-&lt;li&gt;Kubernetes网络权威指南：基础、原理与实践 （2019）&lt;/li&gt;
-&lt;/ol&gt;
-- https://xujiahua.github.io/posts/20200909-docker-series/ - </description>
-        </item>
-    
-    
-    
-        <item>
-        <title>使用 ip/iptables 命令模拟 Docker bridge 网络</title>
-        <link>https://xujiahua.github.io/posts/20200907-docker-bridge-net-sim/</link>
-        <pubDate>Mon, 07 Sep 2020 11:35:39 +0800</pubDate>
-        
-        <guid>https://xujiahua.github.io/posts/20200907-docker-bridge-net-sim/</guid>
-        <description>Happy Coding https://xujiahua.github.io/posts/20200907-docker-bridge-net-sim/ -&lt;p&gt;如&lt;a href=&#34;https://xujiahua.github.io/posts/20200901-linux-namespace/&#34;&gt;前文&lt;/a&gt;介绍，Linux Network namespace 用于给进程创建一个新的网络栈，路由、防火墙规则、网络设备。&lt;code&gt;man ip-netns&lt;/code&gt;：&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;A network namespace is logically another copy of the network stack, with its own routes, firewall rules, and network devices.&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;p&gt;作为对 Network namespace 的实践，本文使用 ip/iptables 等命令模拟下 Docker bridge 网络，并会接触到 Network namespace，veth pair，Linux bridge，NAT 等概念。&lt;/p&gt;
-&lt;h2 id=&#34;实验&#34;&gt;实验&lt;/h2&gt;
-&lt;h3 id=&#34;使用-ip命令操作-network-namespace&#34;&gt;使用 &lt;code&gt;ip&lt;/code&gt;命令操作 Network namespace&lt;/h3&gt;
-&lt;p&gt;ip netns 子命令用于操作 Network namespace。使用 add 子命令，创建一个 Network namespace。&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;# ip netns add netns1
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;查看 netns1 的网络设备（network device）。使用 exec 子命令，后接 netns1 和要执行的命令。默认有一个 DOWN 状态的 lo 设备。&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;# ip netns exec netns1 ip addr
-1: lo: &amp;lt;LOOPBACK&amp;gt; mtu 65536 qdisc noop state DOWN group default qlen 1000
-    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;启动 lo 设备。&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;# ip netns exec netns1 ip link set dev lo up
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;ping 127.0.0.1。&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;# ip netns exec netns1 ip addr
-1: lo: &amp;lt;LOOPBACK,UP,LOWER_UP&amp;gt; mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
-    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
-    inet 127.0.0.1/8 scope host lo
-       valid_lft forever preferred_lft forever
-    inet6 ::1/128 scope host
-       valid_lft forever preferred_lft forever
-
-# ip netns exec netns1 ping 127.0.0.1
-PING 127.0.0.1 (127.0.0.1) 56(84) bytes of data.
-64 bytes from 127.0.0.1: icmp_seq=1 ttl=64 time=0.013 ms
-&lt;/code&gt;&lt;/pre&gt;&lt;h3 id=&#34;通过-veth-pair两个-network-namespace-之间点对点网络&#34;&gt;通过 veth pair，两个 Network namespace 之间点对点网络&lt;/h3&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/linuxswitch-veth.png&#34; alt=&#34;veth pair&#34;&gt;&lt;/p&gt;
-&lt;p&gt;&lt;a href=&#34;https://www.opencloudblog.com/?p=66&#34;&gt;https://www.opencloudblog.com/?p=66&lt;/a&gt;&lt;/p&gt;
-&lt;p&gt;veth（virtual ethernet） 是虚拟网络设备（没有硬件，软件实现），veth 设备总是成对创建，数据包从 veth pair 的一头进入，从 veth pair 的另一头出。&lt;code&gt;man veth&lt;/code&gt;：&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;The veth devices are virtual Ethernet devices.  They can act as tunnels between network namespaces to create a bridge to a physical network device in another namespace, but can also be used as standalone network devices.&lt;/p&gt;
-&lt;p&gt;veth devices are always created in interconnected pairs.&lt;/p&gt;
-&lt;p&gt;Packets transmitted on one device in the pair are immediately received on the other device.&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;p&gt;通信方式如下图：&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/virtual-device-veth-1.png&#34; alt=&#34;img&#34;&gt;&lt;/p&gt;
-&lt;p&gt;&lt;a href=&#34;https://www.fir3net.com/Networking/Terms-and-Concepts/virtual-networking-devices-tun-tap-and-veth-pairs-explained.html&#34;&gt;https://www.fir3net.com/Networking/Terms-and-Concepts/virtual-networking-devices-tun-tap-and-veth-pairs-explained.html&lt;/a&gt;&lt;/p&gt;
-&lt;p&gt;创建 veth pair。默认存在于系统默认的 Network namespace。&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;# ip link add veth0 type veth peer name veth1
-# ip link show
-...
-35: veth1@veth0: &amp;lt;BROADCAST,MULTICAST,M-DOWN&amp;gt; mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 1000
-    link/ether a2:6d:54:66:9d:24 brd ff:ff:ff:ff:ff:ff
-36: veth0@veth1: &amp;lt;BROADCAST,MULTICAST,M-DOWN&amp;gt; mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 1000
-    link/ether 12:73:b7:aa:c6:10 brd ff:ff:ff:ff:ff:ff
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;可分配到其他 Network namespace。&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;# ip link set veth1 netns netns1
-# ip link show
-...
-36: veth0@if35: &amp;lt;BROADCAST,MULTICAST&amp;gt; mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 1000
-    link/ether 12:73:b7:aa:c6:10 brd ff:ff:ff:ff:ff:ff link-netnsid 1
-
-# ip netns exec netns1 ip link show
-1: lo: &amp;lt;LOOPBACK,UP,LOWER_UP&amp;gt; mtu 65536 qdisc noqueue state UNKNOWN mode DEFAULT group default qlen 1000
-    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
-35: veth1@if36: &amp;lt;BROADCAST,MULTICAST&amp;gt; mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 1000
-    link/ether a2:6d:54:66:9d:24 brd ff:ff:ff:ff:ff:ff link-netnsid 0
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;启动网络设备分配 IP 地址和网关。就可以通过 IP 互 ping 了。&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;# ip link set veth0 up
-# ip address add 10.1.1.1/24 dev veth0
-# ip netns exec netns1 ip link set veth1 up
-# ip netns exec netns1 ip address add 10.1.1.2/24 dev veth1
-
-# ip addr
-...
-36: veth0@if35: &amp;lt;BROADCAST,MULTICAST,UP,LOWER_UP&amp;gt; mtu 1500 qdisc noqueue state UP group default qlen 1000
-    link/ether 12:73:b7:aa:c6:10 brd ff:ff:ff:ff:ff:ff link-netnsid 1
-    inet 10.1.1.1/24 scope global veth0
-       valid_lft forever preferred_lft forever
-    inet6 fe80::1073:b7ff:feaa:c610/64 scope link
-       valid_lft forever preferred_lft forever
-
-# ip netns exec netns1 ip addr
-...
-35: veth1@if36: &amp;lt;BROADCAST,MULTICAST,UP,LOWER_UP&amp;gt; mtu 1500 qdisc noqueue state UP group default qlen 1000
-    link/ether a2:6d:54:66:9d:24 brd ff:ff:ff:ff:ff:ff link-netnsid 0
-    inet 10.1.1.2/24 scope global veth1
-       valid_lft forever preferred_lft forever
-    inet6 fe80::a06d:54ff:fe66:9d24/64 scope link
-       valid_lft forever preferred_lft forever
-       
-# ping 10.1.1.2
-PING 10.1.1.2 (10.1.1.2) 56(84) bytes of data.
-64 bytes from 10.1.1.2: icmp_seq=1 ttl=64 time=0.042 ms
-...
-
-# ip netns exec netns1 ping 10.1.1.1
-PING 10.1.1.1 (10.1.1.1) 56(84) bytes of data.
-64 bytes from 10.1.1.1: icmp_seq=1 ttl=64 time=0.058 ms
-...
-&lt;/code&gt;&lt;/pre&gt;&lt;h3 id=&#34;通过-linux-bridge多个-network-namespace-之间局域网络&#34;&gt;通过 Linux bridge，多个 Network namespace 之间局域网络&lt;/h3&gt;
-&lt;p&gt;veth pair 只能处理两个 Network namespace 之间的通信。Linux bridge 用于解决多对多通信的问题，这是 Docker 单机的组网方式。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/bridge_network-9634835.jpg&#34; alt=&#34;docker bridge network&#34;&gt;&lt;/p&gt;
-&lt;p&gt;&lt;a href=&#34;https://godleon.github.io/blog/Docker/docker-network-bridge/&#34;&gt;https://godleon.github.io/blog/Docker/docker-network-bridge/&lt;/a&gt;&lt;/p&gt;
-&lt;p&gt;我在 Linux 主机上运行两个 Docker 容器，果然在默认 Network namespace 下有两个 veth 虚拟网络设备，并与 docker0 这个 bridge 连接。&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;# ip link show | grep veth
-6: vethef984be@if5: &amp;lt;BROADCAST,MULTICAST,UP,LOWER_UP&amp;gt; mtu 1500 qdisc noqueue master docker0 state UP mode DEFAULT group default
-39: vetha6c50b1@if38: &amp;lt;BROADCAST,MULTICAST,UP,LOWER_UP&amp;gt; mtu 1500 qdisc noqueue master docker0 state UP mode DEFAULT group default
-
-# brctl show
-bridge name	bridge id		STP enabled	interfaces
-docker0		8000.0242bd4f236d	no		vetha6c50b1
-							vethef984be
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Linux bridge 相当于一个软件虚拟的网络交换机，工作在链路层。多个端口（如下图）连上多个网络设备，数据从任何端口（网络设备）进来，根据 MAC 地址决定数据的出口端口（网络设备）。效果上，交换机是把多个所属一个子网网段的物理网络设备组成一个局域网。Linux bridge，把多个所属一个子网网段的虚拟网络设备组成一个局域网。&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;A bridge is a piece of software used to unite two or more network segments. A bridge behaves like a virtual network switch, working transparently (the other machines do not need to know about its existence). Any real devices (e.g. &lt;code&gt;eth0&lt;/code&gt;) and virtual devices (e.g. &lt;code&gt;tap0&lt;/code&gt;) can be connected to it.&lt;/p&gt;
-&lt;p&gt;&lt;a href=&#34;https://wiki.archlinux.org/index.php/Network_bridge&#34;&gt;https://wiki.archlinux.org/index.php/Network_bridge&lt;/a&gt;&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;blockquote&gt;
-&lt;p&gt;A &lt;strong&gt;network switch&lt;/strong&gt; (also called &lt;strong&gt;switching hub&lt;/strong&gt;, &lt;strong&gt;bridging hub&lt;/strong&gt;, and by the &lt;a href=&#34;https://en.wikipedia.org/wiki/IEEE&#34;&gt;IEEE&lt;/a&gt; &lt;strong&gt;MAC bridge&lt;/strong&gt;)[&lt;a href=&#34;https://en.wikipedia.org/wiki/Network_switch#cite_note-1&#34;&gt;1]&lt;/a&gt; is &lt;a href=&#34;https://en.wikipedia.org/wiki/Networking_hardware&#34;&gt;networking hardware&lt;/a&gt; that connects devices on a &lt;a href=&#34;https://en.wikipedia.org/wiki/Computer_network&#34;&gt;computer network&lt;/a&gt; by using &lt;a href=&#34;https://en.wikipedia.org/wiki/Packet_switching&#34;&gt;packet switching&lt;/a&gt; to receive and forward data to the destination device.&lt;/p&gt;
-&lt;p&gt;A network switch is a multiport &lt;a href=&#34;https://en.wikipedia.org/wiki/Network_bridge&#34;&gt;network bridge&lt;/a&gt; that uses &lt;a href=&#34;https://en.wikipedia.org/wiki/MAC_address&#34;&gt;MAC addresses&lt;/a&gt; to forward data at the &lt;a href=&#34;https://en.wikipedia.org/wiki/Data_link_layer&#34;&gt;data link layer&lt;/a&gt; (layer 2) of the &lt;a href=&#34;https://en.wikipedia.org/wiki/OSI_model&#34;&gt;OSI model&lt;/a&gt;.&lt;/p&gt;
-&lt;p&gt;&lt;a href=&#34;https://en.wikipedia.org/wiki/Network_switch&#34;&gt;https://en.wikipedia.org/wiki/Network_switch&lt;/a&gt;&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/370px-2550T-PWR-Front.jpg&#34; alt=&#34;img&#34;&gt;&lt;/p&gt;
-&lt;p&gt;动手使用 Linux bridge 和 veth pair 组成一个容器网络。创建网络设备，2 x veth pair，1 x bridge。网络设备的连接状态：veth0 &amp;lt;-&amp;gt; veth1，veth2 &amp;lt;-&amp;gt; veth3，br0。&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;# ip link add veth0 type veth peer name veth1
-# ip link add veth2 type veth peer name veth3
-# ip link add br0 type bridge
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;veth0/veth2 连上 br0，veth0/veth2 沦为「网线」。 网络设备的连接状态：veth3 &amp;lt;-&amp;gt; veth2 &amp;lt;-&amp;gt; br0 &amp;lt;-&amp;gt; veth0 &amp;lt;-&amp;gt; veth1。&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;# ip link set veth0 master br0
-# ip link set veth2 master br0
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;创建两个容器网络，veth1/veth3 分别放入容器网络。&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;# ip netns add netns1
-# ip netns add netns2
-
-# ip link set veth1 netns netns1
-# ip link set veth3 netns netns2
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;启动网络设备。&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;# ip link set veth0 up
-# ip netns exec netns1 ip link set veth1 up
-# ip link set veth2 up
-# ip netns exec netns2 ip link set veth3 up
-# ip link set br0 up
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;分别为主机 br0，容器 veth1，容器 veth3 设置同一网段的 IP。&lt;/p&gt;
-&lt;p&gt;网络设备的连接状态：veth3（10.1.1.3） &amp;lt;-&amp;gt; veth2 &amp;lt;-&amp;gt; br0（10.1.1.1） &amp;lt;-&amp;gt; veth0 &amp;lt;-&amp;gt; veth1（10.1.1.2）。&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;# ip address add 10.1.1.1/24 dev br0
-# ip netns exec netns1 ip address add 10.1.1.2/24 dev veth1
-# ip netns exec netns2 ip address add 10.1.1.3/24 dev veth3
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;网络状态如下。&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;# ip netns exec netns2 ip addr
-...
-6: veth3@if7: &amp;lt;BROADCAST,MULTICAST,UP,LOWER_UP&amp;gt; mtu 1500 qdisc noqueue state UP group default qlen 1000
-    link/ether 62:d1:04:0b:cc:3d brd ff:ff:ff:ff:ff:ff link-netnsid 0
-    inet 10.1.1.3/24 scope global veth3
-       valid_lft forever preferred_lft forever
-    inet6 fe80::60d1:4ff:fe0b:cc3d/64 scope link
-       valid_lft forever preferred_lft forever
-
-# ip netns exec netns1 ip addr
-...
-3: veth1@if4: &amp;lt;BROADCAST,MULTICAST,UP,LOWER_UP&amp;gt; mtu 1500 qdisc noqueue state UP group default qlen 1000
-    link/ether 32:9c:7e:1b:38:ac brd ff:ff:ff:ff:ff:ff link-netnsid 0
-    inet 10.1.1.2/24 scope global veth1
-       valid_lft forever preferred_lft forever
-    inet6 fe80::309c:7eff:fe1b:38ac/64 scope link
-       valid_lft forever preferred_lft forever
-
-# ip addr
-...
-4: veth0@if3: &amp;lt;BROADCAST,MULTICAST,UP,LOWER_UP&amp;gt; mtu 1500 qdisc noqueue master br0 state UP group default qlen 1000
-    link/ether ee:5f:6c:c2:b2:e8 brd ff:ff:ff:ff:ff:ff link-netnsid 0
-    inet6 fe80::ec5f:6cff:fec2:b2e8/64 scope link
-       valid_lft forever preferred_lft forever
-5: br0: &amp;lt;BROADCAST,MULTICAST,UP,LOWER_UP&amp;gt; mtu 1500 qdisc noqueue state UP group default qlen 1000
-    link/ether 72:a4:b4:52:bf:6d brd ff:ff:ff:ff:ff:ff
-    inet 10.1.1.1/24 scope global br0
-       valid_lft forever preferred_lft forever
-    inet6 fe80::d0e2:fff:fe05:da37/64 scope link
-       valid_lft forever preferred_lft forever
-7: veth2@if6: &amp;lt;BROADCAST,MULTICAST,UP,LOWER_UP&amp;gt; mtu 1500 qdisc noqueue master br0 state UP group default qlen 1000
-    link/ether 72:a4:b4:52:bf:6d brd ff:ff:ff:ff:ff:ff link-netnsid 1
-    inet6 fe80::70a4:b4ff:fe52:bf6d/64 scope link
-       valid_lft forever preferred_lft forever
-
-# brctl show
-bridge name	bridge id		STP enabled	interfaces
-br0		8000.72a4b452bf6d	no		veth0
-							veth2
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;宿主机与两个容器能互 ping 成功。&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;# ping 10.1.1.2
-PING 10.1.1.2 (10.1.1.2) 56(84) bytes of data.
-64 bytes from 10.1.1.2: icmp_seq=1 ttl=64 time=0.033 ms
-
-# ping 10.1.1.3
-PING 10.1.1.3 (10.1.1.3) 56(84) bytes of data.
-64 bytes from 10.1.1.3: icmp_seq=1 ttl=64 time=0.046 ms
-
-# ip netns exec netns1 ping 10.1.1.1
-# ip netns exec netns1 ping 10.1.1.3
-
-# ip netns exec netns2 ping 10.1.1.1
-# ip netns exec netns2 ping 10.1.1.2
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;网络结构类似如下。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image-20200909154031492.png&#34; alt=&#34;image-20200909154031492&#34;&gt;&lt;/p&gt;
-&lt;p&gt;&lt;a href=&#34;https://wvi.cz/diyC/networking/#connecting-containers-using-bridge&#34;&gt;https://wvi.cz/diyC/networking/#connecting-containers-using-bridge&lt;/a&gt;&lt;/p&gt;
-&lt;h3 id=&#34;通过-nathttpsenwikipediaorgwikinetwork_address_translation-iptables-设置访问外部网络&#34;&gt;通过 &lt;a href=&#34;https://en.wikipedia.org/wiki/Network_address_translation&#34;&gt;NAT&lt;/a&gt; （iptables 设置）访问外部网络&lt;/h3&gt;
-&lt;p&gt;目前为止，容器局域网通了，但容器内还无法访问外部网络。&lt;/p&gt;
-&lt;p&gt;我们的宿主机现在是双网卡，一个 eth0 连接外部网络，一个 br0 连接容器网络。宿主机上开启 IP forwarding。&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;# sysctl -w net.ipv4.ip_forward=1
-&lt;/code&gt;&lt;/pre&gt;&lt;blockquote&gt;
-&lt;p&gt;IP forwarding should be enabled when you want the system to act as a router, that is transfer IP packets from one network to another.&lt;/p&gt;
-&lt;p&gt;&lt;a href=&#34;https://serverfault.com/questions/248841/ip-forwarding-when-and-why-is-this-required#:~:text=IP%20forwarding%20also%20known%20as,from%20each%20other%20by%20routers&#34;&gt;https://serverfault.com/questions/248841/ip-forwarding-when-and-why-is-this-required#:~:text=IP%20forwarding%20also%20known%20as,from%20each%20other%20by%20routers&lt;/a&gt;.&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;p&gt;宿主机上使用 iptables (administration tool for IPv4/IPv6 packet filtering and NAT) 进行 10.1.1.0/24 网段地址的地址转换，因为 eth0 网络不认识 10.1.1.0/24 网段地址。&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;# iptables -t nat -A POSTROUTING -s 10.1.1.0/24 -j MASQUERADE
-&lt;/code&gt;&lt;/pre&gt;&lt;ol&gt;
-&lt;li&gt;-t nat：选择 nat 表，不指定，默认是 filter 表。&lt;/li&gt;
-&lt;li&gt;-A：Append 新增一条规则，-D Delete，-L List。&lt;/li&gt;
-&lt;li&gt;POSTROUTING：选择 POSTROUTING chain，POSTROUTING代表数据包出口阶段。&lt;/li&gt;
-&lt;li&gt;-s 10.1.1.0/24：匹配条件，source address 是网段 10.1.1.0/24 中的 IP。&lt;/li&gt;
-&lt;li&gt;-j MASQUERADE：匹配后执行命令，执行 MASQUERADE，也就是源 IP 地址伪装为出口网卡 IP。对于 nat 表来说，可选项有 DNAT/MASQUERADE/REDIRECT/SNAT。&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;因为 Network namespace 隔离后，路由也是独立的。容器内添加默认网关，ping baidu.com，baidu 的 IP 不在当前网段，让默认网关处理，也就是 br0 的 IP 地址 10.1.1.1。&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;# ip netns exec netns1 ip route add default via 10.1.1.1 dev veth1
-# ip netns exec netns2 ip route add default via 10.1.1.1 dev veth3
-
-# ip netns exec netns1 ip route
-default via 10.1.1.1 dev veth1
-10.1.1.0/24 dev veth1 proto kernel scope link src 10.1.1.2
-
-# ip netns exec netns2 ip route
-default via 10.1.1.1 dev veth3
-10.1.1.0/24 dev veth3 proto kernel scope link src 10.1.1.3
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;容器内增加 DNS 地址解析。宿主机上默认是 127.0.0.53:53，而容器网络栈内没有这个服务。因为文件系统没有容器隔离，可以直接修改 /etc/resolv.conf，新增一个 114 DNS 地址。&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;# vim /etc/resolv.conf
-
-nameserver 114.114.114.114
-nameserver 127.0.0.53
-options edns0
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;外部网络可通。&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;# ip netns exec netns1 ping baidu.com
-PING baidu.com (220.181.38.148) 56(84) bytes of data.
-64 bytes from 220.181.38.148 (220.181.38.148): icmp_seq=1 ttl=61 time=29.4 ms
-&lt;/code&gt;&lt;/pre&gt;&lt;h2 id=&#34;参考&#34;&gt;参考&lt;/h2&gt;
-&lt;ol&gt;
-&lt;li&gt;&lt;code&gt;man ip-netns&lt;/code&gt;&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;man ip-link&lt;/code&gt;&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;man veth&lt;/code&gt;&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;man address&lt;/code&gt;&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;man iptables&lt;/code&gt;&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;man iptables-extensions&lt;/code&gt;&lt;/li&gt;
-&lt;li&gt;Network bridge &lt;a href=&#34;https://wiki.archlinux.org/index.php/Network_bridge&#34;&gt;https://wiki.archlinux.org/index.php/Network_bridge&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;探索 Docker bridge 的正确姿势，亲测有效！http://blog.daocloud.io/docker-bridge/&lt;/li&gt;
-&lt;li&gt;NAT - Network Address Translation &lt;a href=&#34;https://www.karlrupp.net/en/computer/nat_tutorial&#34;&gt;https://www.karlrupp.net/en/computer/nat_tutorial&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;How to Disable/Enable IP forwarding in Linux &lt;a href=&#34;https://linuxconfig.org/how-to-turn-on-off-ip-forwarding-in-linux&#34;&gt;https://linuxconfig.org/how-to-turn-on-off-ip-forwarding-in-linux&lt;/a&gt;&lt;/li&gt;
-&lt;/ol&gt;
-- https://xujiahua.github.io/posts/20200907-docker-bridge-net-sim/ - </description>
-        </item>
-    
-    
-    
-        <item>
-        <title>瘦终端指北 —— ICMP tunnel</title>
-        <link>https://xujiahua.github.io/posts/20200903-fuck-thin-client/</link>
-        <pubDate>Thu, 03 Sep 2020 17:02:18 +0800</pubDate>
-        
-        <guid>https://xujiahua.github.io/posts/20200903-fuck-thin-client/</guid>
-        <description>Happy Coding https://xujiahua.github.io/posts/20200903-fuck-thin-client/ -&lt;p&gt;因为公司有开发泄露源码在 Github，对公司声誉造成一定影响，公司层面推广起瘦终端，所有开发一起背锅 :( 。在瘦终端里，网络严格管控，vscode 下载插件都难，需要申请 IP 白名单。开发只允许在瘦终端里接触 git 仓库，只能向瘦终端拷贝文件，反之不能。这样就能防住代码泄露么？&lt;/p&gt;
-&lt;p&gt;搞笑的办法，瘦终端生成二维码，主机扫描，数据传输问题搞定。&lt;/p&gt;
-&lt;p&gt;从网络角度，怎么解决呢。我们来严肃看待这个技术问题。&lt;/p&gt;
-&lt;h2 id=&#34;icmp&#34;&gt;ICMP&lt;/h2&gt;
-&lt;p&gt;实践发现，瘦终端里不能访问百度，但是能 ping 通。从 TCP/IP 的角度，瘦终端在网络上只是 TCP 传输层被流量管控了，IP 层还是畅通无阻的。&lt;/p&gt;
-&lt;p&gt;下图为 TCP/IP 的层次结构，TCP 包封装于 IP 包。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/Packet-encapsulation-TCP-IP-architecture-encapsulates-the-data-from-the-upper-layer-by.png&#34; alt=&#34;3: Packet encapsulation. TCP/IP architecture encapsulates the data from the upper layer by attaching a &amp;ldquo;header&amp;rdquo; of the current-layer protocol into the data.&#34;&gt;&lt;/p&gt;
-&lt;p&gt;&lt;a href=&#34;https://www.researchgate.net/figure/Packet-encapsulation-TCP-IP-architecture-encapsulates-the-data-from-the-upper-layer-by_fig4_49288737&#34;&gt;https://www.researchgate.net/figure/Packet-encapsulation-TCP-IP-architecture-encapsulates-the-data-from-the-upper-layer-by_fig4_49288737&lt;/a&gt;&lt;/p&gt;
-&lt;p&gt;目前网站的基石是 HTTP/TCP 协议，代理也普遍是基于 HTTP/TCP 的，shadowsocks 翻墙的思路不通。&lt;/p&gt;
-&lt;p&gt;所以 ICMP 协议是否能作为代理协议呢。从封包的角度，ICMP 与 TCP 一样，也是封在 IP 包中的。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/fire0602.gif&#34; alt=&#34;Figure 6.2&#34;&gt;&lt;/p&gt;
-&lt;p&gt;&lt;a href=&#34;http://web.deu.edu.tr/doc/oreily/networking/firewall/ch06_03.htm&#34;&gt;http://web.deu.edu.tr/doc/oreily/networking/firewall/ch06_03.htm&lt;/a&gt;&lt;/p&gt;
-&lt;p&gt;ICMP 有 Data 字段，可用于存储需要被代理的 TCP 包（协议允许附加最大 64K 大小的 Payload）。从而突破防火墙。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/ICMP-packet-structure.png&#34; alt=&#34;ICMP packet structure &#34;&gt;&lt;/p&gt;
-&lt;p&gt;&lt;a href=&#34;https://www.researchgate.net/figure/ICMP-packet-structure_fig5_316727741&#34;&gt;https://www.researchgate.net/figure/ICMP-packet-structure_fig5_316727741&lt;/a&gt;&lt;/p&gt;
-&lt;h2 id=&#34;icmp-tunnel&#34;&gt;ICMP tunnel&lt;/h2&gt;
-&lt;p&gt;ICMP 隧道，使用 ICMP 协议建立的两台计算机的连接。可用该隧道传输 TCP 流量。&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;An &lt;strong&gt;ICMP tunnel&lt;/strong&gt;[&lt;a href=&#34;https://en.wikipedia.org/wiki/ICMP_tunnel#cite_note-ptunnel-1&#34;&gt;1]&lt;/a&gt; establishes a &lt;a href=&#34;https://en.wikipedia.org/wiki/Covert_channel&#34;&gt;covert&lt;/a&gt; connection between two remote computers (a client and proxy), using &lt;a href=&#34;https://en.wikipedia.org/wiki/Internet_Control_Message_Protocol&#34;&gt;ICMP&lt;/a&gt; echo requests and reply packets. An example of this technique is &lt;a href=&#34;https://en.wikipedia.org/wiki/Tunneling_protocol&#34;&gt;tunneling&lt;/a&gt; complete &lt;a href=&#34;https://en.wikipedia.org/wiki/Transmission_Control_Protocol&#34;&gt;TCP&lt;/a&gt; traffic over ping requests and replies.&lt;/p&gt;
-&lt;p&gt;&lt;a href=&#34;https://en.wikipedia.org/wiki/ICMP_tunnel&#34;&gt;https://en.wikipedia.org/wiki/ICMP_tunnel&lt;/a&gt;&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;p&gt;前人早已栽树，开源实现： &lt;a href=&#34;https://github.com/jamesbarlow/icmptunnel&#34;&gt;https://github.com/jamesbarlow/icmptunnel&lt;/a&gt;&lt;/p&gt;
-&lt;h3 id=&#34;建立-icmp-tunnel&#34;&gt;建立 ICMP tunnel&lt;/h3&gt;
-&lt;p&gt;Linux 上编译 icmptunnel：&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;$ git clone git@github.com:jamesbarlow/icmptunnel.git
-$ make
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;没在瘦终端试验，因为还没尝试将 icmptunnel 编译到 Windows 平台，https://github.com/esrrhs/pingtunnel 是跨平台的，可以参考下。&lt;/p&gt;
-&lt;p&gt;Vagrant 启动两台 Ubuntu 虚拟机试验下，两台虚拟机通过网卡 enp0s8 互联，假设两者通信只允许 ICMP。&lt;/p&gt;
-&lt;p&gt;Proxy server 192.168.33.12：&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# echo 1 &amp;gt; /proc/sys/net/ipv4/icmp_echo_ignore_all&lt;/span&gt;
-
-&lt;span style=&#34;color:#75715e&#34;&gt;# ./icmptunnel –s&lt;/span&gt;
-opened tunnel device: tun0
-&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;ctrl-z&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt;
-&lt;span style=&#34;color:#75715e&#34;&gt;# bg&lt;/span&gt;
-&lt;span style=&#34;color:#75715e&#34;&gt;# ifconfig tun0 10.0.0.1 netmask 255.255.255.0&lt;/span&gt;
-
-&lt;span style=&#34;color:#75715e&#34;&gt;# ifconfig&lt;/span&gt;
-enp0s8: flags&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;4163&amp;lt;UP,BROADCAST,RUNNING,MULTICAST&amp;gt;  mtu &lt;span style=&#34;color:#ae81ff&#34;&gt;1500&lt;/span&gt;
-        inet 192.168.33.12  netmask 255.255.255.0  broadcast 192.168.33.255
-        inet6 fe80::a00:27ff:feb6:74f5  prefixlen &lt;span style=&#34;color:#ae81ff&#34;&gt;64&lt;/span&gt;  scopeid 0x20&amp;lt;link&amp;gt;
-        ether 08:00:27:b6:74:f5  txqueuelen &lt;span style=&#34;color:#ae81ff&#34;&gt;1000&lt;/span&gt;  &lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;Ethernet&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt;
-        RX packets &lt;span style=&#34;color:#ae81ff&#34;&gt;4808&lt;/span&gt;  bytes &lt;span style=&#34;color:#ae81ff&#34;&gt;321774&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;321.7 KB&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt;
-        RX errors &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;  dropped &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;  overruns &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;  frame &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;
-        TX packets &lt;span style=&#34;color:#ae81ff&#34;&gt;1077&lt;/span&gt;  bytes &lt;span style=&#34;color:#ae81ff&#34;&gt;95776&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;95.7 KB&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt;
-        TX errors &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;  dropped &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt; overruns &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;  carrier &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;  collisions &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;
-
-lo: flags&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;73&amp;lt;UP,LOOPBACK,RUNNING&amp;gt;  mtu &lt;span style=&#34;color:#ae81ff&#34;&gt;65536&lt;/span&gt;
-        inet 127.0.0.1  netmask 255.0.0.0
-        inet6 ::1  prefixlen &lt;span style=&#34;color:#ae81ff&#34;&gt;128&lt;/span&gt;  scopeid 0x10&amp;lt;host&amp;gt;
-        loop  txqueuelen &lt;span style=&#34;color:#ae81ff&#34;&gt;1000&lt;/span&gt;  &lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;Local Loopback&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt;
-        RX packets &lt;span style=&#34;color:#ae81ff&#34;&gt;44&lt;/span&gt;  bytes &lt;span style=&#34;color:#ae81ff&#34;&gt;3890&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;3.8 KB&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt;
-        RX errors &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;  dropped &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;  overruns &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;  frame &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;
-        TX packets &lt;span style=&#34;color:#ae81ff&#34;&gt;44&lt;/span&gt;  bytes &lt;span style=&#34;color:#ae81ff&#34;&gt;3890&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;3.8 KB&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt;
-        TX errors &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;  dropped &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt; overruns &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;  carrier &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;  collisions &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;
-
-tun0: flags&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;4305&amp;lt;UP,POINTOPOINT,RUNNING,NOARP,MULTICAST&amp;gt;  mtu &lt;span style=&#34;color:#ae81ff&#34;&gt;1500&lt;/span&gt;
-        inet 10.0.0.1  netmask 255.255.255.0  destination 10.0.0.1
-        inet6 fe80::2743:f01:5f93:4c90  prefixlen &lt;span style=&#34;color:#ae81ff&#34;&gt;64&lt;/span&gt;  scopeid 0x20&amp;lt;link&amp;gt;
-        unspec 00-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00  txqueuelen &lt;span style=&#34;color:#ae81ff&#34;&gt;500&lt;/span&gt;  &lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;UNSPEC&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt;
-        RX packets &lt;span style=&#34;color:#ae81ff&#34;&gt;156&lt;/span&gt;  bytes &lt;span style=&#34;color:#ae81ff&#34;&gt;18219&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;18.2 KB&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt;
-        RX errors &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;  dropped &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;  overruns &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;  frame &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;
-        TX packets &lt;span style=&#34;color:#ae81ff&#34;&gt;134&lt;/span&gt;  bytes &lt;span style=&#34;color:#ae81ff&#34;&gt;32887&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;32.8 KB&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt;
-        TX errors &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;  dropped &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt; overruns &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;  carrier &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;  collisions &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Client 192.168.33.11：&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# echo 1 &amp;gt; /proc/sys/net/ipv4/icmp_echo_ignore_all&lt;/span&gt;
-&lt;span style=&#34;color:#75715e&#34;&gt;# ./icmptunnel 192.168.33.12&lt;/span&gt;
-opened tunnel device: tun0
-connection established.
-&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;ctrl-z&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt;
-&lt;span style=&#34;color:#75715e&#34;&gt;# bg&lt;/span&gt;
-&lt;span style=&#34;color:#75715e&#34;&gt;# ifconfig tun0 10.0.0.2 netmask 255.255.255.0&lt;/span&gt;
-
-&lt;span style=&#34;color:#75715e&#34;&gt;# ifconfig&lt;/span&gt;
-enp0s8: flags&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;4163&amp;lt;UP,BROADCAST,RUNNING,MULTICAST&amp;gt;  mtu &lt;span style=&#34;color:#ae81ff&#34;&gt;1500&lt;/span&gt;
-        inet 192.168.33.11  netmask 255.255.255.0  broadcast 192.168.33.255
-        inet6 fe80::a00:27ff:fe65:dae7  prefixlen &lt;span style=&#34;color:#ae81ff&#34;&gt;64&lt;/span&gt;  scopeid 0x20&amp;lt;link&amp;gt;
-        ether 08:00:27:65:da:e7  txqueuelen &lt;span style=&#34;color:#ae81ff&#34;&gt;1000&lt;/span&gt;  &lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;Ethernet&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt;
-        RX packets &lt;span style=&#34;color:#ae81ff&#34;&gt;1180&lt;/span&gt;  bytes &lt;span style=&#34;color:#ae81ff&#34;&gt;118335&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;118.3 KB&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt;
-        RX errors &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;  dropped &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;  overruns &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;  frame &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;
-        TX packets &lt;span style=&#34;color:#ae81ff&#34;&gt;4603&lt;/span&gt;  bytes &lt;span style=&#34;color:#ae81ff&#34;&gt;292845&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;292.8 KB&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt;
-        TX errors &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;  dropped &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt; overruns &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;  carrier &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;  collisions &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;
-
-lo: flags&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;73&amp;lt;UP,LOOPBACK,RUNNING&amp;gt;  mtu &lt;span style=&#34;color:#ae81ff&#34;&gt;65536&lt;/span&gt;
-        inet 127.0.0.1  netmask 255.0.0.0
-        inet6 ::1  prefixlen &lt;span style=&#34;color:#ae81ff&#34;&gt;128&lt;/span&gt;  scopeid 0x10&amp;lt;host&amp;gt;
-        loop  txqueuelen &lt;span style=&#34;color:#ae81ff&#34;&gt;1000&lt;/span&gt;  &lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;Local Loopback&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt;
-        RX packets &lt;span style=&#34;color:#ae81ff&#34;&gt;122&lt;/span&gt;  bytes &lt;span style=&#34;color:#ae81ff&#34;&gt;22468&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;22.4 KB&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt;
-        RX errors &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;  dropped &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;  overruns &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;  frame &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;
-        TX packets &lt;span style=&#34;color:#ae81ff&#34;&gt;122&lt;/span&gt;  bytes &lt;span style=&#34;color:#ae81ff&#34;&gt;22468&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;22.4 KB&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt;
-        TX errors &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;  dropped &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt; overruns &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;  carrier &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;  collisions &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;
-
-tun0: flags&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;4305&amp;lt;UP,POINTOPOINT,RUNNING,NOARP,MULTICAST&amp;gt;  mtu &lt;span style=&#34;color:#ae81ff&#34;&gt;1500&lt;/span&gt;
-        inet 10.0.0.2  netmask 255.255.255.0  destination 10.0.0.2
-        inet6 fe80::673f:aedd:d37e:afc4  prefixlen &lt;span style=&#34;color:#ae81ff&#34;&gt;64&lt;/span&gt;  scopeid 0x20&amp;lt;link&amp;gt;
-        unspec 00-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00  txqueuelen &lt;span style=&#34;color:#ae81ff&#34;&gt;500&lt;/span&gt;  &lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;UNSPEC&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt;
-        RX packets &lt;span style=&#34;color:#ae81ff&#34;&gt;130&lt;/span&gt;  bytes &lt;span style=&#34;color:#ae81ff&#34;&gt;32695&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;32.6 KB&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt;
-        RX errors &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;  dropped &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;  overruns &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;  frame &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;
-        TX packets &lt;span style=&#34;color:#ae81ff&#34;&gt;156&lt;/span&gt;  bytes &lt;span style=&#34;color:#ae81ff&#34;&gt;18219&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;18.2 KB&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt;
-        TX errors &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;  dropped &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt; overruns &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;  carrier &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;  collisions &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;试验联通性：&lt;/p&gt;
-&lt;p&gt;Server 上创建一个 web server。&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;$ python3 -m http.server &lt;span style=&#34;color:#ae81ff&#34;&gt;8000&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Client 上 curl：&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;$ curl 10.0.0.1:8000
-&amp;lt;!DOCTYPE HTML PUBLIC &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;-//W3C//DTD HTML 4.01//EN&amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;http://www.w3.org/TR/html4/strict.dtd&amp;#34;&lt;/span&gt;&amp;gt;
-&amp;lt;html&amp;gt;
-&amp;lt;head&amp;gt;
-...
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;这样，两台虚拟机通过 ICMP 协议建立 tunnel 成功。Client (10.0.0.2) 可通过 TCP 协议访问 Proxy Server (10.0.0.1)。&lt;/p&gt;
-&lt;h3 id=&#34;network-traffic&#34;&gt;Network Traffic&lt;/h3&gt;
-&lt;p&gt;Client/Server 上抓包，假设 enp0s8 网卡上，client -&amp;gt; server 只有 ICMP 协议流量。&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# tcpdump -i tun0 -w tun0.pcap&lt;/span&gt;
-
-&lt;span style=&#34;color:#75715e&#34;&gt;# tcpdump -i enp0s8 -w enp0s8.pcap&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Client 执行 &lt;code&gt;curl 10.0.0.1:8000&lt;/code&gt;。&lt;/p&gt;
-&lt;p&gt;Client enp0s8：&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image-20200903170657920.png&#34; alt=&#34;image-20200903170657920&#34;&gt;&lt;/p&gt;
-&lt;p&gt;Client tun0：&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image-20200903170805505.png&#34; alt=&#34;image-20200903170805505&#34;&gt;&lt;/p&gt;
-&lt;p&gt;Server enp0s8：&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image-20200903170855923.png&#34; alt=&#34;image-20200903170855923&#34;&gt;&lt;/p&gt;
-&lt;p&gt;Server tun0：&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/image-20200903170932762.png&#34; alt=&#34;image-20200903170932762&#34;&gt;&lt;/p&gt;
-&lt;p&gt;如预期，enp0s8 网卡上只有 ICMP 协议通信，而 tun0 允许 HTTP/TCP。&lt;/p&gt;
-&lt;h3 id=&#34;ssh-隧道代理&#34;&gt;SSH 隧道代理&lt;/h3&gt;
-&lt;p&gt;ssh 隧道翻墙跟连普通服务器没啥两样了。&lt;/p&gt;
-&lt;p&gt;Client 生成 SSH 秘钥：&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# ssh-keygen&lt;/span&gt;
-&lt;span style=&#34;color:#75715e&#34;&gt;# cat ~/.ssh/id_rsa.pub&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Proxy server 让 client root 免密登录：&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# vim ~/.ssh/authorized_keys&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Client 建立 socks 代理：&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# ssh -D 8080 -N root@10.0.0.1&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;代理测试：&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# curl -x socks5h://localhost:8080 http://baidu.com/&lt;/span&gt;
-&amp;lt;html&amp;gt;
-&amp;lt;meta http-equiv&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;refresh&amp;#34;&lt;/span&gt; content&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;0;url=http://www.baidu.com/&amp;#34;&lt;/span&gt;&amp;gt;
-&amp;lt;/html&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;原理&#34;&gt;原理&lt;/h3&gt;
-&lt;p&gt;流程图借用 &lt;a href=&#34;https://github.com/DhavalKapil/icmptunnel&#34;&gt;https://github.com/DhavalKapil/icmptunnel&lt;/a&gt;&lt;/p&gt;
-&lt;h4 id=&#34;overall-architecture&#34;&gt;Overall Architecture&lt;/h4&gt;
-&lt;p&gt;示例中貌似 Client/Proxy Server分别是通过 tun0 网卡上的IP 通信。&lt;/p&gt;
-&lt;p&gt;Client 与 Proxy Server 之间通过 ICMP 协议通信，TCP/UDP over ICMP。Client 发送 Echo Request，Proxy Server 发送 Echo Reply。&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;+--------------+                         +------------+
-|              |       ICMP traffic      |            |       IP traffic
-|    Client    |  -------------------&amp;gt;   |   Proxy    |   ------------------&amp;gt;
-|              |  &amp;lt;-------------------   |   Server   |   &amp;lt;------------------
-|              |    through restricted   |            |     proper internet
-+--------------+         internet        +------------+
-&lt;/code&gt;&lt;/pre&gt;&lt;h4 id=&#34;client-architecture&#34;&gt;Client Architecture&lt;/h4&gt;
-&lt;pre&gt;&lt;code&gt;+--------------+                                    +------------+
-|              |  IP traffic  +------+  IP traffic  |            |   ICMP traffic
-|     User     |  ---------&amp;gt;  | tun0 |  ---------&amp;gt;  | icmptunnel | ---------------&amp;gt;
-| Applications |  &amp;lt;---------  +------+  &amp;lt;---------  |  program   | &amp;lt;---------------
-|              |        (Virtual Interface)         |            |    restricted 
-+--------------+                                    +------------+     internet
-&lt;/code&gt;&lt;/pre&gt;&lt;h4 id=&#34;proxy-server-architecture&#34;&gt;Proxy Server Architecture&lt;/h4&gt;
-&lt;pre&gt;&lt;code&gt;                 +------------+
-  ICMP traffic   |            |  IP traffic     +------+       NAT/Masquerading
----------------&amp;gt; | icmptunnel | ------------&amp;gt;   | tun0 |    ---------------------&amp;gt; 
-&amp;lt;--------------- |  program   | &amp;lt;------------   +------+    &amp;lt;---------------------
-   restricted    |            |           (Virtual Interface)   proper internet
-    internet     +------------+
-&lt;/code&gt;&lt;/pre&gt;&lt;h4 id=&#34;实现注意事项&#34;&gt;实现注意事项&lt;/h4&gt;
-&lt;p&gt;The client will perform all its communications using ICMP echo request (ping) packets (type 8), whereas the proxy will use echo reply packets (type 0)&lt;/p&gt;
-&lt;p&gt;Both the client and proxy maintain their own sequence number, and also a number indicating the last sequence number acknowledged by the remote peer.&lt;/p&gt;
-&lt;h2 id=&#34;总结&#34;&gt;总结&lt;/h2&gt;
-&lt;p&gt;除了瘦终端这个场景，如果你有在公共场所，比如酒店，用过需要网页注册登录才能使用的 WIFI，在不登录的情况下，你的主机只被分配了 IP，而没有浏览网页的能力。icmptunnel 这个工具就能派上用处了。&lt;/p&gt;
-&lt;p&gt;道高一尺魔高一丈，要是被网管封禁了 ICMP 流量或是只允许定长的 ICMP 包，就 GG 了。&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;One way to prevent this type of tunneling is to block ICMP traffic, at the cost of losing some network functionality that people usually take for granted (e.g. it might take tens of seconds to determine that a peer is offline, rather than almost instantaneously). Another method for mitigating this type of attack is to only allow fixed sized ICMP packets through firewalls, which can impede or eliminate this type of behavior.[&lt;a href=&#34;https://en.wikipedia.org/wiki/ICMP_tunnel#cite_note-3&#34;&gt;3]&lt;/a&gt;&lt;/p&gt;
-&lt;p&gt;&lt;a href=&#34;https://en.wikipedia.org/wiki/ICMP_tunnel&#34;&gt;https://en.wikipedia.org/wiki/ICMP_tunnel&lt;/a&gt;&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;p&gt;本文仅仅是一个技术探讨，切莫在犯罪的道路上越走越远。&lt;/p&gt;
-&lt;h2 id=&#34;参考&#34;&gt;参考&lt;/h2&gt;
-&lt;ol&gt;
-&lt;li&gt;ICMP tunnel &lt;a href=&#34;https://en.wikipedia.org/wiki/ICMP_tunnel&#34;&gt;https://en.wikipedia.org/wiki/ICMP_tunnel&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;icmptunnel: Pivot with Ping &lt;a href=&#34;https://labs.f-secure.com/tools/pivot-with-ping/&#34;&gt;https://labs.f-secure.com/tools/pivot-with-ping/&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;内网渗透之ICMP隐藏隧道 &lt;a href=&#34;https://xz.aliyun.com/t/7875#toc-4&#34;&gt;https://xz.aliyun.com/t/7875#toc-4&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;内网渗透之内网穿透 &lt;a href=&#34;https://xz.aliyun.com/t/7701&#34;&gt;https://xz.aliyun.com/t/7701&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;Ping Tunnel &lt;a href=&#34;http://www.cs.uit.no/~daniels/PingTunnel/&#34;&gt;http://www.cs.uit.no/~daniels/PingTunnel/&lt;/a&gt;&lt;/li&gt;
-&lt;/ol&gt;
-- https://xujiahua.github.io/posts/20200903-fuck-thin-client/ - </description>
-        </item>
-    
-    
-  </channel>
-</rss> 
+</code></pre><h2 id="redcon">redcon</h2>
+<p>Redis compatible server framework for <strong>Go</strong>.</p>]]></description>
+</item>
+<item>
+    <title>从 Notion 导出 markdown 到 hugo 项目</title>
+    <link>https://xujiahua.github.io/posts/notion-markdown-hugo-78139407-85c5-4a75-b288-b54d5c3df34b/</link>
+    <pubDate>Mon, 12 Apr 2021 17:25:00 &#43;0800</pubDate>
+    <author>Happy Coding</author>
+    <guid>https://xujiahua.github.io/posts/notion-markdown-hugo-78139407-85c5-4a75-b288-b54d5c3df34b/</guid>
+    <description><![CDATA[<h2 id="目的">目的</h2>
+<p>好久没更新博客了，最近半年使用 Notion，体验很棒。</p>
+<p>之前写博客的过程：使用 Typora 编辑 markdown，使用 Hugo 生成静态页面，上传到 github 使用 github pages serving。参考：</p>
+<p><a href="https://xujiahua.github.io/posts/20200310-github-pages-restart/" target="_blank" rel="noopener noreffer ">Github pages重新开始：使用Hugo、Typora</a></p>
+<p>怎么把我 Notion 中的文章同步到我的博客呢。这是本文目的。</p>
+<p>主要是写了一个 notion-mk 的程序将 notion 文章导出到 hugo 工作目录。后面的工作与之前保持一致。</p>
+<pre tabindex="0"><code>notion -- notion-mk(todo) --&gt; hugo directory 
+																		-- hugo generate --&gt; static html/js/css
+</code></pre><h2 id="wip">WIP</h2>
+<p>代码如下：</p>
+<p><a href="https://github.com/XUJiahua/notion-md" target="_blank" rel="noopener noreffer ">XUJiahua/notion-md</a></p>
+<h3 id="功能">功能</h3>
+<ul>
+<li><i class="far fa-check-square fa-fw" aria-hidden="true"></i> Download images</li>
+<li><i class="far fa-check-square fa-fw" aria-hidden="true"></i> Notion extract to markdown</li>
+<li><i class="far fa-check-square fa-fw" aria-hidden="true"></i> markdown hugo compatiable</li>
+<li><i class="far fa-check-square fa-fw" aria-hidden="true"></i> image location?</li>
+<li><i class="far fa-check-square fa-fw" aria-hidden="true"></i> remove title from markdown, now #&hellip;</li>
+<li><i class="far fa-check-square fa-fw" aria-hidden="true"></i> support category</li>
+<li><i class="far fa-check-square fa-fw" aria-hidden="true"></i> support tag</li>
+<li><i class="far fa-square fa-fw" aria-hidden="true"></i> table of content at the beginning</li>
+</ul>
+<h3 id="使用">使用</h3>
+<p>将要发布的文档添加到这个 list 页面</p>]]></description>
+</item>
+<item>
+    <title>kubectl 怎么念</title>
+    <link>https://xujiahua.github.io/posts/kubectl-4f270b11-8ad4-47c5-b20c-6f340f5ccad1/</link>
+    <pubDate>Tue, 09 Mar 2021 19:41:00 &#43;0800</pubDate>
+    <author>Happy Coding</author>
+    <guid>https://xujiahua.github.io/posts/kubectl-4f270b11-8ad4-47c5-b20c-6f340f5ccad1/</guid>
+    <description><![CDATA[<p>念法很多。就选这个吧。我也一直这么念的。</p>
+<p></p>]]></description>
+</item>
+<item>
+    <title>pandasql库解析</title>
+    <link>https://xujiahua.github.io/posts/20200916-pandas-sql/</link>
+    <pubDate>Wed, 16 Sep 2020 10:48:11 &#43;0800</pubDate>
+    <author>Happy Coding</author>
+    <guid>https://xujiahua.github.io/posts/20200916-pandas-sql/</guid>
+    <description><![CDATA[<p>对 Pandas 库没有原生 SQL 支持表示遗憾，今天看到这么一个库 <a href="https://github.com/yhat/pandasql" target="_blank" rel="noopener noreffer ">https://github.com/yhat/pandasql</a> 。</p>
+<p>它的思路比较简单粗暴，先把 pandas Dataframe 存储到一个关系型数据库（sqlite/postgresql），最后 SQL query 的结果其实是查询关系型数据库返回的结果，封装成 Dataframe 来呈现。其中数据库操作使用 sqlalchemy 这个库。</p>
+<p>学到的知识点：locals()，globals() 这两个方法。</p>
+<blockquote>
+<p>The globals() method returns the dictionary of the current global symbol table. <a href="https://www.programiz.com/python-programming/methods/built-in/globals" target="_blank" rel="noopener noreffer ">https://www.programiz.com/python-programming/methods/built-in/globals</a></p>
+<p>The locals() method updates and returns a dictionary of the current local symbol table. <a href="https://www.programiz.com/python-programming/methods/built-in/locals" target="_blank" rel="noopener noreffer ">https://www.programiz.com/python-programming/methods/built-in/locals</a></p></blockquote>
+<p>如下代码，meat 是一个 Dataframe 变量，为何 SQL query 里能直接引用这个变量。</p>
+<pre tabindex="0"><code>$ python
+&gt;&gt;&gt; from pandasql import sqldf, load_meat, load_births
+&gt;&gt;&gt; pysqldf = lambda q: sqldf(q, globals())
+&gt;&gt;&gt; meat = load_meat()
+&gt;&gt;&gt; print pysqldf(&#34;SELECT * FROM meat LIMIT 10;&#34;).head()
+</code></pre><p>因为可以从 globals() 里通过符号 meat 拿到这个变量。</p>]]></description>
+</item>
+<item>
+    <title>Docker/Kubernetes 系列目录</title>
+    <link>https://xujiahua.github.io/posts/20200909-docker-series/</link>
+    <pubDate>Wed, 09 Sep 2020 09:52:37 &#43;0800</pubDate>
+    <author>Happy Coding</author>
+    <guid>https://xujiahua.github.io/posts/20200909-docker-series/</guid>
+    <description><![CDATA[<p>不定时更新中。</p>
+<h2 id="docker">Docker</h2>
+<h3 id="基础">基础</h3>
+<ol>
+<li><a href="https://docs.docker.com/get-started/" target="_blank" rel="noopener noreffer ">Docker 入门</a>，官方 get started 边看边实践</li>
+<li>Docker 如何改变软件开发协作</li>
+<li>Dockerfile 最佳实践</li>
+<li><a href="https://xujiahua.github.io/posts/20200321-docker-network/" target="_blank" rel="noopener noreffer ">Docker Network小结</a></li>
+<li><a href="https://xujiahua.github.io/posts/20200403-docker-logging/" target="_blank" rel="noopener noreffer ">Docker 日志驱动小结</a></li>
+<li><a href="https://xujiahua.github.io/posts/20200402-use-fluentd/" target="_blank" rel="noopener noreffer ">使用 fluentd 收集 Docker 日志</a></li>
+</ol>
+<h3 id="进阶">进阶</h3>
+<ol>
+<li><a href="https://xujiahua.github.io/posts/20200901-linux-namespace/" target="_blank" rel="noopener noreffer ">Linux namespace 介绍</a></li>
+<li><a href="https://xujiahua.github.io/posts/20200907-docker-bridge-net-sim/" target="_blank" rel="noopener noreffer ">使用 ip/iptables 命令模拟 Docker bridge 网络</a></li>
+<li>Linux cgroup 介绍</li>
+<li>Docker 中 namespace/cgroup 的体现</li>
+<li>Union file system</li>
+<li>容器网络模型标准 Container Network Model (CNM) 与其实现 libnetwork <a href="https://github.com/moby/libnetwork/blob/master/docs/design.md" target="_blank" rel="noopener noreffer ">https://github.com/moby/libnetwork/blob/master/docs/design.md</a></li>
+<li>CNI 标准，不再使用 docker 自带的网络驱动，docker run &ndash;net=none</li>
+<li>libcontainer/containerd/runc</li>
+</ol>
+<h2 id="kubernetes">Kubernetes</h2>
+<h3 id="基础-1">基础</h3>
+<ol>
+<li>k8s 虚拟机体验 <a href="https://github.com/XUJiahua/k8s-try" target="_blank" rel="noopener noreffer ">https://github.com/XUJiahua/k8s-try</a></li>
+</ol>
+<h2 id="参考链接">参考链接</h2>
+<ol>
+<li>官方文档 <a href="https://docs.docker.com/" target="_blank" rel="noopener noreffer ">https://docs.docker.com/</a></li>
+<li>Docker — 从入门到实践 <a href="https://www.yuque.com/grasilife/docker/readme" target="_blank" rel="noopener noreffer ">https://www.yuque.com/grasilife/docker/readme</a></li>
+<li>Golang UK Conf. 2016 - Liz Rice - What is a container, really? Let&rsquo;s write one in Go from scratch <a href="https://www.youtube.com/watch?v=HPuvDm8IC-4" target="_blank" rel="noopener noreffer ">https://www.youtube.com/watch?v=HPuvDm8IC-4</a></li>
+<li>Linux containers from scratch - diyC <a href="https://wvi.cz/diyC/" target="_blank" rel="noopener noreffer ">https://wvi.cz/diyC/</a></li>
+<li>Kubernetes for Full-Stack Developers <a href="https://www.digitalocean.com/community/curriculums/kubernetes-for-full-stack-developers" target="_blank" rel="noopener noreffer ">https://www.digitalocean.com/community/curriculums/kubernetes-for-full-stack-developers</a></li>
+</ol>
+<h2 id="参考书籍">参考书籍</h2>
+<ol>
+<li>Docker技术入门与实战（第3版）（2018）</li>
+<li>Docker 进阶与实战（2016） - 华为 Docker 实践小组</li>
+<li>Kubernetes网络权威指南：基础、原理与实践 （2019）</li>
+</ol>]]></description>
+</item>
+<item>
+    <title>使用 ip/iptables 命令模拟 Docker bridge 网络</title>
+    <link>https://xujiahua.github.io/posts/20200907-docker-bridge-net-sim/</link>
+    <pubDate>Mon, 07 Sep 2020 11:35:39 &#43;0800</pubDate>
+    <author>Happy Coding</author>
+    <guid>https://xujiahua.github.io/posts/20200907-docker-bridge-net-sim/</guid>
+    <description><![CDATA[<p>如<a href="https://xujiahua.github.io/posts/20200901-linux-namespace/" target="_blank" rel="noopener noreffer ">前文</a>介绍，Linux Network namespace 用于给进程创建一个新的网络栈，路由、防火墙规则、网络设备。<code>man ip-netns</code>：</p>
+<blockquote>
+<p>A network namespace is logically another copy of the network stack, with its own routes, firewall rules, and network devices.</p></blockquote>
+<p>作为对 Network namespace 的实践，本文使用 ip/iptables 等命令模拟下 Docker bridge 网络，并会接触到 Network namespace，veth pair，Linux bridge，NAT 等概念。</p>
+<h2 id="实验">实验</h2>
+<h3 id="使用-ip命令操作-network-namespace">使用 <code>ip</code>命令操作 Network namespace</h3>
+<p>ip netns 子命令用于操作 Network namespace。使用 add 子命令，创建一个 Network namespace。</p>
+<pre tabindex="0"><code># ip netns add netns1
+</code></pre><p>查看 netns1 的网络设备（network device）。使用 exec 子命令，后接 netns1 和要执行的命令。默认有一个 DOWN 状态的 lo 设备。</p>]]></description>
+</item>
+<item>
+    <title>瘦终端指北 —— ICMP tunnel</title>
+    <link>https://xujiahua.github.io/posts/20200903-fuck-thin-client/</link>
+    <pubDate>Thu, 03 Sep 2020 17:02:18 &#43;0800</pubDate>
+    <author>Happy Coding</author>
+    <guid>https://xujiahua.github.io/posts/20200903-fuck-thin-client/</guid>
+    <description><![CDATA[<p>因为公司有开发泄露源码在 Github，对公司声誉造成一定影响，公司层面推广起瘦终端，所有开发一起背锅 :( 。在瘦终端里，网络严格管控，vscode 下载插件都难，需要申请 IP 白名单。开发只允许在瘦终端里接触 git 仓库，只能向瘦终端拷贝文件，反之不能。这样就能防住代码泄露么？</p>
+<p>搞笑的办法，瘦终端生成二维码，主机扫描，数据传输问题搞定。</p>
+<p>从网络角度，怎么解决呢。我们来严肃看待这个技术问题。</p>
+<h2 id="icmp">ICMP</h2>
+<p>实践发现，瘦终端里不能访问百度，但是能 ping 通。从 TCP/IP 的角度，瘦终端在网络上只是 TCP 传输层被流量管控了，IP 层还是畅通无阻的。</p>
+<p>下图为 TCP/IP 的层次结构，TCP 包封装于 IP 包。</p>
+<p></p>
+<p><a href="https://www.researchgate.net/figure/Packet-encapsulation-TCP-IP-architecture-encapsulates-the-data-from-the-upper-layer-by_fig4_49288737" target="_blank" rel="noopener noreffer ">https://www.researchgate.net/figure/Packet-encapsulation-TCP-IP-architecture-encapsulates-the-data-from-the-upper-layer-by_fig4_49288737</a></p>
+<p>目前网站的基石是 HTTP/TCP 协议，代理也普遍是基于 HTTP/TCP 的，shadowsocks 翻墙的思路不通。</p>
+<p>所以 ICMP 协议是否能作为代理协议呢。从封包的角度，ICMP 与 TCP 一样，也是封在 IP 包中的。</p>]]></description>
+</item>
+</channel>
+</rss>

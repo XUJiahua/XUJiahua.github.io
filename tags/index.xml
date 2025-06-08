@@ -4,476 +4,373 @@
     <title>Tags on Happy Coding</title>
     <link>https://xujiahua.github.io/tags/</link>
     <description>Recent content in Tags on Happy Coding</description>
-    <generator>Hugo -- gohugo.io</generator>
+    <generator>Hugo</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Sun, 25 Apr 2021 16:35:55 +0800</lastBuildDate><atom:link href="https://xujiahua.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sun, 25 Apr 2021 16:35:55 +0800</lastBuildDate>
+    <atom:link href="https://xujiahua.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>aws</title>
+      <title>Aws</title>
       <link>https://xujiahua.github.io/tags/aws/</link>
       <pubDate>Sun, 25 Apr 2021 16:35:55 +0800</pubDate>
-      
       <guid>https://xujiahua.github.io/tags/aws/</guid>
       <description></description>
     </item>
-    
     <item>
-      <title>eks</title>
+      <title>Eks</title>
       <link>https://xujiahua.github.io/tags/eks/</link>
       <pubDate>Sun, 25 Apr 2021 16:35:55 +0800</pubDate>
-      
       <guid>https://xujiahua.github.io/tags/eks/</guid>
       <description></description>
     </item>
-    
     <item>
-      <title>eksctl</title>
+      <title>Eksctl</title>
       <link>https://xujiahua.github.io/tags/eksctl/</link>
       <pubDate>Sun, 25 Apr 2021 13:18:00 +0800</pubDate>
-      
       <guid>https://xujiahua.github.io/tags/eksctl/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>Go</title>
       <link>https://xujiahua.github.io/tags/go/</link>
       <pubDate>Wed, 21 Apr 2021 18:03:00 +0800</pubDate>
-      
       <guid>https://xujiahua.github.io/tags/go/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>Metabase</title>
       <link>https://xujiahua.github.io/tags/metabase/</link>
       <pubDate>Wed, 21 Apr 2021 18:03:00 +0800</pubDate>
-      
       <guid>https://xujiahua.github.io/tags/metabase/</guid>
       <description></description>
     </item>
-    
     <item>
-      <title>kv</title>
+      <title>Kv</title>
       <link>https://xujiahua.github.io/tags/kv/</link>
       <pubDate>Mon, 19 Apr 2021 10:24:00 +0800</pubDate>
-      
       <guid>https://xujiahua.github.io/tags/kv/</guid>
       <description></description>
     </item>
-    
     <item>
-      <title>redis</title>
+      <title>Redis</title>
       <link>https://xujiahua.github.io/tags/redis/</link>
       <pubDate>Mon, 19 Apr 2021 10:24:00 +0800</pubDate>
-      
       <guid>https://xujiahua.github.io/tags/redis/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>Hugo</title>
       <link>https://xujiahua.github.io/tags/hugo/</link>
       <pubDate>Mon, 12 Apr 2021 17:25:00 +0800</pubDate>
-      
       <guid>https://xujiahua.github.io/tags/hugo/</guid>
       <description></description>
     </item>
-    
     <item>
-      <title>markdown</title>
+      <title>Markdown</title>
       <link>https://xujiahua.github.io/tags/markdown/</link>
       <pubDate>Mon, 12 Apr 2021 17:25:00 +0800</pubDate>
-      
       <guid>https://xujiahua.github.io/tags/markdown/</guid>
       <description></description>
     </item>
-    
     <item>
-      <title>notion</title>
+      <title>Notion</title>
       <link>https://xujiahua.github.io/tags/notion/</link>
       <pubDate>Mon, 12 Apr 2021 17:25:00 +0800</pubDate>
-      
       <guid>https://xujiahua.github.io/tags/notion/</guid>
       <description></description>
     </item>
-    
     <item>
-      <title>kubectl</title>
+      <title>Kubectl</title>
       <link>https://xujiahua.github.io/tags/kubectl/</link>
       <pubDate>Tue, 09 Mar 2021 19:41:00 +0800</pubDate>
-      
       <guid>https://xujiahua.github.io/tags/kubectl/</guid>
       <description></description>
     </item>
-    
     <item>
-      <title>readcode</title>
+      <title>Readcode</title>
       <link>https://xujiahua.github.io/tags/readcode/</link>
       <pubDate>Wed, 16 Sep 2020 10:48:11 +0800</pubDate>
-      
       <guid>https://xujiahua.github.io/tags/readcode/</guid>
       <description></description>
     </item>
-    
     <item>
-      <title>docker</title>
+      <title>Docker</title>
       <link>https://xujiahua.github.io/tags/docker/</link>
       <pubDate>Mon, 07 Sep 2020 11:35:39 +0800</pubDate>
-      
       <guid>https://xujiahua.github.io/tags/docker/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>Linux</title>
       <link>https://xujiahua.github.io/tags/linux/</link>
       <pubDate>Mon, 07 Sep 2020 11:35:39 +0800</pubDate>
-      
       <guid>https://xujiahua.github.io/tags/linux/</guid>
       <description></description>
     </item>
-    
     <item>
-      <title>network</title>
+      <title>Network</title>
       <link>https://xujiahua.github.io/tags/network/</link>
       <pubDate>Mon, 07 Sep 2020 11:35:39 +0800</pubDate>
-      
       <guid>https://xujiahua.github.io/tags/network/</guid>
       <description></description>
     </item>
-    
     <item>
-      <title>tunnel</title>
+      <title>Tunnel</title>
       <link>https://xujiahua.github.io/tags/tunnel/</link>
       <pubDate>Thu, 03 Sep 2020 17:02:18 +0800</pubDate>
-      
       <guid>https://xujiahua.github.io/tags/tunnel/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>Impala</title>
       <link>https://xujiahua.github.io/tags/impala/</link>
       <pubDate>Fri, 07 Aug 2020 15:06:49 +0800</pubDate>
-      
       <guid>https://xujiahua.github.io/tags/impala/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>Ray</title>
       <link>https://xujiahua.github.io/tags/ray/</link>
       <pubDate>Fri, 07 Aug 2020 10:34:23 +0800</pubDate>
-      
       <guid>https://xujiahua.github.io/tags/ray/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>数据</title>
       <link>https://xujiahua.github.io/tags/%E6%95%B0%E6%8D%AE/</link>
       <pubDate>Fri, 24 Jul 2020 16:36:01 +0800</pubDate>
-      
       <guid>https://xujiahua.github.io/tags/%E6%95%B0%E6%8D%AE/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>TCP</title>
       <link>https://xujiahua.github.io/tags/tcp/</link>
       <pubDate>Thu, 23 Jul 2020 16:12:51 +0800</pubDate>
-      
       <guid>https://xujiahua.github.io/tags/tcp/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>WireShark</title>
       <link>https://xujiahua.github.io/tags/wireshark/</link>
       <pubDate>Thu, 23 Jul 2020 16:12:51 +0800</pubDate>
-      
       <guid>https://xujiahua.github.io/tags/wireshark/</guid>
       <description></description>
     </item>
-    
     <item>
-      <title>clojure</title>
+      <title>Clojure</title>
       <link>https://xujiahua.github.io/tags/clojure/</link>
       <pubDate>Thu, 04 Jun 2020 16:13:27 +0800</pubDate>
-      
       <guid>https://xujiahua.github.io/tags/clojure/</guid>
       <description></description>
     </item>
-    
     <item>
-      <title>consul</title>
+      <title>Consul</title>
       <link>https://xujiahua.github.io/tags/consul/</link>
       <pubDate>Tue, 21 Apr 2020 09:01:38 +0800</pubDate>
-      
       <guid>https://xujiahua.github.io/tags/consul/</guid>
       <description></description>
     </item>
-    
     <item>
-      <title>microservices</title>
+      <title>Microservices</title>
       <link>https://xujiahua.github.io/tags/microservices/</link>
       <pubDate>Tue, 21 Apr 2020 09:01:38 +0800</pubDate>
-      
       <guid>https://xujiahua.github.io/tags/microservices/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>Service Mesh</title>
       <link>https://xujiahua.github.io/tags/service-mesh/</link>
       <pubDate>Tue, 21 Apr 2020 09:01:38 +0800</pubDate>
-      
       <guid>https://xujiahua.github.io/tags/service-mesh/</guid>
       <description></description>
     </item>
-    
     <item>
-      <title>etcd</title>
+      <title>Etcd</title>
       <link>https://xujiahua.github.io/tags/etcd/</link>
       <pubDate>Mon, 20 Apr 2020 14:12:38 +0800</pubDate>
-      
       <guid>https://xujiahua.github.io/tags/etcd/</guid>
       <description></description>
     </item>
-    
     <item>
-      <title>k8s</title>
+      <title>K8s</title>
       <link>https://xujiahua.github.io/tags/k8s/</link>
       <pubDate>Fri, 17 Apr 2020 16:09:28 +0800</pubDate>
-      
       <guid>https://xujiahua.github.io/tags/k8s/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>机器学习</title>
       <link>https://xujiahua.github.io/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/</link>
       <pubDate>Thu, 16 Apr 2020 11:33:18 +0800</pubDate>
-      
       <guid>https://xujiahua.github.io/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>机器学习工程</title>
       <link>https://xujiahua.github.io/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E5%B7%A5%E7%A8%8B/</link>
       <pubDate>Thu, 16 Apr 2020 11:33:18 +0800</pubDate>
-      
       <guid>https://xujiahua.github.io/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E5%B7%A5%E7%A8%8B/</guid>
       <description></description>
     </item>
-    
     <item>
-      <title>logging</title>
+      <title>Logging</title>
       <link>https://xujiahua.github.io/tags/logging/</link>
       <pubDate>Tue, 14 Apr 2020 09:53:35 +0800</pubDate>
-      
       <guid>https://xujiahua.github.io/tags/logging/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>BI</title>
       <link>https://xujiahua.github.io/tags/bi/</link>
       <pubDate>Fri, 10 Apr 2020 16:41:53 +0800</pubDate>
-      
       <guid>https://xujiahua.github.io/tags/bi/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>Spark</title>
       <link>https://xujiahua.github.io/tags/spark/</link>
       <pubDate>Fri, 10 Apr 2020 16:41:53 +0800</pubDate>
-      
       <guid>https://xujiahua.github.io/tags/spark/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>CDH</title>
       <link>https://xujiahua.github.io/tags/cdh/</link>
       <pubDate>Fri, 10 Apr 2020 10:07:16 +0800</pubDate>
-      
       <guid>https://xujiahua.github.io/tags/cdh/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>Golang</title>
       <link>https://xujiahua.github.io/tags/golang/</link>
       <pubDate>Fri, 20 Mar 2020 15:24:22 +0800</pubDate>
-      
       <guid>https://xujiahua.github.io/tags/golang/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>Web</title>
       <link>https://xujiahua.github.io/tags/web/</link>
       <pubDate>Fri, 20 Mar 2020 15:24:22 +0800</pubDate>
-      
       <guid>https://xujiahua.github.io/tags/web/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>Bug</title>
       <link>https://xujiahua.github.io/tags/bug/</link>
       <pubDate>Thu, 12 Mar 2020 15:17:36 +0800</pubDate>
-      
       <guid>https://xujiahua.github.io/tags/bug/</guid>
       <description></description>
     </item>
-    
     <item>
-      <title>Go router</title>
+      <title>Go Router</title>
       <link>https://xujiahua.github.io/tags/go-router/</link>
       <pubDate>Thu, 12 Mar 2020 15:17:36 +0800</pubDate>
-      
       <guid>https://xujiahua.github.io/tags/go-router/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>专利</title>
       <link>https://xujiahua.github.io/tags/%E4%B8%93%E5%88%A9/</link>
       <pubDate>Wed, 11 Mar 2020 11:25:09 +0800</pubDate>
-      
       <guid>https://xujiahua.github.io/tags/%E4%B8%93%E5%88%A9/</guid>
       <description></description>
     </item>
-    
     <item>
-      <title>GitHub pages</title>
+      <title>GitHub Pages</title>
       <link>https://xujiahua.github.io/tags/github-pages/</link>
       <pubDate>Tue, 10 Mar 2020 11:24:49 +0800</pubDate>
-      
       <guid>https://xujiahua.github.io/tags/github-pages/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>Typora</title>
       <link>https://xujiahua.github.io/tags/typora/</link>
       <pubDate>Tue, 10 Mar 2020 11:24:49 +0800</pubDate>
-      
       <guid>https://xujiahua.github.io/tags/typora/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>Hyper-V</title>
       <link>https://xujiahua.github.io/tags/hyper-v/</link>
       <pubDate>Tue, 03 Mar 2020 22:13:23 +0800</pubDate>
-      
       <guid>https://xujiahua.github.io/tags/hyper-v/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>VM</title>
       <link>https://xujiahua.github.io/tags/vm/</link>
       <pubDate>Tue, 03 Mar 2020 22:13:23 +0800</pubDate>
-      
       <guid>https://xujiahua.github.io/tags/vm/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>依赖管理</title>
       <link>https://xujiahua.github.io/tags/%E4%BE%9D%E8%B5%96%E7%AE%A1%E7%90%86/</link>
       <pubDate>Fri, 28 Feb 2020 15:05:18 +0800</pubDate>
-      
       <guid>https://xujiahua.github.io/tags/%E4%BE%9D%E8%B5%96%E7%AE%A1%E7%90%86/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>5G</title>
       <link>https://xujiahua.github.io/tags/5g/</link>
       <pubDate>Sat, 22 Feb 2020 23:32:14 +0800</pubDate>
-      
       <guid>https://xujiahua.github.io/tags/5g/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>Implicit</title>
       <link>https://xujiahua.github.io/tags/implicit/</link>
       <pubDate>Tue, 11 Feb 2020 14:34:27 +0800</pubDate>
-      
       <guid>https://xujiahua.github.io/tags/implicit/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>Recsys</title>
       <link>https://xujiahua.github.io/tags/recsys/</link>
       <pubDate>Tue, 11 Feb 2020 14:34:27 +0800</pubDate>
-      
       <guid>https://xujiahua.github.io/tags/recsys/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>测评</title>
       <link>https://xujiahua.github.io/tags/%E6%B5%8B%E8%AF%84/</link>
       <pubDate>Tue, 11 Feb 2020 14:34:27 +0800</pubDate>
-      
       <guid>https://xujiahua.github.io/tags/%E6%B5%8B%E8%AF%84/</guid>
       <description></description>
     </item>
-    
     <item>
-      <title>bigdata</title>
+      <title>Bigdata</title>
       <link>https://xujiahua.github.io/tags/bigdata/</link>
       <pubDate>Sat, 23 Nov 2019 16:13:01 +0800</pubDate>
-      
       <guid>https://xujiahua.github.io/tags/bigdata/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>READ</title>
       <link>https://xujiahua.github.io/tags/read/</link>
       <pubDate>Thu, 31 Oct 2019 15:22:33 +0800</pubDate>
-      
       <guid>https://xujiahua.github.io/tags/read/</guid>
       <description></description>
     </item>
-    
     <item>
-      <title>blockchain</title>
+      <title>Blockchain</title>
       <link>https://xujiahua.github.io/tags/blockchain/</link>
       <pubDate>Wed, 30 Oct 2019 15:31:21 +0800</pubDate>
-      
       <guid>https://xujiahua.github.io/tags/blockchain/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>性能测试</title>
       <link>https://xujiahua.github.io/tags/%E6%80%A7%E8%83%BD%E6%B5%8B%E8%AF%95/</link>
       <pubDate>Wed, 17 Oct 2018 07:42:56 +0800</pubDate>
-      
       <guid>https://xujiahua.github.io/tags/%E6%80%A7%E8%83%BD%E6%B5%8B%E8%AF%95/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>Android</title>
       <link>https://xujiahua.github.io/tags/android/</link>
       <pubDate>Sat, 08 Apr 2017 11:45:49 +0800</pubDate>
-      
       <guid>https://xujiahua.github.io/tags/android/</guid>
       <description></description>
     </item>
-    
   </channel>
 </rss>

@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+    <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="robots" content="noodp" />
+        <title>RSA公钥加密为什么需要padding - Happy Coding</title><meta name="Description" content=""><meta property="og:url" content="http://localhost:1313/posts/20190102-rsa-padding/">
+  <meta property="og:site_name" content="Happy Coding">
+  <meta property="og:title" content="RSA公钥加密为什么需要padding">
+  <meta property="og:description" content="（笔记迁移 @ 2020年）
+承接之前讨论的「【提议】使用RSA公钥来安全碰撞用户」中遗留问题，固定padding（或是没有padding）会有什么问题。
+本文列举了2种攻击方式。结论是不做padding的RSA有风险，优先考虑其他办法做安全碰撞。
+碰撞攻击 没有随机变量参与，RSA公钥加密就是个确定性加密算法。即，输入明文X，输出必定是密文Y，一对一映射关系，这是由数学公式严格界定的。
+破解方式，就是创建彩虹表。预先使用公钥加密常见的明文，通过碰撞来解密。
+Hastad攻击（广播攻击） 单独看加密公式：y = x^e % n 其中：
+x是明文，待求。 y是密文，已知。 (e,n)是公钥，n是已知，e是已知。 现在将一段明文x加密分发给e个用户，假设不同用户e是相同的，取3，但是公钥不同，n不同。（e相同的讨论见下节）
+y0 = x^3 % n0 y1 = x^3 % n1 y2 = x^3 % n2 已知，y0y2, n0n2, e，即已知密文，已知用户公钥，求明文x。
+代数的方式即可求解。
+对上述三个等式变换形式如下，是等价的（k0~k2是整数）： y0 = x^3 % n0 = x^3 &#43; n0 * k0 y1 = x^3 % n1 = x^3 &#43; n1 * k1 y2 = x^3 % n2 = x^3 &#43; n2 * k2 约去x^3 y0 - y1 = n0 * k0 - n1 * k1 y0 - y2 = n0 * k0 - n2 * k2 y1 - y2 = n1 * k1 - n2 * k2 求解三元方程组，得到k0, k1, k2的值 x = (y0 - n0 * k0) ^ (1/3) 代入k0到任意公式，可得到x。 可见，通过广播攻击，如果RSA不做padding，可获得明文的内容。">
+  <meta property="og:locale" content="zh_cn">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2019-01-02T09:05:28+08:00">
+    <meta property="article:modified_time" content="2019-01-02T09:05:28+08:00">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="RSA公钥加密为什么需要padding">
+  <meta name="twitter:description" content="（笔记迁移 @ 2020年）
+承接之前讨论的「【提议】使用RSA公钥来安全碰撞用户」中遗留问题，固定padding（或是没有padding）会有什么问题。
+本文列举了2种攻击方式。结论是不做padding的RSA有风险，优先考虑其他办法做安全碰撞。
+碰撞攻击 没有随机变量参与，RSA公钥加密就是个确定性加密算法。即，输入明文X，输出必定是密文Y，一对一映射关系，这是由数学公式严格界定的。
+破解方式，就是创建彩虹表。预先使用公钥加密常见的明文，通过碰撞来解密。
+Hastad攻击（广播攻击） 单独看加密公式：y = x^e % n 其中：
+x是明文，待求。 y是密文，已知。 (e,n)是公钥，n是已知，e是已知。 现在将一段明文x加密分发给e个用户，假设不同用户e是相同的，取3，但是公钥不同，n不同。（e相同的讨论见下节）
+y0 = x^3 % n0 y1 = x^3 % n1 y2 = x^3 % n2 已知，y0y2, n0n2, e，即已知密文，已知用户公钥，求明文x。
+代数的方式即可求解。
+对上述三个等式变换形式如下，是等价的（k0~k2是整数）： y0 = x^3 % n0 = x^3 &#43; n0 * k0 y1 = x^3 % n1 = x^3 &#43; n1 * k1 y2 = x^3 % n2 = x^3 &#43; n2 * k2 约去x^3 y0 - y1 = n0 * k0 - n1 * k1 y0 - y2 = n0 * k0 - n2 * k2 y1 - y2 = n1 * k1 - n2 * k2 求解三元方程组，得到k0, k1, k2的值 x = (y0 - n0 * k0) ^ (1/3) 代入k0到任意公式，可得到x。 可见，通过广播攻击，如果RSA不做padding，可获得明文的内容。">
+<meta name="application-name" content="Happy Coding">
+<meta name="apple-mobile-web-app-title" content="Happy Coding"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="http://localhost:1313/posts/20190102-rsa-padding/" /><link rel="prev" href="http://localhost:1313/posts/20181029-mastering-ethereum/" /><link rel="next" href="http://localhost:1313/posts/20190304-go-plugin/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="/lib/fontawesome-free/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="/lib/fontawesome-free/all.min.css"></noscript><link rel="preload" href="/lib/animate/animate.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="/lib/animate/animate.min.css"></noscript><script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "headline": "RSA公钥加密为什么需要padding",
+        "inLanguage": "zh-cn",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "http:\/\/localhost:1313\/posts\/20190102-rsa-padding\/"
+        },"genre": "posts","wordcount":  171 ,
+        "url": "http:\/\/localhost:1313\/posts\/20190102-rsa-padding\/","datePublished": "2019-01-02T09:05:28+08:00","dateModified": "2019-01-02T09:05:28+08:00","publisher": {
+            "@type": "Organization",
+            "name": ""},"author": {
+                "@type": "Person",
+                "name": "Happy Coding"
+            },"description": ""
+    }
+    </script></head>
+    <body data-header-desktop="fixed" data-header-mobile="auto"><script type="text/javascript">(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
+
+        <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
+    <div class="header-wrapper">
+        <div class="header-title">
+            <a href="/" title="Happy Coding">Happy Coding</a>
+        </div>
+        <div class="menu">
+            <div class="menu-inner"><a class="menu-item" href="/posts"> Archive </a><a class="menu-item" href="/categories"> Categories </a><a class="menu-item" href="/tags"> Tags </a><a class="menu-item" href="/index.xml"> RSS Feed </a><span class="menu-item delimiter"></span><a href="javascript:void(0);" class="menu-item theme-switch" title="Switch Theme">
+                    <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+                </a></div>
+        </div>
+    </div>
+</header><header class="mobile" id="header-mobile">
+    <div class="header-container">
+        <div class="header-wrapper">
+            <div class="header-title">
+                <a href="/" title="Happy Coding">Happy Coding</a>
+            </div>
+            <div class="menu-toggle" id="menu-toggle-mobile">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="menu" id="menu-mobile"><a class="menu-item" href="/posts" title="">Archive</a><a class="menu-item" href="/categories" title="">Categories</a><a class="menu-item" href="/tags" title="">Tags</a><a class="menu-item" href="/index.xml" title="">RSS Feed</a><a href="javascript:void(0);" class="menu-item theme-switch" title="Switch Theme">
+                <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+            </a></div>
+    </div>
+</header><main class="main">
+                <div class="container"><div class="toc" id="toc-auto">
+            <h2 class="toc-title">Contents</h2>
+            <div class="toc-content" id="toc-content-auto"></div>
+        </div><article class="page single"><h1 class="single-title animate__animated animate__flipInX">RSA公钥加密为什么需要padding</h1><div class="post-meta">
+            <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Happy Coding</a></span></div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2019-01-02">2019-01-02</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;171 words&nbsp;
+                <i class="far fa-clock fa-fw" aria-hidden="true"></i>&nbsp;One minute&nbsp;</div>
+        </div><div class="details toc" id="toc-static"  data-kept="">
+                <div class="details-summary toc-title">
+                    <span>Contents</span>
+                    <span><i class="details-icon fas fa-angle-right" aria-hidden="true"></i></span>
+                </div>
+                <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#碰撞攻击">碰撞攻击</a></li>
+    <li><a href="#hastad攻击广播攻击">Hastad攻击（广播攻击）</a>
+      <ul>
+        <li><a href="#回顾rsa的定义">回顾：RSA的定义</a></li>
+        <li><a href="#假设不同的用户share相同的公钥指数">假设：不同的用户share相同的公钥指数</a></li>
+        <li><a href="#参考">参考</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav></div>
+            </div><div class="content" id="content"><p>（笔记迁移 @ 2020年）</p>
+<p><em>承接之前讨论的「【提议】使用RSA公钥来安全碰撞用户」中遗留问题，固定padding（或是没有padding）会有什么问题。</em></p>
+<p>本文列举了2种攻击方式。<em>结论是不做padding的RSA有风险，优先考虑其他办法做安全碰撞。</em></p>
+<h2 id="碰撞攻击">碰撞攻击</h2>
+<p>没有随机变量参与，RSA公钥加密就是个确定性加密算法。即，输入明文X，输出必定是密文Y，一对一映射关系，这是由数学公式严格界定的。</p>
+<p>破解方式，就是创建彩虹表。预先使用公钥加密常见的明文，通过碰撞来解密。</p>
+<h2 id="hastad攻击广播攻击">Hastad攻击（广播攻击）</h2>
+<p>单独看加密公式：<code>y = x^e % n</code> 其中：</p>
+<ol>
+<li>x是明文，待求。</li>
+<li>y是密文，已知。</li>
+<li>(e,n)是公钥，n是已知，e是已知。</li>
+</ol>
+<p>现在将一段明文x加密分发给e个用户，假设不同用户e是相同的，取3，但是公钥不同，n不同。（e相同的讨论见下节）</p>
+<pre tabindex="0"><code>y0 = x^3 % n0
+y1 = x^3 % n1
+y2 = x^3 % n2
+</code></pre><p>已知，y0<del>y2, n0</del>n2, e，即已知密文，已知用户公钥，求明文x。</p>
+<p>代数的方式即可求解。</p>
+<pre tabindex="0"><code>对上述三个等式变换形式如下，是等价的（k0~k2是整数）：
+
+y0 = x^3 % n0 = x^3 + n0 * k0
+y1 = x^3 % n1 = x^3 + n1 * k1
+y2 = x^3 % n2 = x^3 + n2 * k2
+
+约去x^3
+
+y0 - y1 = n0 * k0 - n1 * k1
+y0 - y2 = n0 * k0 - n2 * k2
+y1 - y2 = n1 * k1 - n2 * k2
+
+求解三元方程组，得到k0, k1, k2的值
+
+x = (y0 - n0 * k0) ^ (1/3)
+
+代入k0到任意公式，可得到x。
+</code></pre><p>可见，通过广播攻击，如果RSA不做padding，可获得明文的内容。</p>
+<p>（可通过中国剩余定理得出结果，暂未推导出。）</p>
+<h3 id="回顾rsa的定义">回顾：RSA的定义</h3>
+<p>参考：https://blog.csdn.net/u010555682/article/details/51901145</p>
+<blockquote>
+<p>1、找密钥的过程
+在自然数中找两个大质数p和q，记n=pq，m=(p-1)(q-1)。
+在0至m-1的自然数中找一个e,但e要满足1个条件：e与m互素。
+再找一个数d，d要满足的条件是：ed-1除以m的余数是0（即ed-1能够被m除尽）。
+那么，数字对（e,n）就是公开密钥，数字对（d,n）就是私有密钥。</p></blockquote>
+<blockquote>
+<p>2、用公开密钥机制加解密的算法公式
+注意：在使用公开密钥加密时，明文分组的值要小于n。
+假设明文的值是x，密文的值是y。则：
+加密公式：密文y=x的e次方除以n的余数
+解密公式：明文x=y的d次方除以n的余数</p></blockquote>
+<h3 id="假设不同的用户share相同的公钥指数">假设：不同的用户share相同的公钥指数</h3>
+<p>这里有个假设，即，不同用户的公钥指数e是相同的。如果使用Chrome打开服务器证书，可以发现，e都取65537。见下图。</p>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="../../images/image-20200625090724939.png"
+        data-srcset="../../images/image-20200625090724939.png, ../../images/image-20200625090724939.png 1.5x, ../../images/image-20200625090724939.png 2x"
+        data-sizes="auto"
+        alt="../../images/image-20200625090724939.png"
+        title="image-20200625090724939" /></p>
+<p>OpenSSL库，e只有两个选择：3或是65537。从加密公式来看，选3，计算效率更高。</p>
+<blockquote>
+<p>-F4|-3
+The public exponent to use, either 65537 or 3. The default is 65537.</p></blockquote>
+<blockquote>
+<p>参考：https://www.openssl.org/docs/man1.1.1/man1/openssl-genrsa.html</p></blockquote>
+<p><strong>结论：不同的用户很大概率都是用相同的公钥指数e，这是由开源库预先定义好的。而每个用户的都有各自的公钥，所以n是不同的（p、q是不同的）。</strong></p>
+<h3 id="参考">参考</h3>
+<ol>
+<li>Why RSA encryption padding is critical 推理一句话 <a href="https://rdist.root.org/2009/10/06/why-rsa-encryption-padding-is-critical/" target="_blank" rel="noopener noreffer ">https://rdist.root.org/2009/10/06/why-rsa-encryption-padding-is-critical/</a></li>
+<li>Chinese Remainder Theorem <a href="https://crypto.stanford.edu/pbc/notes/numbertheory/crt.html" target="_blank" rel="noopener noreffer ">https://crypto.stanford.edu/pbc/notes/numbertheory/crt.html</a></li>
+<li>RSA (cryptosystem) padding 描述了四种plain RSA出现的问题
+<a href="https://en.wikipedia.org/wiki/RSA_%28cryptosystem%29#Padding" target="_blank" rel="noopener noreffer ">https://en.wikipedia.org/wiki/RSA_(cryptosystem)#Padding</a></li>
+</ol>
+</div><div class="post-footer" id="post-footer">
+    <div class="post-info">
+        <div class="post-info-line">
+            <div class="post-info-mod">
+                <span>Updated on 2019-01-02</span>
+            </div></div>
+        <div class="post-info-line">
+            <div class="post-info-md"></div>
+            <div class="post-info-share">
+                <span><a href="javascript:void(0);" title="Share on Twitter" data-sharer="twitter" data-url="http://localhost:1313/posts/20190102-rsa-padding/" data-title="RSA公钥加密为什么需要padding"><i class="fab fa-twitter fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="Share on Facebook" data-sharer="facebook" data-url="http://localhost:1313/posts/20190102-rsa-padding/"><i class="fab fa-facebook-square fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="Share on Hacker News" data-sharer="hackernews" data-url="http://localhost:1313/posts/20190102-rsa-padding/" data-title="RSA公钥加密为什么需要padding"><i class="fab fa-hacker-news fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="Share on Line" data-sharer="line" data-url="http://localhost:1313/posts/20190102-rsa-padding/" data-title="RSA公钥加密为什么需要padding"><i data-svg-src="/lib/simple-icons/icons/line.min.svg" aria-hidden="true"></i></a><a href="javascript:void(0);" title="Share on 微博" data-sharer="weibo" data-url="http://localhost:1313/posts/20190102-rsa-padding/" data-title="RSA公钥加密为什么需要padding"><i class="fab fa-weibo fa-fw" aria-hidden="true"></i></a></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="post-info-more">
+        <section class="post-tags"></section>
+        <section>
+            <span><a href="javascript:void(0);" onclick="window.history.back();">Back</a></span>&nbsp;|&nbsp;<span><a href="/">Home</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav"><a href="/posts/20181029-mastering-ethereum/" class="prev" rel="prev" title="读 Mastering Ethereum"><i class="fas fa-angle-left fa-fw" aria-hidden="true"></i>读 Mastering Ethereum</a>
+            <a href="/posts/20190304-go-plugin/" class="next" rel="next" title="Go Plugin">Go Plugin<i class="fas fa-angle-right fa-fw" aria-hidden="true"></i></a></div>
+</div>
+</article></div>
+            </main><footer class="footer">
+        <div class="footer-container"><div class="footer-line">Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.147.3">Hugo</a> | Theme - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.3.0"><i class="far fa-kiss-wink-heart fa-fw" aria-hidden="true"></i> LoveIt</a>
+                </div><div class="footer-line" itemscope itemtype="http://schema.org/CreativeWork"><i class="far fa-copyright fa-fw" aria-hidden="true"></i><span itemprop="copyrightYear">2022 - 2025</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/" target="_blank">Happy Coding</a></span></div>
+        </div>
+    </footer></div>
+
+        <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="Back to Top">
+                <i class="fas fa-arrow-up fa-fw" aria-hidden="true"></i>
+            </a><a href="#" id="view-comments" class="fixed-button" title="View Comments">
+                <i class="fas fa-comment fa-fw" aria-hidden="true"></i>
+            </a>
+        </div><script type="text/javascript" src="/lib/lazysizes/lazysizes.min.js"></script><script type="text/javascript" src="/lib/clipboard/clipboard.min.js"></script><script type="text/javascript" src="/lib/sharer/sharer.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"Copy to clipboard","maxShownLines":50},"comment":{}};</script><script type="text/javascript" src="/js/theme.min.js"></script></body>
+</html>

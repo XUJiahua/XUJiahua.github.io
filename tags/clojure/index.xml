@@ -1,29 +1,19 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>clojure on Happy Coding</title>
+    <title>Clojure on Happy Coding</title>
     <link>https://xujiahua.github.io/tags/clojure/</link>
-    <description>Recent content in clojure on Happy Coding</description>
-    <generator>Hugo -- gohugo.io</generator>
+    <description>Recent content in Clojure on Happy Coding</description>
+    <generator>Hugo</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Thu, 04 Jun 2020 16:13:27 +0800</lastBuildDate><atom:link href="https://xujiahua.github.io/tags/clojure/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Thu, 04 Jun 2020 16:13:27 +0800</lastBuildDate>
+    <atom:link href="https://xujiahua.github.io/tags/clojure/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>使用 REPL 调试 Clojure 项目（Metabase）</title>
       <link>https://xujiahua.github.io/posts/20200604-clojure-repl-debug/</link>
       <pubDate>Thu, 04 Jun 2020 16:13:27 +0800</pubDate>
-      
       <guid>https://xujiahua.github.io/posts/20200604-clojure-repl-debug/</guid>
-      <description>开发工具 Intellij IDEA + Cursive 安装 IDEA 社区版即可，并安装插件 Cursive。
-Cursive 插件按键冲突 比如我会用组合键⌘ + [浏览代码，与 Cursive 插件的按键冲突。可以取消 Cursive 的这个组合键。
-Emacs Added 2020-07-10
-参考：How to Use Emacs, an Excellent Clojure Editor
-实践Metabase代码库失败：在REPL中执行(-main)直接挂了，待研究。TBD
-实践 Metabase 接触 Clojure 是因为 Metabase 这个项目 https://github.com/metabase/metabase 。以 Metabase 为例，说明如何调试 Clojure 项目。
-Metabase 由前后端两部分组成，后端是由 Clojure 写的 REST API 项目。启动前端工程，需要在前端界面上触发 API 请求。
-yarn build-hot 参考
- Metabase developers-guide https://github.com/metabase/metabase/blob/master/docs/developers-guide.md  REPL 调试 Clojure 项目 新建一个 Clojure REPL 配置。
-展开右下角的 REPL 子窗口，Run REPL for metabase-core。（注意，此时，项目中的 clojure namespace 并没有实际加载。代码编辑区运行 Clojure 函数，会报错，Error: :namespace-not-found）</description>
+      <description>&lt;h2 id=&#34;开发工具&#34;&gt;开发工具&lt;/h2&gt;&#xA;&lt;h3 id=&#34;intellij-idea--cursive&#34;&gt;Intellij IDEA + Cursive&lt;/h3&gt;&#xA;&lt;p&gt;安装 IDEA 社区版即可，并安装插件 Cursive。&lt;/p&gt;&#xA;&lt;p&gt;&lt;img&#xA;        class=&#34;lazyload&#34;&#xA;        src=&#34;https://xujiahua.github.io/svg/loading.min.svg&#34;&#xA;        data-src=&#34;../../images/image-20200604161831382.png&#34;&#xA;        data-srcset=&#34;../../images/image-20200604161831382.png, ../../images/image-20200604161831382.png 1.5x, ../../images/image-20200604161831382.png 2x&#34;&#xA;        data-sizes=&#34;auto&#34;&#xA;        alt=&#34;../../images/image-20200604161831382.png&#34;&#xA;        title=&#34;image-20200604161831382&#34; /&gt;&lt;/p&gt;&#xA;&lt;h4 id=&#34;cursive-插件按键冲突&#34;&gt;Cursive 插件按键冲突&lt;/h4&gt;&#xA;&lt;p&gt;比如我会用组合键&lt;code&gt;⌘ + [&lt;/code&gt;浏览代码，与 Cursive 插件的按键冲突。可以取消 Cursive 的这个组合键。&lt;/p&gt;&#xA;&lt;p&gt;&lt;img&#xA;        class=&#34;lazyload&#34;&#xA;        src=&#34;https://xujiahua.github.io/svg/loading.min.svg&#34;&#xA;        data-src=&#34;../../images/image-20200604162732892.png&#34;&#xA;        data-srcset=&#34;../../images/image-20200604162732892.png, ../../images/image-20200604162732892.png 1.5x, ../../images/image-20200604162732892.png 2x&#34;&#xA;        data-sizes=&#34;auto&#34;&#xA;        alt=&#34;../../images/image-20200604162732892.png&#34;&#xA;        title=&#34;image-20200604162732892&#34; /&gt;&lt;/p&gt;&#xA;&lt;h3 id=&#34;emacs&#34;&gt;Emacs&lt;/h3&gt;&#xA;&lt;p&gt;&lt;em&gt;Added 2020-07-10&lt;/em&gt;&lt;/p&gt;&#xA;&lt;p&gt;参考：&lt;a href=&#34;https://www.braveclojure.com/basic-emacs/&#34; target=&#34;_blank&#34; rel=&#34;noopener noreffer &#34;&gt;How to Use Emacs, an Excellent Clojure Editor&lt;/a&gt;&lt;/p&gt;&#xA;&lt;p&gt;&lt;em&gt;实践&lt;code&gt;Metabase&lt;/code&gt;代码库失败：在REPL中执行(-main)直接挂了，待研究。TBD&lt;/em&gt;&lt;/p&gt;&#xA;&lt;h2 id=&#34;实践&#34;&gt;实践&lt;/h2&gt;&#xA;&lt;h3 id=&#34;metabase&#34;&gt;Metabase&lt;/h3&gt;&#xA;&lt;p&gt;接触 Clojure 是因为 Metabase 这个项目 &lt;a href=&#34;https://github.com/metabase/metabase&#34; target=&#34;_blank&#34; rel=&#34;noopener noreffer &#34;&gt;https://github.com/metabase/metabase&lt;/a&gt; 。以 Metabase 为例，说明如何调试 Clojure 项目。&lt;/p&gt;&#xA;&lt;p&gt;Metabase 由前后端两部分组成，后端是由 Clojure 写的 REST API 项目。启动前端工程，需要在前端界面上触发 API 请求。&lt;/p&gt;</description>
     </item>
-    
   </channel>
 </rss>

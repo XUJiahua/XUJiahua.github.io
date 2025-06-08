@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+    <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="robots" content="noodp" />
+        <title>关于数据产品的畅想 - Happy Coding</title><meta name="Description" content=""><meta property="og:url" content="http://localhost:1313/posts/20200720-bi-product/">
+  <meta property="og:site_name" content="Happy Coding">
+  <meta property="og:title" content="关于数据产品的畅想">
+  <meta property="og:description" content="一个产品的灵魂，不是其外表（UI），而是其领域知识（Domain Knowledge），产品是知识的物化。
+那么一个BI产品，其灵魂，就是关于数据的知识、数据的范式。数据知识，如何软件化呢。
+通过产品，了解领域知识。
+单点的技术产品，很难真正帮助用户发挥数据的价值潜力。比如Cloudera（与hortonworks合并之后的Cloudera将重点扩展到了Hadoop领域之外，其核心产品Cloudera Data Platform（CDP）提供了广泛的功能集，可用于管理数据、分析数据和运行机器学习模型等），只是提供了技术工具，企业还是得雇数据工程师进行数据处理及之后的一连串流程。
+技术与场景的融合至关重要，一定要与业务强相关，基础设施有太强的替代性。
+BI 产品 市场上的BI产品很多，国内就有阿里云QuickBI、网易有数，还有PowerBI、Tableau等。功能大同小异，在互相借鉴中进化，没有本质区别。
+为数据需求方提供了一个取数的地方。 可视化报表自助开发。写SQL（可能鼠标点点，不需要SQL）、套可视化模板，不依赖开发。 关于数据的知识，罗列下：
+集合的思想。 各种数据分析模型。流量模型、网络模型。 可视化的数据探索。EDA。 维度分析。 数据挖掘。 单变量分析：数据的（直方图）分布，识别异常点（Outlier）；统计信息（count, mean, std, min, max, null values?）。 多变量分析。散点图、相关性分析。 SQL：分组、聚合函数，分析（窗口）函数。 对比分析。 基于业务范式比如订单分析，程序自动化生成洞见。 模型的能力。机器学习、网络分析等在此范畴。基于数据学习，形成模型。 用户画像？ 数据分布 作为数据探索的一部分，单变量分析。
+多变量分析。哪个维度对于指标来说比较重要呢。 使用线性回归来拟合历史数据么？ 哪个因素导致交易额提高了，这个需要模型，自动化地告诉我们答案。 不然重复的维度（也就是因素）分析，工作太重复了。 线性回归就可以了。看看每个因素与结果的相关性
+ETL产品 适配各种数据源，将用户数据源中的数据导入到ETL产品的数据仓库，数据以表格的逻辑形式存在。按照插件的形式架构。 数据导入可以是一次性的，也可以是增量导入（比如，日增量导入）的。 Transform，预先定义映射规则，数据导入的过程中进行数据变换。 以上，都是可视化的操作。这些规则，作为原数据存储在数据库。 暴露出JDBC等方式的数据接口，供BI分析工具使用。 数据仓库的选型：有基于大数据的（例如 BDP 使用sparksql），有基于传统MPP列式数据库的（例如 panoply 使用 Amazon Redshift）。 看了panoply这个产品有感。
+Sync and store data from over 80 sources. Explore your data with SQL or visualize it with your favorite BI and analytics tools.">
+  <meta property="og:locale" content="zh_cn">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2020-07-20T17:15:21+08:00">
+    <meta property="article:modified_time" content="2020-07-20T17:15:21+08:00">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="关于数据产品的畅想">
+  <meta name="twitter:description" content="一个产品的灵魂，不是其外表（UI），而是其领域知识（Domain Knowledge），产品是知识的物化。
+那么一个BI产品，其灵魂，就是关于数据的知识、数据的范式。数据知识，如何软件化呢。
+通过产品，了解领域知识。
+单点的技术产品，很难真正帮助用户发挥数据的价值潜力。比如Cloudera（与hortonworks合并之后的Cloudera将重点扩展到了Hadoop领域之外，其核心产品Cloudera Data Platform（CDP）提供了广泛的功能集，可用于管理数据、分析数据和运行机器学习模型等），只是提供了技术工具，企业还是得雇数据工程师进行数据处理及之后的一连串流程。
+技术与场景的融合至关重要，一定要与业务强相关，基础设施有太强的替代性。
+BI 产品 市场上的BI产品很多，国内就有阿里云QuickBI、网易有数，还有PowerBI、Tableau等。功能大同小异，在互相借鉴中进化，没有本质区别。
+为数据需求方提供了一个取数的地方。 可视化报表自助开发。写SQL（可能鼠标点点，不需要SQL）、套可视化模板，不依赖开发。 关于数据的知识，罗列下：
+集合的思想。 各种数据分析模型。流量模型、网络模型。 可视化的数据探索。EDA。 维度分析。 数据挖掘。 单变量分析：数据的（直方图）分布，识别异常点（Outlier）；统计信息（count, mean, std, min, max, null values?）。 多变量分析。散点图、相关性分析。 SQL：分组、聚合函数，分析（窗口）函数。 对比分析。 基于业务范式比如订单分析，程序自动化生成洞见。 模型的能力。机器学习、网络分析等在此范畴。基于数据学习，形成模型。 用户画像？ 数据分布 作为数据探索的一部分，单变量分析。
+多变量分析。哪个维度对于指标来说比较重要呢。 使用线性回归来拟合历史数据么？ 哪个因素导致交易额提高了，这个需要模型，自动化地告诉我们答案。 不然重复的维度（也就是因素）分析，工作太重复了。 线性回归就可以了。看看每个因素与结果的相关性
+ETL产品 适配各种数据源，将用户数据源中的数据导入到ETL产品的数据仓库，数据以表格的逻辑形式存在。按照插件的形式架构。 数据导入可以是一次性的，也可以是增量导入（比如，日增量导入）的。 Transform，预先定义映射规则，数据导入的过程中进行数据变换。 以上，都是可视化的操作。这些规则，作为原数据存储在数据库。 暴露出JDBC等方式的数据接口，供BI分析工具使用。 数据仓库的选型：有基于大数据的（例如 BDP 使用sparksql），有基于传统MPP列式数据库的（例如 panoply 使用 Amazon Redshift）。 看了panoply这个产品有感。
+Sync and store data from over 80 sources. Explore your data with SQL or visualize it with your favorite BI and analytics tools.">
+<meta name="application-name" content="Happy Coding">
+<meta name="apple-mobile-web-app-title" content="Happy Coding"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="http://localhost:1313/posts/20200720-bi-product/" /><link rel="prev" href="http://localhost:1313/posts/20200717-clojure-toucan/" /><link rel="next" href="http://localhost:1313/posts/20200723-golang-http-reuse/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="/lib/fontawesome-free/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="/lib/fontawesome-free/all.min.css"></noscript><link rel="preload" href="/lib/animate/animate.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="/lib/animate/animate.min.css"></noscript><script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "headline": "关于数据产品的畅想",
+        "inLanguage": "zh-cn",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "http:\/\/localhost:1313\/posts\/20200720-bi-product\/"
+        },"genre": "posts","wordcount":  95 ,
+        "url": "http:\/\/localhost:1313\/posts\/20200720-bi-product\/","datePublished": "2020-07-20T17:15:21+08:00","dateModified": "2020-07-20T17:15:21+08:00","publisher": {
+            "@type": "Organization",
+            "name": ""},"author": {
+                "@type": "Person",
+                "name": "Happy Coding"
+            },"description": ""
+    }
+    </script></head>
+    <body data-header-desktop="fixed" data-header-mobile="auto"><script type="text/javascript">(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
+
+        <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
+    <div class="header-wrapper">
+        <div class="header-title">
+            <a href="/" title="Happy Coding">Happy Coding</a>
+        </div>
+        <div class="menu">
+            <div class="menu-inner"><a class="menu-item" href="/posts"> Archive </a><a class="menu-item" href="/categories"> Categories </a><a class="menu-item" href="/tags"> Tags </a><a class="menu-item" href="/index.xml"> RSS Feed </a><span class="menu-item delimiter"></span><a href="javascript:void(0);" class="menu-item theme-switch" title="Switch Theme">
+                    <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+                </a></div>
+        </div>
+    </div>
+</header><header class="mobile" id="header-mobile">
+    <div class="header-container">
+        <div class="header-wrapper">
+            <div class="header-title">
+                <a href="/" title="Happy Coding">Happy Coding</a>
+            </div>
+            <div class="menu-toggle" id="menu-toggle-mobile">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="menu" id="menu-mobile"><a class="menu-item" href="/posts" title="">Archive</a><a class="menu-item" href="/categories" title="">Categories</a><a class="menu-item" href="/tags" title="">Tags</a><a class="menu-item" href="/index.xml" title="">RSS Feed</a><a href="javascript:void(0);" class="menu-item theme-switch" title="Switch Theme">
+                <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+            </a></div>
+    </div>
+</header><main class="main">
+                <div class="container"><div class="toc" id="toc-auto">
+            <h2 class="toc-title">Contents</h2>
+            <div class="toc-content" id="toc-content-auto"></div>
+        </div><article class="page single"><h1 class="single-title animate__animated animate__flipInX">关于数据产品的畅想</h1><div class="post-meta">
+            <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Happy Coding</a></span></div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2020-07-20">2020-07-20</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;95 words&nbsp;
+                <i class="far fa-clock fa-fw" aria-hidden="true"></i>&nbsp;One minute&nbsp;</div>
+        </div><div class="details toc" id="toc-static"  data-kept="">
+                <div class="details-summary toc-title">
+                    <span>Contents</span>
+                    <span><i class="details-icon fas fa-angle-right" aria-hidden="true"></i></span>
+                </div>
+                <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#bi-产品"><code>BI</code> 产品</a>
+      <ul>
+        <li><a href="#数据分布">数据分布</a></li>
+      </ul>
+    </li>
+    <li><a href="#etl产品"><code>ETL</code>产品</a></li>
+    <li><a href="#olap数据库"><code>OLAP</code>数据库</a>
+      <ul>
+        <li><a href="#预聚合">预聚合</a></li>
+        <li><a href="#扩容">扩容</a></li>
+        <li><a href="#试试-clickhouse">试试 Clickhouse</a></li>
+      </ul>
+    </li>
+    <li><a href="#数据分析书籍">数据分析书籍</a></li>
+  </ul>
+</nav></div>
+            </div><div class="content" id="content"><p>一个产品的灵魂，不是其外表（UI），而是其领域知识（Domain Knowledge），产品是知识的物化。</p>
+<p>那么一个<code>BI</code>产品，其灵魂，就是关于数据的知识、数据的范式。数据知识，如何软件化呢。</p>
+<p>通过产品，了解领域知识。</p>
+<p>单点的技术产品，很难真正帮助用户发挥数据的价值潜力。比如<code>Cloudera</code>（与hortonworks合并之后的Cloudera将重点扩展到了Hadoop领域之外，其核心产品Cloudera Data Platform（CDP）提供了广泛的功能集，可用于管理数据、分析数据和运行机器学习模型等），只是提供了技术工具，企业还是得雇数据工程师进行数据处理及之后的一连串流程。</p>
+<p>技术与场景的融合至关重要，一定要与业务强相关，基础设施有太强的替代性。</p>
+<h2 id="bi-产品"><code>BI</code> 产品</h2>
+<p>市场上的<code>BI</code>产品很多，国内就有阿里云QuickBI、网易有数，还有PowerBI、Tableau等。功能大同小异，在互相借鉴中进化，没有本质区别。</p>
+<ol>
+<li>为数据需求方提供了一个取数的地方。</li>
+<li>可视化报表自助开发。写SQL（可能鼠标点点，不需要SQL）、套可视化模板，不依赖开发。</li>
+</ol>
+<p>关于数据的知识，罗列下：</p>
+<ol>
+<li>集合的思想。</li>
+<li>各种数据分析模型。流量模型、网络模型。</li>
+<li>可视化的数据探索。EDA。</li>
+<li>维度分析。</li>
+<li>数据挖掘。</li>
+<li>单变量分析：数据的（直方图）分布，识别异常点（Outlier）；统计信息（count, mean, std, min, max, null values?）。</li>
+<li>多变量分析。散点图、相关性分析。</li>
+<li>SQL：分组、聚合函数，分析（窗口）函数。</li>
+<li>对比分析。</li>
+<li>基于业务范式比如订单分析，程序自动化生成洞见。</li>
+<li>模型的能力。机器学习、网络分析等在此范畴。基于数据学习，形成模型。</li>
+<li>用户画像？</li>
+</ol>
+<h3 id="数据分布">数据分布</h3>
+<p>作为数据探索的一部分，单变量分析。</p>
+<p>多变量分析。哪个维度对于指标来说比较重要呢。
+使用线性回归来拟合历史数据么？
+哪个因素导致交易额提高了，这个需要模型，自动化地告诉我们答案。
+不然重复的维度（也就是因素）分析，工作太重复了。
+线性回归就可以了。看看每个因素与结果的相关性</p>
+<h2 id="etl产品"><code>ETL</code>产品</h2>
+<ol>
+<li>适配各种数据源，将用户数据源中的数据导入到<code>ETL</code>产品的数据仓库，数据以表格的逻辑形式存在。按照插件的形式架构。</li>
+<li>数据导入可以是一次性的，也可以是增量导入（比如，日增量导入）的。</li>
+<li><code>Transform</code>，预先定义映射规则，数据导入的过程中进行数据变换。</li>
+<li>以上，都是可视化的操作。这些规则，作为原数据存储在数据库。</li>
+<li>暴露出<code>JDBC</code>等方式的数据接口，供<code>BI</code>分析工具使用。</li>
+<li>数据仓库的选型：有基于大数据的（例如 <a href="https://www.bdp.cn/home.html" target="_blank" rel="noopener noreffer ">BDP</a> 使用<code>sparksql</code>），有基于传统MPP列式数据库的（例如 <a href="https://panoply.io/" target="_blank" rel="noopener noreffer ">panoply</a> 使用 <code>Amazon Redshift</code>）。</li>
+</ol>
+<p>看了<a href="https://panoply.io/" target="_blank" rel="noopener noreffer ">panoply</a>这个产品有感。</p>
+<blockquote>
+<p>Sync and store data from over 80 sources. Explore your data with SQL or visualize it with your favorite BI and analytics tools.</p></blockquote>
+<p>倒是没有关于用户画像的开源解决方案。</p>
+<p>BDP：集ETL、可视化分析为一体。</p>
+<h2 id="olap数据库"><code>OLAP</code>数据库</h2>
+<p><code>OLAP</code>数据库作为BI分析工具的数据引擎，一定要快。目前使用<code>Impala</code>作为<code>OLAP</code>数据库。业界也挺多使用大数据方案做OLAP数据库的，比如 <a href="https://www.bdp.cn/home.html" target="_blank" rel="noopener noreffer ">BDP</a> 的OLAP引擎是<code>sparksql</code>。</p>
+<p>因为<code>Impala</code>与ETL任务共享一个集群，有互相挤占的现象。</p>
+<p>有两种思路提供数据查询加速。</p>
+<h3 id="预聚合">预聚合</h3>
+<p>将预聚合结果存到比如<code>mysql</code>，只要查询<code>mysql</code>就行。</p>
+<p>缺点很明显：</p>
+<ol>
+<li>用户不使用，就是浪费计算。</li>
+<li>需求没法完美满足。比如<code>uv</code>计算，预聚合日<code>uv</code>，用户想看某一段时间的<code>uv</code>，没法基于已计算的日<code>uv</code>累加，无法满足用户需求。聚合的规则都在用户脑子里，预先聚合没有止尽。</li>
+</ol>
+<h3 id="扩容">扩容</h3>
+<p>多准备几个Impala节点。</p>
+<h3 id="试试-clickhouse">试试 Clickhouse</h3>
+<p>尚未深度体验。</p>
+<h2 id="数据分析书籍">数据分析书籍</h2>
+</div><div class="post-footer" id="post-footer">
+    <div class="post-info">
+        <div class="post-info-line">
+            <div class="post-info-mod">
+                <span>Updated on 2020-07-20</span>
+            </div></div>
+        <div class="post-info-line">
+            <div class="post-info-md"></div>
+            <div class="post-info-share">
+                <span><a href="javascript:void(0);" title="Share on Twitter" data-sharer="twitter" data-url="http://localhost:1313/posts/20200720-bi-product/" data-title="关于数据产品的畅想"><i class="fab fa-twitter fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="Share on Facebook" data-sharer="facebook" data-url="http://localhost:1313/posts/20200720-bi-product/"><i class="fab fa-facebook-square fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="Share on Hacker News" data-sharer="hackernews" data-url="http://localhost:1313/posts/20200720-bi-product/" data-title="关于数据产品的畅想"><i class="fab fa-hacker-news fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="Share on Line" data-sharer="line" data-url="http://localhost:1313/posts/20200720-bi-product/" data-title="关于数据产品的畅想"><i data-svg-src="/lib/simple-icons/icons/line.min.svg" aria-hidden="true"></i></a><a href="javascript:void(0);" title="Share on 微博" data-sharer="weibo" data-url="http://localhost:1313/posts/20200720-bi-product/" data-title="关于数据产品的畅想"><i class="fab fa-weibo fa-fw" aria-hidden="true"></i></a></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="post-info-more">
+        <section class="post-tags"></section>
+        <section>
+            <span><a href="javascript:void(0);" onclick="window.history.back();">Back</a></span>&nbsp;|&nbsp;<span><a href="/">Home</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav"><a href="/posts/20200717-clojure-toucan/" class="prev" rel="prev" title="20200717 Clojure Toucan"><i class="fas fa-angle-left fa-fw" aria-hidden="true"></i>20200717 Clojure Toucan</a>
+            <a href="/posts/20200723-golang-http-reuse/" class="next" rel="next" title="实验说明 Golang HTTP 连接池参数">实验说明 Golang HTTP 连接池参数<i class="fas fa-angle-right fa-fw" aria-hidden="true"></i></a></div>
+</div>
+</article></div>
+            </main><footer class="footer">
+        <div class="footer-container"><div class="footer-line">Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.147.3">Hugo</a> | Theme - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.3.0"><i class="far fa-kiss-wink-heart fa-fw" aria-hidden="true"></i> LoveIt</a>
+                </div><div class="footer-line" itemscope itemtype="http://schema.org/CreativeWork"><i class="far fa-copyright fa-fw" aria-hidden="true"></i><span itemprop="copyrightYear">2022 - 2025</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/" target="_blank">Happy Coding</a></span></div>
+        </div>
+    </footer></div>
+
+        <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="Back to Top">
+                <i class="fas fa-arrow-up fa-fw" aria-hidden="true"></i>
+            </a><a href="#" id="view-comments" class="fixed-button" title="View Comments">
+                <i class="fas fa-comment fa-fw" aria-hidden="true"></i>
+            </a>
+        </div><script type="text/javascript" src="/lib/lazysizes/lazysizes.min.js"></script><script type="text/javascript" src="/lib/clipboard/clipboard.min.js"></script><script type="text/javascript" src="/lib/sharer/sharer.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"Copy to clipboard","maxShownLines":50},"comment":{}};</script><script type="text/javascript" src="/js/theme.min.js"></script></body>
+</html>

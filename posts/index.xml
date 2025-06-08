@@ -1,964 +1,240 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
-  <channel>
-    <title>Posts on Happy Coding</title>
-    <link>https://xujiahua.github.io/posts/</link>
-    <description>Recent content in Posts on Happy Coding</description>
-    <generator>Hugo -- gohugo.io</generator>
-    <language>zh-cn</language>
-    <lastBuildDate>Sun, 25 Apr 2021 16:35:55 +0800</lastBuildDate><atom:link href="https://xujiahua.github.io/posts/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>K8s 认证授权流程及 EKS 用户管理</title>
-      <link>https://xujiahua.github.io/posts/k8s-eks-ea3b5d29-0425-494e-8d9e-149f1654a41f/</link>
-      <pubDate>Sun, 25 Apr 2021 16:35:55 +0800</pubDate>
-      
-      <guid>https://xujiahua.github.io/posts/k8s-eks-ea3b5d29-0425-494e-8d9e-149f1654a41f/</guid>
-      <description>编辑于2020年12月，Google Docs 导入。
-目前使用 Rancher 管理集群及结合 LDAP 用户管理。支持多云的场景。
-本文只做知识记录。
-Kubernetes Authentication &amp;amp; Authorization Kubernetes 背景知识 整体架构，来源：Components of Kubernetes Architecture | by Gaurav Gupta
-比较典型的 Master-Slave 架构。而 apiserver 是核心中的核心。
-apiserver 架构，来源：？？？
-单单 apiserver 本身，可以理解为一个后端连接 etcd 作为数据库的，仅仅执行 CRUD 操作的 API 服务。CRUD 的对象，就是我们说的 API Resource，比如 Pod, Service 等内置资源，还有开发者自定义的资源。
-具体的工作由各种 controllers （包括 kubelet ）来执行。这些 controllers 通过 watch apiserver，其本质是 etcd 的 watch 功能，能及时获得新的指令。
-这个机制，形成了 Kubernetes 可以声明式地进行部署应用的能力。也叫做控制器模式。
-Authentication 不管是通过 kubectl，还是直接访问 kubernetes-apiserver，对 kubernetes-apiserver 的 API 的访问都是受保护的，也就是，访问首先需要认证请求方。
-一个“用户”从集群获取 API Resource，需要经过 Authentication/ Authorization/ AdmissionControl 这三大步骤。Authentication/ Authorization/ AdmissionControl 是高度模块化的，可以按需自定义开发。（如图，Authentication 模块使用积木拼图表示）</description>
-    </item>
-    
-    <item>
-      <title>eksctl: NodeCreationFailure: Instances failed to join the kubernetes cluster</title>
-      <link>https://xujiahua.github.io/posts/eksctl-nodecreationfailure-instances-failed-to-join-the-kubernetes-cluster-0393476e-6e53-42f7-8222-842ffd0e8358/</link>
-      <pubDate>Sun, 25 Apr 2021 13:18:00 +0800</pubDate>
-      
-      <guid>https://xujiahua.github.io/posts/eksctl-nodecreationfailure-instances-failed-to-join-the-kubernetes-cluster-0393476e-6e53-42f7-8222-842ffd0e8358/</guid>
-      <description>eksctl 创建集群失败了。第一次遇到这个错。
-2021-04-25 01:59:24 [ℹ] waiting for CloudFormation stack &amp;quot;eksctl-eks-prod-evocloud-tyo-nodegroup-mng-1&amp;quot; 2021-04-25 01:59:25 [✖] unexpected status &amp;quot;ROLLBACK_IN_PROGRESS&amp;quot; while waiting for CloudFormation stack &amp;quot;eksctl-eks-prod-evocloud-tyo-nodegroup-mng-1&amp;quot; 2021-04-25 01:59:25 [ℹ] fetching stack events in attempt to troubleshoot the root cause of the failure 2021-04-25 01:59:25 [✖] AWS::EKS::Nodegroup/ManagedNodeGroup: CREATE_FAILED – &amp;quot;Nodegroup mng-1 failed to stabilize: [{Code: NodeCreationFailure,Message: Instances failed to join the kubernetes cluster,ResourceIds: [i-09df0fc7408f36801]}]&amp;quot; 2021-04-25 01:59:25 [!] 1 error(s) occurred and cluster hasn&#39;t been created properly, you may wish to check CloudFormation console 分析 在 CloudFormation 控制台查看详细日志。无法加入到 K8s 集群。然后没有进一步的信息了。</description>
-    </item>
-    
-    <item>
-      <title>metabase-quick 小结</title>
-      <link>https://xujiahua.github.io/posts/metabase-quick-71d491f9-972e-4305-9f93-1af388b5ca9b/</link>
-      <pubDate>Wed, 21 Apr 2021 18:03:00 +0800</pubDate>
-      
-      <guid>https://xujiahua.github.io/posts/metabase-quick-71d491f9-972e-4305-9f93-1af388b5ca9b/</guid>
-      <description>对 metabase-quick 这个工具进行简单小结。
-简单来说，metabase-quick 是个命令行工具，使用 Metabase 的 UI，写 SQL分析本地的 csv 文件，并进行可视化。功能与 Metabase 一样，设置上简化了。
-肝了几天，熬了几个晚上，终于有了 v0.1 MVP 版本。
-XUJiahua/metabase-quick
-使用 Releases 页面下载自己平台的二进制文件。
-Releases · XUJiahua/metabase-quick
-$ ./metabase-quick-darwin dataset/iris.csv INFO: load file dataset/iris.csv in 0.00393911 seconds You can visit database engine via below command: mysql --host=127.0.0.1 --port=53045 default -u root INFO: NewConnection: client 1 open http://localhost:53046 incoming query: select * from iris 会自动打开网页，点击 Native query。
-写SQL，可视化，都是 Metabase 的能力。
-源起 当时手头正好有份指标数据需要做对比分析，觉得可以用 Metabase 试试。但是 Metabase 还得安装到本地，进行一系列的设置：创建用户、加入一个数据源、导入数据。然后才是我想要做的数据分析！</description>
-    </item>
-    
-    <item>
-      <title>使用 redis-benchmark 压测自建的 kv 存储引擎</title>
-      <link>https://xujiahua.github.io/posts/redis-benchmark-kv-a3e78900-612a-4d04-b2aa-fc6f0908b431/</link>
-      <pubDate>Mon, 19 Apr 2021 10:24:00 +0800</pubDate>
-      
-      <guid>https://xujiahua.github.io/posts/redis-benchmark-kv-a3e78900-612a-4d04-b2aa-fc6f0908b431/</guid>
-      <description>给自建 kv 存储引擎做性能测试不难，使用 redis-benchmark 压测的目的是，测试结果能与 redis-server 的结果做横向对比。
-redis-benchmark redis-benchmark 支持如下指令的 benchmark。其中 GET/SET 指令可用于 kv 存储引擎的压测。
-redis-benchmark -q PING_INLINE: 102669.41 requests per second, p50=0.247 msec PING_MBULK: 102880.66 requests per second, p50=0.231 msec SET: 101936.80 requests per second, p50=0.239 msec GET: 101626.02 requests per second, p50=0.239 msec INCR: 102249.49 requests per second, p50=0.239 msec LPUSH: 100603.62 requests per second, p50=0.255 msec RPUSH: 101626.02 requests per second, p50=0.255 msec LPOP: 102354.15 requests per second, p50=0.</description>
-    </item>
-    
-    <item>
-      <title>从 Notion 导出 markdown 到 hugo 项目</title>
-      <link>https://xujiahua.github.io/posts/notion-markdown-hugo-78139407-85c5-4a75-b288-b54d5c3df34b/</link>
-      <pubDate>Mon, 12 Apr 2021 17:25:00 +0800</pubDate>
-      
-      <guid>https://xujiahua.github.io/posts/notion-markdown-hugo-78139407-85c5-4a75-b288-b54d5c3df34b/</guid>
-      <description>目的 好久没更新博客了，最近半年使用 Notion，体验很棒。
-之前写博客的过程：使用 Typora 编辑 markdown，使用 Hugo 生成静态页面，上传到 github 使用 github pages serving。参考：
-Github pages重新开始：使用Hugo、Typora
-怎么把我 Notion 中的文章同步到我的博客呢。这是本文目的。
-主要是写了一个 notion-mk 的程序将 notion 文章导出到 hugo 工作目录。后面的工作与之前保持一致。
-notion -- notion-mk(todo) --&amp;gt; hugo directory -- hugo generate --&amp;gt; static html/js/css WIP 代码如下：
-XUJiahua/notion-md
-功能  Download images Notion extract to markdown markdown hugo compatiable image location? remove title from markdown, now #&amp;hellip; support category support tag table of content at the beginning  使用 将要发布的文档添加到这个 list 页面</description>
-    </item>
-    
-    <item>
-      <title>kubectl 怎么念</title>
-      <link>https://xujiahua.github.io/posts/kubectl-4f270b11-8ad4-47c5-b20c-6f340f5ccad1/</link>
-      <pubDate>Tue, 09 Mar 2021 19:41:00 +0800</pubDate>
-      
-      <guid>https://xujiahua.github.io/posts/kubectl-4f270b11-8ad4-47c5-b20c-6f340f5ccad1/</guid>
-      <description>念法很多。就选这个吧。我也一直这么念的。</description>
-    </item>
-    
-    <item>
-      <title>pandasql库解析</title>
-      <link>https://xujiahua.github.io/posts/20200916-pandas-sql/</link>
-      <pubDate>Wed, 16 Sep 2020 10:48:11 +0800</pubDate>
-      
-      <guid>https://xujiahua.github.io/posts/20200916-pandas-sql/</guid>
-      <description>对 Pandas 库没有原生 SQL 支持表示遗憾，今天看到这么一个库 https://github.com/yhat/pandasql 。
-它的思路比较简单粗暴，先把 pandas Dataframe 存储到一个关系型数据库（sqlite/postgresql），最后 SQL query 的结果其实是查询关系型数据库返回的结果，封装成 Dataframe 来呈现。其中数据库操作使用 sqlalchemy 这个库。
-学到的知识点：locals()，globals() 这两个方法。
- The globals() method returns the dictionary of the current global symbol table. https://www.programiz.com/python-programming/methods/built-in/globals
-The locals() method updates and returns a dictionary of the current local symbol table. https://www.programiz.com/python-programming/methods/built-in/locals
- 如下代码，meat 是一个 Dataframe 变量，为何 SQL query 里能直接引用这个变量。
-$ python &amp;gt;&amp;gt;&amp;gt; from pandasql import sqldf, load_meat, load_births &amp;gt;&amp;gt;&amp;gt; pysqldf = lambda q: sqldf(q, globals()) &amp;gt;&amp;gt;&amp;gt; meat = load_meat() &amp;gt;&amp;gt;&amp;gt; print pysqldf(&amp;quot;SELECT * FROM meat LIMIT 10;&amp;quot;).</description>
-    </item>
-    
-    <item>
-      <title>Docker/Kubernetes 系列目录</title>
-      <link>https://xujiahua.github.io/posts/20200909-docker-series/</link>
-      <pubDate>Wed, 09 Sep 2020 09:52:37 +0800</pubDate>
-      
-      <guid>https://xujiahua.github.io/posts/20200909-docker-series/</guid>
-      <description>不定时更新中。
-Docker 基础  Docker 入门，官方 get started 边看边实践 Docker 如何改变软件开发协作 Dockerfile 最佳实践 Docker Network小结 Docker 日志驱动小结 使用 fluentd 收集 Docker 日志  进阶  Linux namespace 介绍 使用 ip/iptables 命令模拟 Docker bridge 网络 Linux cgroup 介绍 Docker 中 namespace/cgroup 的体现 Union file system 容器网络模型标准 Container Network Model (CNM) 与其实现 libnetwork https://github.com/moby/libnetwork/blob/master/docs/design.md CNI 标准，不再使用 docker 自带的网络驱动，docker run &amp;ndash;net=none libcontainer/containerd/runc  Kubernetes 基础  k8s 虚拟机体验 https://github.com/XUJiahua/k8s-try  参考链接  官方文档 https://docs.</description>
-    </item>
-    
-    <item>
-      <title>使用 ip/iptables 命令模拟 Docker bridge 网络</title>
-      <link>https://xujiahua.github.io/posts/20200907-docker-bridge-net-sim/</link>
-      <pubDate>Mon, 07 Sep 2020 11:35:39 +0800</pubDate>
-      
-      <guid>https://xujiahua.github.io/posts/20200907-docker-bridge-net-sim/</guid>
-      <description>如前文介绍，Linux Network namespace 用于给进程创建一个新的网络栈，路由、防火墙规则、网络设备。man ip-netns：
- A network namespace is logically another copy of the network stack, with its own routes, firewall rules, and network devices.
- 作为对 Network namespace 的实践，本文使用 ip/iptables 等命令模拟下 Docker bridge 网络，并会接触到 Network namespace，veth pair，Linux bridge，NAT 等概念。
-实验 使用 ip命令操作 Network namespace ip netns 子命令用于操作 Network namespace。使用 add 子命令，创建一个 Network namespace。
-# ip netns add netns1 查看 netns1 的网络设备（network device）。使用 exec 子命令，后接 netns1 和要执行的命令。默认有一个 DOWN 状态的 lo 设备。</description>
-    </item>
-    
-    <item>
-      <title>瘦终端指北 —— ICMP tunnel</title>
-      <link>https://xujiahua.github.io/posts/20200903-fuck-thin-client/</link>
-      <pubDate>Thu, 03 Sep 2020 17:02:18 +0800</pubDate>
-      
-      <guid>https://xujiahua.github.io/posts/20200903-fuck-thin-client/</guid>
-      <description>因为公司有开发泄露源码在 Github，对公司声誉造成一定影响，公司层面推广起瘦终端，所有开发一起背锅 :( 。在瘦终端里，网络严格管控，vscode 下载插件都难，需要申请 IP 白名单。开发只允许在瘦终端里接触 git 仓库，只能向瘦终端拷贝文件，反之不能。这样就能防住代码泄露么？
-搞笑的办法，瘦终端生成二维码，主机扫描，数据传输问题搞定。
-从网络角度，怎么解决呢。我们来严肃看待这个技术问题。
-ICMP 实践发现，瘦终端里不能访问百度，但是能 ping 通。从 TCP/IP 的角度，瘦终端在网络上只是 TCP 传输层被流量管控了，IP 层还是畅通无阻的。
-下图为 TCP/IP 的层次结构，TCP 包封装于 IP 包。
-https://www.researchgate.net/figure/Packet-encapsulation-TCP-IP-architecture-encapsulates-the-data-from-the-upper-layer-by_fig4_49288737
-目前网站的基石是 HTTP/TCP 协议，代理也普遍是基于 HTTP/TCP 的，shadowsocks 翻墙的思路不通。
-所以 ICMP 协议是否能作为代理协议呢。从封包的角度，ICMP 与 TCP 一样，也是封在 IP 包中的。
-http://web.deu.edu.tr/doc/oreily/networking/firewall/ch06_03.htm
-ICMP 有 Data 字段，可用于存储需要被代理的 TCP 包（协议允许附加最大 64K 大小的 Payload）。从而突破防火墙。
-https://www.researchgate.net/figure/ICMP-packet-structure_fig5_316727741
-ICMP tunnel ICMP 隧道，使用 ICMP 协议建立的两台计算机的连接。可用该隧道传输 TCP 流量。
- An ICMP tunnel[1] establishes a covert connection between two remote computers (a client and proxy), using ICMP echo requests and reply packets.</description>
-    </item>
-    
-    <item>
-      <title>Linux Namespace</title>
-      <link>https://xujiahua.github.io/posts/20200901-linux-namespace/</link>
-      <pubDate>Tue, 01 Sep 2020 12:03:13 +0800</pubDate>
-      
-      <guid>https://xujiahua.github.io/posts/20200901-linux-namespace/</guid>
-      <description>Linux Namespace namespace 在编程语言中是一种常见的概念，C++/Clojure 中就使用 namespace 关键字来模块化组织代码。模块与模块之间互不污染，模块A有个 helloworld 的方法，模块B也可以有一个 helloworld 的方法。Java/Go 中的 package 也是同样的意义。
-Linux namespaces 是 Linux 内核用于隔离内核资源的手段，进程使用隔离的内核资源保证了与其他进程之间的独立。也是 Docker 容器的底层技术（Docker 主要开发语言是 Go，container 的创建使用 C）。
- Namespaces are a feature of the Linux kernel that partitions kernel resources such that one set of processes sees one set of resources while another set of processes sees a different set of resources. The feature works by having the same namespace for a set of resources and processes, but those namespaces refer to distinct resources.</description>
-    </item>
-    
-    <item>
-      <title>记录一个 Impala JDBC 驱动问题</title>
-      <link>https://xujiahua.github.io/posts/20200807-impala/</link>
-      <pubDate>Fri, 07 Aug 2020 15:06:49 +0800</pubDate>
-      
-      <guid>https://xujiahua.github.io/posts/20200807-impala/</guid>
-      <description>现象 洪敏在用 Metabase 写报表过程中，使用 Metabase 的日期变量，发现的诡异问题。两条语句仅有部分差异，返回的结果却差了一天。
-期望结果。
-与期望结果差了一天。
-在 CDH 中查看 impala 服务器接收到的请求。
-得到期望结果的SQL：
-dt 是字符串，内容是日期，参数是TIMESTAMP，SQL引擎会自动转为两个 TIMESTAMP比较。
-SELECT `a`.`dt`, (`a`.`x` - `b`.`x`) as `净增人数` FROM (SELECT `f_ods_wx_subscribe_di`.`dt`, COUNT(DISTINCT `f_ods_wx_subscribe_di`.`userinfo_openid`) as `x` FROM `product`.`f_ods_wx_subscribe_di` WHERE ((`f_ods_wx_subscribe_di`.`dt` &amp;lt; CAST( &amp;#39;2020-08-05 00:00:00.0&amp;#39; AS TIMESTAMP)) AND ((`f_ods_wx_subscribe_di`.`mid` = &amp;#39;jt20191017175015910985&amp;#39;) AND (`f_ods_wx_subscribe_di`.`dt` &amp;gt;= CAST( &amp;#39;2020-08-01 00:00:00.0&amp;#39; AS TIMESTAMP)))) GROUP BY `f_ods_wx_subscribe_di`.`dt`) AS a LEFT JOIN (SELECT `f_ods_wx_unsubscribe_di`.`dt`, COUNT(DISTINCT `f_ods_wx_unsubscribe_di`.`userinfo_openid`) as `x` FROM `product`.`f_ods_wx_unsubscribe_di` WHERE ((`f_ods_wx_unsubscribe_di`.`dt` &amp;lt; CAST( &amp;#39;2020-08-05 00:00:00.</description>
-    </item>
-    
-    <item>
-      <title>【阅读】How Ray Uses gRPC (and Arrow) to Outperform gRPC</title>
-      <link>https://xujiahua.github.io/posts/20200807-ray-grpc-arrow/</link>
-      <pubDate>Fri, 07 Aug 2020 10:34:23 +0800</pubDate>
-      
-      <guid>https://xujiahua.github.io/posts/20200807-ray-grpc-arrow/</guid>
-      <description>原文：How Ray Uses gRPC (and Arrow) to Outperform gRPC
-对理解 Ray 的底层逻辑有帮助。文中描述的Ray版本为0.8。
-Overview of Ray Ray 的计算任务分为两类，无状态计算任务 Task，有状态计算任务 Actor。
-  Tasks (remote functions): these let you run a function remotely in a cluster. Tasks are for stateless computation. Actors (remote classes): these are instances of Python classes running remotely in worker processes in a cluster. Actors are for stateful computation, where evolving state needs to be managed.   原文讲的是Ray核心逻辑，如何使用gRPC和Arrow的。</description>
-    </item>
-    
-    <item>
-      <title>【阅读】Machine Learning Serving Broken</title>
-      <link>https://xujiahua.github.io/posts/20200806-machine-learning-serving-broken/</link>
-      <pubDate>Thu, 06 Aug 2020 09:49:47 +0800</pubDate>
-      
-      <guid>https://xujiahua.github.io/posts/20200806-machine-learning-serving-broken/</guid>
-      <description>原文 Machine Learning Serving is Broken 是 Distributed Computing with Ray 专栏文章，聊了机器学习模型的 Serving 问题，记录一二。
-设立好机器学习目标后，从模型角度，机器学习整体可分这么2个阶段：
- 模型的创建。模型训练 Training。包括训练数据准备，选择最好的模型（超参数调优）。 模型的使用。模型推理 Inference。也包括输入数据的准备。  模型被使用，才是机器学习落地的开始。
-Wrap Your Model in Flask 机器学习模型一般使用 Python 开发，所以使用 Flask 是很自然就能想到的方案。
-从 coding 角度，与传统的Web应用开发区别不大。把模型、数据库当做黑盒，开发只关心输入输出。
-使用 Flask 进行 Serving，给了模型的开发者很大的便利，同样的 Python 技术栈，Flask 学习成本又低，从模型开发到模型API化可以一人搞定。不同的机器学习模型的格式差异（ScikitLearn与TensorFlow的模型格式就迥异）统一使用HTTP协议抹平。这是优点。
-表面上是美好的。但是，机器学习 Serving 需要大内存加载模型，并且执行计算密集型任务。响应时间秒级，QPS 100+是常见的。下图比较的是单机与传统Web Serving的不同。
-解决方法也是有的，因为Model Serving本身是无状态的，很容易进行水平扩展。
-性能问题也能通过水平扩展来解决。目前为止，Flask 方案表现良好。
-Flask的问题：因为 Model Serving 是计算密集型任务，提高 Flask 服务并发的手段只有多进程（规避 Python GIL 问题） ，使用 gunicorn。也就意味着，启动N个worker进程，Model 会加载N次，内存浪费问题很严重。参考：Ray Serve: A new scalable machine learning model serving library on Ray。</description>
-    </item>
-    
-    <item>
-      <title>关于业务系统数据化的思考</title>
-      <link>https://xujiahua.github.io/posts/20200724-bizapp-data/</link>
-      <pubDate>Fri, 24 Jul 2020 16:36:01 +0800</pubDate>
-      
-      <guid>https://xujiahua.github.io/posts/20200724-bizapp-data/</guid>
-      <description>一个发券系统为例，该怎么发券。用 5W1H 分析法尝试提问：
- Why 理由：为什么发券，为了获益。比如激活沉睡用户来消费，比如无脑群发拉一波流量，用户来了就是赚了。为什么用这个系统发券，因为这个系统能问答如下的问题。 What 物品：优惠券，应该发放什么类型的优惠券。 When 时间：应该在什么时间点发放优惠券。 Where 地点：应该往哪个渠道发放优惠券。 Who 人物：应该向什么样的人群发放优惠券。  这些问题，需要软件用数据（统计数据）来回答，而不是靠参差不齐的运营人员主观臆断。
-数据模型该怎么设计，先分析出这些问题中的实体是什么。
-实体与实体画像 以实体为中心，及与其他实体的交互，构建实体的画像。实体之间互相接触，实体A产生关于实体B的画像（标签），比如用户画像有时间相关的标签。
-优惠券、物品 构建物品画像。
-一张优惠券的画像，相当于评定优惠券发放效果好坏的结论报告。
-时间点 构建时间画像。
-渠道 构建渠道画像。相当于评定发放渠道的效果好坏的结论报告。
-用户属性 性别比例、城市分布。
-用户 构建用户画像。
-基础属性 比如微信授权给到的信息，性别、城市等。
-物品属性 比如优惠券领取率，优惠券的核销率、优惠券类型偏好。
-渠道属性 渠道偏好。
-时间属性 各领取时间段统计、领取时间段偏好、核销时间段偏好。
-开发画像 T + 1 统计即可，统计数据对差一天的数据并不敏感。
-按照用户画像的常用套路：
- 定义标签元数据。 竖表的方式开发新标签，新标签的开发通过增加开发者水平扩展。 根据标签元数据，将竖表转为横表。 加快多维度查询速度，可以使用ElasticSearch加速。  使用画像 基于标签元数据和每日生成的画像数据，可以，
-精准投放 使用用户画像圈定人群。人群画像有时间偏好，选择发放时间，有渠道偏好，选择发放渠道，有优惠券偏好，选择优惠券类型。
-或者换个方式，先选发放时间，根据时间画像，得知性别分布等，再筛选人群。
-BI 可视化 各实体的可视化，各维度可筛选条件。
-实体画像是用户画像的抽象，前端开发基于这种抽象开发，可适配不断新增的实体，减少重复劳动，免开发。
-这就像一份知识库，作为运营人员的学习材料。比如时间的 BI 可视化，运营人员可学习到 xxx 时间段，是领取率最高的。
-小结 一个发券系统，如何有别于其他产品。
- 充分收集和保留数据。 利用数据。使用统计数据，就能让产品很不同。 去发掘新的实体，丰富画像。 如果可以，在数据基础上加入机器学习模型。  未完待续。</description>
-    </item>
-    
-    <item>
-      <title>实验说明 Golang HTTP 连接池参数</title>
-      <link>https://xujiahua.github.io/posts/20200723-golang-http-reuse/</link>
-      <pubDate>Thu, 23 Jul 2020 16:12:51 +0800</pubDate>
-      
-      <guid>https://xujiahua.github.io/posts/20200723-golang-http-reuse/</guid>
-      <description>连接相对于其他对象，创建成本较高，资源也有限。如果没有连接池，在高并发场景下，连接关闭又新建，很快就会因为过多的TIME_WAIT（连接主动关闭方）导致无法创建更多连接了，程序被压死。
-net/http 连接池参数 Go （测试版本 go 1.14）的net/http包是有连接池功能的，具体地，是 Transport 用于连接池化。
- Transport is an implementation of RoundTripper that supports HTTP, HTTPS, and HTTP proxies (for either HTTP or HTTPS with CONNECT).
-By default, Transport caches connections for future re-use.
- // MaxIdleConns controls the maximum number of idle (keep-alive) 	// connections across all hosts. Zero means no limit. 	MaxIdleConns int // MaxIdleConnsPerHost, if non-zero, controls the maximum idle 	// (keep-alive) connections to keep per-host.</description>
-    </item>
-    
-    <item>
-      <title>Metabase Impala Driver 时区问题</title>
-      <link>https://xujiahua.github.io/posts/20200714-metabase-timezone/</link>
-      <pubDate>Tue, 14 Jul 2020 10:14:14 +0800</pubDate>
-      
-      <guid>https://xujiahua.github.io/posts/20200714-metabase-timezone/</guid>
-      <description>问题 实际日期是上午11点，而Metabase显示是下午7点。差8小时。
-select CURRENT_TIMESTAMP(),hour(CURRENT_TIMESTAMP()) 分析 参考：
- Handling timezones in Metabase troubleshooting-guide/timezones  有几个时区有关的设置：
- Database TimeZone，其中 impalad 启动环境是东八区，TIMESTAMP 不存储时区信息，存储的是东八区本地时间。 Metabase TimeZone = JVM TimeZone = OS TimeZone，使用的是东八区。 “Report Time Zone” setting，对 Impala 是不起作用的。  同样的SQL在MySQL上试了下，没问题。问题定位基本在metabase到impala的Driver层。
-发现从impala读取TIMESTAMP的值，TIMEZONE写死了UTC，应该是东八区。（Metabase SparkSQL Driver 也有这个问题，因为代码是从那copy的。）
-https://github.com/XUJiahua/metabase-impala-driver/commit/0963f9890a9213d53511c61b53870476f8f82cf4
-metabase东八区启动，用北京时间显示，就会多加8小时。
-修复 </description>
-    </item>
-    
-    <item>
-      <title>Impala TIMESTAMP 时区处理</title>
-      <link>https://xujiahua.github.io/posts/20200713-impala-timezone/</link>
-      <pubDate>Mon, 13 Jul 2020 16:16:27 +0800</pubDate>
-      
-      <guid>https://xujiahua.github.io/posts/20200713-impala-timezone/</guid>
-      <description>现象 Hive 以Parquet数据存储格式写入的 TIMESTAMP字段内容，Impala读取，时间差8小时。
-Hive写入
-Impala读取差8小时，北京时间与UTC差8小时。
-原因 Hive写Parquet数据文件，TIMESTAMP先规范化到UTC格式再存储。而Impala直接读取数据文件中的内容，不会进行TIMEZONE的调整。
- When Hive writes to Parquet data files, the TIMESTAMP values are normalized to UTC from the local time zone of the host where the data was written. On the other hand, Impala does not make any time zone adjustment when it writes or reads INT96 TIMESTAMP values to Parquet files. This difference in time zone handling can cause potentially inconsistent results when Impala processes TIMESTAMP values in the Parquet files written by Hive.</description>
-    </item>
-    
-    <item>
-      <title>Metabase Impala Driver 0710更新日志</title>
-      <link>https://xujiahua.github.io/posts/20200710-metabase-impala-driver/</link>
-      <pubDate>Fri, 10 Jul 2020 10:35:08 +0800</pubDate>
-      
-      <guid>https://xujiahua.github.io/posts/20200710-metabase-impala-driver/</guid>
-      <description>基于 Metabase 0.35.4 版本和Cloudera的Impala JDBC驱动，重构了一份独立的 Metabase Impala Driver。
-整体思路参考 Writing A Driver ，更多时间是参考其他驱动的代码和根据实际用例调试。还有不少待完善的地方：
- 单元测试缺乏。 去除没有必要的方法（首先得理解方法的含义）。  </description>
-    </item>
-    
-    <item>
-      <title>Metabase 客户隔离</title>
-      <link>https://xujiahua.github.io/posts/20200615-metabase-customer-isolation/</link>
-      <pubDate>Mon, 15 Jun 2020 17:19:50 +0800</pubDate>
-      
-      <guid>https://xujiahua.github.io/posts/20200615-metabase-customer-isolation/</guid>
-      <description>之前有讨论，在不改动代码的情况下，可以使用分组功能来做客户隔离。但是该方案面临的问题是，每个客户一套模板，模板可维护性低。
-问题的关键就是如何共享SQL模板并客户隔离。需要改动源代码。
-目标  代码复用。同一套SQL代码。不用copy/paste，好维护。一个dashboard所有客户都能看。 客户隔离，保证数据安全。不同客户只能看到自己的数据。  实现 执行dashboard/chart中SQL代码时，动态插入客户隔离标识。
-首先来看下一次SQL Query的生命周期。
-找了个比较接近的处理逻辑，substitute-parameters用于将{ {xxx} }替换为widget中选的值。模仿之，SQL中定义一个##client_id##占位符，写了一个substitute-placeholder方法使用用户的client-id替代占位符。
-code: https://github.com/XUJiahua/metabase/pull/4/files
-DEMO 效果
-使用Sample Data数据集测试。
-select * from PEOPLE where STATE={{STATE}} and SOURCE=##client_id## 返回的SQL中，可见占位符被替换为Google。
-因为还没有集成SSO系统，client-id临时用first-name来代替。</description>
-    </item>
-    
-    <item>
-      <title>使用 Perceptual hashing 去除微信头像内容干扰</title>
-      <link>https://xujiahua.github.io/posts/20200611-phash/</link>
-      <pubDate>Thu, 11 Jun 2020 11:38:55 +0800</pubDate>
-      
-      <guid>https://xujiahua.github.io/posts/20200611-phash/</guid>
-      <description>本文是「微信用户授权头像内容带随机干扰的问题」的延续。本文对效果进行量化，并找到一个phash库，达到了更好的效果。
-实验框架 相关脚本点此。
-实验数据 10 组微信头像，每组 10万个头像。
-准备 10万 微信头像链接，重复下载10次：
-./download.sh 实验期望 期望目标：
- 1 个头像链接对应 1 个特征：期望特征抽取算法能够剥离微信对头像内容加入的干扰。不然使用密码学哈希算法，1 个头像链接下载 10 次可能就对应 10 个特征了。 1 个特征对应 1 个头像链接。跟哈希算法一样，希望哈希冲突尽可能小。  实验 图像降维方法 延续上文中在有限数据下得出的规则，图像降维到：32级灰度，10x10 尺寸。
-python extract_feature_p2.py echo &amp;#34;file,feature&amp;#34; &amp;gt; header.csv cat header.csv download_1.csv download_2.csv download_3.csv download_4.csv download_5.csv download_6.csv download_7.csv download_8.csv download_9.csv download_10.csv &amp;gt; data.csv 两个指标分析如下：
-csvsql --query &amp;#34;select avg(cnt) as expect1 from (select file, count(distinct feature) as cnt from &amp;#39;data&amp;#39; group by file)&amp;#34; data.</description>
-    </item>
-    
-    <item>
-      <title>Metabase SSO 登录</title>
-      <link>https://xujiahua.github.io/posts/20200609-metabase-sso-login/</link>
-      <pubDate>Tue, 09 Jun 2020 10:37:09 +0800</pubDate>
-      
-      <guid>https://xujiahua.github.io/posts/20200609-metabase-sso-login/</guid>
-      <description>探讨如何将 Metabase 融入业务系统（SaaS 服务）。
-为何需要集成 Metabase 到业务系统中呢？一般，通用的数据需求都做到SaaS服务中了。而现实情况是，客户是有很多定制化数据需求的。使用 Metabase 制作报表，直接跳过前后端开发，快速满足客户需求。
-（最终极地，进一步提高生产效率，把 Metabase 的组件化能力内化到 SaaS 服务中才是正道。）
-试分析下 Metabase 提供的方案，以及适配我们的场景，分析该怎么改。
-分析现存方案 开源版本的 Metabase 支持两种第三方登录：
- LDAP: Allows users within your LDAP directory to log in to Metabase with their LDAP credentials, and allows automatic mapping of LDAP groups to Metabase groups. Sign in with Google: Allows users with existing Metabase accounts to login with a Google account that matches their email address in addition to their Metabase username and password.</description>
-    </item>
-    
-    <item>
-      <title>Metabase 日期筛选控件实践</title>
-      <link>https://xujiahua.github.io/posts/20200605-metabase-field-filter/</link>
-      <pubDate>Fri, 05 Jun 2020 14:41:44 +0800</pubDate>
-      
-      <guid>https://xujiahua.github.io/posts/20200605-metabase-field-filter/</guid>
-      <description>Metabase Dashboard 可以是动态的，常用的是指定时间范围筛选，查看这个时间段的指标。
-简单示范 使用 SAMPLE DATASET 数据库。定义一个Question：在某一时间段，订单数是多少。使用以下 SQL模板。
-select count(1) FROM ORDERS WHERE 1=1 [[AND {{CREATED_AT}} ]] 在Variables侧栏选择如下：
- Variable type：Field Filter。（其他选项，Text/Number/Date 都是单值，没有范围。） Field to map to：选择对应的数据表字段，这里使用ORDERS表的CREATED_AT字段。 Filter widget type：Date Range。注意，只有日期类型（date/ timestamp）有这些选择。（其他选项，大同小异，都会生成对应SQL语句。）  在日期控件中选择时间范围，实际执行的SQL语句如下。
-select count(1) FROM ORDERS WHERE 1=1 AND CAST(&amp;#34;PUBLIC&amp;#34;.&amp;#34;ORDERS&amp;#34;.&amp;#34;CREATED_AT&amp;#34; AS date) BETWEEN date &amp;#39;2020-06-03&amp;#39; AND date &amp;#39;2020-06-04&amp;#39; 打开浏览器开发者工具就能看到。
-可以看到，生成了这个过滤条件：CAST(&amp;quot;PUBLIC&amp;quot;.&amp;quot;ORDERS&amp;quot;.&amp;quot;CREATED_AT&amp;quot; AS date) BETWEEN date &#39;2020-06-03&#39; AND date &#39;2020-06-04&#39;替代了。
-column CREATED_AT 被转为date类型。因为日期控件的日期精度只到年月日，没有时分秒，实际使用中确实也没必要时分秒。
-不同的数据库，支持的数据类型是不同的，比如Impala就不支持date类型。Metabase 用如下语句达到相同效果（由各个数据库驱动负责实现），将timestamp类型的精度截断到年月日：
-CAST(from_unixtime(unix_timestamp(from_timestamp(CAST(`table`.`column` AS timestamp), &amp;#39;yyyy-MM-dd&amp;#39;), &amp;#39;yyyy-MM-dd&amp;#39;)) AS timestamp) BETWEEN to_timestamp(&amp;#39;2020-05-25 00:00:00&amp;#39;, &amp;#39;yyyy-MM-dd HH:mm:ss&amp;#39;) AND to_timestamp(&amp;#39;2020-05-31 00:00:00&amp;#39;, &amp;#39;yyyy-MM-dd HH:mm:ss&amp;#39;) 参考：</description>
-    </item>
-    
-    <item>
-      <title>使用 REPL 调试 Clojure 项目（Metabase）</title>
-      <link>https://xujiahua.github.io/posts/20200604-clojure-repl-debug/</link>
-      <pubDate>Thu, 04 Jun 2020 16:13:27 +0800</pubDate>
-      
-      <guid>https://xujiahua.github.io/posts/20200604-clojure-repl-debug/</guid>
-      <description>开发工具 Intellij IDEA + Cursive 安装 IDEA 社区版即可，并安装插件 Cursive。
-Cursive 插件按键冲突 比如我会用组合键⌘ + [浏览代码，与 Cursive 插件的按键冲突。可以取消 Cursive 的这个组合键。
-Emacs Added 2020-07-10
-参考：How to Use Emacs, an Excellent Clojure Editor
-实践Metabase代码库失败：在REPL中执行(-main)直接挂了，待研究。TBD
-实践 Metabase 接触 Clojure 是因为 Metabase 这个项目 https://github.com/metabase/metabase 。以 Metabase 为例，说明如何调试 Clojure 项目。
-Metabase 由前后端两部分组成，后端是由 Clojure 写的 REST API 项目。启动前端工程，需要在前端界面上触发 API 请求。
-yarn build-hot 参考
- Metabase developers-guide https://github.com/metabase/metabase/blob/master/docs/developers-guide.md  REPL 调试 Clojure 项目 新建一个 Clojure REPL 配置。
-展开右下角的 REPL 子窗口，Run REPL for metabase-core。（注意，此时，项目中的 clojure namespace 并没有实际加载。代码编辑区运行 Clojure 函数，会报错，Error: :namespace-not-found）</description>
-    </item>
-    
-    <item>
-      <title>记一次数据项目经历</title>
-      <link>https://xujiahua.github.io/posts/20200529-bi_project/</link>
-      <pubDate>Fri, 29 May 2020 11:00:23 +0800</pubDate>
-      
-      <guid>https://xujiahua.github.io/posts/20200529-bi_project/</guid>
-      <description>分享下 4月、5月（特别是5月，5/1假期后基本上全身心投入）在忙的这个数据项目经历，工作面覆盖陪同拜访客户、开会、需求分析、提供方案、数据清洗、数据分析、数据基础设施的搭建开发、帮甲方IT调试代码等环节，累到头秃。
-（本文刻意隐去客户信息。）
-需求背景 客户需求是做一个聚合小程序（此处脑补下麦当劳的微信小程序「i麦当劳」），用于广告投放，比如微信系APP的弹屏广告。应用本身不复杂，只是罗列客户其他小程序、H5应用和一些广告链接，让用户选择。
-投放效果需要数据量化，我们做了前后端的数据埋点，尽可能收集用户的行为记录。
-客户花钱投广告，是为了企业销售额等指标的提升。我们也对接了客户的订单数据，多方数据进行交叉分析。
-数据量化的结果，也就是数据报告，以日报、周报、月报的形式体现。
-技术细节 下文就以数据的生命周期来讲，数据是怎么从毛料，到精修，最后到报表的。
-数据采集 工作重点：
- 定义数据对接规范，或是理解别人的规范。 与自家开发做好数据对接。把握数据质量。 与甲方开发做好数据对接。把握数据质量。（为了加快数据对接速度，又是写示例代码、又是帮他们定位中文编码问题。体验真是酸爽。还是自家小伙伴靠谱。） 数据质量很重要。数据质量决定了后续工作是否需要反复。  1. 前端应用埋点 用于收集聚合小程序的用户行为记录。
-整体架构还是沿用几年前的，唯一变化的就是埋点的规范，因为需求的不同而变化。基本上如下逻辑：
- 前端应用开发主动在代码中加入用户行为埋点。 埋点 SDK 异步地将数据上传到服务器。多台服务器通过 DNS 解析来负载均衡。 WEB 服务器使用的是 openresty，有一些 lua 脚本，用于处理 cookie，和格式化存储行为日志。 之后数据通过Filebeat、Kafka、StreamSets等软件分发到Hadoop集群、实时处理任务。  2. SFTP 文件同步 用于接收甲方的订单数据（二期、三期项目还有其他类型数据）。
-根据双方约定时间收取文件，将文件存入Hadoop集群。
-3. 微信公众号授权 客户授权后，我们获取到了公众号的粉丝关注记录（由后端开发请求微信服务器取到数据并写入Kafka集群）。同样，也存放到了Hadoop集群。
-ETL 与 数据仓库 工作重点：
- 承上启下的工作。以方便数据分析为出发点，反过来检验数据质量。 字符串类型的时间转为时间戳类型。BI 工具需要。 基于数据金字塔模型、维度分析模型建模。 数据仓库未来可以考虑 ClickHouse。Hadoop体系数据粒度是文件，更新历史数据中的某条记录，得更新所在的整个文件！  1. ETL 经过数据采集阶段，毛料数据以文件形式存储于Hadoop集群。本阶段主要将毛料数据抽取成表（实际还是文件存储）。
-技术上使用 Hive/Spark 框架写SQL。Hive SQL实在太慢了，所以一般使用Spark做清洗，Hive更多地是用其metastore组件，维护表结构信息。
-因为Spark（SQL）脚本得用Python写。抽象了一个清洗脚本模板，填空：
- 可选填清洗前执行的SQL。比如建表DDL。 可选填毛料数据的解析schema。（直接依靠框架采样推理出schema，与实际schema比，可能缺字段，程序会崩。schema也没必要手写。一个技巧就是准备一条最全的数据记录，让Spark推理，把schema存下来使用。） 填核心的清洗逻辑。  2.</description>
-    </item>
-    
-    <item>
-      <title>Metabase Impala Driver 0528更新日志</title>
-      <link>https://xujiahua.github.io/posts/20200528-metabase-impala-type/</link>
-      <pubDate>Thu, 28 May 2020 09:30:09 +0800</pubDate>
-      
-      <guid>https://xujiahua.github.io/posts/20200528-metabase-impala-type/</guid>
-      <description>体验过程中还是碰到不少问题。
-1. TIMESTAMP 类型没有过滤器样式 现象 连 SparkSQL 没这个问题。同样是TIMESTAMP类型，表现不同。
-初步分析 在数据库中查看存储的字段信息，Impala/SparkSQL对比看，发现 Impala 数据库下的字段 base_type 都是 type/*。而 database_type，Impala 都是大写的，比如TIMESTAMP，而不是timestamp。所以，并不仅仅是TIMESTAMP类型没有过滤器样式。
-Metabase 数据库类型会映射为 Clojure类型，数据库类型的名称是大小写敏感的。所以不能复用hive-like中的实现（都是小写的），而且Hive与Impala的类型还是有些不同的。
-Hive Impala的数据类型异同 以 Hive Data Types 为基准。
-   Type Name Type Catgory Comment Impala Support?     TINYINT Numeric Types  Yes   SMALLINT Numeric Types  Yes   INT Numeric Types  Yes   BIGINT Numeric Types  Yes   FLOAT Numeric Types  Yes   DOUBLE Numeric Types  Yes   DOUBLE PRECISION Numeric Types alias for DOUBLE, only available starting with Hive 2.</description>
-    </item>
-    
-    <item>
-      <title>Metabase Impala Driver</title>
-      <link>https://xujiahua.github.io/posts/20200527-metabase-impala-driver/</link>
-      <pubDate>Wed, 27 May 2020 12:16:36 +0800</pubDate>
-      
-      <guid>https://xujiahua.github.io/posts/20200527-metabase-impala-driver/</guid>
-      <description>更新日志
- Metabase Impala Driver 0528更新日志 Metabase Impala Driver 0710更新日志  背景 我们的数据仓库是 Hadoop/Hive 体系的。Hadoop 版本采用的是 CDH 发行版。在这个背景下 SQL on Hadoop 的方案有 Hive/Impala/(SparkSQL)。作为 BI 数据库，Impala 在我们的场景下比较合适。
- Hive：太慢了。做 ETL 可以，BI 非常不适。 SparkSQL：CDH 官方 Spark 不含 Thrift Server。为了能够使用 Metabase ，独立于 CDH 启了个 Thrift Server，用着还不错。问题就在于缺乏统一管理，比如 Kerberos 的管理就得自己写脚本处理、进程 OOM 挂掉了 CDH Manager 也监测不到。 Impala：CDH 官方出品，为 BI 而设计，由 CDH Manager 管理。根据这份报告，见下参考链接，Impala 好于 SparkSQL。  出于尽可能复用已有基础设施的目的，选择 Impala。而 Metabase 官方、社区并不提供 Impala 驱动。本文就是为了探索并解决这个问题。
-参考：
- 开源OLAP引擎测评报告(SparkSql、Presto、Impala、HAWQ、ClickHouse、GreenPlum) http://www.clickhouse.com.cn/topic/5c453371389ad55f127768ea  现有驱动探索 搭建 Impala 开发环境 使用 Cloudera Quickstart Docker 镜像（官方已经下架 quickstart vm ）。其中，Impala版本 2.</description>
-    </item>
-    
-    <item>
-      <title>微信用户授权头像内容带随机干扰的问题</title>
-      <link>https://xujiahua.github.io/posts/20200514-wx-avatar/</link>
-      <pubDate>Thu, 14 May 2020 13:38:12 +0800</pubDate>
-      
-      <guid>https://xujiahua.github.io/posts/20200514-wx-avatar/</guid>
-      <description>项目需要基于头像、昵称对不同实体账号下的微信用户进行匹配。基于这个思路，打算先下载微信头像的图像，后计算其MD5，“单元测试”了下这个简单方法，结果惊人。
-同一个人的同一个头像链接返回的图像内容都不一样。内容不一样，MD5值也就不一样。
-看来微信对我们这些拙劣的手段早有防备。
-微信头像内容分析 同一个头像链接下载两次。
-$ wget -O 1.png https://wx.qlogo.cn/mmopen/vi_32/DYAIOgq83eoc614h6RfCUnwQTblG9y2dq4g5PKVicVZd5CQO9JNdPCWCovl8cmsvxQcWDemcLYGW6pSt97uUW5A/132 $ wget -O 2.png https://wx.qlogo.cn/mmopen/vi_32/DYAIOgq83eoc614h6RfCUnwQTblG9y2dq4g5PKVicVZd5CQO9JNdPCWCovl8cmsvxQcWDemcLYGW6pSt97uUW5A/132 $ md5 1.png MD5 (1.png) = dd6aa938cbec381a3e83702776be88a3 $ md5 2.png MD5 (2.png) = 83668a6ad7eeee8fa8e5e0db339233d1 肉眼比较 肉眼完全无法区分。
-字节级比较 两张图，可以看出差异很大。
-像素级比较 为了方便对比，图先灰度化（一个像素点的RGB三值改为1个值）。
-两张灰度图差值的数据分布。x轴为差值，y轴为出现次数。
-0代表相同位置的像素点相同，非0代表相同位置像素点有差异及其差异幅度。
-0出现次数最多，可见两张图的大部分像素点的值是相同的。差异主要分为两部分，1-10 闭区间。（试了几张图）
-另一种可视化，白色代表两图相同位置像素点不同。可见，图片污染非常严重。
-上图生成脚本：
-import numpy as np from PIL import Image def read_to_2d_array(filename): img = Image.open(filename) img = img.convert(&amp;#39;L&amp;#39;) print(img.size) return np.array(img) data1 = read_to_2d_array(&amp;#34;1.png&amp;#34;) data2 = read_to_2d_array(&amp;#34;2.png&amp;#34;) # NOTE: np.uint8(3) - np.</description>
-    </item>
-    
-    <item>
-      <title>NUC8i5BEH Hackintosh</title>
-      <link>https://xujiahua.github.io/posts/20200504-hackintosh/</link>
-      <pubDate>Mon, 04 May 2020 13:11:09 +0800</pubDate>
-      
-      <guid>https://xujiahua.github.io/posts/20200504-hackintosh/</guid>
-      <description>买了个 NUC8i5BEH 当玩具，不怎么折腾的方式体验下黑苹果。
-效果 与我的 2018 MBP 13.3 做对比。处理器、显卡是一样的。用很少的钱提升内存，16GB 2133 DDR3 -&amp;gt; 32GB 2400 DDR4。
-成本 大概 ￥4000。2018年买的MacBook近￥15000。
- NUC8i5BEH ￥2379 DDR4 2400 16 GB X 2 笔记本内存条 ￥978 500GB M.2 SSD 大约￥600（不在这次消费计划里，从现有机器抠出来的）  不足 WiFi、蓝牙，以及之上的AirDrop等功能缺失。
-网上有解决方案，主要是网卡使用Macbook的配件替代。感觉配件也不便宜，应该是炒热了。用网线，不折腾了。
-WHY NUC8i5BEH 豆子峡谷 NUC8i5BEH 机箱真的小！性能也不差。可以说，是最具性价比的了。
-能做这么小，机箱与电源分离的设计功不可没。- -!
-NUC8i5BEH vs NUC8i5BEK BEH 胖版，BEK 瘦版。瘦版差一个 2.5 寸盘位。硬盘只有一个M.2插槽。网卡魔改的方案使用M.2插槽，这样BEK就不能放硬盘了。BEH 虽然胖一点，还是很mini。
-NUC8i5BEH vs NUC8i7BEH 区别在CPU。差大约￥700。
-NUC8i5BEH vs NUC8i7HVK 冥王峡谷 NUC8i7HVK 拥有 AMD 显卡。不玩电脑游戏，AMD卡又不方便做深度学习，另外小机身大功耗散热问题一定存在，就不考虑了。价格￥6000 起。那就非常没有必要了。
-安装教程 硬件安装 插内存条和硬盘，看说明书就行。
-MacOS 安装 MacOS是认硬件的，所以直接按照Apple官方制作MacOS启动盘的方式肯定不行。目前主要是用 Clover/OpenCore 等 BootLoader 骗过系统。安装过程中有两个阶段：U盘启动，硬盘启动，为了能够顺利进入系统，都要对它们的EFI分区进行修改。</description>
-    </item>
-    
-    <item>
-      <title>consul 小结</title>
-      <link>https://xujiahua.github.io/posts/20200421-use-consul/</link>
-      <pubDate>Tue, 21 Apr 2020 09:01:38 +0800</pubDate>
-      
-      <guid>https://xujiahua.github.io/posts/20200421-use-consul/</guid>
-      <description>简单介绍 hashicorp 对 Consul 的定位是服务间网络方案。
- Consul is a service networking solution to connect and secure services across any runtime platform and public or private cloud. https://www.consul.io/
- 官方的两个 use case 就是 service discovery, service mesh。
-service discovery 与 etcd 比起来，Consul 的服务发现是开箱即用的。优点如下：
- First class 的服务注册和获取接口。不需要像 etcd 那样在 kv 存储基础上做包装。 服务注册，可以是consul 命令，也可以是HTTP API。 获取服务注册表，除了 HTTP 接口，还可以使用 DNS 查询接口。 健康检查。服务注册的时候可以提供健康检查项。健康检查机制保证了拿到的服务注册表是“健康”的。健康检查也包括节点的检查。单纯利用 consul 健康检查这个功能，consul 就是一个分布式监控工具。 Web 管理界面。节点、服务、健康与否一目了然。 Watch 功能。通过 blocking queries/ long-polling HTTP API 的方式得到服务注册表的改变的通知。 跨数据中心（取资源）。When a request is made for a resource in another datacenter, the local Consul servers forward an RPC request to the remote Consul servers for that resource and return the results.</description>
-    </item>
-    
-    <item>
-      <title>etcd 小结</title>
-      <link>https://xujiahua.github.io/posts/20200420-use_etcd/</link>
-      <pubDate>Mon, 20 Apr 2020 14:12:38 +0800</pubDate>
-      
-      <guid>https://xujiahua.github.io/posts/20200420-use_etcd/</guid>
-      <description>简介 取名有意思。Linux下的/etc目录放的是配置文件。etcd，etc代表配置，d代表distributed，代表分布式配置。
-特点：
- designed to reliably store infrequently updated data and provide reliable watch queries https://etcd.io/docs/v3.4.0/learning/data_model/ KV 核心用户接口 MVCC Multi-version Concurrency Control 也确实能读历史版本 Raft consensus algorithms 共识算法 Watch 配置更新能及时&amp;quot;通知&amp;quot;应用 RBAC 用户、角色、权限  基于 etcd 可以做哪些事情：
- 配置中心。元数据存储。应用的配置集中存储在配置中心。 服务发现。配置中心的一个特例。相比起来，consul的服务发现是开箱即用的。 分布式锁。分布式系统协调。选主。像是Hadoop使用Zookeeper做Namenode的选主。  vs. Consul。Consul 官方（https://www.consul.io/）定义的usecase是 service discovery和 service mesh。
- etcd and Consul solve different problems. If looking for a distributed consistent key value store, etcd is a better choice over Consul.</description>
-    </item>
-    
-    <item>
-      <title>k8s configmap 与热更新</title>
-      <link>https://xujiahua.github.io/posts/20200417-kubernetes-configmap/</link>
-      <pubDate>Fri, 17 Apr 2020 16:09:28 +0800</pubDate>
-      
-      <guid>https://xujiahua.github.io/posts/20200417-kubernetes-configmap/</guid>
-      <description>configmap 简介 官方介绍：使用 ConfigMap 配置 Pod https://kubernetes.io/zh/docs/tasks/configure-pod-container/configure-pod-configmap/
-他人总结：ConfigMap https://jimmysong.io/kubernetes-handbook/concepts/configmap.html
-稍微总结下：
- 每个configmap都有一个名字，名字全局唯一（命名空间内），重复创建会报错。 每个configmap本身是键值对。 configmap可以通过环境变量的方式让Pod内容器读取。 configmap可以通过挂载文件的方式让Pod内容器读取。k8s每隔一段时间同步configmap，如果有更新的话。当然，应用本身是不知道的。这个定时更新感觉有点鸡肋。 configmap更新，不会自动重启应用。只能人工方式，滚动重启应用。  把配置更新也当作一次应用变更看待，心情就好很多了。
-官方不支持热更新，所以有了各种技巧，提高效率。
- create a new ConfigMap with the changes you want to make, and point your deployment at the new ConfigMap https://stackoverflow.com/a/40624029/820682 因为 deployment 文件变化了，触发滚动重启。 还有deployment 文件中配置 configmap hash值的。配置变化，hash值变化，deployment变化，滚动重启，一级级联动。 https://blog.questionable.services/article/kubernetes-deployments-configmap-change/ 还有使用sidecar的方式做热更新的，太复杂了 https://zhuanlan.zhihu.com/p/57570231  关于热更新 configmap的更新，容器化应用是无感知的。configmap这种方式没有推送更新到应用内的机制，要实现热更新过于复杂。
-k8s最核心的功能还是自动部署、伸缩、容器管理以及资源分配。微服务架构还是得需要其他框架来辅助的。
-配置热更新应用，就选择 etcd, consul 吧，有 watch 功能。</description>
-    </item>
-    
-    <item>
-      <title>etcd api client 请求重试逻辑</title>
-      <link>https://xujiahua.github.io/posts/20200417-etcd_client/</link>
-      <pubDate>Fri, 17 Apr 2020 15:05:51 +0800</pubDate>
-      
-      <guid>https://xujiahua.github.io/posts/20200417-etcd_client/</guid>
-      <description>使用 Consul 作为配置中心，按照官方的说法，没必要创建 consul client 节点。那么直接连 consul server 就好了。
- Running an agent is not required for discovering other services or getting/setting key/value data. The agent is responsible for health checking the services on the node as well as the node itself.
-https://www.consul.io/intro/index.html#basic-architecture-of-consul
- Consul api client (https://github.com/hashicorp/consul/tree/master/api) 目前只能接收一个server地址。那么这个server地址得保证高可用才行啊。
-etcd api client (https://github.com/etcd-io/etcd/tree/master/client) 倒是能接收多个server地址，看看 etcd 是怎么做的。
-etcd api client 创建了 httpClusterClient。
-多个 endpoint 的处理核心逻辑。https://github.com/etcd-io/etcd/blob/master/client/client.go#L362
- pinned 用于记录好用的连接地址的index，优先使用这个地址。 context 类错误，比如取消请求，直接退出。 遇到 5xx 类错误，服务端错误。需要考虑是否重试了。 isOneShot 标记，true 代表是 Set/Delete 操作，请求失败不再重试。应该跟请求是否幂等有关。 可以重试的请求，重试直到成功或是循环结束。  </description>
-    </item>
-    
-    <item>
-      <title>机器学习在线推理部署方案：Cortex</title>
-      <link>https://xujiahua.github.io/posts/20200416-cortex/</link>
-      <pubDate>Thu, 16 Apr 2020 11:33:18 +0800</pubDate>
-      
-      <guid>https://xujiahua.github.io/posts/20200416-cortex/</guid>
-      <description>Cortex 介绍 官方网站：Deploy machine learning models in production https://www.cortex.dev/
-GitHub https://github.com/cortexlabs/cortex
- The CLI sends configuration and code to the cluster every time you run cortex deploy. Each model is loaded into a Docker container, along with any Python packages and request handling code. The model is exposed as a web service using Elastic Load Balancing (ELB), TensorFlow Serving, and ONNX Runtime. The containers are orchestrated on Elastic Kubernetes Service (EKS) while logs and metrics are streamed to CloudWatch.</description>
-    </item>
-    
-    <item>
-      <title>k8s 应用日志收集</title>
-      <link>https://xujiahua.github.io/posts/20200414-k8s-logging/</link>
-      <pubDate>Tue, 14 Apr 2020 09:53:35 +0800</pubDate>
-      
-      <guid>https://xujiahua.github.io/posts/20200414-k8s-logging/</guid>
-      <description>k8s 日志收集架构 以下是比较一般、普适的架构。更多参考：Kubernetes 日志架构 https://kubernetes.io/zh/docs/concepts/cluster-administration/logging/
- 容器化应用将日志写入stdout、stderr。 Docker容器引擎将stdout、stderr流重定向到日志驱动，比如默认的json-file。 json-file日志驱动将日志写入到（宿主机上的）文件。 日志收集工具以DaemonSet的形式安装在每个节点。 日志收集工具监听文件变化，并将日志写入到日志中心服务。  k8s 日志收集细节 实战 可以直接参考以下教程：minikube创建了一个Kubernetes集群，Fluentd收集日志，存入ElasticSearch，使用Kibana查看日志。典型的EFK技术栈。
- Logging in Kubernetes with Elasticsearch, Kibana, and Fluentd https://mherman.org/blog/logging-in-kubernetes-with-elasticsearch-Kibana-fluentd/  在Kibana上看收集到的日志。能看到日志收集工具也采集了容器、镜像、Pod有关的信息。这些上下文信息能让人定位到是哪个应用在生产日志。
-fluentd 收集上下文信息 Docker json-file 日志驱动写文件，并不记录上下文信息。 https://docs.docker.com/config/containers/logging/json-file/
-{&amp;quot;log&amp;quot;:&amp;quot;Log line is here\n&amp;quot;,&amp;quot;stream&amp;quot;:&amp;quot;stdout&amp;quot;,&amp;quot;time&amp;quot;:&amp;quot;2019-01-01T11:11:11.111111111Z&amp;quot;} 上文中使用的日志收集镜像是 fluent/fluentd-kubernetes-daemonset:v1.3-debian-elasticsearch。
-具体代码路径在此 https://github.com/fluent/fluentd-kubernetes-daemonset/tree/master/docker-image/v1.3/debian-elasticsearch
-收集容器目录下的日志。
-使用kubernetes_metadata这个第三方插件获取容器相关的上下文信息。这里是通过请求API server得到metadata的。
-kubernetes_metadata 插件地址 https://github.com/fabric8io/fluent-plugin-kubernetes_metadata_filter
-插件中有缓存metadata的选项，不用担心每处理一条日志，就要向API server发送请求。</description>
-    </item>
-    
-    <item>
-      <title>Metabase &#43; Spark SQL</title>
-      <link>https://xujiahua.github.io/posts/20200410-metabase-spark-sql/</link>
-      <pubDate>Fri, 10 Apr 2020 16:41:53 +0800</pubDate>
-      
-      <guid>https://xujiahua.github.io/posts/20200410-metabase-spark-sql/</guid>
-      <description>这是大数据 BI 平台的第二步，BI 工具的搭建。假设已经配置好 Spark SQL JDBC Server，并启用了Kerberos。参考 https://xujiahua.github.io/posts/20200410-spark-thrift-server-cdh/
-这里，我们选择了开源产品 Metabase。
-最终，大数据 BI 平台，是由 1) 以Metabase作为BI可视化，2) 由HDFS（分布式文件存储） + parquet（列式数据存储格式）+ Hive metastore（SQL表结构信息维护） + Spark SQL（批处理引擎）组合的OLAP数据库组成。
-Metabase 简介 Metabase is the easy, open source way for everyone in your company to ask questions and learn from data.
-https://www.metabase.com/
-数据库支持  BigQuery Druid Google Analytics H2 MongoDB MySQL/MariaDB PostgreSQL Presto Amazon Redshift Snowflake Spark SQL SQLite SQL Server  https://www.metabase.com/docs/latest/faq/setup/which-databases-does-metabase-support.html
-这里有我们需要的Spark SQL，我们的大数据集群可以支持。比较遗憾的是没有Impala。
-Metabase 安装 MySQL 使用MySQL作为元数据存储。复用之前CDH的MySQL实例。</description>
-    </item>
-    
-    <item>
-      <title>CDH6 启用 Spark Thrift Server</title>
-      <link>https://xujiahua.github.io/posts/20200410-spark-thrift-server-cdh/</link>
-      <pubDate>Fri, 10 Apr 2020 10:07:16 +0800</pubDate>
-      
-      <guid>https://xujiahua.github.io/posts/20200410-spark-thrift-server-cdh/</guid>
-      <description>很遗憾，CDH版本的Spark阉割了Thrift Server。（可能与自家产品Impala有竞争关系的原因。）
-参考 https://docs.cloudera.com/documentation/enterprise/6/6.3/topics/spark.html#spark__d99299e107
-# ll /opt/cloudera/parcels/CDH/lib/spark/sbin/ total 84 -rwxr-xr-x 1 root root 2803 Nov 9 00:05 slaves.sh -rwxr-xr-x 1 root root 1429 Nov 9 00:05 spark-config.sh -rwxr-xr-x 1 root root 5689 Nov 9 00:05 spark-daemon.sh -rwxr-xr-x 1 root root 1262 Nov 9 00:05 spark-daemons.sh -rwxr-xr-x 1 root root 1190 Nov 9 00:05 start-all.sh -rwxr-xr-x 1 root root 1274 Nov 9 00:05 start-history-server.sh -rwxr-xr-x 1 root root 2050 Nov 9 00:05 start-master.</description>
-    </item>
-    
-    <item>
-      <title>Docker日志驱动小结</title>
-      <link>https://xujiahua.github.io/posts/20200403-docker-logging/</link>
-      <pubDate>Fri, 03 Apr 2020 15:43:07 +0800</pubDate>
-      
-      <guid>https://xujiahua.github.io/posts/20200403-docker-logging/</guid>
-      <description>docker logs， kubectl logs能看到Docker容器的标准输出、标准错误，方便定位问题。而 xxx logs之所以能看到，是因为标准输出、标准错误存储在每个容器独有的日志文件中。
-另外日志量大了，用docker logs看历史数据不大合适。我们就需要考虑将日志存储到日志中心去。
-Docker默认支持如下日志驱动。有直接写文件的，有使用云服务的。下面简单介绍下。
-credit: https://jaxenter.com/docker-logging-gotchas-137049.html
-官方文档 https://docs.docker.com/config/containers/logging/configure/
-默认驱动：json-file 默认的Logging Driver是json-file。docker info可以查看。全局的日志驱动设置，可以修改daemon配置文件 /etc/docker/daemon.json。
-写入文件的日志格式长这样：{&amp;quot;log&amp;quot;:&amp;quot;Log line is here\n&amp;quot;,&amp;quot;stream&amp;quot;:&amp;quot;stdout&amp;quot;,&amp;quot;time&amp;quot;:&amp;quot;2019-01-01T11:11:11.111111111Z&amp;quot;}，每一行是一个json文件，log字段为容器原来输出的每行内容。
-默认配置，创建的容器的信息在这个目录下： /var/lib/docker/containers。
-实验 root@ubuntu-parallel:~# docker run --name default_logging_driver hello-world root@ubuntu-parallel:~# cd /var/lib/docker/containers/$(docker ps --no-trunc -aqf &amp;#34;name=default_logging_driver&amp;#34;) root@ubuntu-parallel:~# cat $(docker ps --no-trunc -aqf &amp;#34;name=default_logging_driver&amp;#34;)-json.log {&amp;#34;log&amp;#34;:&amp;#34;\n&amp;#34;,&amp;#34;stream&amp;#34;:&amp;#34;stdout&amp;#34;,&amp;#34;time&amp;#34;:&amp;#34;2020-04-02T01:46:54.096347888Z&amp;#34;} {&amp;#34;log&amp;#34;:&amp;#34;Hello from Docker!\n&amp;#34;,&amp;#34;stream&amp;#34;:&amp;#34;stdout&amp;#34;,&amp;#34;time&amp;#34;:&amp;#34;2020-04-02T01:46:54.096377382Z&amp;#34;} {&amp;#34;log&amp;#34;:&amp;#34;This message shows that your installation appears to be working correctly.\n&amp;#34;,&amp;#34;stream&amp;#34;:&amp;#34;stdout&amp;#34;,&amp;#34;time&amp;#34;:&amp;#34;2020-04-02T01:46:54.096381118Z&amp;#34;} {&amp;#34;log&amp;#34;:&amp;#34;\n&amp;#34;,&amp;#34;stream&amp;#34;:&amp;#34;stdout&amp;#34;,&amp;#34;time&amp;#34;:&amp;#34;2020-04-02T01:46:54.096383725Z&amp;#34;} https://docs.docker.com/config/containers/logging/json-file/
-怎么记录更多上下文信息 json-file本身是没有记录上下文信息的。集中存储到日志中心服务器，就无法区分具体是哪个应用产生的日志了。
-k8s的容器日志收集，上下文信息是由日志收集工具 fluentd 通过请求api server采集并缓存起来的。参考 https://xujiahua.github.io/posts/20200414-k8s-logging/
-同样的思路，fluentd也有不少通过docker daemon查询或是解析容器目录下config.</description>
-    </item>
-    
-    <item>
-      <title>Fluentd 实战——收集 Docker 容器日志</title>
-      <link>https://xujiahua.github.io/posts/20200402-use-fluentd/</link>
-      <pubDate>Thu, 02 Apr 2020 16:58:23 +0800</pubDate>
-      
-      <guid>https://xujiahua.github.io/posts/20200402-use-fluentd/</guid>
-      <description>以收集Docker容器日志的例子，介绍下Fluentd的用法。不考虑logstash，太占服务器资源了。
-安装 Fluentd Ubuntu 18.04上的安装命令（https://docs.fluentd.org/installation/install-by-deb）：
-root@ubuntu-parallel:~# curl -L https://toolbelt.treasuredata.com/sh/install-ubuntu-bionic-td-agent3.sh | sh 以Daemon方式启动：
-root@ubuntu-parallel:~# systemctl start td-agent.service root@ubuntu-parallel:~# systemctl status td-agent.service fluentd的安装目录是在/opt/td-agent/下的。为演示方便，我们可以直接使用 /opt/td-agent/embedded/bin/fluentd这个程序。
-root@ubuntu-parallel:~# ps -ef | grep fluentd td-agent 30596 1 0 17:10 ? 00:00:00 /opt/td-agent/embedded/bin/ruby /opt/td-agent/embedded/bin/fluentd --log /var/log/td-agent/td-agent.log --daemon /var/run/td-agent/td-agent.pid td-agent 30602 30596 9 17:10 ? 00:00:00 /opt/td-agent/embedded/bin/ruby -Eascii-8bit:ascii-8bit /opt/td-agent/embedded/bin/fluentd --log /var/log/td-agent/td-agent.log --daemon /var/run/td-agent/td-agent.pid --under-supervisor 其他系统的安装参考：https://docs.fluentd.org/installation
-小试牛刀 配置文件 test.conf，启动一个HTTP服务，并把接收到的日志，打印到标准输出。
-&amp;lt;source&amp;gt; @type http port 9880 &amp;lt;/source&amp;gt; &amp;lt;match *.*&amp;gt; @type stdout &amp;lt;/match&amp;gt; 启动fluentd进程。</description>
-    </item>
-    
-    <item>
-      <title>Google Vision API</title>
-      <link>https://xujiahua.github.io/posts/20200401-google-vision-api/</link>
-      <pubDate>Wed, 01 Apr 2020 14:20:51 +0800</pubDate>
-      
-      <guid>https://xujiahua.github.io/posts/20200401-google-vision-api/</guid>
-      <description>目标 业务上需要识别出文本、图像敏感内容，降低业务风险。
-调用下云服务的产品。
-Google Cloud Platform GCP上，图像识别有两个产品：
- Vision API 直接使用预先训练的模型 AutoML 迁移学习，使用用户提交的新分类数据，训练模型。  关于文本识别的产品是类似的，也分直接使用预训练模型和迁移学习重新训练。
-Vision API：图像内容识别  Google Vision API的模型已经有审核内容的能力：暴力、成人内容的识别。 提供API，也提供了各个语言的SDK。 不需要开发者训练模型。  参考：https://cloud.google.com/vision?hl=zh-cn
-试用 安全搜索的分类说明  Adult 成人内容 Spoof 恶搞，比如恶搞政治人物 Medical 医疗影像 Violence 暴力内容 Racy 猥亵类，类似成人内容  参考：https://cloud.google.com/vision/docs/reference/rpc/google.cloud.vision.v1?hl=zh-cn#google.cloud.vision.v1.SafeSearchAnnotation
-对接流程 参考：https://codelabs.developers.google.com/codelabs/cloud-vision-intro/index.html?index=..%2F..cloudai&amp;amp;hl=zh-cn&amp;amp;_ga=2.102874504.925825070.1585721382-1910642988.1585296097#0
-注意，图像不一定需要上传到Google的云存储。
-开发对接参考：检测露骨内容（安全搜索）https://cloud.google.com/vision/docs/detecting-safe-search?hl=zh-cn
-DEMO 创建服务账号、创建密钥，自动下载json文件：
-code：
-https://github.com/GoogleCloudPlatform/golang-samples/blob/master/vision/detect/README.md
-请求次数限制 对请求内容大小有限制外，需要注意请求配额，每分钟请求数1800，QPS也就是30。如果无法满足需求，需要在平台申请增加配额。
-使用默认配额，业务上需要考虑采样数据，再调用Vision API。
-参考 https://cloud.google.com/vision/quotas?hl=zh-cn
-请求响应时间 请求响应时间，取决于两个因素：
-上传数据大小 越大越慢。
- 手机拍照软件生成的图像一般3M，建议图像压缩后上传。 考虑gcloud上先存储图像文件。参考 https://medium.com/bankify-tech-blog/how-to-optimize-the-speed-of-google-vision-api-cdc5e452104b  Vision API本身 对一张249K的图像进行简单压测。
-$ ll demo/trump.jpg -rw-r--r-- 1 jiahua staff 249K Apr 1 14:14 demo/trump.</description>
-    </item>
-    
-    <item>
-      <title>使用 Docker Machine</title>
-      <link>https://xujiahua.github.io/posts/20200331-use-docker-machine/</link>
-      <pubDate>Tue, 31 Mar 2020 09:53:05 +0800</pubDate>
-      
-      <guid>https://xujiahua.github.io/posts/20200331-use-docker-machine/</guid>
-      <description>简介 Docker Machine lets you create Docker hosts on your computer, on cloud providers, and inside your own data center. It creates servers, installs Docker on them, then configures the Docker client to talk to them.
-参考：
- https://github.com/docker/machine https://docs.docker.com/machine/overview/  vs. Vagrant 与Vagrant的交集 目前使用 Vagrant 搭 Docker 环境的步骤如下：
- vagrant init {box_name}，下载一个基础的虚拟机镜像，比如centos，并创建一个Vagrantfile。 Vagrantfile中设置虚拟机hostname。 Vagrantfile中设置Private network，使得几个VM可以互相通信。 VM内安装docker软件。  如果用上了docker-machine，只要一行命令。在这个场景上，docker-machine 比 Vagrant 方便了很多。
-docker-machine create -d virtualbox {host_name} VM的管理，vagrant命令需要在Vagrantfile所在目录执行。而docker-machine可以在任何目录管理VM。
-其他特色  通过其他driver，可以安装管理云主机或是私有数据中心，而不仅仅是virtualbox。 通过eval &amp;ldquo;$(docker-machine env default)&amp;quot;，覆盖环境变量DOCKER_HOST，使得本地docker client访问VM内的docker daemon。 更多实用命令，参考 https://docs.</description>
-    </item>
-    
-    <item>
-      <title>Docker Network小结</title>
-      <link>https://xujiahua.github.io/posts/20200321-docker-network/</link>
-      <pubDate>Sat, 21 Mar 2020 14:10:40 +0800</pubDate>
-      
-      <guid>https://xujiahua.github.io/posts/20200321-docker-network/</guid>
-      <description>Docker网络非常值得学习。对Docker不熟的同学，建议先看一些入门资料。
-Docker 学习资料  Docker — 从入门到实践 https://www.yuque.com/grasilife/docker Docker Kubernetes Lab Handbook https://docker-k8s-lab.readthedocs.io/en/latest/index.html 「Docker进阶与实战」华为Docker实践小组  单机网络 （建议在Linux系统上实验。）
-Docker安装完后，默认有三个（三种）网络。分别是默认的bridge模式，host模式，none模式。
-# docker network ls NETWORK ID NAME DRIVER SCOPE 51cbe7a9bb19 bridge bridge local 7182ef9fa8c4 host host local bd80d0dedaa8 none null local 参考：https://docs.docker.com/network/
-none模式 &amp;ndash;net=none 无网络。
-# docker run --net=none --rm -it alpine ip addr show 1: lo: &amp;lt;LOOPBACK,UP,LOWER_UP&amp;gt; mtu 65536 qdisc noqueue state UNKNOWN qlen 1000 link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00 inet 127.0.0.1/8 scope host lo valid_lft forever preferred_lft forever host模式 &amp;ndash;net=host  容器共用宿主机的网络。但是，容器的其他方面，如文件系统、进程列表等还是和宿主机隔离的。 容器不会申请独立的IP。 容器申请的端口占用宿主机的端口资源。 -p等端口映射命令不起作用：WARNING: Published ports are discarded when using host network mode 性能上比较好，因为没有地址转换。Host mode networking can be useful to optimize performance, and in situations where a container needs to handle a large range of ports, as it does not require network address translation (NAT), and no “userland-proxy” is created for each port.</description>
-    </item>
-    
-    <item>
-      <title>Go Web 项目框架</title>
-      <link>https://xujiahua.github.io/posts/20200320-go-web-project/</link>
-      <pubDate>Fri, 20 Mar 2020 15:24:22 +0800</pubDate>
-      
-      <guid>https://xujiahua.github.io/posts/20200320-go-web-project/</guid>
-      <description>常用开源库 依赖包管理 Go Modules Go Modules。Go 从1.11版本开始支持，Go 1.14被认为是生产可用了。个人用过最方便的Go依赖包管理工具了。
-版本管理中维护 go.mod/go.sum 两个文件。
-参考  Using Go Modules https://blog.golang.org/using-go-modules  命令行框架 Corba Corba。第一次看到，是在翻看 Hyperledger Fabric 的时候。
- 子命令，嵌套的子命令。 增强版本的flags。 项目模板的生成工具。 生成工具也自动引入了Viper这个包。Corba与Viper由一个作者开发，两个项目配合使用非常方便。  建议使用Cobra命令行工具生成项目模板。
- ▾ appName/ ▾ cmd/ add.go your.go commands.go here.go main.go 参考  A Commander for modern Go CLI interactions https://github.com/spf13/cobra Cobra Generator https://github.com/spf13/cobra/blob/master/cobra/README.md  配置管理 Viper Viper。常常与Corba搭配使用。抄一段官方简介：
-Viper is a complete configuration solution for Go applications including 12-Factor apps. It is designed to work within an application, and can handle all types of configuration needs and formats.</description>
-    </item>
-    
-    <item>
-      <title>Go库对URL Path中%2F的处理</title>
-      <link>https://xujiahua.github.io/posts/20200312-slash-in-url-path/</link>
-      <pubDate>Thu, 12 Mar 2020 15:17:36 +0800</pubDate>
-      
-      <guid>https://xujiahua.github.io/posts/20200312-slash-in-url-path/</guid>
-      <description>问题描述  有同事反馈Go项目的接口404了。看了下nginx日志，只有部分请求404了，404请求的显著特征是URL里有%2F，也就是/的转义。 接口定义是这样的：/api/xxx/{mid}/{uid}。mid、uid是URL path的一部分。从现象来看，程序没处理好转义字符，因为多了一个path部分，路由不匹配了，404。 nginx的URL记录是%2F，其实调用方传的是微信ID，比如IEd5W/jqsdF9qpuagQscEg==。调用方在发请求之前对ID已经做好了转义。  Go内置库：不区分%2F和/ An application cannot distinguish between &amp;ldquo;/&amp;rdquo; used as a path segment delimiter and &amp;ldquo;/&amp;rdquo; encoded in a path segment.
-这个问题由来已久了，看着官方也不打算解决了，见这个issue：https://github.com/golang/go/issues/3659
-If your app needs to assign special meaning, the server can reprocess req.RequestURI as it sees fit, and the client can issue requests using &amp;amp;url.URL{Opaque: rawURI}.  reprocess req.RequestURI 就是让你别用内置路由库了。 issue requests using &amp;amp;url.URL{Opaque: rawURI}. 试了，问题没解决。客户端不管怎么做，最终都是以HTTP协议输出的。GET http://www.google.com/index.html HTTP/1.1 服务端代码最终解析的还是中间的那段URL文本。照理就不通啊。  源码角度 url.URL的定义，明确指出Path字段存储的是decode之后的数据，所以%2F在这里已经被转义成了/，跟之前的Path意义完全不同了。</description>
-    </item>
-    
-    <item>
-      <title>专利申请流程小结</title>
-      <link>https://xujiahua.github.io/posts/20200311-patent/</link>
-      <pubDate>Wed, 11 Mar 2020 11:25:09 +0800</pubDate>
-      
-      <guid>https://xujiahua.github.io/posts/20200311-patent/</guid>
-      <description>去年憋的一篇专利，到申请公布阶段了，算是去年研究区块链的副成果。https://patents.google.com/patent/CN110807211。整理下专利申请流程。
-专利申请流程 主要流程如下图，来自网络。
-技术成果生成 有可以申请专利的点，这个因人而异。基于点子，写个草稿。
-申请专利 找一个专利代理，让他们提供专利稿的修改意见。反复迭代直到专利代理觉得没问题了。
-之后专利代理会出具一份「专利申请受理通知书」，你再交点钱，可能还会有税费减免。
-我遇到了专利代理看不大懂专利的情况，僵持了一段时间，后面换了一家顺畅好多。
-专利申请公布 这个时间点叫做：申请公布日。
-说明初审过了。实用新型和外观发明的话，直接就授权了，而发明还需要实质审查。
-&amp;ldquo;初步审查合格后，实用新型和外观就直接授权了，而发明还要经过实质审查，检索国内外的资料，确认没有相同的才会授权，所以发明的含金量会高很多，因此发明专利审查的时间也会是比较长的，一般从申请到拿证书都需要2-3年，而实用、外观这两项专利一年能拿到。&amp;rdquo;
-专利授权公告 这个时间点叫做：授权公告日。
-说明正式审查完了。这时候才算是真正拥有专利。</description>
-    </item>
-    
-    <item>
-      <title>Github pages重新开始：使用Hugo、Typora</title>
-      <link>https://xujiahua.github.io/posts/20200310-github-pages-restart/</link>
-      <pubDate>Tue, 10 Mar 2020 11:24:49 +0800</pubDate>
-      
-      <guid>https://xujiahua.github.io/posts/20200310-github-pages-restart/</guid>
-      <description>重新开始GitHub pages 曾使用GitHub pages +  jekyll 写过一段时间博客，没啥营养。
-打算重新开始：
- 把我记录在Evernote和Typora中的资料迁移到GitHub pages上。 另外做一些Web形式的小工具，挂载在一个子目录里，方便平时使用。  Hugo + Typora 打算如下：
- Markdown文件还是使用Typora写。用过MWeb、Typora，Typora使用感受更好些（这么好用还不要钱）。 Hugo作为静态网站生成，创建一个博客模板。  Hugo quickstart # 安装hugo（其实是Go编译的二进制文件） brew install hugo # 创建site hugo new site quickstart # 通过git submodule的方式下载主题 git init git submodule -b master add https://github.com/dillonzq/LoveIt themes/LoveIt # 更新config.toml，配置主题参数，见loveit配置 # 创建博客，创建的posts在content目录下。文件格式为：content/&amp;lt;CATEGORY&amp;gt;/&amp;lt;FILE&amp;gt;.&amp;lt;FORMAT&amp;gt; # hugo new 会采用 archetypes/default.md作为模板，把一些共性配置放在这个模板里吧。 hugo new posts/my-first-post.md # 本地看blog效果，-D表示草稿状态的博客也显示 hugo server -D # 生成静态网站到./public/，也可以指定目录 hugo -D 挑选了一个比较实用的主题 https://hugoloveit.com/</description>
-    </item>
-    
-    <item>
-      <title>Hyper-V使用体验</title>
-      <link>https://xujiahua.github.io/posts/20200323-use-hyper-v/</link>
-      <pubDate>Tue, 03 Mar 2020 22:13:23 +0800</pubDate>
-      
-      <guid>https://xujiahua.github.io/posts/20200323-use-hyper-v/</guid>
-      <description>Hyper-V 使用体验 Hyper-V是 Windows10 内置的虚拟机软件，没想到我会用到它。
-为什么要用Hyper-V  需要使用虚拟机来模拟Kubernetes环境。 Windows Docker依赖Hyper-V。貌似WSL2也是基于Hyper-V。应该是不会卸载Hyper-V了。 Hyper-V与其他虚拟机软件（VirtualBox, VMWare）冲突，用不了其他的，只能用Hyper-V。 Hyper-V与VirtualBox兼容的方案有没有。可能有，不想过于折腾了，那就不得不用。  Hyper-V好不好用  使用体验太差了，从Mac、从其他虚拟机使用过来，默认配置各种踩坑。 安装VM碰到DHCP超时的问题，反复试验无果，重启Windows后VM的DHCP不超时了。总结下，Windows上，如果怎么搞都搞不定，重启下可能就好了。WTF！ 自带的NAT网络有点残疾，VM配置静态IP，网络就不通了。不像VirtualBox是开箱即用的。 最后借助网络上的零碎信息自定义了下NAT网络，各种神奇配置。 Windows还是很屎，除了打游戏，开发体验跟我之前的体验一样糟。最后搞定花了我一天时间。要是用VMware/VirtualBox，可能在2个小时内就能搞定。总结，不好用。  Hyper-V 创建和克隆VM 创建VM 从*.iso文件创建VM。
- 注意，Linux VM，不启用Windows Secure Boot。 更多选项里，设置VM的名称和交换机。 体验不好的地方：左上方的「选择操作系统」区域有长时间的加载过程，即使使用本地镜像文件也得等。  克隆VM 从硬盘文件创建VM。
- 克隆是为了减少重复配置一些基础环境的工作量。 不像VirtualBox那样有直观的克隆按钮。摸索出的克隆功能是这样的：就是从VM硬盘创建VM。 建议先关机母体VM后，再基于母体VM的硬盘文件克隆。防止母体VM开机状态下一些更新并没有持久化到硬盘文件中。  Hyper-V NAT网络搭建总结 如果使用VMWare/VirtualBox的话，NAT网络是完全自动搭建的。
-VMWare中有三种网络模式，Bridging、NAT、Host-only分别对应Hyper-V下的三种交换机，外部、内部、专用。
- Bridging：VM使用物理网络。GUEST VM与HOST相当于通过交换机连上一个网络（细节不确定）。 NAT：VM使用虚拟网络，HOST同时连入物理网络和虚拟网络。VM出口流量都会通过HOST，使用HOST IP。 Host-only：在NAT基础上，VM连不上外网，除非有路由设置。  默认的NAT网络 默认交换机支持NAT，但是瑕疵不少，无法满足工作需要。
-Hyper-V Default Switch + VM DHCP 的组合默认有了NAT功能，满足以下：
- 虚拟机之间可以互相访问 虚拟机与物理机之间可以互相访问 虚拟机可以访问互联网  但是：
- 每次重启，Default Switch的IP都会变，Windows10 物理机上的网卡IPv4配置无法让他不变。 ping baidu.</description>
-    </item>
-    
-    <item>
-      <title>使用Go Modules</title>
-      <link>https://xujiahua.github.io/posts/20200228-go-modules/</link>
-      <pubDate>Fri, 28 Feb 2020 15:05:18 +0800</pubDate>
-      
-      <guid>https://xujiahua.github.io/posts/20200228-go-modules/</guid>
-      <description>Go Modules使用着感觉不错，Go终于有正常点的依赖管理工具了。记录一二。
-使用小结  go.mod, go.sum加入版本管理 Both go.mod and go.sum should be checked into version control. 直接依赖体现在go.mod，间接依赖由直接依赖自己管理，这是个递归的过程 Only direct dependencies are recorded in the go.mod file. go命令自动管理go.mod，这可太方便了 When it encounters an import of a package not provided by any module in go.mod, the go command automatically looks up the module containing that package and adds it to go.mod, using the latest version. 看着比之前的依赖管理好用很多。比如dep。因为网络下载包等问题，最后把依赖包全checkin到vendor目录了。太臃肿。  常用命令  go mod init creates a new module, initializing the go.</description>
-    </item>
-    
-    <item>
-      <title>5G认识小结</title>
-      <link>https://xujiahua.github.io/posts/20200222-5g/</link>
-      <pubDate>Sat, 22 Feb 2020 23:32:14 +0800</pubDate>
-      
-      <guid>https://xujiahua.github.io/posts/20200222-5g/</guid>
-      <description>去年11月尝鲜，买了个三星5G手机。找基站测5G速度成了刚买时候的乐趣。用了几个月，深感5G功能很鸡肋，5G基站太少。
-这两天翻了好多知乎上关于5G的评论，对5G的概念、应用场景有了些厘清。
-基本概念  5G，第五代移动通信技术。也就是5G的边界是移动通信网络。 5G的直接作用是提高了移动设备到基站的下载速率，能达到1G/s，也就是所谓的空口延迟低。 5G下载的速度上限还是光纤的下载速度上限。 5G的流量套餐应该不会便宜，除非国家出政策。为什么套餐不会便宜，这得看成本。5G的基站建设成本远比4G高。5G基站覆盖面积小，需要几倍于4G的基站，5G基站耗电成本也是几倍于4G基站。肥了设备商（华为中兴），苦了运营商（移动联通电信），最后还是消费者买单。 理论速度极可能跑不满。使用者多了，平均到每个终端，带宽就不够。现在我的4G速度好慢，完全没到理论速度。现在的矛盾不是需要更快的网络，而是更多的网络。 木桶效应，一个桶能装多少水由短板决定，以前的移动通信是短板，但是通过3G、4G到现在的5G的改善，已经成为长板了。运营商的承载网等配套也得扩容。不然5G的超高下载速率就是一个理论值。又是运营商的成本。  应用场景 大部分人的共识是，5G的杀手级应用仍在探索中。
-什么样的场景，只有通过5G能够做到，而其他技术不行，这样的场景就是典型的5G应用场景。要找到技术的适用场景，不能生搬硬套。区块链也是这样一个典型。过滤那些“可以使用XXX技术，但是完全没必要”的场景。
-媒体上关于5G的一些应用场景：
- 远程手术 —— 为什么不用光纤，可靠性更好。如果是边远山区不方便铺光纤，5G可能是好的替代。有总比没有好。 远程挖掘机 —— 微博上看到的，挖掘机通过5G联网，驾驶员在机房操控，安全性更高。 远程办公、远程上课 —— 这些光纤都能做到。对于山村里不方便通光纤的，是好事。但是山村里的困难是超乎我们想象的。看新闻，因为疫情不得不在家上课，几个小孩子共用一个手机，流量又贵，不舍得用。太难了。 AR/VR —— 不看好。光纤，百兆宽带都这么普及了，AR/VR发展不好的根本原因应该是AR/VR本身吧，5G救不了ARVR。 无人驾驶 —— 不看好。移动通信中的延时一直保持很低很困难吧，比如短时间太多人/设备使用基站导致拥挤。可靠性太重要了，毕竟汽车是高速移动的，稍微的疏忽就是惨痛代价。  会不会带来下一个“移动互联网” 之所以大家对5G这么关注，就是在想，5G能否像3/4G一样带动下一个移动互联网（电商、O2O、移动支付、短视频、直播）。
-先来看看移动互联网是怎么发展起来的。
- 苹果公司发布iPhone，智能手机的火种。 小米等一众国产品牌的低价策略，带来了智能手机的普及。 国务院要求运营商资费下降。大家都用得起流量。 总结就是：智能手机普及 + 运营商资费下降。 其中智能手机，这是从无到有，从0到1的奇迹，颠覆了之前的所有手机。（好久没有让人激动的科技产品了，苹果的创新能力也是在备受质疑，因为大家期望太高了。） 其中运营商资费下降，这是国家权力。（知乎用户：钱都让互联网企业赚走了，通讯行业等同于修路。）  5G目前的作用仅限于加快了与基站之间的通信速度，假如说3G完成了从0到1，4G完成了从1到10，那么5G是从10到100吧。根据边际效应准则，后面的收益会越来越少。
-很难看出能带来什么样的产业革命来。
-5G的利益关系 利好：
- 5G基站厂商。华为为主。 国家层面。5G是国家战略，是政治正确。其一，靠专利技术薅世界羊毛，从国家角度是有利可图的。其二，带动产业发展，拉动GDP。 手机终端厂商。近年来手机上的创新的吸睛能力真不行，消费欲望降低。靠5G这个卖点，能赚一波眼球。 还有众多蹭5G话题流量的：广告公司、创业公司。  利坏：
- 三大运营商。基站投入是高成本的，为了发展5G生态，国家也会限制套餐费用，影响其收入。还好是国企。  参考：https://www.zhihu.com/question/342366514/answer/820922564
-杂言 真正有颠覆性的，真正能突破人们想象力的，都在基础科学。比如材料科学，电池技术现在是瓶颈。离我很远。我做的事情真的对人类价值不大，只是个普通人，只能做到赚钱养家对家庭做贡献了。</description>
-    </item>
-    
-    <item>
-      <title>Implicit：推荐系统协同过滤库的测评</title>
-      <link>https://xujiahua.github.io/posts/20200211-recsys-implicit/</link>
-      <pubDate>Tue, 11 Feb 2020 14:34:27 +0800</pubDate>
-      
-      <guid>https://xujiahua.github.io/posts/20200211-recsys-implicit/</guid>
-      <description>简介 Implicit是一个推荐系统协同过滤库。所谓协同过滤，只用到了user、item的ID和user、item交互后的评分（或是某个度量）。
-GitHub：https://github.com/benfred/implicit
-安装 pip install implicit 其他选择 自己照着「推荐系统实战」里的基于物品推荐的相似度公式（类似关联分析中的Lift公式），也写了一个item-item recommender。
- 看推荐结果，自己写与implicit ALS有点差别，与implicit Cosine的结果差不多。 纯python，没有并行，没有用C/C++，果然很慢。 自己写一个的目的，除了练手，也想看看implicit的效果具体怎么样。 生产使用，不建议用自己手写的，水平真的有限。  Spark Mllib怎么样。
- Spark Mllib支持分布式，感觉没必要。本来Implicit单机就很强了。只要把数据导出来，导到训练机器上即可。 Spark分布式，扩展性好，但是性能并没有Implicit那么好。 Spark还得搭配HDFS，真的蛮重的，开发效率也没那么好。  背后的原理 今早根据作者文章Distance Metrics for Fun and Profit，整理了一份读后感，把之前的知识给梳理起来了。这篇文章主要介绍的是距离公式，用于K近邻的推荐算法。
-协同过滤算法分两类：
- 基于记忆的，K近邻算法（基于“距离”公式），建议使用BM25。优势在读后感中有写。（实际效果怎么样，还得看数据） 基于模型的，矩阵分解算法，建议使用 (implicit) ALS，其变种是支持implicit dataset的。矩阵分解算法SGD，只适用于评分。  效果，见测评图。ALS的效果是最好的了。这是在movielens100k的结果。
-看起来指标都很低，「推荐系统实战」里差不多这个结果。
-遇到的小问题  K近邻算法的model没有model.recommend_all方法。 model.recommend与model.recommend_all的返回数据结构不同，model.recommend是包含评分的，而model.recommend_all只返回ID。 recommend(0)，传入第一个用户ID，与recommend_all[0]，取出第一个用户ID，两者的结果是不一样的，不管用什么算法都一样！去年12月就有这样的issue：https://github.com/benfred/implicit/issues/299，我解决了，回复了这个issue。  猜想，因为recommend方法用到indices的原因？试着重新构建下user-item维度的sparse matrix。改完后，果然就一致了。技术原因，sparse matrix transpose后，indices是未转置前的indices，没有变化。 具体地，user_items.indices与item_users.T.indices是不同的。
-ALS算法在Mac上表现稀烂啊，同样的代码。ALS_Faiss还报错了。先在Linux上用吧。  Mac上的ALS效果：
-Linux上的ALS效果：
-冷启动 一开始并没有那么多行为数据。训练出的结果肯定是挺一般的。这时候用标签推荐，运营根据经验配置标签和推荐的映射即可。
-考虑用户特征、商品特征（而不仅仅是ID） 如果有user特征、item特征，可以使用更一般的监督学习算法。或是使用factorization machine。</description>
-    </item>
-    
-    <item>
-      <title>2019 eBay Big Data TechDay</title>
-      <link>https://xujiahua.github.io/posts/20191123-ebay-bigdata-techday/</link>
-      <pubDate>Sat, 23 Nov 2019 16:13:01 +0800</pubDate>
-      
-      <guid>https://xujiahua.github.io/posts/20191123-ebay-bigdata-techday/</guid>
-      <description>（笔记迁移 @ 2020年）
-现场听了下eBay大数据的分享。视频/PPT https://www.slidestalk.com/ebay
-总体感觉，很棒。
- 环境很好。德国中心，提供了星巴克、点心。 技术氛围好。几百人做大数据呢！而且做得都比较深。 拥抱开源：基于开源的二次开发，外围开发，平台化（易用性）等工作。 风控经理演讲水平好棒。 Spark SQL / Flink Streaming / Spark Streaming / ElasticSearch 这些是目前大数据的主流 真正投身大数据，最优选择是学习Spark。 没有中奖，不过拿了小礼物，心里美滋滋。  【应用角度】Data Driven Payment Risk  演讲、台风挺好的。 内容方面没有很新颖但是很扎实（基于图算法的挖掘其实挺少听见的，是让人眼前一亮的东西，但是我之前正好看过这块了。）。 基本上是在支付风控这个应用角度。 如果去PayPal，这块支付风控是可以好好学习的。  【Flink Streaming】Rheos-SQL: A Real-Time Processing Language  两个年轻人联合做的分享。 基于Flink的，Flink还有SQL功能。Flink这块我没接触。 扩展SQL语法的思路，加入了一些新功能，比如sqlflow也是这么做的（阿里巴巴）。写SQL就能连Kafka、ES。这点很不错的扩展。 还做了一个平台。  【Spark Streaming】Designing ETL pipelines with Structured Streaming and Delta lake  干货不多，一些最佳实践（因为没怎么做过streaming，印象不深）。感觉是Delta Lake的推广。 Delta Lake能替换hive么？  【ElasticSearch】Pronto - ElasticSearch as a service at ebay  Kibaba插件开发扩展ELK 做了一个平台管理ES。  【AI+BigData】Nous - Empower Data Analysis through Augmented Analytics  增强分析。大数据分析+知识图谱，自然语言处理（英文）。这个topic太时髦了。 演示效果，界面真很好看了。 风趣的开场白。技术又好。 英语对话，这么流利。有被刺激到。 从规则引擎开始 积累数据，机器学习生成规则  【Spark SQL】Carmel - Optimizing SparkSQL for Interative Analysis  eBay优化Spark sql（改写内部代码）替换TeraData，作为MPP方案。Impala不好吗。。。 观众提问，SQL on spark没有索引，是不是历史的倒退。有个问题挺好。回答是下推到parquet，列式存储会过滤。 是大牛，技术做的很深。Druid/Kylin/Spark/Spark SQL。一句话很经典，批处理也可以很快。 演讲基本上是站着不动，看着PPT疯狂输出信息。  </description>
-    </item>
-    
-    <item>
-      <title>量子计算——读「古今密码学趣谈」展望未来的密码学</title>
-      <link>https://xujiahua.github.io/posts/20191031-quantum-computer/</link>
-      <pubDate>Thu, 31 Oct 2019 15:22:33 +0800</pubDate>
-      
-      <guid>https://xujiahua.github.io/posts/20191031-quantum-computer/</guid>
-      <description>（笔记迁移 @ 2020年）
-主要讲了密码学怎么来应对量子计算。量子计算的并行性（N个量子位，能同时表示2^N个数字，而同样的比特位，同时只能表示一个2^N以内的数字。太神奇了），将以前指数级别的破解难度降低为了线性级别。RSA、ECC等现代密码学技术都会被轻易攻破。
-量子计算机的历史：
- 在美国电话电报公司贝尔实验室工作的数学家肖尔（Peter W.Shor，1959）于1994年发现了快速分解大整数的量子算法！他因此于1998年获得了由国际数学联盟颁发的奈望林纳应用数学奖。 2001年，美国IBM公司率先研制成功7个量子位的示例型量子计算机。 2007年2月，加拿大D-Wave System公司宣布研制成功世界上第一台商用16量子位的量子计算机。 2011年5月30日，D-Wave System公司宣布研制成功128量子位的量子计算机，并且出人意料地以每台 1000万美元的价格公开出售，还提供与传统计算机软件接口的软件工具包。 2011年9月2日，美国加州大学圣芭芭拉分校的科学家宣布，已通过量子电路成功实现了冯·诺依曼计算机结构，证实了未来量子大规模集成电路指日可待。 2012 年3月1日，美国IBM公司宣布，找到一种可以提升量子计算机规模的关键技术，从而使大规模量子计算机的实现成为可能 In 2015, D-Wave&amp;rsquo;s 2X Quantum Computer with more than 1000 qubits was installed at the Quantum Artificial Intelligence Lab at NASA Ames Research Center. January 2017 2048 qubits In 2019, D-Wave announced a 5000 qubit system available mid-2020, using their new Pegasus chip with 15 connections per qubit.  关于Dwave，客观看待，以下是引用：
-使用Dwave的量子退火提速找机器学习中的最优解，这是个很实用的功能。
-量子计算机中的算法需要特殊设计的。
-现代密码学是基于一些数学难题的，比如大整数分解、椭圆曲线。为了对抗量子计算破解，如果继续走基于数学路线，就需要找新的数学难题，比如基于格的难题（虽然接触过，但还是无法理解）。</description>
-    </item>
-    
-    <item>
-      <title>数字货币资料整理：FB Libra，央行 DCEP</title>
-      <link>https://xujiahua.github.io/posts/20191030-dcep-libra/</link>
-      <pubDate>Wed, 30 Oct 2019 15:31:21 +0800</pubDate>
-      
-      <guid>https://xujiahua.github.io/posts/20191030-dcep-libra/</guid>
-      <description>（笔记迁移 @ 2020年）
-资料：
- 「区块链到底能干嘛」，赏味不足，梁杰ggtalk博客 「Libra与数字货币展望」，央行_穆长春，得到课程 「有关DCEP/Libra/支付/金融科技企业」，Mikko，微博：现金（央行发行）- 存款（银行）- 余额（支付机构比如支付宝）- 货币基金之间的（层级）关系。第一次这么系统地去理解金融系统 Libra白皮书，官网 「参议院就Facebook的Libra听证会」 https://www.bilibili.com/video/av59535863/  Libra：
- Libra是分层架构（混合架构），节点与节点之间是用区块链，节点与用户之间是中心化服务  央行数字货币DCEP优势：
- DCEP是法币，价值属性等同现金，央行发行，国家信用担保 离线支付，应该是NFC技术，具体实现细节没有披露 保护国家货币主权和法币地位 便携性：现钞发行、运输、存储、防伪等环节成本高，使用DCEP可以规避这一点 匿名性：（现金支持匿名性，而支付宝、银行都没有隐私可言），DCEP也支持匿名性（一定程度上），具体实现细节见下文 防止犯罪：反洗钱、反逃税、反恐怖融资。这一点与匿名性有点相悖。文章提到使用大数据来挖掘特征，符合风险特征的会进行身份比对。（原文这么说：所以说，出于反洗钱的考虑，我们对数字钱包也是有分级和限额安排的。比如说你就用一个手机号码注册一个钱包，那你这个钱包当然可以用，但是级别一定是最低的，只能满足日常小额支付需求；但如果你要能上传一下身份证，或者再上传一个银行卡，就可以获得更高级别的数字钱包，如果你还能到柜台去面签一下，那可能就没有限额了。）也就是说小额支持匿名，而大额不行。 与区块链没有必然联系：央行没有要求使用区块链，央行调研结论也是区块链没法满足高并发需求（Libra是一个双层架构，节点与节点之间是用区块链，节点与用户之间是中心化服务） 采取的是双层运营体系，央行做上层，商业银行做第二层；商业机构向央行全额、100%缴纳准备金，央行的数字货币依然是中央银行负债，由中央银行信用担保，具有无限法偿性：这些是与人民币现金一个路子。  参考：
- DCEP：中国自己的数字货币 https://mp.weixin.qq.com/s?__biz=MzA5MDAxMjcwOQ==&amp;amp;mid=2447616917&amp;amp;idx=1&amp;amp;sn=73207944a32667c50ea12d65e209c4c8&amp;amp;chksm=840526dfb372afc947bf188f9154a37b773320a1ab3a2bb8de87fbe5b7a89b8c05934a100b2d&amp;amp;scene=0&amp;amp;xtrack=1  区块链的弱点（没法支持零售级别的交易）：
- 并发性能低（可扩展性差），共识机制导致的天然劣势，所有节点一起竞争记账权，相当于堵死在一件事上了 存储的可扩展性差，这个只能定期archive历史数据来解决了。 安全性只保证了数据不会被篡改，至于匿名，通过大数据是可以破解的 没有原生的加密机制：公有链匿名性，通过大数据可以挖掘出真实身份 等待确认太慢，不适合日常使用 51%算力攻击  怎么思考区块链：
- 去中心化？比中心化还要中心化。更集权。节点自己没法改。无法解决所有者作弊的问题，但对所有者（统治者）是利好的工具（赏味不足的说法，有道理） （IT上能）提升效率：一份数据在各个系统流转，那么这份数据就存在区块链数据库上就可以了。  </description>
-    </item>
-    
-    <item>
-      <title>rm docker image interactively</title>
-      <link>https://xujiahua.github.io/posts/20190429-docker-rmi/</link>
-      <pubDate>Mon, 29 Apr 2019 12:25:54 +0800</pubDate>
-      
-      <guid>https://xujiahua.github.io/posts/20190429-docker-rmi/</guid>
-      <description>写了个工具交互式删除 docker image。
-实在无法忍受先docker images，然后docker rmi的重复操作。 还比较原始，刚好够自己目前所需。
-想到交互式，是受ncdu的启发。ncdu命令是du命令的交互式版本。</description>
-    </item>
-    
-    <item>
-      <title>20190323黑客松总结</title>
-      <link>https://xujiahua.github.io/posts/20190325-blockchain-hackathon/</link>
-      <pubDate>Mon, 25 Mar 2019 10:45:59 +0800</pubDate>
-      
-      <guid>https://xujiahua.github.io/posts/20190325-blockchain-hackathon/</guid>
-      <description>过程 比赛背景见 https://www.tuoniaox.com/news/p-327352.html 。 打算从几个角度来讲下这个比赛过程。
-关于团队 我们公司3人（我、洪敏、天宇）参加比赛，都是开发背景。 主办方根据协调，一位来自台湾的社交方向创业者参加进来，英语演讲不错，技术会一点，有过hackathon经验。 比赛当天晚些时候，又有一位金融领域的伙伴加入进来，报名晚了，当时还没分配到队伍。 本来还有一位以太坊开发背景的参加，但是比赛当天还在加班。 最终是一支5人小组。
-产品设计 团队主体是我们公司三人，花了比较多的时间在选题和创意设计。有想过比如聊天工具、抽奖工具，感觉都一般。我们的眼界还是比较狭窄。
-主办方提供了多个topic，我们选了这个方向——了解客户（KYC）规则 Know-your-customer。因为这块涉及到用户身份，感觉能套在很多场景。
- 比赛前一天（周五）定了一个政府中心化KYC数据库的方案，区块链用于授权与审计用。 比赛当天清晨，改为去中心化的KYC方案，只有企业和用户，IPFS作为去中心化的存储，数据安全由公钥加密保证。区块链同样是用于授权、审计，和存储文件HASH。 主办方宣讲完毕，与其他组员REVIEW，一致用去中心化的方案，更贴比赛。这个作为我们的基础模型。 从B2C扩展到B2B，比如银行怎么Know一家向他借钱的酒店或是房屋租赁公司。引入IoT、智能设备采集真实入住率。通过合约，智能设备与C端用户交互，保证真实性。这里，区块链用于一份难以篡改的数据库，可以看出酒店的经营事件。 分工：我们公司3人开发，他们2人准备演示材料。  技术实现 我们没有实际的以太坊开发经验。所以，趟了很多坑，绕了很多弯路。低估了技术复杂度。按时间线：
- 当天下午，分析技术提供方提供的SDK（Go），是scryinfo的两个合约封装，一个是数据交换，一个是token交换。没法涵盖我们的设计场景，必须写自己的智能合约。 智能合约开发很顺利，使用remix+metaMask这个组合。 开始翻车之旅。 前端使用web3无法调用合约，还有web3js的版本问题、下载问题。 使用infura.io提供的免费的以太坊节点服务，发现有些方法没有开放。 连入主办方提供的以太坊节点，面对跨域（可解决）、还有一些新问题。 尝试同步一个以太坊测试节点，一个节点需要100G空间，时间和空间都没法满足。 翻阅SDK源码，尝试套用SDK中使用Go来包装智能合约调用的方式来调用我们的合约。执行合约方法进入无限等待。找SDK提供者一起review代码，也是无解。本以为翻车到此为止，能360度翻回正常轨道。 最后又想起创建一个私有链。但时间上不允许了。 紧急魔改代码，用于作品演示。 UI设计因为时间问题，比较粗暴。 第二天下午2点前，提交了代码。  技术上最大的问题，是应用无法调用合约。很多东西都是现学。 为此，我们几位就睡了几个小时。少壮不努力，老大徒伤悲。留下没有技术的泪水。
-展示 因为评委主要是日本人，演讲全程需要英文。 台湾小伙上，讲了一个故事：
- 以自己是一个开酒店的入题。 基于区块链的KYC解决了C端和B端重复繁琐的资料登记过程。 酒店初创，需要银行贷款，利用IoT+区块链和扩展的KYC应用，公开经营状况。解决银行对初创酒店的数据信任问题。 演讲中，意思表达还是有点折扣。不过，已经非常自然了。  主办方整理的信息图
-为了能增加亮点，金融小伙，拿来了之前准备好的树莓派和门锁，放入了演示环节。但是演示过程中，台上调试设备花了些时间，尴尬了几分钟。主持人马上与观众进入互动，避免令人窒息的安静。然后这个智能设备的演示也失败了，我们是唯一这么尴尬的小组。
-这个过程，技术并不重要，合约没调通这个事情显得没那么严重了。重要的是演讲能力、演示效果。重要的是，打动用户，让自己的作品被理解。
-总结 在最后的环节，我们也看到了其他队伍的演讲演示。准备得非常充分，都是有备而来，有非常酷的PPT、还有成型的app供下载、非常流畅自然的英文演讲、更贴合主办方业务的产品设计。没有得奖，心服口服。
-功在平时，厚积才能薄发。如果要赢，一定做好充足准备。需要做好这些准备：
- 痛点的定位。不能为技术而技术。 技术储备。 sales的能力。 英语。 最最重要的，还是teamwork，我们需要培育一个更强大的团队。  </description>
-    </item>
-    
-    <item>
-      <title>Go Plugin</title>
-      <link>https://xujiahua.github.io/posts/20190304-go-plugin/</link>
-      <pubDate>Mon, 04 Mar 2019 08:27:31 +0800</pubDate>
-      
-      <guid>https://xujiahua.github.io/posts/20190304-go-plugin/</guid>
-      <description>（笔记迁移 @ 2020年）
-早已忘记 C/C++ 中常用的动态链接库了。日常开发中，使用 Go 引入一个组件，常常是go get引入其源码，放在一起编译。
-Go 1.8 起也提供了动态链接库的功能。
-因为看 HyperLedger Fabric 源码的关系，接触到这块，稍微记录下。
-一、使用流程 这里有个demo可以参考下：https://github.com/vladimirvivien/go-plugin-example
-作者写作时，Go 1.8，plugin特性尚不支持MacOS。目前（Go 1.11.4），是支持Linux/MacOS的。
-1. 编译模块（module, .so） go build -buildmode=plugin -o path/to/shared/object/file.so path/to/source/code.go 注意-buildmode=plugin这个编译Flag。
-2. 引入&amp;quot;plugin&amp;quot; import &amp;quot;plugin&amp;quot; 3. 加载module plug, err := plugin.Open(&amp;quot;path/to/shared/object/file.so&amp;quot;) 4. 查找symbol，比如exported function/variable symGreeter, err := plug.Lookup(&amp;quot;Greeter&amp;quot;) plug.Lookup的返回类型是Symbol，其实就是interface{}，为了正常使用，需要做类型转换。
-type Symbol interface{} 5. 类型转换 type assertion var greeter Greeter greeter, ok := symGreeter.(Greeter) 很重要，不然没法使用。
-6. 正常使用 greeter.Greet() 二、已知问题 无法debug 分别在MacOS和Ubuntu尝试debug使用plugin包的应用，报错如下（Go 1.</description>
-    </item>
-    
-    <item>
-      <title>读 Mastering Ethereum</title>
-      <link>https://xujiahua.github.io/posts/20181029-mastering-ethereum/</link>
-      <pubDate>Mon, 29 Oct 2018 08:37:44 +0800</pubDate>
-      
-      <guid>https://xujiahua.github.io/posts/20181029-mastering-ethereum/</guid>
-      <description>（笔记迁移 @ 2020年）
-区块链上不应该只有数字货币。
- Ethereum was conceived at a time when people recognized the power of the Bitcoin model, and were trying to move beyond cryptocurrency applications.
-Ethereum’s founders were thinking about a blockchain without a specific purpose, that could support a broad variety of applications by being programmed.
-Ethereum has memory that stores both code and data, and it uses the Ethereum blockchain to track how this memory changes over time.</description>
-    </item>
-    
-    <item>
-      <title>一点压力测试的经验</title>
-      <link>https://xujiahua.github.io/posts/20181017-perf-testing/</link>
-      <pubDate>Wed, 17 Oct 2018 07:42:56 +0800</pubDate>
-      
-      <guid>https://xujiahua.github.io/posts/20181017-perf-testing/</guid>
-      <description>（笔记迁移 @ 2020年）
-一、概念，最基础最重要 1. 响应时间 TP99, TP90是什么 除了要看TPS，也要看请求的响应时间是否在合理的范围内。太离谱，压测该停了。
-响应时间的指标有最大响应时间、平均响应时间、TPXXX等。
-TP – Top Percentile
-TP90 = 500ms ：90%的请求都是在500ms以内。
-2. 错误率 压测过程中发现异常或是错误，或者，错误率明显上升，这时候压测就该停了。
-3. 吞吐量 TPS 单纯看TPS是没有意义的。要结合上述两个指标，一般是0错误率，TP99在xxx ms（看具体应用场景）内的TPS。
-比如这么描述TPS，TP99小于100ms的前提下，系统没有错误，系统可承载的TPS是1000。
-4. 压测案例 选择生产环境中并发要求高的请求。
-二、工具选型，选最合适的 工具的选择，一要看场景，二要看自己是否趁手。
-ab (apache benchmark) ab -kc 1000 -n 10000 http://www.some-site.cc/tmp/index.html
- -k Enables HTTP keep-alive -c Number of concurrent requests -n Number of total requests to make  不足：
- 只能使用单核。本身就可能是压测的瓶颈。 对于带多个步骤的压测场景无力。 没有（没找到）自定义断言的能力。  reference: https://en.wikipedia.org/wiki/ApacheBench
-wrk wrk小巧，性能非常好，报告直观。
-wrk -t2 -c100 -d30s -R2000 http://127.</description>
-    </item>
-    
-    <item>
-      <title>利用Jenkins&#43;Ansible做持续部署</title>
-      <link>https://xujiahua.github.io/posts/20170413-jenkins&#43;ansible/</link>
-      <pubDate>Thu, 13 Apr 2017 11:37:09 +0800</pubDate>
-      
-      <guid>https://xujiahua.github.io/posts/20170413-jenkins&#43;ansible/</guid>
-      <description>Ansible 工作需要，接盘又做后端开发，本着不做重复劳动的理念，加上前人留下来的脚本不够优秀，需要重搞一套一键部署的脚本。
-之前在Windows平台开发的时候，使用cmd、 powershell也写过一套部署脚本，还算凑合着用。
-这次是在Linux平台上，在重整之前，我也调研了下业界经验。最后选择了Ansible。Ansible比起bash简单很多，而且不怕重复执行相同命令有副作用，Ansible内置操作都是幂等的。同样的功能，用bash都能写。但是站在巨人肩膀上，效率更高。
-选择Ansible的时候也考虑过Puppet、Chef。
-比较之下，Puppet等都需要在每台被部署机上安装agent程序。而Ansible，只要被部署机上有Python即可。
-考虑到公司服务器都是内置Python的Ubuntu系统，就放心使用Ansible了。
-我们也基于Ansible上编写了应用发布的滚动部署脚本、回退脚本。 也编写了一套一键配置服务器的脚本，目前支持Nginx环境、APP服务器环境、Logstash安装等。
-主要用途，结合讯联场景，有这么几点：
- 服务器的配置（包括软件安装）可以做到脚本化、版本控制 —— 服务器的配置应该像源代码一样控制起来，而不是一个黑盒、或是随意性太多，比如redis的安装路径都不一样、测试环境与生产环境的nginx配置不一样。服务器部署文档并没有脚本那么精确，只能算是一份人工操作指南，程序员重复劳动太多 适合一套架构需要部署几个环境的场景 —— 比如支付宝国际项目需要一套独立后端系统的需求 服务器需要水平扩展，无需人工一台台处理 —— 构建一些应用服务器，将应用服务器加入到nginx load balancer里，都是可以脚本化的（包含在滚动部署里了） 应用部署、滚动部署 —— 云收银的部署，感觉有点奇怪，发布的时候需要重新编译一遍程序，两台生产服务器就需要编译两次。虽然部署有脚本，但还是有手工处理的场景。部署没问题的前提是程序员没有checkout错git分支。觉得这个没必要。测试通过，生产环境就直接用测试环境的包，除了配置。这个可以结合jenkins做到的，发布测试环境的同时构建一个生产的包。测试人员验收通过测试包，发布时就用对应的生产包 快速构建一套测试环境 —— 如何构建一套mongo集群？测试有这样的需求，刚入职的同事都有这样的需求 进程监控是否存在 —— 写好进程检查脚本，通过ansible脚本定时执行就能看到结果了  滚动部署，就是个循环 for i in webservers: for j in nginxservers: remove i from load balancer // wait for a while until webserver i finish processing requests sleep(1 * minute) deploy(i) for j in nginxservers: add i from load balancer Jenkins 真正考虑要搭个Jenkins，是因为Android打包太慢了、测试催着开发要最新的测试包。</description>
-    </item>
-    
-    <item>
-      <title>Android热更新框架的使用</title>
-      <link>https://xujiahua.github.io/posts/20170408-android-hot-update/</link>
-      <pubDate>Sat, 08 Apr 2017 11:45:49 +0800</pubDate>
-      
-      <guid>https://xujiahua.github.io/posts/20170408-android-hot-update/</guid>
-      <description>一个伪需求 Android热更新框架听的多了，真正开始用是因为组织突发奇想，说能否在智能POS上做个应用／插件，让开发者不改一行代码就能支持做扫码交易了。
-智能POS其实就是带刷卡槽，芯片插卡槽，NFC读卡器的Android系统。
-看完需求后，感觉意义不大啊，都是Android系统了，加个扫码模块很难么，对一个Android程序员，分分钟集成一个这是基本素养了。有点伪需求的味道。
-好奇心 不管是不是伪需求，还是激发了我的好奇心，有趣，如果做，该怎么做。有想过让硬件供应商协助下，能否在SDK上开个口，但想想还是算了，成本有点高。
-交代下，后端提供了套规范，终端将条码信息转成卡号和二磁道信息，后端就能转回条码，发往微信、支付宝。所以无论是刷卡交易还是条码交易，对终端来说，请求报文可以做到是一套规范。
-自然就想到了方法劫持的思路，打开刷卡器方法变成打开摄像头，读磁道信息方法变成读取扫描到的条码，这样用户真不用改什么代码了。说到方法劫持，就要指望Android的热更新框架了。
-Android热更新框架 Android的热更新框架一般都是阿里系、腾讯系的作品。可能是他们的apk包实在很大吧。相比我们的应用只有几M。 收集了些资料，简单对比了下。个人没有每个都实践过。
-回到需求上来，我们需要的是一个能够即时生效的框架。目前用了下Dexposed，因为编程方式比较方便。 Dexposed的感受，Android 4.x Dalvik虚拟机上基本算是完美了，但是ART虚拟机就不适配了。也是Dexposed被弃用的原因。AndFix延续了Dexposed。
-因为使用Dexposed，第一版，只能用在Android 4.x上，这周演示效果良好。有机会再做下Android 5.x的兼容。
-最后产品还是要让开发者动代码，加一行代码。因为这些热更新框架没有哪个是能劫持其他APP方法的。
-小想法，Dexposed/AndFix这个套路修复问题，以后估计会越来越难做，Android 7.x都已经支持JIT了，将Java代码编译到了本地代码，还怎么劫持Java方法呢，跑的都是本地代码了。</description>
-    </item>
-    
-  </channel>
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+    <channel>
+        <title>All Posts - Happy Coding</title>
+        <link>https://xujiahua.github.io/posts/</link>
+        <description>All Posts | Happy Coding</description>
+        <generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Sun, 08 Jun 2025 11:06:22 &#43;0800</lastBuildDate><atom:link href="https://xujiahua.github.io/posts/" rel="self" type="application/rss+xml" /><item>
+    <title>K8s 认证授权流程及 EKS 用户管理</title>
+    <link>https://xujiahua.github.io/posts/k8s-eks-ea3b5d29-0425-494e-8d9e-149f1654a41f/</link>
+    <pubDate>Sun, 25 Apr 2021 16:35:55 &#43;0800</pubDate>
+    <author>Happy Coding</author>
+    <guid>https://xujiahua.github.io/posts/k8s-eks-ea3b5d29-0425-494e-8d9e-149f1654a41f/</guid>
+    <description><![CDATA[<p>编辑于2020年12月，Google Docs 导入。</p>
+<p>目前使用 Rancher 管理集群及结合 LDAP 用户管理。支持多云的场景。</p>
+<p>本文只做知识记录。</p>
+<h1 id="kubernetes-authentication--authorization">Kubernetes Authentication &amp; Authorization</h1>
+<h2 id="kubernetes-背景知识">Kubernetes 背景知识</h2>
+<p></p>
+<p>整体架构，来源：<a href="https://medium.com/@kumargaurav1247/components-of-kubernetes-architecture-6feea4d5c712" target="_blank" rel="noopener noreffer ">Components of Kubernetes Architecture | by Gaurav Gupta</a></p>
+<p>比较典型的 Master-Slave 架构。而 apiserver 是核心中的核心。</p>
+<p></p>
+<p>apiserver 架构，来源：？？？</p>
+<p>单单 apiserver 本身，可以理解为一个后端连接 etcd 作为数据库的，仅仅执行 CRUD 操作的 API 服务。CRUD 的对象，就是我们说的 API Resource，比如 Pod, Service 等内置资源，还有开发者自定义的资源。</p>
+<p>具体的工作由各种 controllers （包括 kubelet ）来执行。这些 controllers 通过 watch apiserver，其本质是 etcd 的 watch 功能，能及时获得新的指令。</p>]]></description>
+</item>
+<item>
+    <title>eksctl: NodeCreationFailure: Instances failed to join the kubernetes cluster</title>
+    <link>https://xujiahua.github.io/posts/eksctl-nodecreationfailure-instances-failed-to-join-the-kubernetes-cluster-0393476e-6e53-42f7-8222-842ffd0e8358/</link>
+    <pubDate>Sun, 25 Apr 2021 13:18:00 &#43;0800</pubDate>
+    <author>Happy Coding</author>
+    <guid>https://xujiahua.github.io/posts/eksctl-nodecreationfailure-instances-failed-to-join-the-kubernetes-cluster-0393476e-6e53-42f7-8222-842ffd0e8358/</guid>
+    <description><![CDATA[<p>eksctl 创建集群失败了。第一次遇到这个错。</p>
+<pre tabindex="0"><code>2021-04-25 01:59:24 [ℹ]  waiting for CloudFormation stack &#34;eksctl-eks-prod-evocloud-tyo-nodegroup-mng-1&#34;
+2021-04-25 01:59:25 [✖]  unexpected status &#34;ROLLBACK_IN_PROGRESS&#34; while waiting for CloudFormation stack &#34;eksctl-eks-prod-evocloud-tyo-nodegroup-mng-1&#34;
+2021-04-25 01:59:25 [ℹ]  fetching stack events in attempt to troubleshoot the root cause of the failure
+2021-04-25 01:59:25 [✖]  AWS::EKS::Nodegroup/ManagedNodeGroup: CREATE_FAILED – &#34;Nodegroup mng-1 failed to stabilize: [{Code: NodeCreationFailure,Message: Instances failed to join the kubernetes cluster,ResourceIds: [i-09df0fc7408f36801]}]&#34;
+2021-04-25 01:59:25 [!]  1 error(s) occurred and cluster hasn&#39;t been created properly, you may wish to check CloudFormation console
+</code></pre><h2 id="分析">分析</h2>
+<p>在 CloudFormation 控制台查看详细日志。无法加入到 K8s 集群。然后没有进一步的信息了。</p>]]></description>
+</item>
+<item>
+    <title>metabase-quick 小结</title>
+    <link>https://xujiahua.github.io/posts/metabase-quick-71d491f9-972e-4305-9f93-1af388b5ca9b/</link>
+    <pubDate>Wed, 21 Apr 2021 18:03:00 &#43;0800</pubDate>
+    <author>Happy Coding</author>
+    <guid>https://xujiahua.github.io/posts/metabase-quick-71d491f9-972e-4305-9f93-1af388b5ca9b/</guid>
+    <description><![CDATA[<p>对 metabase-quick 这个工具进行简单小结。</p>
+<p>简单来说，metabase-quick 是个命令行工具，使用 Metabase 的 UI，写 SQL分析本地的 csv 文件，并进行可视化。功能与 Metabase 一样，设置上简化了。</p>
+<p>肝了几天，熬了几个晚上，终于有了 v0.1 MVP 版本。</p>
+<p><a href="https://github.com/XUJiahua/metabase-quick" target="_blank" rel="noopener noreffer ">XUJiahua/metabase-quick</a></p>
+<h2 id="使用">使用</h2>
+<p>Releases 页面下载自己平台的二进制文件。</p>
+<p><a href="https://github.com/XUJiahua/metabase-quick/releases" target="_blank" rel="noopener noreffer ">Releases · XUJiahua/metabase-quick</a></p>
+<pre tabindex="0"><code>$ ./metabase-quick-darwin dataset/iris.csv
+INFO: load file dataset/iris.csv in 0.00393911 seconds
+You can visit database engine via below command:
+mysql --host=127.0.0.1 --port=53045 default -u root
+
+INFO: NewConnection: client 1
+open http://localhost:53046
+
+incoming query: select * from iris
+</code></pre><p>会自动打开网页，点击 Native query。</p>
+<p></p>]]></description>
+</item>
+<item>
+    <title>使用 redis-benchmark 压测自建的 kv 存储引擎</title>
+    <link>https://xujiahua.github.io/posts/redis-benchmark-kv-a3e78900-612a-4d04-b2aa-fc6f0908b431/</link>
+    <pubDate>Mon, 19 Apr 2021 10:24:00 &#43;0800</pubDate>
+    <author>Happy Coding</author>
+    <guid>https://xujiahua.github.io/posts/redis-benchmark-kv-a3e78900-612a-4d04-b2aa-fc6f0908b431/</guid>
+    <description><![CDATA[<p>给自建 kv 存储引擎做性能测试不难，使用 redis-benchmark 压测的目的是，测试结果能与 redis-server 的结果做横向对比。</p>
+<h2 id="redis-benchmark">redis-benchmark</h2>
+<p>redis-benchmark 支持如下指令的 benchmark。其中 GET/SET 指令可用于 kv 存储引擎的压测。</p>
+<pre tabindex="0"><code>redis-benchmark -q
+PING_INLINE: 102669.41 requests per second, p50=0.247 msec
+PING_MBULK: 102880.66 requests per second, p50=0.231 msec
+SET: 101936.80 requests per second, p50=0.239 msec
+GET: 101626.02 requests per second, p50=0.239 msec
+INCR: 102249.49 requests per second, p50=0.239 msec
+LPUSH: 100603.62 requests per second, p50=0.255 msec
+RPUSH: 101626.02 requests per second, p50=0.255 msec
+LPOP: 102354.15 requests per second, p50=0.255 msec
+RPOP: 102249.49 requests per second, p50=0.255 msec
+SADD: 101522.84 requests per second, p50=0.247 msec
+HSET: 100603.62 requests per second, p50=0.255 msec
+SPOP: 102249.49 requests per second, p50=0.247 msec
+ZADD: 102564.10 requests per second, p50=0.255 msec
+ZPOPMIN: 103412.62 requests per second, p50=0.247 msec
+LPUSH (needed to benchmark LRANGE): 94607.38 requests per second, p50=0.263 msec
+LRANGE_100 (first 100 elements): 27964.21 requests per second, p50=0.855 msec
+LRANGE_300 (first 300 elements): 11193.19 requests per second, p50=2.135 msec
+LRANGE_500 (first 450 elements): 7649.94 requests per second, p50=3.159 msec
+LRANGE_600 (first 600 elements): 5884.78 requests per second, p50=4.103 msec
+MSET (10 keys): 93283.58 requests per second, p50=0.423 msec
+</code></pre><h2 id="redcon">redcon</h2>
+<p>Redis compatible server framework for <strong>Go</strong>.</p>]]></description>
+</item>
+<item>
+    <title>从 Notion 导出 markdown 到 hugo 项目</title>
+    <link>https://xujiahua.github.io/posts/notion-markdown-hugo-78139407-85c5-4a75-b288-b54d5c3df34b/</link>
+    <pubDate>Mon, 12 Apr 2021 17:25:00 &#43;0800</pubDate>
+    <author>Happy Coding</author>
+    <guid>https://xujiahua.github.io/posts/notion-markdown-hugo-78139407-85c5-4a75-b288-b54d5c3df34b/</guid>
+    <description><![CDATA[<h2 id="目的">目的</h2>
+<p>好久没更新博客了，最近半年使用 Notion，体验很棒。</p>
+<p>之前写博客的过程：使用 Typora 编辑 markdown，使用 Hugo 生成静态页面，上传到 github 使用 github pages serving。参考：</p>
+<p><a href="https://xujiahua.github.io/posts/20200310-github-pages-restart/" target="_blank" rel="noopener noreffer ">Github pages重新开始：使用Hugo、Typora</a></p>
+<p>怎么把我 Notion 中的文章同步到我的博客呢。这是本文目的。</p>
+<p>主要是写了一个 notion-mk 的程序将 notion 文章导出到 hugo 工作目录。后面的工作与之前保持一致。</p>
+<pre tabindex="0"><code>notion -- notion-mk(todo) --&gt; hugo directory 
+																		-- hugo generate --&gt; static html/js/css
+</code></pre><h2 id="wip">WIP</h2>
+<p>代码如下：</p>
+<p><a href="https://github.com/XUJiahua/notion-md" target="_blank" rel="noopener noreffer ">XUJiahua/notion-md</a></p>
+<h3 id="功能">功能</h3>
+<ul>
+<li><i class="far fa-check-square fa-fw" aria-hidden="true"></i> Download images</li>
+<li><i class="far fa-check-square fa-fw" aria-hidden="true"></i> Notion extract to markdown</li>
+<li><i class="far fa-check-square fa-fw" aria-hidden="true"></i> markdown hugo compatiable</li>
+<li><i class="far fa-check-square fa-fw" aria-hidden="true"></i> image location?</li>
+<li><i class="far fa-check-square fa-fw" aria-hidden="true"></i> remove title from markdown, now #&hellip;</li>
+<li><i class="far fa-check-square fa-fw" aria-hidden="true"></i> support category</li>
+<li><i class="far fa-check-square fa-fw" aria-hidden="true"></i> support tag</li>
+<li><i class="far fa-square fa-fw" aria-hidden="true"></i> table of content at the beginning</li>
+</ul>
+<h3 id="使用">使用</h3>
+<p>将要发布的文档添加到这个 list 页面</p>]]></description>
+</item>
+<item>
+    <title>kubectl 怎么念</title>
+    <link>https://xujiahua.github.io/posts/kubectl-4f270b11-8ad4-47c5-b20c-6f340f5ccad1/</link>
+    <pubDate>Tue, 09 Mar 2021 19:41:00 &#43;0800</pubDate>
+    <author>Happy Coding</author>
+    <guid>https://xujiahua.github.io/posts/kubectl-4f270b11-8ad4-47c5-b20c-6f340f5ccad1/</guid>
+    <description><![CDATA[<p>念法很多。就选这个吧。我也一直这么念的。</p>
+<p></p>]]></description>
+</item>
+<item>
+    <title>pandasql库解析</title>
+    <link>https://xujiahua.github.io/posts/20200916-pandas-sql/</link>
+    <pubDate>Wed, 16 Sep 2020 10:48:11 &#43;0800</pubDate>
+    <author>Happy Coding</author>
+    <guid>https://xujiahua.github.io/posts/20200916-pandas-sql/</guid>
+    <description><![CDATA[<p>对 Pandas 库没有原生 SQL 支持表示遗憾，今天看到这么一个库 <a href="https://github.com/yhat/pandasql" target="_blank" rel="noopener noreffer ">https://github.com/yhat/pandasql</a> 。</p>
+<p>它的思路比较简单粗暴，先把 pandas Dataframe 存储到一个关系型数据库（sqlite/postgresql），最后 SQL query 的结果其实是查询关系型数据库返回的结果，封装成 Dataframe 来呈现。其中数据库操作使用 sqlalchemy 这个库。</p>
+<p>学到的知识点：locals()，globals() 这两个方法。</p>
+<blockquote>
+<p>The globals() method returns the dictionary of the current global symbol table. <a href="https://www.programiz.com/python-programming/methods/built-in/globals" target="_blank" rel="noopener noreffer ">https://www.programiz.com/python-programming/methods/built-in/globals</a></p>
+<p>The locals() method updates and returns a dictionary of the current local symbol table. <a href="https://www.programiz.com/python-programming/methods/built-in/locals" target="_blank" rel="noopener noreffer ">https://www.programiz.com/python-programming/methods/built-in/locals</a></p></blockquote>
+<p>如下代码，meat 是一个 Dataframe 变量，为何 SQL query 里能直接引用这个变量。</p>
+<pre tabindex="0"><code>$ python
+&gt;&gt;&gt; from pandasql import sqldf, load_meat, load_births
+&gt;&gt;&gt; pysqldf = lambda q: sqldf(q, globals())
+&gt;&gt;&gt; meat = load_meat()
+&gt;&gt;&gt; print pysqldf(&#34;SELECT * FROM meat LIMIT 10;&#34;).head()
+</code></pre><p>因为可以从 globals() 里通过符号 meat 拿到这个变量。</p>]]></description>
+</item>
+<item>
+    <title>Docker/Kubernetes 系列目录</title>
+    <link>https://xujiahua.github.io/posts/20200909-docker-series/</link>
+    <pubDate>Wed, 09 Sep 2020 09:52:37 &#43;0800</pubDate>
+    <author>Happy Coding</author>
+    <guid>https://xujiahua.github.io/posts/20200909-docker-series/</guid>
+    <description><![CDATA[<p>不定时更新中。</p>
+<h2 id="docker">Docker</h2>
+<h3 id="基础">基础</h3>
+<ol>
+<li><a href="https://docs.docker.com/get-started/" target="_blank" rel="noopener noreffer ">Docker 入门</a>，官方 get started 边看边实践</li>
+<li>Docker 如何改变软件开发协作</li>
+<li>Dockerfile 最佳实践</li>
+<li><a href="https://xujiahua.github.io/posts/20200321-docker-network/" target="_blank" rel="noopener noreffer ">Docker Network小结</a></li>
+<li><a href="https://xujiahua.github.io/posts/20200403-docker-logging/" target="_blank" rel="noopener noreffer ">Docker 日志驱动小结</a></li>
+<li><a href="https://xujiahua.github.io/posts/20200402-use-fluentd/" target="_blank" rel="noopener noreffer ">使用 fluentd 收集 Docker 日志</a></li>
+</ol>
+<h3 id="进阶">进阶</h3>
+<ol>
+<li><a href="https://xujiahua.github.io/posts/20200901-linux-namespace/" target="_blank" rel="noopener noreffer ">Linux namespace 介绍</a></li>
+<li><a href="https://xujiahua.github.io/posts/20200907-docker-bridge-net-sim/" target="_blank" rel="noopener noreffer ">使用 ip/iptables 命令模拟 Docker bridge 网络</a></li>
+<li>Linux cgroup 介绍</li>
+<li>Docker 中 namespace/cgroup 的体现</li>
+<li>Union file system</li>
+<li>容器网络模型标准 Container Network Model (CNM) 与其实现 libnetwork <a href="https://github.com/moby/libnetwork/blob/master/docs/design.md" target="_blank" rel="noopener noreffer ">https://github.com/moby/libnetwork/blob/master/docs/design.md</a></li>
+<li>CNI 标准，不再使用 docker 自带的网络驱动，docker run &ndash;net=none</li>
+<li>libcontainer/containerd/runc</li>
+</ol>
+<h2 id="kubernetes">Kubernetes</h2>
+<h3 id="基础-1">基础</h3>
+<ol>
+<li>k8s 虚拟机体验 <a href="https://github.com/XUJiahua/k8s-try" target="_blank" rel="noopener noreffer ">https://github.com/XUJiahua/k8s-try</a></li>
+</ol>
+<h2 id="参考链接">参考链接</h2>
+<ol>
+<li>官方文档 <a href="https://docs.docker.com/" target="_blank" rel="noopener noreffer ">https://docs.docker.com/</a></li>
+<li>Docker — 从入门到实践 <a href="https://www.yuque.com/grasilife/docker/readme" target="_blank" rel="noopener noreffer ">https://www.yuque.com/grasilife/docker/readme</a></li>
+<li>Golang UK Conf. 2016 - Liz Rice - What is a container, really? Let&rsquo;s write one in Go from scratch <a href="https://www.youtube.com/watch?v=HPuvDm8IC-4" target="_blank" rel="noopener noreffer ">https://www.youtube.com/watch?v=HPuvDm8IC-4</a></li>
+<li>Linux containers from scratch - diyC <a href="https://wvi.cz/diyC/" target="_blank" rel="noopener noreffer ">https://wvi.cz/diyC/</a></li>
+<li>Kubernetes for Full-Stack Developers <a href="https://www.digitalocean.com/community/curriculums/kubernetes-for-full-stack-developers" target="_blank" rel="noopener noreffer ">https://www.digitalocean.com/community/curriculums/kubernetes-for-full-stack-developers</a></li>
+</ol>
+<h2 id="参考书籍">参考书籍</h2>
+<ol>
+<li>Docker技术入门与实战（第3版）（2018）</li>
+<li>Docker 进阶与实战（2016） - 华为 Docker 实践小组</li>
+<li>Kubernetes网络权威指南：基础、原理与实践 （2019）</li>
+</ol>]]></description>
+</item>
+<item>
+    <title>使用 ip/iptables 命令模拟 Docker bridge 网络</title>
+    <link>https://xujiahua.github.io/posts/20200907-docker-bridge-net-sim/</link>
+    <pubDate>Mon, 07 Sep 2020 11:35:39 &#43;0800</pubDate>
+    <author>Happy Coding</author>
+    <guid>https://xujiahua.github.io/posts/20200907-docker-bridge-net-sim/</guid>
+    <description><![CDATA[<p>如<a href="https://xujiahua.github.io/posts/20200901-linux-namespace/" target="_blank" rel="noopener noreffer ">前文</a>介绍，Linux Network namespace 用于给进程创建一个新的网络栈，路由、防火墙规则、网络设备。<code>man ip-netns</code>：</p>
+<blockquote>
+<p>A network namespace is logically another copy of the network stack, with its own routes, firewall rules, and network devices.</p></blockquote>
+<p>作为对 Network namespace 的实践，本文使用 ip/iptables 等命令模拟下 Docker bridge 网络，并会接触到 Network namespace，veth pair，Linux bridge，NAT 等概念。</p>
+<h2 id="实验">实验</h2>
+<h3 id="使用-ip命令操作-network-namespace">使用 <code>ip</code>命令操作 Network namespace</h3>
+<p>ip netns 子命令用于操作 Network namespace。使用 add 子命令，创建一个 Network namespace。</p>
+<pre tabindex="0"><code># ip netns add netns1
+</code></pre><p>查看 netns1 的网络设备（network device）。使用 exec 子命令，后接 netns1 和要执行的命令。默认有一个 DOWN 状态的 lo 设备。</p>]]></description>
+</item>
+<item>
+    <title>瘦终端指北 —— ICMP tunnel</title>
+    <link>https://xujiahua.github.io/posts/20200903-fuck-thin-client/</link>
+    <pubDate>Thu, 03 Sep 2020 17:02:18 &#43;0800</pubDate>
+    <author>Happy Coding</author>
+    <guid>https://xujiahua.github.io/posts/20200903-fuck-thin-client/</guid>
+    <description><![CDATA[<p>因为公司有开发泄露源码在 Github，对公司声誉造成一定影响，公司层面推广起瘦终端，所有开发一起背锅 :( 。在瘦终端里，网络严格管控，vscode 下载插件都难，需要申请 IP 白名单。开发只允许在瘦终端里接触 git 仓库，只能向瘦终端拷贝文件，反之不能。这样就能防住代码泄露么？</p>
+<p>搞笑的办法，瘦终端生成二维码，主机扫描，数据传输问题搞定。</p>
+<p>从网络角度，怎么解决呢。我们来严肃看待这个技术问题。</p>
+<h2 id="icmp">ICMP</h2>
+<p>实践发现，瘦终端里不能访问百度，但是能 ping 通。从 TCP/IP 的角度，瘦终端在网络上只是 TCP 传输层被流量管控了，IP 层还是畅通无阻的。</p>
+<p>下图为 TCP/IP 的层次结构，TCP 包封装于 IP 包。</p>
+<p></p>
+<p><a href="https://www.researchgate.net/figure/Packet-encapsulation-TCP-IP-architecture-encapsulates-the-data-from-the-upper-layer-by_fig4_49288737" target="_blank" rel="noopener noreffer ">https://www.researchgate.net/figure/Packet-encapsulation-TCP-IP-architecture-encapsulates-the-data-from-the-upper-layer-by_fig4_49288737</a></p>
+<p>目前网站的基石是 HTTP/TCP 协议，代理也普遍是基于 HTTP/TCP 的，shadowsocks 翻墙的思路不通。</p>
+<p>所以 ICMP 协议是否能作为代理协议呢。从封包的角度，ICMP 与 TCP 一样，也是封在 IP 包中的。</p>]]></description>
+</item>
+</channel>
 </rss>

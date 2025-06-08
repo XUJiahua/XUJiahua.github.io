@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+    <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="robots" content="noodp" />
+        <title>Linux Network TUN/TAP 虚拟网络设备 - Happy Coding</title><meta name="Description" content=""><meta property="og:url" content="http://localhost:1313/posts/20200905-linux-virtual-network-device/">
+  <meta property="og:site_name" content="Happy Coding">
+  <meta property="og:title" content="Linux Network TUN/TAP 虚拟网络设备">
+  <meta property="og:description" content="icmptunnel 中有用到 TUN 虚拟（Virtual）网络设备，本文整理下。
+Linux 中有别于物理网络设备的，背后没有真实物理网卡，完成通过软件虚拟化的就是虚拟网络设备了。虚拟网络设备的应用场景很多，比如 VirtualBox 虚拟机内的网卡是虚拟出来的，VPN（Virtual private networks）网络是基于虚拟网络设备的。
+先重点讲下 TUN/TAP 这两种虚拟网络设备，主要用途就是建立隧道网络。
+tunnel 隧道，联通两块陆地。
+Linux L3隧道底层实现原理都基于tun设备。现在的Linux内核原生支持5种隧道协议，它们的底层实现都采用tun设备。我们熟知的各种VPN软件，其底层实现都离不开这5种隧道协议。其他隧道实现方式与ipip隧道的大同小异。
+TUN/TAP 工作原理 https://blog.csdn.net/bailyzheng/article/details/18770121
+Virtual NIC：同 Real VIC 一样，是内核资源，只是没有物理链路，向上的抽象是一样的，同样经过 TCP/IP 协议栈。
+数据处理进程：通过系统调用创建了 TUN/TAP 虚拟网卡（ifconfig 可见类似 tun0/tap0 的网卡名称），使用 ip/ifconfig 配置 IP address 等。对数据处理进程来说，与 VIrtual NIC 的通信跟读写文件一样简单，因为中间有字符驱动。
+使用 tun/tap 驱动的进程：通过 IP 访问 TUN/TAP 虚拟网卡，即，实现了与数据处理进程之间的通信。
+Real NIC：为了达到数据转发的目的，数据处理进程通过 Socket 通信与其他网络地址通信，当然，这会经过物理网卡，也就是会经过 Real NIC。
+其工作原理，大体也是如 Shadowsocks 这类软件的工作思路。
+TUN 与 TAP 的区别">
+  <meta property="og:locale" content="zh_cn">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2020-09-06T06:43:31+08:00">
+    <meta property="article:modified_time" content="2020-09-06T06:43:31+08:00">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Linux Network TUN/TAP 虚拟网络设备">
+  <meta name="twitter:description" content="icmptunnel 中有用到 TUN 虚拟（Virtual）网络设备，本文整理下。
+Linux 中有别于物理网络设备的，背后没有真实物理网卡，完成通过软件虚拟化的就是虚拟网络设备了。虚拟网络设备的应用场景很多，比如 VirtualBox 虚拟机内的网卡是虚拟出来的，VPN（Virtual private networks）网络是基于虚拟网络设备的。
+先重点讲下 TUN/TAP 这两种虚拟网络设备，主要用途就是建立隧道网络。
+tunnel 隧道，联通两块陆地。
+Linux L3隧道底层实现原理都基于tun设备。现在的Linux内核原生支持5种隧道协议，它们的底层实现都采用tun设备。我们熟知的各种VPN软件，其底层实现都离不开这5种隧道协议。其他隧道实现方式与ipip隧道的大同小异。
+TUN/TAP 工作原理 https://blog.csdn.net/bailyzheng/article/details/18770121
+Virtual NIC：同 Real VIC 一样，是内核资源，只是没有物理链路，向上的抽象是一样的，同样经过 TCP/IP 协议栈。
+数据处理进程：通过系统调用创建了 TUN/TAP 虚拟网卡（ifconfig 可见类似 tun0/tap0 的网卡名称），使用 ip/ifconfig 配置 IP address 等。对数据处理进程来说，与 VIrtual NIC 的通信跟读写文件一样简单，因为中间有字符驱动。
+使用 tun/tap 驱动的进程：通过 IP 访问 TUN/TAP 虚拟网卡，即，实现了与数据处理进程之间的通信。
+Real NIC：为了达到数据转发的目的，数据处理进程通过 Socket 通信与其他网络地址通信，当然，这会经过物理网卡，也就是会经过 Real NIC。
+其工作原理，大体也是如 Shadowsocks 这类软件的工作思路。
+TUN 与 TAP 的区别">
+<meta name="application-name" content="Happy Coding">
+<meta name="apple-mobile-web-app-title" content="Happy Coding"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="http://localhost:1313/posts/20200905-linux-virtual-network-device/" /><link rel="prev" href="http://localhost:1313/posts/20200903-fuck-thin-client/" /><link rel="next" href="http://localhost:1313/posts/20200907-docker-bridge-net-sim/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="/lib/fontawesome-free/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="/lib/fontawesome-free/all.min.css"></noscript><link rel="preload" href="/lib/animate/animate.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="/lib/animate/animate.min.css"></noscript><script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "headline": "Linux Network TUN/TAP 虚拟网络设备",
+        "inLanguage": "zh-cn",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "http:\/\/localhost:1313\/posts\/20200905-linux-virtual-network-device\/"
+        },"genre": "posts","wordcount":  171 ,
+        "url": "http:\/\/localhost:1313\/posts\/20200905-linux-virtual-network-device\/","datePublished": "2020-09-06T06:43:31+08:00","dateModified": "2020-09-06T06:43:31+08:00","publisher": {
+            "@type": "Organization",
+            "name": ""},"author": {
+                "@type": "Person",
+                "name": "Happy Coding"
+            },"description": ""
+    }
+    </script></head>
+    <body data-header-desktop="fixed" data-header-mobile="auto"><script type="text/javascript">(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
+
+        <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
+    <div class="header-wrapper">
+        <div class="header-title">
+            <a href="/" title="Happy Coding">Happy Coding</a>
+        </div>
+        <div class="menu">
+            <div class="menu-inner"><a class="menu-item" href="/posts"> Archive </a><a class="menu-item" href="/categories"> Categories </a><a class="menu-item" href="/tags"> Tags </a><a class="menu-item" href="/index.xml"> RSS Feed </a><span class="menu-item delimiter"></span><a href="javascript:void(0);" class="menu-item theme-switch" title="Switch Theme">
+                    <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+                </a></div>
+        </div>
+    </div>
+</header><header class="mobile" id="header-mobile">
+    <div class="header-container">
+        <div class="header-wrapper">
+            <div class="header-title">
+                <a href="/" title="Happy Coding">Happy Coding</a>
+            </div>
+            <div class="menu-toggle" id="menu-toggle-mobile">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="menu" id="menu-mobile"><a class="menu-item" href="/posts" title="">Archive</a><a class="menu-item" href="/categories" title="">Categories</a><a class="menu-item" href="/tags" title="">Tags</a><a class="menu-item" href="/index.xml" title="">RSS Feed</a><a href="javascript:void(0);" class="menu-item theme-switch" title="Switch Theme">
+                <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+            </a></div>
+    </div>
+</header><main class="main">
+                <div class="container"><div class="toc" id="toc-auto">
+            <h2 class="toc-title">Contents</h2>
+            <div class="toc-content" id="toc-content-auto"></div>
+        </div><article class="page single"><h1 class="single-title animate__animated animate__flipInX">Linux Network TUN/TAP 虚拟网络设备</h1><div class="post-meta">
+            <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Happy Coding</a></span></div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2020-09-06">2020-09-06</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;171 words&nbsp;
+                <i class="far fa-clock fa-fw" aria-hidden="true"></i>&nbsp;One minute&nbsp;</div>
+        </div><div class="details toc" id="toc-static"  data-kept="">
+                <div class="details-summary toc-title">
+                    <span>Contents</span>
+                    <span><i class="details-icon fas fa-angle-right" aria-hidden="true"></i></span>
+                </div>
+                <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#tuntap">TUN/TAP</a>
+      <ul>
+        <li><a href="#工作原理">工作原理</a></li>
+        <li><a href="#tun-与-tap-的区别">TUN 与 TAP 的区别</a></li>
+        <li><a href="#如何使用-tun">如何使用 tun</a></li>
+      </ul>
+    </li>
+    <li><a href="#参考">参考</a></li>
+  </ul>
+</nav></div>
+            </div><div class="content" id="content"><p>icmptunnel 中有用到 TUN 虚拟（Virtual）网络设备，本文整理下。</p>
+<p>Linux 中有别于物理网络设备的，背后没有真实物理网卡，完成通过软件虚拟化的就是虚拟网络设备了。虚拟网络设备的应用场景很多，比如 VirtualBox 虚拟机内的网卡是虚拟出来的，VPN（Virtual private networks）网络是基于虚拟网络设备的。</p>
+<p>先重点讲下 TUN/TAP 这两种虚拟网络设备，主要用途就是建立隧道网络。</p>
+<p>tunnel 隧道，联通两块陆地。</p>
+<p>Linux L3隧道底层实现原理都基于tun设备。现在的Linux内核原生支持5种隧道协议，它们的底层实现都采用tun设备。我们熟知的各种VPN软件，其底层实现都离不开这5种隧道协议。其他隧道实现方式与ipip隧道的大同小异。</p>
+<h2 id="tuntap">TUN/TAP</h2>
+<h3 id="工作原理">工作原理</h3>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="../../images/image002.jpg"
+        data-srcset="../../images/image002.jpg, ../../images/image002.jpg 1.5x, ../../images/image002.jpg 2x"
+        data-sizes="auto"
+        alt="../../images/image002.jpg"
+        title="img" /></p>
+<p><a href="https://blog.csdn.net/bailyzheng/article/details/18770121" target="_blank" rel="noopener noreffer ">https://blog.csdn.net/bailyzheng/article/details/18770121</a></p>
+<p>Virtual NIC：同 Real VIC 一样，是内核资源，只是没有物理链路，向上的抽象是一样的，同样经过 TCP/IP 协议栈。</p>
+<p>数据处理进程：通过系统调用创建了 TUN/TAP 虚拟网卡（ifconfig 可见类似 tun0/tap0 的网卡名称），使用 ip/ifconfig 配置 IP address 等。对数据处理进程来说，与 VIrtual NIC 的通信跟读写文件一样简单，因为中间有字符驱动。</p>
+<p>使用 tun/tap 驱动的进程：通过 IP 访问 TUN/TAP 虚拟网卡，即，实现了与数据处理进程之间的通信。</p>
+<p>Real NIC：为了达到数据转发的目的，数据处理进程通过 Socket 通信与其他网络地址通信，当然，这会经过物理网卡，也就是会经过 Real NIC。</p>
+<p>其工作原理，大体也是如 Shadowsocks 这类软件的工作思路。</p>
+<h3 id="tun-与-tap-的区别">TUN 与 TAP 的区别</h3>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="../../images/400px-Tun-tap-osilayers-diagram.png"
+        data-srcset="../../images/400px-Tun-tap-osilayers-diagram.png, ../../images/400px-Tun-tap-osilayers-diagram.png 1.5x, ../../images/400px-Tun-tap-osilayers-diagram.png 2x"
+        data-sizes="auto"
+        alt="../../images/400px-Tun-tap-osilayers-diagram.png"
+        title="img" /></p>
+<p><a href="https://en.wikipedia.org/wiki/TUN/TAP" target="_blank" rel="noopener noreffer ">https://en.wikipedia.org/wiki/TUN/TAP</a></p>
+<p>封包的层次不一样，TUN 是网络层的，封装 IP 包，而 TAP 是链接层的。</p>
+<h3 id="如何使用-tun">如何使用 tun</h3>
+<blockquote>
+<p>In order to use the driver a program has to open /dev/net/tun and issue a
+corresponding ioctl() to register a network device with the kernel. A network
+device will appear as tunXX or tapXX, depending on the options chosen. When
+the program closes the file descriptor, the network device and all
+corresponding routes will disappear.</p>
+<p>Depending on the type of device chosen the userspace program has to read/write
+IP packets (with tun) or ethernet frames (with tap). Which one is being used
+depends on the flags given with the ioctl().</p>
+<p><a href="https://www.kernel.org/doc/Documentation/networking/tuntap.txt" target="_blank" rel="noopener noreffer ">https://www.kernel.org/doc/Documentation/networking/tuntap.txt</a></p></blockquote>
+<h2 id="参考">参考</h2>
+<ol>
+<li>TUN/TAP <a href="https://en.wikipedia.org/wiki/TUN/TAP" target="_blank" rel="noopener noreffer ">https://en.wikipedia.org/wiki/TUN/TAP</a></li>
+<li>Universal TUN/TAP device driver. <a href="https://www.kernel.org/doc/Documentation/networking/tuntap.txt" target="_blank" rel="noopener noreffer ">https://www.kernel.org/doc/Documentation/networking/tuntap.txt</a></li>
+<li>Linux的TUN/TAP编程 <a href="https://blog.csdn.net/bailyzheng/article/details/18770121" target="_blank" rel="noopener noreffer ">https://blog.csdn.net/bailyzheng/article/details/18770121</a></li>
+</ol>
+</div><div class="post-footer" id="post-footer">
+    <div class="post-info">
+        <div class="post-info-line">
+            <div class="post-info-mod">
+                <span>Updated on 2020-09-06</span>
+            </div></div>
+        <div class="post-info-line">
+            <div class="post-info-md"></div>
+            <div class="post-info-share">
+                <span><a href="javascript:void(0);" title="Share on Twitter" data-sharer="twitter" data-url="http://localhost:1313/posts/20200905-linux-virtual-network-device/" data-title="Linux Network TUN/TAP 虚拟网络设备"><i class="fab fa-twitter fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="Share on Facebook" data-sharer="facebook" data-url="http://localhost:1313/posts/20200905-linux-virtual-network-device/"><i class="fab fa-facebook-square fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="Share on Hacker News" data-sharer="hackernews" data-url="http://localhost:1313/posts/20200905-linux-virtual-network-device/" data-title="Linux Network TUN/TAP 虚拟网络设备"><i class="fab fa-hacker-news fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="Share on Line" data-sharer="line" data-url="http://localhost:1313/posts/20200905-linux-virtual-network-device/" data-title="Linux Network TUN/TAP 虚拟网络设备"><i data-svg-src="/lib/simple-icons/icons/line.min.svg" aria-hidden="true"></i></a><a href="javascript:void(0);" title="Share on 微博" data-sharer="weibo" data-url="http://localhost:1313/posts/20200905-linux-virtual-network-device/" data-title="Linux Network TUN/TAP 虚拟网络设备"><i class="fab fa-weibo fa-fw" aria-hidden="true"></i></a></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="post-info-more">
+        <section class="post-tags"></section>
+        <section>
+            <span><a href="javascript:void(0);" onclick="window.history.back();">Back</a></span>&nbsp;|&nbsp;<span><a href="/">Home</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav"><a href="/posts/20200903-fuck-thin-client/" class="prev" rel="prev" title="瘦终端指北 —— ICMP tunnel"><i class="fas fa-angle-left fa-fw" aria-hidden="true"></i>瘦终端指北 —— ICMP tunnel</a>
+            <a href="/posts/20200907-docker-bridge-net-sim/" class="next" rel="next" title="使用 ip/iptables 命令模拟 Docker bridge 网络">使用 ip/iptables 命令模拟 Docker bridge 网络<i class="fas fa-angle-right fa-fw" aria-hidden="true"></i></a></div>
+</div>
+</article></div>
+            </main><footer class="footer">
+        <div class="footer-container"><div class="footer-line">Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.147.3">Hugo</a> | Theme - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.3.0"><i class="far fa-kiss-wink-heart fa-fw" aria-hidden="true"></i> LoveIt</a>
+                </div><div class="footer-line" itemscope itemtype="http://schema.org/CreativeWork"><i class="far fa-copyright fa-fw" aria-hidden="true"></i><span itemprop="copyrightYear">2022 - 2025</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/" target="_blank">Happy Coding</a></span></div>
+        </div>
+    </footer></div>
+
+        <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="Back to Top">
+                <i class="fas fa-arrow-up fa-fw" aria-hidden="true"></i>
+            </a><a href="#" id="view-comments" class="fixed-button" title="View Comments">
+                <i class="fas fa-comment fa-fw" aria-hidden="true"></i>
+            </a>
+        </div><script type="text/javascript" src="/lib/lazysizes/lazysizes.min.js"></script><script type="text/javascript" src="/lib/clipboard/clipboard.min.js"></script><script type="text/javascript" src="/lib/sharer/sharer.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"Copy to clipboard","maxShownLines":50},"comment":{}};</script><script type="text/javascript" src="/js/theme.min.js"></script></body>
+</html>

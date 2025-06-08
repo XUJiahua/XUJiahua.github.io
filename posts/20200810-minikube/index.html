@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+    <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="robots" content="noodp" />
+        <title>20200810 Minikube - Happy Coding</title><meta name="Description" content=""><meta property="og:url" content="http://localhost:1313/posts/20200810-minikube/">
+  <meta property="og:site_name" content="Happy Coding">
+  <meta property="og:title" content="20200810 Minikube">
+  <meta property="og:description" content="体验 Kubernetes 准备工作 一台 Linux 虚拟机（vagrant 启动虚拟机）。需要满足条件 https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/install-kubeadm/#before-you-begin。VM本身不需要虚拟化。
+使用 minikube 安装集群。
+minikube 支持各种driver，我们会使用None https://minikube.sigs.k8s.io/docs/drivers/none/ 所以不会用到虚拟化。
+使用 yaml 文件，直接使用命令不利于git保存。使用 apply。
+传统部署方式遇到的问题：
+Node 上多应用，可能端口冲突。 Node 上多应用，有资源竞争问题，合理分配困难。 使用 K8S
+资源合理分配由系统处理。 端口不怕冲突，K8S集群内的内部网络，每个容器化应用都有独立IP、独占整个端口范围区间。 Kubernetes 逻辑上架构还是主从架构。Control Plane &#43; Nodes 的组合。
+Control Plane 包含如下组件：
+etcd KV数据库，Kubernetes的存储核心。 apiServer。操作入口，一般是kubectl工具连入apiServer，运维使用kubectl工具。 Controller？比如 Replication Controller。类比恒温器。 coreDNS Node 包含如下组件：
+kubelet 与apiServer 通信？ kubeproxy 网络 container runtime 比如常用的 Docker 这些组件呢，都是以容器的形式安装的。
+install kubectl 需科学上网，不用直接安装。">
+  <meta property="og:locale" content="zh_cn">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2020-08-10T10:06:12+08:00">
+    <meta property="article:modified_time" content="2020-08-10T10:06:12+08:00">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="20200810 Minikube">
+  <meta name="twitter:description" content="体验 Kubernetes 准备工作 一台 Linux 虚拟机（vagrant 启动虚拟机）。需要满足条件 https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/install-kubeadm/#before-you-begin。VM本身不需要虚拟化。
+使用 minikube 安装集群。
+minikube 支持各种driver，我们会使用None https://minikube.sigs.k8s.io/docs/drivers/none/ 所以不会用到虚拟化。
+使用 yaml 文件，直接使用命令不利于git保存。使用 apply。
+传统部署方式遇到的问题：
+Node 上多应用，可能端口冲突。 Node 上多应用，有资源竞争问题，合理分配困难。 使用 K8S
+资源合理分配由系统处理。 端口不怕冲突，K8S集群内的内部网络，每个容器化应用都有独立IP、独占整个端口范围区间。 Kubernetes 逻辑上架构还是主从架构。Control Plane &#43; Nodes 的组合。
+Control Plane 包含如下组件：
+etcd KV数据库，Kubernetes的存储核心。 apiServer。操作入口，一般是kubectl工具连入apiServer，运维使用kubectl工具。 Controller？比如 Replication Controller。类比恒温器。 coreDNS Node 包含如下组件：
+kubelet 与apiServer 通信？ kubeproxy 网络 container runtime 比如常用的 Docker 这些组件呢，都是以容器的形式安装的。
+install kubectl 需科学上网，不用直接安装。">
+<meta name="application-name" content="Happy Coding">
+<meta name="apple-mobile-web-app-title" content="Happy Coding"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="http://localhost:1313/posts/20200810-minikube/" /><link rel="prev" href="http://localhost:1313/posts/20200807-impala/" /><link rel="next" href="http://localhost:1313/posts/20200813-kubernetes-faq/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="/lib/fontawesome-free/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="/lib/fontawesome-free/all.min.css"></noscript><link rel="preload" href="/lib/animate/animate.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="/lib/animate/animate.min.css"></noscript><script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "headline": "20200810 Minikube",
+        "inLanguage": "zh-cn",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "http:\/\/localhost:1313\/posts\/20200810-minikube\/"
+        },"genre": "posts","wordcount":  126 ,
+        "url": "http:\/\/localhost:1313\/posts\/20200810-minikube\/","datePublished": "2020-08-10T10:06:12+08:00","dateModified": "2020-08-10T10:06:12+08:00","publisher": {
+            "@type": "Organization",
+            "name": ""},"author": {
+                "@type": "Person",
+                "name": "Happy Coding"
+            },"description": ""
+    }
+    </script></head>
+    <body data-header-desktop="fixed" data-header-mobile="auto"><script type="text/javascript">(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
+
+        <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
+    <div class="header-wrapper">
+        <div class="header-title">
+            <a href="/" title="Happy Coding">Happy Coding</a>
+        </div>
+        <div class="menu">
+            <div class="menu-inner"><a class="menu-item" href="/posts"> Archive </a><a class="menu-item" href="/categories"> Categories </a><a class="menu-item" href="/tags"> Tags </a><a class="menu-item" href="/index.xml"> RSS Feed </a><span class="menu-item delimiter"></span><a href="javascript:void(0);" class="menu-item theme-switch" title="Switch Theme">
+                    <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+                </a></div>
+        </div>
+    </div>
+</header><header class="mobile" id="header-mobile">
+    <div class="header-container">
+        <div class="header-wrapper">
+            <div class="header-title">
+                <a href="/" title="Happy Coding">Happy Coding</a>
+            </div>
+            <div class="menu-toggle" id="menu-toggle-mobile">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="menu" id="menu-mobile"><a class="menu-item" href="/posts" title="">Archive</a><a class="menu-item" href="/categories" title="">Categories</a><a class="menu-item" href="/tags" title="">Tags</a><a class="menu-item" href="/index.xml" title="">RSS Feed</a><a href="javascript:void(0);" class="menu-item theme-switch" title="Switch Theme">
+                <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+            </a></div>
+    </div>
+</header><main class="main">
+                <div class="container"><div class="toc" id="toc-auto">
+            <h2 class="toc-title">Contents</h2>
+            <div class="toc-content" id="toc-content-auto"></div>
+        </div><article class="page single"><h1 class="single-title animate__animated animate__flipInX">20200810 Minikube</h1><div class="post-meta">
+            <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Happy Coding</a></span></div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2020-08-10">2020-08-10</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;126 words&nbsp;
+                <i class="far fa-clock fa-fw" aria-hidden="true"></i>&nbsp;One minute&nbsp;</div>
+        </div><div class="details toc" id="toc-static"  data-kept="">
+                <div class="details-summary toc-title">
+                    <span>Contents</span>
+                    <span><i class="details-icon fas fa-angle-right" aria-hidden="true"></i></span>
+                </div>
+                <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#体验-kubernetes">体验 Kubernetes</a>
+      <ul>
+        <li><a href="#准备工作">准备工作</a></li>
+        <li><a href="#install-kubectl">install kubectl</a></li>
+        <li><a href="#drivernone">driver=None</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav></div>
+            </div><div class="content" id="content"><h2 id="体验-kubernetes">体验 Kubernetes</h2>
+<h3 id="准备工作">准备工作</h3>
+<p>一台 Linux 虚拟机（vagrant 启动虚拟机）。需要满足条件 <a href="https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/install-kubeadm/#before-you-begin" target="_blank" rel="noopener noreffer ">https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/install-kubeadm/#before-you-begin</a>。VM本身不需要虚拟化。</p>
+<p>使用 minikube 安装集群。</p>
+<p>minikube 支持各种driver，我们会使用None <a href="https://minikube.sigs.k8s.io/docs/drivers/none/" target="_blank" rel="noopener noreffer ">https://minikube.sigs.k8s.io/docs/drivers/none/</a> 所以不会用到虚拟化。</p>
+<p>使用 yaml 文件，直接使用命令不利于git保存。使用 apply。</p>
+<p>传统部署方式遇到的问题：</p>
+<ol>
+<li>Node 上多应用，可能端口冲突。</li>
+<li>Node 上多应用，有资源竞争问题，合理分配困难。</li>
+</ol>
+<p>使用 K8S</p>
+<ol>
+<li>资源合理分配由系统处理。</li>
+<li>端口不怕冲突，K8S集群内的内部网络，每个容器化应用都有独立IP、独占整个端口范围区间。</li>
+</ol>
+<p>Kubernetes 逻辑上架构还是主从架构。Control Plane + Nodes 的组合。</p>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="../../images/components-of-kubernetes.png"
+        data-srcset="../../images/components-of-kubernetes.png, ../../images/components-of-kubernetes.png 1.5x, ../../images/components-of-kubernetes.png 2x"
+        data-sizes="auto"
+        alt="../../images/components-of-kubernetes.png"
+        title="Kubernetes components" /></p>
+<p>Control Plane 包含如下组件：</p>
+<ol>
+<li>etcd KV数据库，Kubernetes的存储核心。</li>
+<li>apiServer。操作入口，一般是kubectl工具连入apiServer，运维使用kubectl工具。</li>
+<li>Controller？比如 Replication Controller。类比恒温器。</li>
+<li>coreDNS</li>
+</ol>
+<p>Node 包含如下组件：</p>
+<ol>
+<li>kubelet 与apiServer 通信？</li>
+<li>kubeproxy 网络</li>
+<li>container runtime 比如常用的 Docker</li>
+</ol>
+<p>这些组件呢，都是以容器的形式安装的。</p>
+<h3 id="install-kubectl">install kubectl</h3>
+<p>需科学上网，不用直接安装。</p>
+<p>kubernetes-cli-1.18.6.mojave.bottle.tar.gz</p>
+<pre tabindex="0"><code>brew install kubectl
+</code></pre><p>需科学上网</p>
+<pre tabindex="0"><code>brew install minikube
+</code></pre><p>Kubernetes的组件也是以容器的方式安装的。这些组件的下载地址<code>k8s.gcr.io</code>境内无法访问，需要使用 <code>registry.cn-hangzhou.aliyuncs.com/google_containers</code>。</p>
+<pre tabindex="0"><code>minikube start --image-repository=&#39;registry.cn-hangzhou.aliyuncs.com/google_containers&#39;
+</code></pre><pre tabindex="0"><code>kubectl create deployment hello-minikube --image=registry.cn-hangzhou.aliyuncs.com/google_containers/echoserver:1.4
+kubectl expose deployment hello-minikube --type=NodePort --port=8080
+</code></pre><pre tabindex="0"><code>kubectl expose deployment hello-minikube --type=LoadBalancer --port=8080
+</code></pre><p>node</p>
+<p>pod K8S中的最小执行单元，可含有多个容器（主容器+sidecar容器，共享相同的网络栈）。</p>
+<p>deployment 一般不会直接创建 Pod，而是通过创建Pod的deployment，间接创建Pod。这块涉及到资源调度，K8S会处理，运维不用关心。</p>
+<p>service Pod的网络是K8S内的虚拟网络。每个Pod有分配一个虚拟网络的IP。service 将流量带入Pods。</p>
+<p>怎么调试 Pod呢，查看容器内 接口的返回？直接进入容器，这个不错！</p>
+<pre tabindex="0"><code>kubectl exec -ti $POD_NAME -- bash
+</code></pre><pre tabindex="0"><code>kubectl apply -f yaml/echoserver-deployment.yaml
+
+kubectl expose deployment echoserver-deployment --type=NodePort --port=7893
+
+发现负载均衡不够平衡啊，一直在一台机器上？
+minikube service echoserver-deployment
+</code></pre><p>kubectl</p>
+<h3 id="drivernone">driver=None</h3>
+<p><a href="https://minikube.sigs.k8s.io/docs/drivers/none/" target="_blank" rel="noopener noreffer ">https://minikube.sigs.k8s.io/docs/drivers/none/</a></p>
+<p>参考文档：</p>
+<ol>
+<li><a href="https://minikube.sigs.k8s.io/docs/" target="_blank" rel="noopener noreffer ">https://minikube.sigs.k8s.io/docs/</a></li>
+</ol>
+</div><div class="post-footer" id="post-footer">
+    <div class="post-info">
+        <div class="post-info-line">
+            <div class="post-info-mod">
+                <span>Updated on 2020-08-10</span>
+            </div></div>
+        <div class="post-info-line">
+            <div class="post-info-md"></div>
+            <div class="post-info-share">
+                <span><a href="javascript:void(0);" title="Share on Twitter" data-sharer="twitter" data-url="http://localhost:1313/posts/20200810-minikube/" data-title="20200810 Minikube"><i class="fab fa-twitter fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="Share on Facebook" data-sharer="facebook" data-url="http://localhost:1313/posts/20200810-minikube/"><i class="fab fa-facebook-square fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="Share on Hacker News" data-sharer="hackernews" data-url="http://localhost:1313/posts/20200810-minikube/" data-title="20200810 Minikube"><i class="fab fa-hacker-news fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="Share on Line" data-sharer="line" data-url="http://localhost:1313/posts/20200810-minikube/" data-title="20200810 Minikube"><i data-svg-src="/lib/simple-icons/icons/line.min.svg" aria-hidden="true"></i></a><a href="javascript:void(0);" title="Share on 微博" data-sharer="weibo" data-url="http://localhost:1313/posts/20200810-minikube/" data-title="20200810 Minikube"><i class="fab fa-weibo fa-fw" aria-hidden="true"></i></a></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="post-info-more">
+        <section class="post-tags"></section>
+        <section>
+            <span><a href="javascript:void(0);" onclick="window.history.back();">Back</a></span>&nbsp;|&nbsp;<span><a href="/">Home</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav"><a href="/posts/20200807-impala/" class="prev" rel="prev" title="记录一个 Impala JDBC 驱动问题"><i class="fas fa-angle-left fa-fw" aria-hidden="true"></i>记录一个 Impala JDBC 驱动问题</a>
+            <a href="/posts/20200813-kubernetes-faq/" class="next" rel="next" title="Kubernetes QA">Kubernetes QA<i class="fas fa-angle-right fa-fw" aria-hidden="true"></i></a></div>
+</div>
+</article></div>
+            </main><footer class="footer">
+        <div class="footer-container"><div class="footer-line">Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.147.3">Hugo</a> | Theme - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.3.0"><i class="far fa-kiss-wink-heart fa-fw" aria-hidden="true"></i> LoveIt</a>
+                </div><div class="footer-line" itemscope itemtype="http://schema.org/CreativeWork"><i class="far fa-copyright fa-fw" aria-hidden="true"></i><span itemprop="copyrightYear">2022 - 2025</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/" target="_blank">Happy Coding</a></span></div>
+        </div>
+    </footer></div>
+
+        <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="Back to Top">
+                <i class="fas fa-arrow-up fa-fw" aria-hidden="true"></i>
+            </a><a href="#" id="view-comments" class="fixed-button" title="View Comments">
+                <i class="fas fa-comment fa-fw" aria-hidden="true"></i>
+            </a>
+        </div><script type="text/javascript" src="/lib/lazysizes/lazysizes.min.js"></script><script type="text/javascript" src="/lib/clipboard/clipboard.min.js"></script><script type="text/javascript" src="/lib/sharer/sharer.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"Copy to clipboard","maxShownLines":50},"comment":{}};</script><script type="text/javascript" src="/js/theme.min.js"></script></body>
+</html>

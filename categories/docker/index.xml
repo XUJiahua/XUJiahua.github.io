@@ -4,32 +4,23 @@
     <title>Docker on Happy Coding</title>
     <link>https://xujiahua.github.io/categories/docker/</link>
     <description>Recent content in Docker on Happy Coding</description>
-    <generator>Hugo -- gohugo.io</generator>
+    <generator>Hugo</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Mon, 07 Sep 2020 11:35:39 +0800</lastBuildDate><atom:link href="https://xujiahua.github.io/categories/docker/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 07 Sep 2020 11:35:39 +0800</lastBuildDate>
+    <atom:link href="https://xujiahua.github.io/categories/docker/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>使用 ip/iptables 命令模拟 Docker bridge 网络</title>
       <link>https://xujiahua.github.io/posts/20200907-docker-bridge-net-sim/</link>
       <pubDate>Mon, 07 Sep 2020 11:35:39 +0800</pubDate>
-      
       <guid>https://xujiahua.github.io/posts/20200907-docker-bridge-net-sim/</guid>
-      <description>如前文介绍，Linux Network namespace 用于给进程创建一个新的网络栈，路由、防火墙规则、网络设备。man ip-netns：
- A network namespace is logically another copy of the network stack, with its own routes, firewall rules, and network devices.
- 作为对 Network namespace 的实践，本文使用 ip/iptables 等命令模拟下 Docker bridge 网络，并会接触到 Network namespace，veth pair，Linux bridge，NAT 等概念。
-实验 使用 ip命令操作 Network namespace ip netns 子命令用于操作 Network namespace。使用 add 子命令，创建一个 Network namespace。
-# ip netns add netns1 查看 netns1 的网络设备（network device）。使用 exec 子命令，后接 netns1 和要执行的命令。默认有一个 DOWN 状态的 lo 设备。</description>
+      <description>&lt;p&gt;如&lt;a href=&#34;https://xujiahua.github.io/posts/20200901-linux-namespace/&#34; target=&#34;_blank&#34; rel=&#34;noopener noreffer &#34;&gt;前文&lt;/a&gt;介绍，Linux Network namespace 用于给进程创建一个新的网络栈，路由、防火墙规则、网络设备。&lt;code&gt;man ip-netns&lt;/code&gt;：&lt;/p&gt;&#xA;&lt;blockquote&gt;&#xA;&lt;p&gt;A network namespace is logically another copy of the network stack, with its own routes, firewall rules, and network devices.&lt;/p&gt;&lt;/blockquote&gt;&#xA;&lt;p&gt;作为对 Network namespace 的实践，本文使用 ip/iptables 等命令模拟下 Docker bridge 网络，并会接触到 Network namespace，veth pair，Linux bridge，NAT 等概念。&lt;/p&gt;&#xA;&lt;h2 id=&#34;实验&#34;&gt;实验&lt;/h2&gt;&#xA;&lt;h3 id=&#34;使用-ip命令操作-network-namespace&#34;&gt;使用 &lt;code&gt;ip&lt;/code&gt;命令操作 Network namespace&lt;/h3&gt;&#xA;&lt;p&gt;ip netns 子命令用于操作 Network namespace。使用 add 子命令，创建一个 Network namespace。&lt;/p&gt;&#xA;&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;# ip netns add netns1&#xA;&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;查看 netns1 的网络设备（network device）。使用 exec 子命令，后接 netns1 和要执行的命令。默认有一个 DOWN 状态的 lo 设备。&lt;/p&gt;</description>
     </item>
-    
     <item>
       <title>Linux Namespace</title>
       <link>https://xujiahua.github.io/posts/20200901-linux-namespace/</link>
       <pubDate>Tue, 01 Sep 2020 12:03:13 +0800</pubDate>
-      
       <guid>https://xujiahua.github.io/posts/20200901-linux-namespace/</guid>
-      <description>Linux Namespace namespace 在编程语言中是一种常见的概念，C++/Clojure 中就使用 namespace 关键字来模块化组织代码。模块与模块之间互不污染，模块A有个 helloworld 的方法，模块B也可以有一个 helloworld 的方法。Java/Go 中的 package 也是同样的意义。
-Linux namespaces 是 Linux 内核用于隔离内核资源的手段，进程使用隔离的内核资源保证了与其他进程之间的独立。也是 Docker 容器的底层技术（Docker 主要开发语言是 Go，container 的创建使用 C）。
- Namespaces are a feature of the Linux kernel that partitions kernel resources such that one set of processes sees one set of resources while another set of processes sees a different set of resources. The feature works by having the same namespace for a set of resources and processes, but those namespaces refer to distinct resources.</description>
+      <description>&lt;h2 id=&#34;linux-namespace&#34;&gt;Linux Namespace&lt;/h2&gt;&#xA;&lt;p&gt;namespace 在编程语言中是一种常见的概念，C++/Clojure 中就使用 namespace 关键字来模块化组织代码。模块与模块之间互不污染，模块A有个 helloworld 的方法，模块B也可以有一个 helloworld 的方法。Java/Go 中的 package 也是同样的意义。&lt;/p&gt;&#xA;&lt;p&gt;Linux namespaces 是 Linux 内核用于隔离内核资源的手段，进程使用隔离的内核资源保证了与其他进程之间的独立。也是 Docker 容器的底层技术（Docker 主要开发语言是 Go，container 的创建使用 C）。&lt;/p&gt;&#xA;&lt;blockquote&gt;&#xA;&lt;p&gt;&lt;strong&gt;Namespaces&lt;/strong&gt; are a feature of the &lt;a href=&#34;https://en.wikipedia.org/wiki/Linux_kernel&#34; target=&#34;_blank&#34; rel=&#34;noopener noreffer &#34;&gt;Linux kernel&lt;/a&gt; that partitions kernel resources such that one set of &lt;a href=&#34;https://en.wikipedia.org/wiki/Process_%28computing%29&#34; target=&#34;_blank&#34; rel=&#34;noopener noreffer &#34;&gt;processes&lt;/a&gt; sees one set of resources while another set of processes sees a different set of resources. The feature works by having the same namespace for a set of resources and processes, but those namespaces refer to distinct resources. Resources may exist in multiple spaces. Examples of such resources are process IDs, hostnames, user IDs, file names, and some names associated with network access, and &lt;a href=&#34;https://en.wikipedia.org/wiki/Interprocess_communication&#34; target=&#34;_blank&#34; rel=&#34;noopener noreffer &#34;&gt;interprocess communication&lt;/a&gt;.&lt;/p&gt;</description>
     </item>
-    
   </channel>
 </rss>

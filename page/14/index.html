@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+    <head>
+	<meta name="generator" content="Hugo 0.147.3"><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="robots" content="noodp" />
+        <title>Happy Coding</title><meta name="Description" content=""><meta property="og:url" content="http://localhost:1313/">
+  <meta property="og:site_name" content="Happy Coding">
+  <meta property="og:title" content="Happy Coding">
+  <meta property="og:locale" content="zh_cn">
+  <meta property="og:type" content="website">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Happy Coding">
+<meta name="application-name" content="Happy Coding">
+<meta name="apple-mobile-web-app-title" content="Happy Coding"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="http://localhost:1313/" /><link rel="alternate" href="/index.xml" type="application/rss+xml" title="Happy Coding">
+    <link rel="feed" href="/index.xml" type="application/rss+xml" title="Happy Coding"><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="/lib/fontawesome-free/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="/lib/fontawesome-free/all.min.css"></noscript><link rel="preload" href="/lib/animate/animate.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="/lib/animate/animate.min.css"></noscript><script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "WebSite",
+        "url": "http:\/\/localhost:1313\/","inLanguage": "zh-cn","author": {
+                "@type": "Person",
+                "name": "Happy Coding"
+            },"name": "Happy Coding"
+    }
+    </script></head>
+    <body data-header-desktop="fixed" data-header-mobile="auto"><script type="text/javascript">(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
+
+        <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
+    <div class="header-wrapper">
+        <div class="header-title">
+            <a href="/" title="Happy Coding">Happy Coding</a>
+        </div>
+        <div class="menu">
+            <div class="menu-inner"><a class="menu-item" href="/posts"> Archive </a><a class="menu-item" href="/categories"> Categories </a><a class="menu-item" href="/tags"> Tags </a><a class="menu-item" href="/index.xml"> RSS Feed </a><span class="menu-item delimiter"></span><a href="javascript:void(0);" class="menu-item theme-switch" title="Switch Theme">
+                    <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+                </a></div>
+        </div>
+    </div>
+</header><header class="mobile" id="header-mobile">
+    <div class="header-container">
+        <div class="header-wrapper">
+            <div class="header-title">
+                <a href="/" title="Happy Coding">Happy Coding</a>
+            </div>
+            <div class="menu-toggle" id="menu-toggle-mobile">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="menu" id="menu-mobile"><a class="menu-item" href="/posts" title="">Archive</a><a class="menu-item" href="/categories" title="">Categories</a><a class="menu-item" href="/tags" title="">Tags</a><a class="menu-item" href="/index.xml" title="">RSS Feed</a><a href="javascript:void(0);" class="menu-item theme-switch" title="Switch Theme">
+                <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+            </a></div>
+    </div>
+</header><main class="main">
+                <div class="container"><div class="page home" data-home="posts"><div class="home-profile"><div class="links"></div></div>
+<article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
+        <a href="/posts/20200420-service_mesh/">service mesh</a>
+    </h1><div class="post-meta"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Happy Coding</a></span>&nbsp;<span class="post-publish">published on <time datetime="2020-04-20">2020-04-20</time></span></div><div class="content"><h2 id="service-mesh-简单介绍">Service Mesh 简单介绍</h2>
+<p>Service Mesh是微服务治理的一种模式。</p>
+<p>核心理念就是将业务逻辑无关的代码下沉到基础设施。</p>
+<p>Service Mesh 的代理实例会完成完整的服务间通信的调用流程，如服务发现、负载均衡等基本功能，熔断、限流、重试等容错功能，以及各种高级路由功能，安全方面的认证、授权、鉴权、加密等，最后将请求发送给目标服务。最终表现为Sidecar模式，实现和传统类库类似甚至比传统类库更完备的功能。</p>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="../../images/service-mesh-generic-topology_social.png"
+        data-srcset="../../images/service-mesh-generic-topology_social.png, ../../images/service-mesh-generic-topology_social.png 1.5x, ../../images/service-mesh-generic-topology_social.png 2x"
+        data-sizes="auto"
+        alt="../../images/service-mesh-generic-topology_social.png"
+        title="“Service Mesh”的图片搜索结果" /></p>
+<p>（来源互联网）</p>
+<p>sidecar是一种不侵入代码的方式，sidecar服务劫持了原服务的流量，sidecar服务与原服务之间使用lo网卡通信。 Connect proxies are typically deployed as &ldquo;sidecars&rdquo; that run on the same node as the single service instance that they handle traffic for. They might be on the same VM or running as a separate container in the same network namespace.   <a href="https://www.consul.io/docs/connect/registration/sidecar-service.html" target="_blank" rel="noopener noreffer ">https://www.consul.io/docs/connect/registration/sidecar-service.html</a></p>
+<h3 id="微服务与服务发现">微服务与服务发现</h3>
+<p>从单体应用拆分为微服务，虽然有诸多好处比如不同发布周期的模块拆分平衡了系统稳定性和发布频率，但天下没有免费的午餐。</p>
+<p>以服务发现这个角度看：原来的函数级调用，变成了网络服务级调用。怎么找到网络服务，即其IP+port呢。</p>
+<p>几种方式：</p>
+<ol>
+<li>配置在静态文件。不建议使用，无法应对动态增减服务实例的场景。</li>
+<li>还是配置在静态文件，但配置的是一个负载均衡器比如nginx的地址。其实就是把动态增减服务实例的问题转嫁到了负载均衡器上。调用方也少了做负载均衡的工作。关于nginx处理动态增减服务实例的解决方案，可以参考下节「实践：基于consul的nginx动态upstream」。</li>
+<li>从某中心服务器取，或是轮询或是被通知的方式知道了最新的服务地址。consul 就是这里的中心服务器（集群）。</li>
+</ol>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="../../images/image-20200326114005444.png"
+        data-srcset="../../images/image-20200326114005444.png, ../../images/image-20200326114005444.png 1.5x, ../../images/image-20200326114005444.png 2x"
+        data-sizes="auto"
+        alt="../../images/image-20200326114005444.png"
+        title="image-20200326114005444" /></p></div><div class="post-footer">
+        <a href="/posts/20200420-service_mesh/">Read More</a></div>
+</article><article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
+        <a href="/posts/20200420-use_etcd/">etcd 小结</a>
+    </h1><div class="post-meta"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Happy Coding</a></span>&nbsp;<span class="post-publish">published on <time datetime="2020-04-20">2020-04-20</time></span></div><div class="content"><h2 id="简介">简介</h2>
+<p>取名有意思。Linux下的/etc目录放的是配置文件。etcd，etc代表配置，d代表distributed，代表分布式配置。</p>
+<p>特点：</p>
+<ol>
+<li>designed to reliably store infrequently updated data and provide reliable watch queries <a href="https://etcd.io/docs/v3.4.0/learning/data_model/" target="_blank" rel="noopener noreffer ">https://etcd.io/docs/v3.4.0/learning/data_model/</a></li>
+<li>KV 核心用户接口</li>
+<li>MVCC Multi-version Concurrency Control 也确实能读历史版本</li>
+<li>Raft consensus algorithms 共识算法</li>
+<li>Watch 配置更新能及时&quot;通知&quot;应用</li>
+<li>RBAC 用户、角色、权限</li>
+</ol>
+<p>基于 etcd 可以做哪些事情：</p>
+<ol>
+<li>配置中心。元数据存储。应用的配置集中存储在配置中心。</li>
+<li>服务发现。配置中心的一个特例。相比起来，consul的服务发现是开箱即用的。</li>
+<li>分布式锁。分布式系统协调。选主。像是Hadoop使用Zookeeper做Namenode的选主。</li>
+</ol>
+<p>vs. Consul。Consul 官方（https://www.consul.io/）定义的usecase是 service discovery和 service mesh。</p>
+<blockquote>
+<p>etcd and Consul solve different problems. If looking for a distributed consistent key value store, etcd is a better choice over Consul. If looking for end-to-end cluster service discovery, etcd will not have enough features; choose Kubernetes, Consul, or SmartStack. <a href="https://github.com/etcd-io/etcd/blob/master/Documentation/learning/why.md#consul" target="_blank" rel="noopener noreffer ">https://github.com/etcd-io/etcd/blob/master/Documentation/learning/why.md#consul</a></p></div><div class="post-footer">
+        <a href="/posts/20200420-use_etcd/">Read More</a><div class="post-tags">
+                <i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/etcd/">Etcd</a></div></div>
+</article><article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
+        <a href="/posts/20200417-kubernetes-configmap/">k8s configmap 与热更新</a>
+    </h1><div class="post-meta"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Happy Coding</a></span>&nbsp;<span class="post-publish">published on <time datetime="2020-04-17">2020-04-17</time></span></div><div class="content"><h2 id="configmap-简介">configmap 简介</h2>
+<p>官方介绍：使用 ConfigMap 配置 Pod  <a href="https://kubernetes.io/zh/docs/tasks/configure-pod-container/configure-pod-configmap/" target="_blank" rel="noopener noreffer ">https://kubernetes.io/zh/docs/tasks/configure-pod-container/configure-pod-configmap/</a></p>
+<p>他人总结：ConfigMap <a href="https://jimmysong.io/kubernetes-handbook/concepts/configmap.html" target="_blank" rel="noopener noreffer ">https://jimmysong.io/kubernetes-handbook/concepts/configmap.html</a></p>
+<p>稍微总结下：</p>
+<ol>
+<li>每个configmap都有一个名字，名字全局唯一（命名空间内），重复创建会报错。</li>
+<li>每个configmap本身是键值对。</li>
+<li>configmap可以通过环境变量的方式让Pod内容器读取。</li>
+<li>configmap可以通过挂载文件的方式让Pod内容器读取。k8s每隔一段时间同步configmap，如果有更新的话。当然，应用本身是不知道的。这个定时更新感觉有点鸡肋。</li>
+<li>configmap更新，不会自动重启应用。只能人工方式，滚动重启应用。</li>
+</ol>
+<p>把配置更新也当作一次应用变更看待，心情就好很多了。</p>
+<p>官方不支持热更新，所以有了各种技巧，提高效率。</p>
+<ol>
+<li>create a new ConfigMap with the changes you want to make, and point your deployment at the new ConfigMap <a href="https://stackoverflow.com/a/40624029/820682" target="_blank" rel="noopener noreffer ">https://stackoverflow.com/a/40624029/820682</a> 因为 deployment 文件变化了，触发滚动重启。</li>
+<li>还有deployment 文件中配置 configmap hash值的。配置变化，hash值变化，deployment变化，滚动重启，一级级联动。 <a href="https://blog.questionable.services/article/kubernetes-deployments-configmap-change/" target="_blank" rel="noopener noreffer ">https://blog.questionable.services/article/kubernetes-deployments-configmap-change/</a></li>
+<li>还有使用sidecar的方式做热更新的，太复杂了 <a href="https://zhuanlan.zhihu.com/p/57570231" target="_blank" rel="noopener noreffer ">https://zhuanlan.zhihu.com/p/57570231</a></li>
+</ol>
+<h2 id="关于热更新">关于热更新</h2>
+<p>configmap的更新，容器化应用是无感知的。configmap这种方式没有推送更新到应用内的机制，要实现热更新过于复杂。</p>
+<p>k8s最核心的功能还是自动部署、伸缩、容器管理以及资源分配。微服务架构还是得需要其他框架来辅助的。</p>
+<p>配置热更新应用，就选择 etcd, consul 吧，有 watch 功能。</p></div><div class="post-footer">
+        <a href="/posts/20200417-kubernetes-configmap/">Read More</a><div class="post-tags">
+                <i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/etcd/">Etcd</a>,&nbsp;<a href="/tags/k8s/">K8s</a>,&nbsp;<a href="/tags/consul/">Consul</a></div></div>
+</article><article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
+        <a href="/posts/20200417-etcd_client/">etcd api client 请求重试逻辑</a>
+    </h1><div class="post-meta"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Happy Coding</a></span>&nbsp;<span class="post-publish">published on <time datetime="2020-04-17">2020-04-17</time></span></div><div class="content"><p>使用 Consul 作为配置中心，按照官方的说法，没必要创建 <code>consul client</code> 节点。那么直接连 <code>consul server</code> 就好了。</p>
+<blockquote>
+<p>Running an agent is not required for discovering other services or getting/setting key/value data. The agent is responsible for health checking the services on the node as well as the node itself.</p>
+<p><a href="https://www.consul.io/intro/index.html#basic-architecture-of-consul" target="_blank" rel="noopener noreffer ">https://www.consul.io/intro/index.html#basic-architecture-of-consul</a></p></blockquote>
+<p>Consul api client (<a href="https://github.com/hashicorp/consul/tree/master/api" target="_blank" rel="noopener noreffer ">https://github.com/hashicorp/consul/tree/master/api</a>) 目前只能接收一个server地址。那么这个server地址得保证高可用才行啊。</p>
+<p>etcd api client (<a href="https://github.com/etcd-io/etcd/tree/master/client" target="_blank" rel="noopener noreffer ">https://github.com/etcd-io/etcd/tree/master/client</a>) 倒是能接收多个server地址，看看 etcd 是怎么做的。</p>
+<h3 id="etcd-api-client">etcd api client</h3>
+<p>创建了 httpClusterClient。</p>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="../../images/image-20200417151856806.png"
+        data-srcset="../../images/image-20200417151856806.png, ../../images/image-20200417151856806.png 1.5x, ../../images/image-20200417151856806.png 2x"
+        data-sizes="auto"
+        alt="../../images/image-20200417151856806.png"
+        title="image-20200417151856806" /></p></div><div class="post-footer">
+        <a href="/posts/20200417-etcd_client/">Read More</a><div class="post-tags">
+                <i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/etcd/">Etcd</a></div></div>
+</article><article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
+        <a href="/posts/20200416-cortex/">机器学习在线推理部署方案：Cortex</a>
+    </h1><div class="post-meta"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Happy Coding</a></span>&nbsp;<span class="post-publish">published on <time datetime="2020-04-16">2020-04-16</time></span></div><div class="content"><h2 id="cortex-介绍">Cortex 介绍</h2>
+<p>官方网站：Deploy machine learning models in production <a href="https://www.cortex.dev/" target="_blank" rel="noopener noreffer ">https://www.cortex.dev/</a></p>
+<p>GitHub <a href="https://github.com/cortexlabs/cortex" target="_blank" rel="noopener noreffer ">https://github.com/cortexlabs/cortex</a></p>
+<blockquote>
+<p>The CLI sends configuration and code to the cluster every time you run <code>cortex deploy</code>. Each model is loaded into a Docker container, along with any Python packages and request handling code. The model is exposed as a web service using Elastic Load Balancing (ELB), TensorFlow Serving, and ONNX Runtime. The containers are orchestrated on Elastic Kubernetes Service (EKS) while logs and metrics are streamed to CloudWatch.</p></div><div class="post-footer">
+        <a href="/posts/20200416-cortex/">Read More</a><div class="post-tags">
+                <i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/">机器学习</a>,&nbsp;<a href="/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E5%B7%A5%E7%A8%8B/">机器学习工程</a></div></div>
+</article><article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
+        <a href="/posts/20200415-the-data-warehouse-toolkit/">The Data Warehouse Toolkit</a>
+    </h1><div class="post-meta"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Happy Coding</a></span>&nbsp;<span class="post-publish">published on <time datetime="2020-04-15">2020-04-15</time></span></div><div class="content"><p>去年读了「The Data Warehouse Toolkit」，今年工作需要重读，记录一二。</p>
+<p>作者 Ralph Kimball <a href="https://en.wikipedia.org/wiki/Ralph_Kimball" target="_blank" rel="noopener noreffer ">https://en.wikipedia.org/wiki/Ralph_Kimball</a></p>
+<p>第三章开始是实战内容，会展开描述第二章中浓缩的方法论。方便读者吸收知识。书名 Toolkit，内容确实如此。</p>
+<h2 id="一些概念">一些概念</h2>
+<h3 id="dimensional-modeling-维度模型">Dimensional Modeling 维度模型</h3>
+<p>维度模型并不严格按照3NF建模。3NF建模的目标是去重，而维度模型放松了这一要求。</p>
+<p>有这么几个好处：</p>
+<ol>
+<li>表会更少，更易于人理解，特别是对业务人员。如果严格按照3NF建模，一条订单记录，可能会建模成有几十个表的复杂结构了。</li>
+<li>适当的冗余，减少了关联查询，提高查询性能。</li>
+</ol>
+<h4 id="inmon-method-和-kimball-method">Inmon method 和 Kimball method</h4>
+<p>数据仓库领域，有两种数据仓库建模方法。Inmon method 和 Kimball method。</p>
+<p>Kimball method 也就是这里的维度模型，主张从业务需求出发，倒推出逻辑、物理数据表设计，技术工具的选型。区分事实表、维度表。</p>
+<p>Inmon method 严格遵循第三范式 （3NF models）建模，拆分实体，维护严格的表关系，需要精心设计。不区分事实表、维度表。</p>
+<p>可以参考这篇：深入对比数据仓库模式：Kimball vs Inmon <a href="https://segmentfault.com/a/1190000006255954" target="_blank" rel="noopener noreffer ">https://segmentfault.com/a/1190000006255954</a></p>
+<h3 id="star-schema-星形模型">star schema 星形模型</h3>
+<p>在关系型数据库的语境下，维度模型指的是星形模型。星形模型进一步演化是雪花模型。</p>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="../../images/image-20200415154942324.png"
+        data-srcset="../../images/image-20200415154942324.png, ../../images/image-20200415154942324.png 1.5x, ../../images/image-20200415154942324.png 2x"
+        data-sizes="auto"
+        alt="../../images/image-20200415154942324.png"
+        title="image-20200415154942324" /></p>
+<h3 id="olap-cube-数据立方体">OLAP cube 数据立方体</h3>
+<p>在多维度数据库的语境下，维度模型指的是数据立方体。OLAP cube 也是基于逻辑上的星形模型推演出来。</p>
+<p>这里，每个小格子代表的是预计算的指标，x、y、z三个轴代表维度。因为预计算，所以查询会很快。</p>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="../../images/image-20200415154954416.png"
+        data-srcset="../../images/image-20200415154954416.png, ../../images/image-20200415154954416.png 1.5x, ../../images/image-20200415154954416.png 2x"
+        data-sizes="auto"
+        alt="../../images/image-20200415154954416.png"
+        title="image-20200415154954416" /></p></div><div class="post-footer">
+        <a href="/posts/20200415-the-data-warehouse-toolkit/">Read More</a><div class="post-tags">
+                <i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/bi/">BI</a></div></div>
+</article><ul class="pagination"><li class="page-item ">
+                    <span class="page-link">
+                        <a href="/">1</a>
+                    </span>
+                </li><li class="page-item ">
+                    <span class="page-link" aria-hidden="true">&hellip;</span>
+                </li><li class="page-item ">
+                    <span class="page-link">
+                        <a href="/page/12/">12</a>
+                    </span>
+                </li><li class="page-item ">
+                    <span class="page-link">
+                        <a href="/page/13/">13</a>
+                    </span>
+                </li><li class="page-item active">
+                    <span class="page-link">
+                        <a href="/page/14/">14</a>
+                    </span>
+                </li><li class="page-item ">
+                    <span class="page-link">
+                        <a href="/page/15/">15</a>
+                    </span>
+                </li><li class="page-item ">
+                    <span class="page-link">
+                        <a href="/page/16/">16</a>
+                    </span>
+                </li><li class="page-item ">
+                    <span class="page-link" aria-hidden="true">&hellip;</span>
+                </li><li class="page-item ">
+                    <span class="page-link">
+                        <a href="/page/20/">20</a>
+                    </span>
+                </li></ul></div></div>
+            </main><footer class="footer">
+        <div class="footer-container"><div class="footer-line">Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.147.3">Hugo</a> | Theme - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.3.0"><i class="far fa-kiss-wink-heart fa-fw" aria-hidden="true"></i> LoveIt</a>
+                </div><div class="footer-line" itemscope itemtype="http://schema.org/CreativeWork"><i class="far fa-copyright fa-fw" aria-hidden="true"></i><span itemprop="copyrightYear">2022 - 2025</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/" target="_blank">Happy Coding</a></span></div>
+        </div>
+    </footer></div>
+
+        <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="Back to Top">
+                <i class="fas fa-arrow-up fa-fw" aria-hidden="true"></i>
+            </a><a href="#" id="view-comments" class="fixed-button" title="View Comments">
+                <i class="fas fa-comment fa-fw" aria-hidden="true"></i>
+            </a>
+        </div><script type="text/javascript" src="/lib/lazysizes/lazysizes.min.js"></script><script type="text/javascript" src="/lib/clipboard/clipboard.min.js"></script><script type="text/javascript" src="/lib/sharer/sharer.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"Copy to clipboard","maxShownLines":50}};</script><script type="text/javascript" src="/js/theme.min.js"></script></body>
+</html>
