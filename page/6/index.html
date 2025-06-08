@@ -59,6 +59,28 @@
 </header><main class="main">
                 <div class="container"><div class="page home" data-home="posts"><div class="home-profile"><div class="links"></div></div>
 <article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
+        <a href="/posts/20200421-use-consul/">consul 小结</a>
+    </h1><div class="post-meta"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Happy Coding</a></span>&nbsp;<span class="post-publish">published on <time datetime="2020-04-21">2020-04-21</time></span></div><div class="content"><h2 id="简单介绍">简单介绍</h2>
+<p>hashicorp 对 Consul 的定位是服务间网络方案。</p>
+<blockquote>
+<p>Consul is a service networking solution to connect and secure services across any runtime platform and public or private cloud. <a href="https://www.consul.io/" target="_blank" rel="noopener noreffer ">https://www.consul.io/</a></p></blockquote>
+<p>官方的两个 use case 就是 service discovery, service mesh。</p>
+<h3 id="service-discovery">service discovery</h3>
+<p>与 etcd 比起来，Consul 的服务发现是开箱即用的。优点如下：</p>
+<ol>
+<li>First class 的服务注册和获取接口。不需要像 etcd 那样在 kv 存储基础上做包装。</li>
+<li>服务注册，可以是consul 命令，也可以是HTTP API。</li>
+<li>获取服务注册表，除了 HTTP 接口，还可以使用  DNS 查询接口。</li>
+<li>健康检查。服务注册的时候可以提供健康检查项。健康检查机制保证了拿到的服务注册表是“健康”的。健康检查也包括节点的检查。单纯利用 consul 健康检查这个功能，consul 就是一个分布式监控工具。</li>
+<li>Web 管理界面。节点、服务、健康与否一目了然。</li>
+<li>Watch 功能。通过 blocking queries/ long-polling HTTP API 的方式得到服务注册表的改变的通知。</li>
+<li>跨数据中心（取资源）。When a request is made for a resource in another datacenter, the local Consul servers forward an RPC request to the remote Consul servers for that resource and return the results. <a href="https://learn.hashicorp.com/consul/security-networking/datacenters#data-replication" target="_blank" rel="noopener noreffer ">https://learn.hashicorp.com/consul/security-networking/datacenters#data-replication</a></li>
+</ol>
+<h3 id="service-mesh">service mesh</h3>
+<p>service discovery 只是微服务治理的初级阶段。作为服务请求方，通过 consul/ etcd 获取到服务注册表，下一步就是选择其中一个服务实例，发送请求。这个步骤叫做负载均衡。可以想象，客户端的代码会越来越重了。</p></div><div class="post-footer">
+        <a href="/posts/20200421-use-consul/">Read More</a><div class="post-tags">
+                <i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/service-mesh/">Service Mesh</a>,&nbsp;<a href="/tags/consul/">Consul</a>,&nbsp;<a href="/tags/microservices/">Microservices</a></div></div>
+</article><article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
         <a href="/posts/20200420-use_etcd/">etcd 小结</a>
     </h1><div class="post-meta"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Happy Coding</a></span>&nbsp;<span class="post-publish">published on <time datetime="2020-04-20">2020-04-20</time></span></div><div class="content"><h2 id="简介">简介</h2>
 <p>取名有意思。Linux下的/etc目录放的是配置文件。etcd，etc代表配置，d代表distributed，代表分布式配置。</p>
@@ -188,33 +210,6 @@
 <p>使用<code>kubernetes_metadata</code>这个第三方插件获取容器相关的上下文信息。这里是通过请求API server得到metadata的。</p></div><div class="post-footer">
         <a href="/posts/20200414-k8s-logging/">Read More</a><div class="post-tags">
                 <i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/docker/">Docker</a>,&nbsp;<a href="/tags/logging/">Logging</a>,&nbsp;<a href="/tags/k8s/">K8s</a></div></div>
-</article><article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
-        <a href="/posts/20200410-metabase-spark-sql/">Metabase + Spark SQL</a>
-    </h1><div class="post-meta"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Happy Coding</a></span>&nbsp;<span class="post-publish">published on <time datetime="2020-04-10">2020-04-10</time></span>&nbsp;<span class="post-category">included in <a href="/categories/metabase/"><i class="far fa-folder fa-fw" aria-hidden="true"></i>Metabase</a></span></div><div class="content"><p>这是大数据 BI 平台的第二步，BI 工具的搭建。假设已经配置好 Spark SQL JDBC Server，并启用了Kerberos。参考  <a href="https://xujiahua.github.io/posts/20200410-spark-thrift-server-cdh/" target="_blank" rel="noopener noreffer ">https://xujiahua.github.io/posts/20200410-spark-thrift-server-cdh/</a></p>
-<p>这里，我们选择了开源产品 Metabase。</p>
-<p>最终，大数据 BI 平台，是由 1) 以Metabase作为BI可视化，2) 由HDFS（分布式文件存储） + parquet（列式数据存储格式）+ Hive metastore（SQL表结构信息维护） + Spark SQL（批处理引擎）组合的OLAP数据库组成。</p>
-<h2 id="metabase-简介">Metabase 简介</h2>
-<p>Metabase is the easy, open source way for everyone in your company to ask questions and learn from data.</p>
-<p><a href="https://www.metabase.com/" target="_blank" rel="noopener noreffer ">https://www.metabase.com/</a></p>
-<h3 id="数据库支持">数据库支持</h3>
-<ul>
-<li>BigQuery</li>
-<li>Druid</li>
-<li>Google Analytics</li>
-<li>H2</li>
-<li>MongoDB</li>
-<li>MySQL/MariaDB</li>
-<li>PostgreSQL</li>
-<li>Presto</li>
-<li>Amazon Redshift</li>
-<li>Snowflake</li>
-<li>Spark SQL</li>
-<li>SQLite</li>
-<li>SQL Server</li>
-</ul>
-<p><a href="https://www.metabase.com/docs/latest/faq/setup/which-databases-does-metabase-support.html" target="_blank" rel="noopener noreffer ">https://www.metabase.com/docs/latest/faq/setup/which-databases-does-metabase-support.html</a></p></div><div class="post-footer">
-        <a href="/posts/20200410-metabase-spark-sql/">Read More</a><div class="post-tags">
-                <i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/bi/">BI</a>,&nbsp;<a href="/tags/metabase/">Metabase</a>,&nbsp;<a href="/tags/spark/">Spark</a></div></div>
 </article><ul class="pagination"><li class="page-item ">
                     <span class="page-link">
                         <a href="/">1</a>
@@ -245,7 +240,7 @@
                     <span class="page-link" aria-hidden="true">&hellip;</span>
                 </li><li class="page-item ">
                     <span class="page-link">
-                        <a href="/page/10/">10</a>
+                        <a href="/page/11/">11</a>
                     </span>
                 </li></ul></div></div>
             </main><footer class="footer">

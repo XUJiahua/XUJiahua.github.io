@@ -4,6 +4,35 @@
         <link>https://xujiahua.github.io/posts/</link>
         <description>All Posts | Happy Coding</description>
         <generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Sun, 08 Jun 2025 11:06:22 &#43;0800</lastBuildDate><atom:link href="https://xujiahua.github.io/posts/" rel="self" type="application/rss+xml" /><item>
+    <title>SQL Studio</title>
+    <link>https://xujiahua.github.io/posts/20250608-sql-studio/</link>
+    <pubDate>Sun, 08 Jun 2025 11:06:22 &#43;0800</pubDate>
+    <author>Happy Coding</author>
+    <guid>https://xujiahua.github.io/posts/20250608-sql-studio/</guid>
+    <description><![CDATA[<p><a href="https://github.com/frectonz/sql-studio" target="_blank" rel="noopener noreffer ">SQL Studio</a> 是一个比较轻量的数据库管理工具，支持主流的数据库，比如 MySQL、PostgreSQL、SQLite 等。</p>
+<p>命令行启动 server，通过浏览器访问：</p>
+<ol>
+<li>
+<p>数据库的统计信息</p>
+</li>
+<li>
+<p>表的统计信息：显示表结构和数据</p>
+</li>
+<li>
+<p>写 SQL</p>
+</li>
+</ol>
+<h2 id="示例">示例</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>sql-studio mysql mysql://root:root@localhost:3306/dbname
+</span></span><span style="display:flex;"><span>sql-studio sqlite sqlite.db
+</span></span></code></pre></div><h2 id="个人评价">个人评价</h2>
+<ol>
+<li>这个工具特别适合快速打开一个 SQLite 数据库。正常的数据库管理工具，通过向导导入 SQLite 文件，使用这个工具避免这个繁琐流程。</li>
+<li>通过暴露端口的方式可快速访问内网数据库。</li>
+<li>如果是连接固定的数据库，这个工具相对于传统数据库管理工具来说，显得鸡肋。</li>
+</ol>]]></description>
+</item>
+<item>
     <title>K8s 认证授权流程及 EKS 用户管理</title>
     <link>https://xujiahua.github.io/posts/k8s-eks-ea3b5d29-0425-494e-8d9e-149f1654a41f/</link>
     <pubDate>Sun, 25 Apr 2021 16:35:55 &#43;0800</pubDate>
@@ -218,23 +247,6 @@ MSET (10 keys): 93283.58 requests per second, p50=0.423 msec
 <p>ip netns 子命令用于操作 Network namespace。使用 add 子命令，创建一个 Network namespace。</p>
 <pre tabindex="0"><code># ip netns add netns1
 </code></pre><p>查看 netns1 的网络设备（network device）。使用 exec 子命令，后接 netns1 和要执行的命令。默认有一个 DOWN 状态的 lo 设备。</p>]]></description>
-</item>
-<item>
-    <title>瘦终端指北 —— ICMP tunnel</title>
-    <link>https://xujiahua.github.io/posts/20200903-fuck-thin-client/</link>
-    <pubDate>Thu, 03 Sep 2020 17:02:18 &#43;0800</pubDate>
-    <author>Happy Coding</author>
-    <guid>https://xujiahua.github.io/posts/20200903-fuck-thin-client/</guid>
-    <description><![CDATA[<p>因为公司有开发泄露源码在 Github，对公司声誉造成一定影响，公司层面推广起瘦终端，所有开发一起背锅 :( 。在瘦终端里，网络严格管控，vscode 下载插件都难，需要申请 IP 白名单。开发只允许在瘦终端里接触 git 仓库，只能向瘦终端拷贝文件，反之不能。这样就能防住代码泄露么？</p>
-<p>搞笑的办法，瘦终端生成二维码，主机扫描，数据传输问题搞定。</p>
-<p>从网络角度，怎么解决呢。我们来严肃看待这个技术问题。</p>
-<h2 id="icmp">ICMP</h2>
-<p>实践发现，瘦终端里不能访问百度，但是能 ping 通。从 TCP/IP 的角度，瘦终端在网络上只是 TCP 传输层被流量管控了，IP 层还是畅通无阻的。</p>
-<p>下图为 TCP/IP 的层次结构，TCP 包封装于 IP 包。</p>
-<p></p>
-<p><a href="https://www.researchgate.net/figure/Packet-encapsulation-TCP-IP-architecture-encapsulates-the-data-from-the-upper-layer-by_fig4_49288737" target="_blank" rel="noopener noreffer ">https://www.researchgate.net/figure/Packet-encapsulation-TCP-IP-architecture-encapsulates-the-data-from-the-upper-layer-by_fig4_49288737</a></p>
-<p>目前网站的基石是 HTTP/TCP 协议，代理也普遍是基于 HTTP/TCP 的，shadowsocks 翻墙的思路不通。</p>
-<p>所以 ICMP 协议是否能作为代理协议呢。从封包的角度，ICMP 与 TCP 一样，也是封在 IP 包中的。</p>]]></description>
 </item>
 </channel>
 </rss>

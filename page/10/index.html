@@ -59,6 +59,22 @@
 </header><main class="main">
                 <div class="container"><div class="page home" data-home="posts"><div class="home-profile"><div class="links"></div></div>
 <article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
+        <a href="/posts/20190429-docker-rmi/">rm docker image interactively</a>
+    </h1><div class="post-meta"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Happy Coding</a></span>&nbsp;<span class="post-publish">published on <time datetime="2019-04-29">2019-04-29</time></span></div><div class="content"><p><a href="https://github.com/XUJiahua/dockerrmi" target="_blank" rel="noopener noreffer ">写了个工具</a>交互式删除 docker image。</p>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="../../images/show.gif"
+        data-srcset="../../images/show.gif, ../../images/show.gif 1.5x, ../../images/show.gif 2x"
+        data-sizes="auto"
+        alt="../../images/show.gif"
+        title="demo" /></p>
+<p>实在无法忍受先<code>docker images</code>，然后<code>docker rmi</code>的重复操作。
+还比较原始，刚好够自己目前所需。</p>
+<p>想到交互式，是受<code>ncdu</code>的启发。<code>ncdu</code>命令是<code>du</code>命令的交互式版本。</p></div><div class="post-footer">
+        <a href="/posts/20190429-docker-rmi/">Read More</a><div class="post-tags">
+                <i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/docker/">Docker</a></div></div>
+</article><article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
         <a href="/posts/20190325-blockchain-hackathon/">20190323黑客松总结</a>
     </h1><div class="post-meta"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Happy Coding</a></span>&nbsp;<span class="post-publish">published on <time datetime="2019-03-25">2019-03-25</time></span></div><div class="content"><h2 id="过程">过程</h2>
 <p>比赛背景见 <a href="https://www.tuoniaox.com/news/p-327352.html" target="_blank" rel="noopener noreffer ">https://www.tuoniaox.com/news/p-327352.html</a> 。
@@ -250,34 +266,6 @@ greeter, ok := symGreeter.(Greeter)
 </code></pre><h2 id="jenkins">Jenkins</h2>
 <p>真正考虑要搭个Jenkins，是因为Android打包太慢了、测试催着开发要最新的测试包。</p></div><div class="post-footer">
         <a href="/posts/20170413-jenkins&#43;ansible/">Read More</a></div>
-</article><article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
-        <a href="/posts/20170408-android-hot-update/">Android热更新框架的使用</a>
-    </h1><div class="post-meta"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Happy Coding</a></span>&nbsp;<span class="post-publish">published on <time datetime="2017-04-08">2017-04-08</time></span></div><div class="content"><h2 id="一个伪需求">一个伪需求</h2>
-<p>Android热更新框架听的多了，真正开始用是因为组织突发奇想，说能否在智能POS上做个应用／插件，让开发者不改一行代码就能支持做扫码交易了。</p>
-<p>智能POS其实就是带刷卡槽，芯片插卡槽，NFC读卡器的Android系统。</p>
-<p>看完需求后，感觉意义不大啊，都是Android系统了，加个扫码模块很难么，对一个Android程序员，分分钟集成一个这是基本素养了。有点伪需求的味道。</p>
-<h2 id="好奇心">好奇心</h2>
-<p>不管是不是伪需求，还是激发了我的好奇心，有趣，如果做，该怎么做。有想过让硬件供应商协助下，能否在SDK上开个口，但想想还是算了，成本有点高。</p>
-<p>交代下，后端提供了套规范，终端将条码信息转成卡号和二磁道信息，后端就能转回条码，发往微信、支付宝。所以无论是刷卡交易还是条码交易，对终端来说，请求报文可以做到是一套规范。</p>
-<p>自然就想到了方法劫持的思路，打开刷卡器方法变成打开摄像头，读磁道信息方法变成读取扫描到的条码，这样用户真不用改什么代码了。说到方法劫持，就要指望Android的热更新框架了。</p>
-<h2 id="android热更新框架">Android热更新框架</h2>
-<p>Android的热更新框架一般都是阿里系、腾讯系的作品。可能是他们的apk包实在很大吧。相比我们的应用只有几M。
-收集了些资料，简单对比了下。个人没有每个都实践过。</p>
-<p><img
-        class="lazyload"
-        src="/svg/loading.min.svg"
-        data-src="../../images/android_hot_fix_framework.png"
-        data-srcset="../../images/android_hot_fix_framework.png, ../../images/android_hot_fix_framework.png 1.5x, ../../images/android_hot_fix_framework.png 2x"
-        data-sizes="auto"
-        alt="../../images/android_hot_fix_framework.png"
-        title="Android热更新框架对比" /></p>
-<p>回到需求上来，我们需要的是一个能够即时生效的框架。目前用了下Dexposed，因为编程方式比较方便。
-Dexposed的感受，Android 4.x Dalvik虚拟机上基本算是完美了，但是ART虚拟机就不适配了。也是Dexposed被弃用的原因。AndFix延续了Dexposed。</p>
-<p>因为使用Dexposed，第一版，只能用在Android 4.x上，这周演示效果良好。有机会再做下Android 5.x的兼容。</p>
-<p>最后产品还是要让开发者动代码，加一行代码。因为这些热更新框架没有哪个是能劫持其他APP方法的。</p>
-<p>小想法，Dexposed/AndFix这个套路修复问题，以后估计会越来越难做，Android 7.x都已经支持JIT了，将Java代码编译到了本地代码，还怎么劫持Java方法呢，跑的都是本地代码了。</p></div><div class="post-footer">
-        <a href="/posts/20170408-android-hot-update/">Read More</a><div class="post-tags">
-                <i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/android/">Android</a></div></div>
 </article><ul class="pagination"><li class="page-item ">
                     <span class="page-link">
                         <a href="/">1</a>
@@ -295,6 +283,10 @@ Dexposed的感受，Android 4.x Dalvik虚拟机上基本算是完美了，但是
                 </li><li class="page-item active">
                     <span class="page-link">
                         <a href="/page/10/">10</a>
+                    </span>
+                </li><li class="page-item ">
+                    <span class="page-link">
+                        <a href="/page/11/">11</a>
                     </span>
                 </li></ul></div></div>
             </main><footer class="footer">

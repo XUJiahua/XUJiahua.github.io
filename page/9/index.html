@@ -59,6 +59,28 @@
 </header><main class="main">
                 <div class="container"><div class="page home" data-home="posts"><div class="home-profile"><div class="links"></div></div>
 <article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
+        <a href="/posts/20200228-go-modules/">使用Go Modules</a>
+    </h1><div class="post-meta"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Happy Coding</a></span>&nbsp;<span class="post-publish">published on <time datetime="2020-02-28">2020-02-28</time></span></div><div class="content"><p>Go Modules使用着感觉不错，Go终于有正常点的依赖管理工具了。记录一二。</p>
+<h2 id="使用小结">使用小结</h2>
+<ol>
+<li>go.mod, go.sum加入版本管理 Both go.mod and go.sum should be checked into version control.</li>
+<li>直接依赖体现在go.mod，间接依赖由直接依赖自己管理，这是个递归的过程 Only direct dependencies are recorded in the go.mod file.</li>
+<li>go命令自动管理go.mod，这可太方便了 When it encounters an import of a package not provided   by any module in go.mod, the go command automatically   looks up the module containing that package and adds it to   go.mod, using the latest version.</li>
+<li>看着比之前的依赖管理好用很多。比如dep。因为网络下载包等问题，最后把依赖包全checkin到vendor目录了。太臃肿。</li>
+</ol>
+<h2 id="常用命令">常用命令</h2>
+<ul>
+<li><code>go mod init</code> creates a new module, initializing the go.mod file that describes it.</li>
+<li><code>go build</code>,<code> go test</code>, and other package-building commands add new dependencies to go.mod as needed.</li>
+<li><code>go list -m</code> all prints the current module’s dependencies.</li>
+<li><code>go get</code> changes the required version of a dependency (or adds a new dependency).</li>
+<li><code>go mod tidy</code> removes unused dependencies.</li>
+</ul>
+<h2 id="代理">代理</h2>
+<p>国内网络的问题，加上下面这行就好很多了。</p></div><div class="post-footer">
+        <a href="/posts/20200228-go-modules/">Read More</a><div class="post-tags">
+                <i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/go/">Go</a>,&nbsp;<a href="/tags/%E4%BE%9D%E8%B5%96%E7%AE%A1%E7%90%86/">依赖管理</a></div></div>
+</article><article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
         <a href="/posts/20200222-5g/">5G认识小结</a>
     </h1><div class="post-meta"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Happy Coding</a></span>&nbsp;<span class="post-publish">published on <time datetime="2020-02-22">2020-02-22</time></span></div><div class="content"><p>去年11月尝鲜，买了个三星5G手机。找基站测5G速度成了刚买时候的乐趣。用了几个月，深感5G功能很鸡肋，5G基站太少。</p>
 <p>这两天翻了好多知乎上关于5G的评论，对5G的概念、应用场景有了些厘清。</p>
@@ -304,22 +326,6 @@
 </ol></div><div class="post-footer">
         <a href="/posts/20191030-dcep-libra/">Read More</a><div class="post-tags">
                 <i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/read/">READ</a>,&nbsp;<a href="/tags/blockchain/">Blockchain</a></div></div>
-</article><article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
-        <a href="/posts/20190429-docker-rmi/">rm docker image interactively</a>
-    </h1><div class="post-meta"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Happy Coding</a></span>&nbsp;<span class="post-publish">published on <time datetime="2019-04-29">2019-04-29</time></span></div><div class="content"><p><a href="https://github.com/XUJiahua/dockerrmi" target="_blank" rel="noopener noreffer ">写了个工具</a>交互式删除 docker image。</p>
-<p><img
-        class="lazyload"
-        src="/svg/loading.min.svg"
-        data-src="../../images/show.gif"
-        data-srcset="../../images/show.gif, ../../images/show.gif 1.5x, ../../images/show.gif 2x"
-        data-sizes="auto"
-        alt="../../images/show.gif"
-        title="demo" /></p>
-<p>实在无法忍受先<code>docker images</code>，然后<code>docker rmi</code>的重复操作。
-还比较原始，刚好够自己目前所需。</p>
-<p>想到交互式，是受<code>ncdu</code>的启发。<code>ncdu</code>命令是<code>du</code>命令的交互式版本。</p></div><div class="post-footer">
-        <a href="/posts/20190429-docker-rmi/">Read More</a><div class="post-tags">
-                <i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/docker/">Docker</a></div></div>
 </article><ul class="pagination"><li class="page-item ">
                     <span class="page-link">
                         <a href="/">1</a>
@@ -341,6 +347,10 @@
                 </li><li class="page-item ">
                     <span class="page-link">
                         <a href="/page/10/">10</a>
+                    </span>
+                </li><li class="page-item ">
+                    <span class="page-link">
+                        <a href="/page/11/">11</a>
                     </span>
                 </li></ul></div></div>
             </main><footer class="footer">

@@ -59,6 +59,39 @@
 </header><main class="main">
                 <div class="container"><div class="page home" data-home="posts"><div class="home-profile"><div class="links"></div></div>
 <article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
+        <a href="/posts/20200604-clojure-repl-debug/">使用 REPL 调试 Clojure 项目（Metabase）</a>
+    </h1><div class="post-meta"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Happy Coding</a></span>&nbsp;<span class="post-publish">published on <time datetime="2020-06-04">2020-06-04</time></span>&nbsp;<span class="post-category">included in <a href="/categories/metabase/"><i class="far fa-folder fa-fw" aria-hidden="true"></i>Metabase</a></span></div><div class="content"><h2 id="开发工具">开发工具</h2>
+<h3 id="intellij-idea--cursive">Intellij IDEA + Cursive</h3>
+<p>安装 IDEA 社区版即可，并安装插件 Cursive。</p>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="../../images/image-20200604161831382.png"
+        data-srcset="../../images/image-20200604161831382.png, ../../images/image-20200604161831382.png 1.5x, ../../images/image-20200604161831382.png 2x"
+        data-sizes="auto"
+        alt="../../images/image-20200604161831382.png"
+        title="image-20200604161831382" /></p>
+<h4 id="cursive-插件按键冲突">Cursive 插件按键冲突</h4>
+<p>比如我会用组合键<code>⌘ + [</code>浏览代码，与 Cursive 插件的按键冲突。可以取消 Cursive 的这个组合键。</p>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="../../images/image-20200604162732892.png"
+        data-srcset="../../images/image-20200604162732892.png, ../../images/image-20200604162732892.png 1.5x, ../../images/image-20200604162732892.png 2x"
+        data-sizes="auto"
+        alt="../../images/image-20200604162732892.png"
+        title="image-20200604162732892" /></p>
+<h3 id="emacs">Emacs</h3>
+<p><em>Added 2020-07-10</em></p>
+<p>参考：<a href="https://www.braveclojure.com/basic-emacs/" target="_blank" rel="noopener noreffer ">How to Use Emacs, an Excellent Clojure Editor</a></p>
+<p><em>实践<code>Metabase</code>代码库失败：在REPL中执行(-main)直接挂了，待研究。TBD</em></p>
+<h2 id="实践">实践</h2>
+<h3 id="metabase">Metabase</h3>
+<p>接触 Clojure 是因为 Metabase 这个项目 <a href="https://github.com/metabase/metabase" target="_blank" rel="noopener noreffer ">https://github.com/metabase/metabase</a> 。以 Metabase 为例，说明如何调试 Clojure 项目。</p>
+<p>Metabase 由前后端两部分组成，后端是由 Clojure 写的 REST API 项目。启动前端工程，需要在前端界面上触发 API 请求。</p></div><div class="post-footer">
+        <a href="/posts/20200604-clojure-repl-debug/">Read More</a><div class="post-tags">
+                <i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/clojure/">Clojure</a>,&nbsp;<a href="/tags/metabase/">Metabase</a></div></div>
+</article><article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
         <a href="/posts/20200529-bi_project/">记一次数据项目经历</a>
     </h1><div class="post-meta"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Happy Coding</a></span>&nbsp;<span class="post-publish">published on <time datetime="2020-05-29">2020-05-29</time></span></div><div class="content"><p>分享下 4月、5月（特别是5月，5/1假期后基本上全身心投入）在忙的这个数据项目经历，工作面覆盖陪同拜访客户、开会、需求分析、提供方案、数据清洗、数据分析、数据基础设施的搭建开发、帮甲方IT调试代码等环节，累到头秃。</p>
 <p>（本文刻意隐去客户信息。）</p>
@@ -418,28 +451,6 @@
         alt="../../images/v2-80ec6cb9eb82fa2c5e0e16cbda516f41_720w.jpg"
         title="v2-80ec6cb9eb82fa2c5e0e16cbda516f41_720w" /></p></div><div class="post-footer">
         <a href="/posts/20200504-hackintosh/">Read More</a></div>
-</article><article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
-        <a href="/posts/20200421-use-consul/">consul 小结</a>
-    </h1><div class="post-meta"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Happy Coding</a></span>&nbsp;<span class="post-publish">published on <time datetime="2020-04-21">2020-04-21</time></span></div><div class="content"><h2 id="简单介绍">简单介绍</h2>
-<p>hashicorp 对 Consul 的定位是服务间网络方案。</p>
-<blockquote>
-<p>Consul is a service networking solution to connect and secure services across any runtime platform and public or private cloud. <a href="https://www.consul.io/" target="_blank" rel="noopener noreffer ">https://www.consul.io/</a></p></blockquote>
-<p>官方的两个 use case 就是 service discovery, service mesh。</p>
-<h3 id="service-discovery">service discovery</h3>
-<p>与 etcd 比起来，Consul 的服务发现是开箱即用的。优点如下：</p>
-<ol>
-<li>First class 的服务注册和获取接口。不需要像 etcd 那样在 kv 存储基础上做包装。</li>
-<li>服务注册，可以是consul 命令，也可以是HTTP API。</li>
-<li>获取服务注册表，除了 HTTP 接口，还可以使用  DNS 查询接口。</li>
-<li>健康检查。服务注册的时候可以提供健康检查项。健康检查机制保证了拿到的服务注册表是“健康”的。健康检查也包括节点的检查。单纯利用 consul 健康检查这个功能，consul 就是一个分布式监控工具。</li>
-<li>Web 管理界面。节点、服务、健康与否一目了然。</li>
-<li>Watch 功能。通过 blocking queries/ long-polling HTTP API 的方式得到服务注册表的改变的通知。</li>
-<li>跨数据中心（取资源）。When a request is made for a resource in another datacenter, the local Consul servers forward an RPC request to the remote Consul servers for that resource and return the results. <a href="https://learn.hashicorp.com/consul/security-networking/datacenters#data-replication" target="_blank" rel="noopener noreffer ">https://learn.hashicorp.com/consul/security-networking/datacenters#data-replication</a></li>
-</ol>
-<h3 id="service-mesh">service mesh</h3>
-<p>service discovery 只是微服务治理的初级阶段。作为服务请求方，通过 consul/ etcd 获取到服务注册表，下一步就是选择其中一个服务实例，发送请求。这个步骤叫做负载均衡。可以想象，客户端的代码会越来越重了。</p></div><div class="post-footer">
-        <a href="/posts/20200421-use-consul/">Read More</a><div class="post-tags">
-                <i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/service-mesh/">Service Mesh</a>,&nbsp;<a href="/tags/consul/">Consul</a>,&nbsp;<a href="/tags/microservices/">Microservices</a></div></div>
 </article><ul class="pagination"><li class="page-item ">
                     <span class="page-link">
                         <a href="/">1</a>
@@ -470,7 +481,7 @@
                     <span class="page-link" aria-hidden="true">&hellip;</span>
                 </li><li class="page-item ">
                     <span class="page-link">
-                        <a href="/page/10/">10</a>
+                        <a href="/page/11/">11</a>
                     </span>
                 </li></ul></div></div>
             </main><footer class="footer">

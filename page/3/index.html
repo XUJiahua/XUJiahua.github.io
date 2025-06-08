@@ -59,6 +59,38 @@
 </header><main class="main">
                 <div class="container"><div class="page home" data-home="posts"><div class="home-profile"><div class="links"></div></div>
 <article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
+        <a href="/posts/20200807-impala/">记录一个 Impala JDBC 驱动问题</a>
+    </h1><div class="post-meta"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Happy Coding</a></span>&nbsp;<span class="post-publish">published on <time datetime="2020-08-07">2020-08-07</time></span></div><div class="content"><h3 id="现象">现象</h3>
+<p>洪敏在用 Metabase 写报表过程中，使用 Metabase 的日期变量，发现的诡异问题。两条语句仅有部分差异，返回的结果却差了一天。</p>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="../../images/image-20200807173209949.png"
+        data-srcset="../../images/image-20200807173209949.png, ../../images/image-20200807173209949.png 1.5x, ../../images/image-20200807173209949.png 2x"
+        data-sizes="auto"
+        alt="../../images/image-20200807173209949.png"
+        title="image-20200807173209949" /></p>
+<p>期望结果。</p>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="../../images/image-20200807173143617.png"
+        data-srcset="../../images/image-20200807173143617.png, ../../images/image-20200807173143617.png 1.5x, ../../images/image-20200807173143617.png 2x"
+        data-sizes="auto"
+        alt="../../images/image-20200807173143617.png"
+        title="image-20200807173143617" /></p>
+<p>与期望结果差了一天。</p>
+<p>在 CDH 中查看 impala 服务器接收到的请求。</p>
+<p>得到期望结果的SQL：</p>
+<p>dt 是字符串，内容是日期，参数是TIMESTAMP，SQL引擎会自动转为两个 TIMESTAMP比较。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#66d9ef">SELECT</span> <span style="color:#f92672">`</span>a<span style="color:#f92672">`</span>.<span style="color:#f92672">`</span>dt<span style="color:#f92672">`</span>, (<span style="color:#f92672">`</span>a<span style="color:#f92672">`</span>.<span style="color:#f92672">`</span>x<span style="color:#f92672">`</span> <span style="color:#f92672">-</span> <span style="color:#f92672">`</span>b<span style="color:#f92672">`</span>.<span style="color:#f92672">`</span>x<span style="color:#f92672">`</span>) <span style="color:#66d9ef">as</span> <span style="color:#f92672">`</span><span style="color:#960050;background-color:#1e0010">净增人数</span><span style="color:#f92672">`</span> <span style="color:#66d9ef">FROM</span> (<span style="color:#66d9ef">SELECT</span> <span style="color:#f92672">`</span>f_ods_wx_subscribe_di<span style="color:#f92672">`</span>.<span style="color:#f92672">`</span>dt<span style="color:#f92672">`</span>, <span style="color:#66d9ef">COUNT</span>(<span style="color:#66d9ef">DISTINCT</span> <span style="color:#f92672">`</span>f_ods_wx_subscribe_di<span style="color:#f92672">`</span>.<span style="color:#f92672">`</span>userinfo_openid<span style="color:#f92672">`</span>) <span style="color:#66d9ef">as</span> <span style="color:#f92672">`</span>x<span style="color:#f92672">`</span> <span style="color:#66d9ef">FROM</span> <span style="color:#f92672">`</span>product<span style="color:#f92672">`</span>.<span style="color:#f92672">`</span>f_ods_wx_subscribe_di<span style="color:#f92672">`</span> <span style="color:#66d9ef">WHERE</span> ((<span style="color:#f92672">`</span>f_ods_wx_subscribe_di<span style="color:#f92672">`</span>.<span style="color:#f92672">`</span>dt<span style="color:#f92672">`</span> <span style="color:#f92672">&lt;</span> <span style="color:#66d9ef">CAST</span>( <span style="color:#e6db74">&#39;2020-08-05 00:00:00.0&#39;</span> <span style="color:#66d9ef">AS</span> <span style="color:#66d9ef">TIMESTAMP</span>)) <span style="color:#66d9ef">AND</span> ((<span style="color:#f92672">`</span>f_ods_wx_subscribe_di<span style="color:#f92672">`</span>.<span style="color:#f92672">`</span>mid<span style="color:#f92672">`</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;jt20191017175015910985&#39;</span>) <span style="color:#66d9ef">AND</span> (<span style="color:#f92672">`</span>f_ods_wx_subscribe_di<span style="color:#f92672">`</span>.<span style="color:#f92672">`</span>dt<span style="color:#f92672">`</span> <span style="color:#f92672">&gt;=</span> <span style="color:#66d9ef">CAST</span>( <span style="color:#e6db74">&#39;2020-08-01 00:00:00.0&#39;</span> <span style="color:#66d9ef">AS</span> <span style="color:#66d9ef">TIMESTAMP</span>)))) <span style="color:#66d9ef">GROUP</span> <span style="color:#66d9ef">BY</span> <span style="color:#f92672">`</span>f_ods_wx_subscribe_di<span style="color:#f92672">`</span>.<span style="color:#f92672">`</span>dt<span style="color:#f92672">`</span>) <span style="color:#66d9ef">AS</span> a <span style="color:#66d9ef">LEFT</span> <span style="color:#66d9ef">JOIN</span> (<span style="color:#66d9ef">SELECT</span> <span style="color:#f92672">`</span>f_ods_wx_unsubscribe_di<span style="color:#f92672">`</span>.<span style="color:#f92672">`</span>dt<span style="color:#f92672">`</span>, <span style="color:#66d9ef">COUNT</span>(<span style="color:#66d9ef">DISTINCT</span> <span style="color:#f92672">`</span>f_ods_wx_unsubscribe_di<span style="color:#f92672">`</span>.<span style="color:#f92672">`</span>userinfo_openid<span style="color:#f92672">`</span>) <span style="color:#66d9ef">as</span> <span style="color:#f92672">`</span>x<span style="color:#f92672">`</span> <span style="color:#66d9ef">FROM</span> <span style="color:#f92672">`</span>product<span style="color:#f92672">`</span>.<span style="color:#f92672">`</span>f_ods_wx_unsubscribe_di<span style="color:#f92672">`</span> <span style="color:#66d9ef">WHERE</span> ((<span style="color:#f92672">`</span>f_ods_wx_unsubscribe_di<span style="color:#f92672">`</span>.<span style="color:#f92672">`</span>dt<span style="color:#f92672">`</span> <span style="color:#f92672">&lt;</span> <span style="color:#66d9ef">CAST</span>( <span style="color:#e6db74">&#39;2020-08-05 00:00:00.0&#39;</span> <span style="color:#66d9ef">AS</span> <span style="color:#66d9ef">TIMESTAMP</span>)) <span style="color:#66d9ef">AND</span> ((<span style="color:#f92672">`</span>f_ods_wx_unsubscribe_di<span style="color:#f92672">`</span>.<span style="color:#f92672">`</span>mid<span style="color:#f92672">`</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;jt20191017175015910985&#39;</span>) <span style="color:#66d9ef">AND</span> (<span style="color:#f92672">`</span>f_ods_wx_unsubscribe_di<span style="color:#f92672">`</span>.<span style="color:#f92672">`</span>dt<span style="color:#f92672">`</span> <span style="color:#f92672">&gt;=</span> <span style="color:#66d9ef">CAST</span>( <span style="color:#e6db74">&#39;2020-08-01 00:00:00.0&#39;</span> <span style="color:#66d9ef">AS</span> <span style="color:#66d9ef">TIMESTAMP</span>)))) <span style="color:#66d9ef">GROUP</span> <span style="color:#66d9ef">BY</span> <span style="color:#f92672">`</span>f_ods_wx_unsubscribe_di<span style="color:#f92672">`</span>.<span style="color:#f92672">`</span>dt<span style="color:#f92672">`</span>) <span style="color:#66d9ef">AS</span> b <span style="color:#66d9ef">ON</span> (<span style="color:#f92672">`</span>a<span style="color:#f92672">`</span>.<span style="color:#f92672">`</span>dt<span style="color:#f92672">`</span> <span style="color:#f92672">=</span> <span style="color:#f92672">`</span>b<span style="color:#f92672">`</span>.<span style="color:#f92672">`</span>dt<span style="color:#f92672">`</span>)
+</span></span></code></pre></div><p>得到错误结果的SQL：</p>
+<p>dt 本身是字符串，参数也是字符串。变成两个字符串比较，结果确实差一天。只是在select里使用了一个函数，就造成SQL巨大差异，很神奇。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span> <span style="color:#66d9ef">select</span> a.dt ,(a.x <span style="color:#f92672">-</span> nvl(b.x,<span style="color:#ae81ff">0</span>)) <span style="color:#66d9ef">as</span> <span style="color:#f92672">`</span><span style="color:#960050;background-color:#1e0010">净增人数</span><span style="color:#f92672">`</span> <span style="color:#66d9ef">from</span> ( <span style="color:#66d9ef">SELECT</span> dt, <span style="color:#66d9ef">count</span>(<span style="color:#66d9ef">distinct</span> userinfo_openid) <span style="color:#66d9ef">as</span> x <span style="color:#66d9ef">FROM</span> f_ods_wx_subscribe_di <span style="color:#66d9ef">WHERE</span> mid <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;jt20191017175015910985&#39;</span> <span style="color:#66d9ef">AND</span> dt <span style="color:#f92672">&gt;=</span> <span style="color:#e6db74">&#39;2020-08-01 00:00:00.0&#39;</span> <span style="color:#66d9ef">and</span> dt <span style="color:#f92672">&lt;</span> <span style="color:#e6db74">&#39;2020-08-05 00:00:00.0&#39;</span> <span style="color:#66d9ef">group</span> <span style="color:#66d9ef">by</span> dt ) a <span style="color:#66d9ef">left</span> <span style="color:#66d9ef">join</span> ( <span style="color:#66d9ef">SELECT</span> dt, <span style="color:#66d9ef">count</span>(<span style="color:#66d9ef">distinct</span> userinfo_openid) <span style="color:#66d9ef">as</span> x <span style="color:#66d9ef">FROM</span> f_ods_wx_unsubscribe_di <span style="color:#66d9ef">WHERE</span> mid <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;jt20191017175015910985&#39;</span> <span style="color:#66d9ef">AND</span> dt <span style="color:#f92672">&gt;=</span> <span style="color:#e6db74">&#39;2020-08-01 00:00:00.0&#39;</span> <span style="color:#66d9ef">and</span> dt <span style="color:#f92672">&lt;</span> <span style="color:#e6db74">&#39;2020-08-05 00:00:00.0&#39;</span> <span style="color:#66d9ef">group</span> <span style="color:#66d9ef">by</span> dt ) b <span style="color:#66d9ef">on</span> a.dt <span style="color:#f92672">=</span> b.dt
+</span></span></code></pre></div><p>metabase，metabase impala driver，impala JDBC driver都会有问题。</p></div><div class="post-footer">
+        <a href="/posts/20200807-impala/">Read More</a><div class="post-tags">
+                <i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/impala/">Impala</a></div></div>
+</article><article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
         <a href="/posts/20200807-ray-grpc-arrow/">【阅读】How Ray Uses gRPC (and Arrow) to Outperform gRPC</a>
     </h1><div class="post-meta"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Happy Coding</a></span>&nbsp;<span class="post-publish">published on <time datetime="2020-08-07">2020-08-07</time></span>&nbsp;<span class="post-category">included in <a href="/categories/ray/"><i class="far fa-folder fa-fw" aria-hidden="true"></i>Ray</a></span></div><div class="content"><p>原文：<a href="https://medium.com/distributed-computing-with-ray/how-ray-uses-grpc-and-arrow-to-outperform-grpc-43ec368cb385" target="_blank" rel="noopener noreffer ">How Ray Uses gRPC (and Arrow) to Outperform gRPC</a></p>
 <p>对理解 Ray 的底层逻辑有帮助。文中描述的Ray版本为0.8。</p>
@@ -254,34 +286,6 @@
         title="image-20200714131930694" /></p></div><div class="post-footer">
         <a href="/posts/20200714-metabase-timezone/">Read More</a><div class="post-tags">
                 <i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/metabase/">Metabase</a>,&nbsp;<a href="/tags/impala/">Impala</a></div></div>
-</article><article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
-        <a href="/posts/20200713-impala-timezone/">Impala TIMESTAMP 时区处理</a>
-    </h1><div class="post-meta"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Happy Coding</a></span>&nbsp;<span class="post-publish">published on <time datetime="2020-07-13">2020-07-13</time></span></div><div class="content"><h2 id="现象">现象</h2>
-<p><code>Hive</code> 以<code>Parquet</code>数据存储格式写入的 <code>TIMESTAMP</code>字段内容，<code>Impala</code>读取，时间差8小时。</p>
-<p><img
-        class="lazyload"
-        src="/svg/loading.min.svg"
-        data-src="../../images/image-20200713162929821.png"
-        data-srcset="../../images/image-20200713162929821.png, ../../images/image-20200713162929821.png 1.5x, ../../images/image-20200713162929821.png 2x"
-        data-sizes="auto"
-        alt="../../images/image-20200713162929821.png"
-        title="image-20200713162929821" /></p>
-<p><code>Hive</code>写入</p>
-<p><img
-        class="lazyload"
-        src="/svg/loading.min.svg"
-        data-src="../../images/image-20200713163001445.png"
-        data-srcset="../../images/image-20200713163001445.png, ../../images/image-20200713163001445.png 1.5x, ../../images/image-20200713163001445.png 2x"
-        data-sizes="auto"
-        alt="../../images/image-20200713163001445.png"
-        title="image-20200713163001445" /></p>
-<p><code>Impala</code>读取差8小时，北京时间与UTC差8小时。</p>
-<h2 id="原因">原因</h2>
-<p><code>Hive</code>写<code>Parquet</code>数据文件，<code>TIMESTAMP</code>先规范化到UTC格式再存储。而<code>Impala</code>直接读取数据文件中的内容，不会进行TIMEZONE的调整。</p>
-<blockquote>
-<p>When Hive writes to Parquet data files, the TIMESTAMP values are normalized to UTC from the local time zone of the host where the data was written. On the other hand, Impala does not make any time zone adjustment when it writes or reads INT96 TIMESTAMP values to Parquet files. This difference in time zone handling can cause potentially inconsistent results when Impala processes TIMESTAMP values in the Parquet files written by Hive.</p></div><div class="post-footer">
-        <a href="/posts/20200713-impala-timezone/">Read More</a><div class="post-tags">
-                <i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/impala/">Impala</a></div></div>
 </article><ul class="pagination"><li class="page-item ">
                     <span class="page-link">
                         <a href="/">1</a>
@@ -306,7 +310,7 @@
                     <span class="page-link" aria-hidden="true">&hellip;</span>
                 </li><li class="page-item ">
                     <span class="page-link">
-                        <a href="/page/10/">10</a>
+                        <a href="/page/11/">11</a>
                     </span>
                 </li></ul></div></div>
             </main><footer class="footer">
