@@ -59,6 +59,37 @@
 </header><main class="main">
                 <div class="container"><div class="page home" data-home="posts"><div class="home-profile"><div class="links"></div></div>
 <article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
+        <a href="/posts/20250610-alipay_enterprise/">企业支付宝申请小结</a>
+    </h1><div class="post-meta"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Happy Coding</a></span>&nbsp;<span class="post-publish">published on <time datetime="2025-06-10">2025-06-10</time></span></div><div class="content"><ol>
+<li>
+<p>网站需要支持支付宝支付，选择手机网站支付场景。</p>
+</li>
+<li>
+<p>已经在支付宝 sandbox 环境下进行开发测试。个人帐号即可使用 sandbox 环境。</p>
+</li>
+<li>
+<p>如果使用 Golang 开发，选择 <a href="https://github.com/smartwalle/alipay/tree/master/examples" target="_blank" rel="noopener noreffer ">https://github.com/smartwalle/alipay/tree/master/examples</a> 这个库最快，连例子都准备好了。</p>
+</li>
+</ol>
+<p>申请需要的参数即可上线，以下是申请时间线，很费时间，耐心等待：</p>
+<ol>
+<li>创建企业支付宝帐号（上传营业执照）</li>
+<li>申请参数失败，帐号进入限制状态，原因：网站没有 ICP 备案</li>
+<li>购买境内服务器，网站不需要部署</li>
+<li>申请 ICP 备案：需要等待 10 天。
+<ol>
+<li>公安备案：对支付宝来说不要求。最好在 30 天内完成。这里走了弯路，一直在等公安备案（到现在为止 20250610，公安备案还没通过）</li>
+<li>经营性备案 ICP 许可证：卖自己产品不需要申请</li>
+</ol>
+</li>
+<li>支付宝解除限制提交材料</li>
+<li>提交的最后一个视频材料不通过，需要重新上传。忙，没管</li>
+<li>限制解除，1 个月限制期过了，自动解除？</li>
+<li>开通手机网站支付场景，提交审核，第二天通过</li>
+<li>创建应用，得到生产参数，提交审核，第二天通过</li>
+</ol></div><div class="post-footer">
+        <a href="/posts/20250610-alipay_enterprise/">Read More</a></div>
+</article><article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
         <a href="/posts/20250608-sql-studio/">SQL Studio</a>
     </h1><div class="post-meta"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Happy Coding</a></span>&nbsp;<span class="post-publish">published on <time datetime="2025-06-08">2025-06-08</time></span>&nbsp;<span class="post-category">included in <a href="/categories/%E5%B0%8F%E5%B7%A5%E5%85%B7/"><i class="far fa-folder fa-fw" aria-hidden="true"></i>小工具</a></span></div><div class="content"><p><a href="https://github.com/frectonz/sql-studio" target="_blank" rel="noopener noreffer ">SQL Studio</a> 是一个比较轻量的数据库管理工具，支持主流的数据库，比如 MySQL、PostgreSQL、SQLite 等。</p>
 <p>命令行启动 server，通过浏览器访问：</p>
@@ -185,34 +216,6 @@ MSET (10 keys): 93283.58 requests per second, p50=0.423 msec
 <p>Redis compatible server framework for <strong>Go</strong>.</p></div><div class="post-footer">
         <a href="/posts/redis-benchmark-kv-a3e78900-612a-4d04-b2aa-fc6f0908b431/">Read More</a><div class="post-tags">
                 <i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/redis/">Redis</a>,&nbsp;<a href="/tags/kv/">Kv</a></div></div>
-</article><article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
-        <a href="/posts/notion-markdown-hugo-78139407-85c5-4a75-b288-b54d5c3df34b/">从 Notion 导出 markdown 到 hugo 项目</a>
-    </h1><div class="post-meta"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Happy Coding</a></span>&nbsp;<span class="post-publish">published on <time datetime="2021-04-12">2021-04-12</time></span>&nbsp;<span class="post-category">included in <a href="/categories/%E5%8D%9A%E5%AE%A2/"><i class="far fa-folder fa-fw" aria-hidden="true"></i>博客</a></span></div><div class="content"><h2 id="目的">目的</h2>
-<p>好久没更新博客了，最近半年使用 Notion，体验很棒。</p>
-<p>之前写博客的过程：使用 Typora 编辑 markdown，使用 Hugo 生成静态页面，上传到 github 使用 github pages serving。参考：</p>
-<p><a href="https://xujiahua.github.io/posts/20200310-github-pages-restart/" target="_blank" rel="noopener noreffer ">Github pages重新开始：使用Hugo、Typora</a></p>
-<p>怎么把我 Notion 中的文章同步到我的博客呢。这是本文目的。</p>
-<p>主要是写了一个 notion-mk 的程序将 notion 文章导出到 hugo 工作目录。后面的工作与之前保持一致。</p>
-<pre tabindex="0"><code>notion -- notion-mk(todo) --&gt; hugo directory 
-																		-- hugo generate --&gt; static html/js/css
-</code></pre><h2 id="wip">WIP</h2>
-<p>代码如下：</p>
-<p><a href="https://github.com/XUJiahua/notion-md" target="_blank" rel="noopener noreffer ">XUJiahua/notion-md</a></p>
-<h3 id="功能">功能</h3>
-<ul>
-<li><i class="far fa-check-square fa-fw" aria-hidden="true"></i> Download images</li>
-<li><i class="far fa-check-square fa-fw" aria-hidden="true"></i> Notion extract to markdown</li>
-<li><i class="far fa-check-square fa-fw" aria-hidden="true"></i> markdown hugo compatiable</li>
-<li><i class="far fa-check-square fa-fw" aria-hidden="true"></i> image location?</li>
-<li><i class="far fa-check-square fa-fw" aria-hidden="true"></i> remove title from markdown, now #&hellip;</li>
-<li><i class="far fa-check-square fa-fw" aria-hidden="true"></i> support category</li>
-<li><i class="far fa-check-square fa-fw" aria-hidden="true"></i> support tag</li>
-<li><i class="far fa-square fa-fw" aria-hidden="true"></i> table of content at the beginning</li>
-</ul>
-<h3 id="使用">使用</h3>
-<p>将要发布的文档添加到这个 list 页面</p></div><div class="post-footer">
-        <a href="/posts/notion-markdown-hugo-78139407-85c5-4a75-b288-b54d5c3df34b/">Read More</a><div class="post-tags">
-                <i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/notion/">Notion</a>,&nbsp;<a href="/tags/markdown/">Markdown</a>,&nbsp;<a href="/tags/hugo/">Hugo</a></div></div>
 </article><ul class="pagination"><li class="page-item active">
                     <span class="page-link">
                         <a href="/">1</a>

@@ -59,6 +59,76 @@
 </header><main class="main">
                 <div class="container"><div class="page home" data-home="posts"><div class="home-profile"><div class="links"></div></div>
 <article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
+        <a href="/posts/20200323-use-hyper-v/">Hyper-V使用体验</a>
+    </h1><div class="post-meta"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Happy Coding</a></span>&nbsp;<span class="post-publish">published on <time datetime="2020-03-03">2020-03-03</time></span></div><div class="content"><h2 id="hyper-v-使用体验">Hyper-V 使用体验</h2>
+<p>Hyper-V是 Windows10 内置的虚拟机软件，没想到我会用到它。</p>
+<h3 id="为什么要用hyper-v">为什么要用Hyper-V</h3>
+<ol>
+<li>需要使用虚拟机来模拟Kubernetes环境。</li>
+<li>Windows Docker依赖Hyper-V。貌似WSL2也是基于Hyper-V。应该是不会卸载Hyper-V了。</li>
+<li>Hyper-V与其他虚拟机软件（VirtualBox, VMWare）冲突，用不了其他的，只能用Hyper-V。</li>
+<li>Hyper-V与VirtualBox兼容的方案有没有。可能有，不想过于折腾了，那就不得不用。</li>
+</ol>
+<h3 id="hyper-v好不好用">Hyper-V好不好用</h3>
+<ol>
+<li>使用体验太差了，从Mac、从其他虚拟机使用过来，默认配置各种踩坑。</li>
+<li>安装VM碰到DHCP超时的问题，反复试验无果，重启Windows后VM的DHCP不超时了。总结下，Windows上，如果怎么搞都搞不定，重启下可能就好了。WTF！</li>
+<li>自带的NAT网络有点残疾，VM配置静态IP，网络就不通了。不像VirtualBox是开箱即用的。</li>
+<li>最后借助网络上的零碎信息自定义了下NAT网络，各种神奇配置。</li>
+<li>Windows还是很屎，除了打游戏，开发体验跟我之前的体验一样糟。最后搞定花了我一天时间。要是用VMware/VirtualBox，可能在2个小时内就能搞定。总结，不好用。</li>
+</ol>
+<h2 id="hyper-v-创建和克隆vm">Hyper-V 创建和克隆VM</h2>
+<h3 id="创建vm">创建VM</h3>
+<p>从<code>*.iso</code>文件创建VM。</p>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="../../images/465F25A3-07A1-4DB7-90CE-FD02376D4C92.png"
+        data-srcset="../../images/465F25A3-07A1-4DB7-90CE-FD02376D4C92.png, ../../images/465F25A3-07A1-4DB7-90CE-FD02376D4C92.png 1.5x, ../../images/465F25A3-07A1-4DB7-90CE-FD02376D4C92.png 2x"
+        data-sizes="auto"
+        alt="../../images/465F25A3-07A1-4DB7-90CE-FD02376D4C92.png"
+        title="465F25A3-07A1-4DB7-90CE-FD02376D4C92" /></p>
+<ol>
+<li>注意，Linux VM，不启用Windows Secure Boot。</li>
+<li>更多选项里，设置VM的名称和交换机。</li>
+<li>体验不好的地方：左上方的「选择操作系统」区域有长时间的加载过程，即使使用本地镜像文件也得等。</li>
+</ol>
+<h3 id="克隆vm">克隆VM</h3>
+<p>从硬盘文件创建VM。</p>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="../../images/03603F71-9B97-4ABC-8D1F-91F6CBB6602E.png"
+        data-srcset="../../images/03603F71-9B97-4ABC-8D1F-91F6CBB6602E.png, ../../images/03603F71-9B97-4ABC-8D1F-91F6CBB6602E.png 1.5x, ../../images/03603F71-9B97-4ABC-8D1F-91F6CBB6602E.png 2x"
+        data-sizes="auto"
+        alt="../../images/03603F71-9B97-4ABC-8D1F-91F6CBB6602E.png"
+        title="03603F71-9B97-4ABC-8D1F-91F6CBB6602E" /></p>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="../../images/3C85F0B5-0763-468F-9ABC-2FC35AF20235.png"
+        data-srcset="../../images/3C85F0B5-0763-468F-9ABC-2FC35AF20235.png, ../../images/3C85F0B5-0763-468F-9ABC-2FC35AF20235.png 1.5x, ../../images/3C85F0B5-0763-468F-9ABC-2FC35AF20235.png 2x"
+        data-sizes="auto"
+        alt="../../images/3C85F0B5-0763-468F-9ABC-2FC35AF20235.png"
+        title="3C85F0B5-0763-468F-9ABC-2FC35AF20235" /></p>
+<ol>
+<li>克隆是为了减少重复配置一些基础环境的工作量。</li>
+<li>不像VirtualBox那样有直观的克隆按钮。摸索出的克隆功能是这样的：就是从VM硬盘创建VM。</li>
+<li>建议先关机母体VM后，再基于母体VM的硬盘文件克隆。防止母体VM开机状态下一些更新并没有持久化到硬盘文件中。</li>
+</ol>
+<h2 id="hyper-v-nat网络搭建总结">Hyper-V NAT网络搭建总结</h2>
+<p>如果使用VMWare/VirtualBox的话，NAT网络是完全自动搭建的。</p>
+<p>VMWare中有三种网络模式，Bridging、NAT、Host-only分别对应Hyper-V下的三种交换机，外部、内部、专用。</p>
+<ol>
+<li>Bridging：VM使用物理网络。GUEST VM与HOST相当于通过交换机连上一个网络（细节不确定）。</li>
+<li>NAT：VM使用虚拟网络，HOST同时连入物理网络和虚拟网络。VM出口流量都会通过HOST，使用HOST IP。</li>
+<li>Host-only：在NAT基础上，VM连不上外网，除非有路由设置。</li>
+</ol>
+<h3 id="默认的nat网络">默认的NAT网络</h3>
+<p>默认交换机支持NAT，但是瑕疵不少，无法满足工作需要。</p></div><div class="post-footer">
+        <a href="/posts/20200323-use-hyper-v/">Read More</a><div class="post-tags">
+                <i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/hyper-v/">Hyper-V</a>,&nbsp;<a href="/tags/vm/">VM</a></div></div>
+</article><article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
         <a href="/posts/20200228-go-modules/">使用Go Modules</a>
     </h1><div class="post-meta"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Happy Coding</a></span>&nbsp;<span class="post-publish">published on <time datetime="2020-02-28">2020-02-28</time></span></div><div class="content"><p>Go Modules使用着感觉不错，Go终于有正常点的依赖管理工具了。记录一二。</p>
 <h2 id="使用小结">使用小结</h2>
@@ -280,52 +350,6 @@
         title="image-20191031151535708" /></p></div><div class="post-footer">
         <a href="/posts/20191031-quantum-computer/">Read More</a><div class="post-tags">
                 <i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/read/">READ</a></div></div>
-</article><article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
-        <a href="/posts/20191030-dcep-libra/">数字货币资料整理：FB Libra，央行 DCEP</a>
-    </h1><div class="post-meta"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Happy Coding</a></span>&nbsp;<span class="post-publish">published on <time datetime="2019-10-30">2019-10-30</time></span></div><div class="content"><p>（笔记迁移 @ 2020年）</p>
-<p>资料：</p>
-<ol>
-<li>「区块链到底能干嘛」，赏味不足，梁杰ggtalk博客</li>
-<li>「Libra与数字货币展望」，央行_穆长春，得到课程</li>
-<li>「有关DCEP/Libra/支付/金融科技企业」，Mikko，微博：现金（央行发行）- 存款（银行）- 余额（支付机构比如支付宝）- 货币基金之间的（层级）关系。第一次这么系统地去理解金融系统</li>
-<li>Libra白皮书，官网</li>
-<li>「参议院就Facebook的Libra听证会」 <a href="https://www.bilibili.com/video/av59535863/" target="_blank" rel="noopener noreffer ">https://www.bilibili.com/video/av59535863/</a></li>
-</ol>
-<p>Libra：</p>
-<ol>
-<li>Libra是分层架构（混合架构），节点与节点之间是用区块链，节点与用户之间是中心化服务</li>
-</ol>
-<p>央行数字货币DCEP优势：</p>
-<ol>
-<li>DCEP是法币，价值属性等同现金，央行发行，国家信用担保</li>
-<li><strong>离线支付，应该是NFC技术，具体实现细节没有披露</strong></li>
-<li>保护国家货币主权和法币地位</li>
-<li>便携性：现钞发行、运输、存储、防伪等环节成本高，使用DCEP可以规避这一点</li>
-<li>匿名性：（现金支持匿名性，而支付宝、银行都没有隐私可言），DCEP也支持匿名性（一定程度上），具体实现细节见下文</li>
-<li>防止犯罪：反洗钱、反逃税、反恐怖融资。这一点与匿名性有点相悖。文章提到使用大数据来挖掘特征，符合风险特征的会进行身份比对。（原文这么说：所以说，出于反洗钱的考虑，我们对数字钱包也是有分级和限额安排的。比如说你就用一个手机号码注册一个钱包，那你这个钱包当然可以用，但是级别一定是最低的，只能满足日常小额支付需求；但如果你要能上传一下身份证，或者再上传一个银行卡，就可以获得更高级别的数字钱包，如果你还能到柜台去面签一下，那可能就没有限额了。）也就是说小额支持匿名，而大额不行。</li>
-<li>与区块链没有必然联系：央行没有要求使用区块链，央行调研结论也是区块链没法满足高并发需求（Libra是一个双层架构，节点与节点之间是用区块链，节点与用户之间是中心化服务）</li>
-<li>采取的是<strong>双层运营体系</strong>，央行做上层，商业银行做第二层；商业机构向央行全额、100%缴纳准备金，央行的数字货币依然是中央银行负债，由中央银行信用担保，具有无限法偿性：这些是与人民币现金一个路子。</li>
-</ol>
-<p>参考：</p>
-<ol>
-<li>DCEP：中国自己的数字货币 <a href="https://mp.weixin.qq.com/s?__biz=MzA5MDAxMjcwOQ==&amp;mid=2447616917&amp;idx=1&amp;sn=73207944a32667c50ea12d65e209c4c8&amp;chksm=840526dfb372afc947bf188f9154a37b773320a1ab3a2bb8de87fbe5b7a89b8c05934a100b2d&amp;scene=0&amp;xtrack=1" target="_blank" rel="noopener noreffer ">https://mp.weixin.qq.com/s?__biz=MzA5MDAxMjcwOQ==&mid=2447616917&idx=1&sn=73207944a32667c50ea12d65e209c4c8&chksm=840526dfb372afc947bf188f9154a37b773320a1ab3a2bb8de87fbe5b7a89b8c05934a100b2d&scene=0&xtrack=1</a></li>
-</ol>
-<p>区块链的弱点（没法支持零售级别的交易）：</p>
-<ol>
-<li>并发性能低（可扩展性差），共识机制导致的天然劣势，所有节点一起竞争记账权，相当于堵死在一件事上了</li>
-<li>存储的可扩展性差，这个只能定期archive历史数据来解决了。</li>
-<li>安全性只保证了数据不会被篡改，至于匿名，通过大数据是可以破解的</li>
-<li>没有原生的加密机制：公有链匿名性，通过大数据可以挖掘出真实身份</li>
-<li>等待确认太慢，不适合日常使用</li>
-<li>51%算力攻击</li>
-</ol>
-<p>怎么思考区块链：</p>
-<ol>
-<li>去中心化？比中心化还要中心化。更集权。节点自己没法改。无法解决所有者作弊的问题，但对所有者（统治者）是利好的工具（赏味不足的说法，有道理）</li>
-<li>（IT上能）提升效率：一份数据在各个系统流转，那么这份数据就存在区块链数据库上就可以了。</li>
-</ol></div><div class="post-footer">
-        <a href="/posts/20191030-dcep-libra/">Read More</a><div class="post-tags">
-                <i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/read/">READ</a>,&nbsp;<a href="/tags/blockchain/">Blockchain</a></div></div>
 </article><ul class="pagination"><li class="page-item ">
                     <span class="page-link">
                         <a href="/">1</a>

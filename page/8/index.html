@@ -59,6 +59,35 @@
 </header><main class="main">
                 <div class="container"><div class="page home" data-home="posts"><div class="home-profile"><div class="links"></div></div>
 <article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
+        <a href="/posts/20200331-use-docker-machine/">使用 Docker Machine</a>
+    </h1><div class="post-meta"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Happy Coding</a></span>&nbsp;<span class="post-publish">published on <time datetime="2020-03-31">2020-03-31</time></span></div><div class="content"><h2 id="简介">简介</h2>
+<p>Docker Machine lets you create Docker hosts on your computer, on cloud providers, and inside your own data center. It creates servers, installs Docker on them, then configures the Docker client to talk to them.</p>
+<p>参考：</p>
+<ol>
+<li><a href="https://github.com/docker/machine" target="_blank" rel="noopener noreffer ">https://github.com/docker/machine</a></li>
+<li><a href="https://docs.docker.com/machine/overview/" target="_blank" rel="noopener noreffer ">https://docs.docker.com/machine/overview/</a></li>
+</ol>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="../../images/machine.png"
+        data-srcset="../../images/machine.png, ../../images/machine.png 1.5x, ../../images/machine.png 2x"
+        data-sizes="auto"
+        alt="../../images/machine.png"
+        title="Docker Machine" /></p>
+<h2 id="vs-vagrant">vs. Vagrant</h2>
+<h3 id="与vagrant的交集">与Vagrant的交集</h3>
+<p>目前使用 Vagrant 搭 Docker 环境的步骤如下：</p>
+<ol>
+<li>vagrant init {box_name}，下载一个基础的虚拟机镜像，比如centos，并创建一个Vagrantfile。</li>
+<li>Vagrantfile中设置虚拟机hostname。</li>
+<li>Vagrantfile中设置Private network，使得几个VM可以互相通信。</li>
+<li>VM内安装docker软件。</li>
+</ol>
+<p>如果用上了docker-machine，只要一行命令。在这个场景上，docker-machine 比 Vagrant 方便了很多。</p></div><div class="post-footer">
+        <a href="/posts/20200331-use-docker-machine/">Read More</a><div class="post-tags">
+                <i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/docker/">Docker</a></div></div>
+</article><article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
         <a href="/posts/20200321-docker-network/">Docker Network小结</a>
     </h1><div class="post-meta"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Happy Coding</a></span>&nbsp;<span class="post-publish">published on <time datetime="2020-03-21">2020-03-21</time></span></div><div class="content"><p>Docker网络非常值得学习。对Docker不熟的同学，建议先看一些入门资料。</p>
 <h2 id="docker-学习资料">Docker 学习资料</h2>
@@ -264,76 +293,6 @@ hugo -D
 <p>参考：</p></div><div class="post-footer">
         <a href="/posts/20200310-github-pages-restart/">Read More</a><div class="post-tags">
                 <i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/github-pages/">GitHub Pages</a>,&nbsp;<a href="/tags/hugo/">Hugo</a>,&nbsp;<a href="/tags/typora/">Typora</a></div></div>
-</article><article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
-        <a href="/posts/20200323-use-hyper-v/">Hyper-V使用体验</a>
-    </h1><div class="post-meta"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Happy Coding</a></span>&nbsp;<span class="post-publish">published on <time datetime="2020-03-03">2020-03-03</time></span></div><div class="content"><h2 id="hyper-v-使用体验">Hyper-V 使用体验</h2>
-<p>Hyper-V是 Windows10 内置的虚拟机软件，没想到我会用到它。</p>
-<h3 id="为什么要用hyper-v">为什么要用Hyper-V</h3>
-<ol>
-<li>需要使用虚拟机来模拟Kubernetes环境。</li>
-<li>Windows Docker依赖Hyper-V。貌似WSL2也是基于Hyper-V。应该是不会卸载Hyper-V了。</li>
-<li>Hyper-V与其他虚拟机软件（VirtualBox, VMWare）冲突，用不了其他的，只能用Hyper-V。</li>
-<li>Hyper-V与VirtualBox兼容的方案有没有。可能有，不想过于折腾了，那就不得不用。</li>
-</ol>
-<h3 id="hyper-v好不好用">Hyper-V好不好用</h3>
-<ol>
-<li>使用体验太差了，从Mac、从其他虚拟机使用过来，默认配置各种踩坑。</li>
-<li>安装VM碰到DHCP超时的问题，反复试验无果，重启Windows后VM的DHCP不超时了。总结下，Windows上，如果怎么搞都搞不定，重启下可能就好了。WTF！</li>
-<li>自带的NAT网络有点残疾，VM配置静态IP，网络就不通了。不像VirtualBox是开箱即用的。</li>
-<li>最后借助网络上的零碎信息自定义了下NAT网络，各种神奇配置。</li>
-<li>Windows还是很屎，除了打游戏，开发体验跟我之前的体验一样糟。最后搞定花了我一天时间。要是用VMware/VirtualBox，可能在2个小时内就能搞定。总结，不好用。</li>
-</ol>
-<h2 id="hyper-v-创建和克隆vm">Hyper-V 创建和克隆VM</h2>
-<h3 id="创建vm">创建VM</h3>
-<p>从<code>*.iso</code>文件创建VM。</p>
-<p><img
-        class="lazyload"
-        src="/svg/loading.min.svg"
-        data-src="../../images/465F25A3-07A1-4DB7-90CE-FD02376D4C92.png"
-        data-srcset="../../images/465F25A3-07A1-4DB7-90CE-FD02376D4C92.png, ../../images/465F25A3-07A1-4DB7-90CE-FD02376D4C92.png 1.5x, ../../images/465F25A3-07A1-4DB7-90CE-FD02376D4C92.png 2x"
-        data-sizes="auto"
-        alt="../../images/465F25A3-07A1-4DB7-90CE-FD02376D4C92.png"
-        title="465F25A3-07A1-4DB7-90CE-FD02376D4C92" /></p>
-<ol>
-<li>注意，Linux VM，不启用Windows Secure Boot。</li>
-<li>更多选项里，设置VM的名称和交换机。</li>
-<li>体验不好的地方：左上方的「选择操作系统」区域有长时间的加载过程，即使使用本地镜像文件也得等。</li>
-</ol>
-<h3 id="克隆vm">克隆VM</h3>
-<p>从硬盘文件创建VM。</p>
-<p><img
-        class="lazyload"
-        src="/svg/loading.min.svg"
-        data-src="../../images/03603F71-9B97-4ABC-8D1F-91F6CBB6602E.png"
-        data-srcset="../../images/03603F71-9B97-4ABC-8D1F-91F6CBB6602E.png, ../../images/03603F71-9B97-4ABC-8D1F-91F6CBB6602E.png 1.5x, ../../images/03603F71-9B97-4ABC-8D1F-91F6CBB6602E.png 2x"
-        data-sizes="auto"
-        alt="../../images/03603F71-9B97-4ABC-8D1F-91F6CBB6602E.png"
-        title="03603F71-9B97-4ABC-8D1F-91F6CBB6602E" /></p>
-<p><img
-        class="lazyload"
-        src="/svg/loading.min.svg"
-        data-src="../../images/3C85F0B5-0763-468F-9ABC-2FC35AF20235.png"
-        data-srcset="../../images/3C85F0B5-0763-468F-9ABC-2FC35AF20235.png, ../../images/3C85F0B5-0763-468F-9ABC-2FC35AF20235.png 1.5x, ../../images/3C85F0B5-0763-468F-9ABC-2FC35AF20235.png 2x"
-        data-sizes="auto"
-        alt="../../images/3C85F0B5-0763-468F-9ABC-2FC35AF20235.png"
-        title="3C85F0B5-0763-468F-9ABC-2FC35AF20235" /></p>
-<ol>
-<li>克隆是为了减少重复配置一些基础环境的工作量。</li>
-<li>不像VirtualBox那样有直观的克隆按钮。摸索出的克隆功能是这样的：就是从VM硬盘创建VM。</li>
-<li>建议先关机母体VM后，再基于母体VM的硬盘文件克隆。防止母体VM开机状态下一些更新并没有持久化到硬盘文件中。</li>
-</ol>
-<h2 id="hyper-v-nat网络搭建总结">Hyper-V NAT网络搭建总结</h2>
-<p>如果使用VMWare/VirtualBox的话，NAT网络是完全自动搭建的。</p>
-<p>VMWare中有三种网络模式，Bridging、NAT、Host-only分别对应Hyper-V下的三种交换机，外部、内部、专用。</p>
-<ol>
-<li>Bridging：VM使用物理网络。GUEST VM与HOST相当于通过交换机连上一个网络（细节不确定）。</li>
-<li>NAT：VM使用虚拟网络，HOST同时连入物理网络和虚拟网络。VM出口流量都会通过HOST，使用HOST IP。</li>
-<li>Host-only：在NAT基础上，VM连不上外网，除非有路由设置。</li>
-</ol>
-<h3 id="默认的nat网络">默认的NAT网络</h3>
-<p>默认交换机支持NAT，但是瑕疵不少，无法满足工作需要。</p></div><div class="post-footer">
-        <a href="/posts/20200323-use-hyper-v/">Read More</a><div class="post-tags">
-                <i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/hyper-v/">Hyper-V</a>,&nbsp;<a href="/tags/vm/">VM</a></div></div>
 </article><ul class="pagination"><li class="page-item ">
                     <span class="page-link">
                         <a href="/">1</a>

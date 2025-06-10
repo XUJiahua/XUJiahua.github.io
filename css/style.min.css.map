@@ -1,7 +1,7 @@
 {
 	"version": 3,
 	"file": "style.min.css",
-	"sourceRoot": "/Users/jiahua/Downloads/archive_macbook2018/Archive/hugo-blogger",
+	"sourceRoot": "/Users/jiahua/projects/me/hugo-blogger",
 	"sources": [
 		"themes/LoveIt/assets/css/style.scss",
 		"themes/LoveIt/assets/lib/normalize/normalize.css",

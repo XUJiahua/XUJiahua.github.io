@@ -59,6 +59,57 @@
 </header><main class="main">
                 <div class="container"><div class="page home" data-home="posts"><div class="home-profile"><div class="links"></div></div>
 <article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
+        <a href="/posts/20200414-k8s-logging/">k8s 应用日志收集</a>
+    </h1><div class="post-meta"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Happy Coding</a></span>&nbsp;<span class="post-publish">published on <time datetime="2020-04-14">2020-04-14</time></span></div><div class="content"><h2 id="k8s-日志收集架构">k8s 日志收集架构</h2>
+<p>以下是比较一般、普适的架构。更多参考：Kubernetes 日志架构 <a href="https://kubernetes.io/zh/docs/concepts/cluster-administration/logging/" target="_blank" rel="noopener noreffer ">https://kubernetes.io/zh/docs/concepts/cluster-administration/logging/</a></p>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="../../images/logging-with-node-agent.png"
+        data-srcset="../../images/logging-with-node-agent.png, ../../images/logging-with-node-agent.png 1.5x, ../../images/logging-with-node-agent.png 2x"
+        data-sizes="auto"
+        alt="../../images/logging-with-node-agent.png"
+        title="使用节点日志记录代理" /></p>
+<ol>
+<li>容器化应用将日志写入<code>stdout</code>、<code>stderr</code>。</li>
+<li>Docker容器引擎将<code>stdout</code>、<code>stderr</code>流重定向到日志驱动，比如默认的json-file。</li>
+<li>json-file日志驱动将日志写入到（宿主机上的）文件。</li>
+<li>日志收集工具以DaemonSet的形式安装在每个节点。</li>
+<li>日志收集工具监听文件变化，并将日志写入到日志中心服务。</li>
+</ol>
+<h2 id="k8s-日志收集细节">k8s 日志收集细节</h2>
+<h3 id="实战">实战</h3>
+<p>可以直接参考以下教程：minikube创建了一个Kubernetes集群，Fluentd收集日志，存入ElasticSearch，使用Kibana查看日志。典型的EFK技术栈。</p>
+<ol>
+<li>Logging in Kubernetes with Elasticsearch, Kibana, and Fluentd <a href="https://mherman.org/blog/logging-in-kubernetes-with-elasticsearch-Kibana-fluentd/" target="_blank" rel="noopener noreffer ">https://mherman.org/blog/logging-in-kubernetes-with-elasticsearch-Kibana-fluentd/</a></li>
+</ol>
+<p>在Kibana上看收集到的日志。能看到日志收集工具也采集了容器、镜像、Pod有关的信息。这些上下文信息能让人定位到是哪个应用在生产日志。</p>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="../../images/image-20200414104511399.png"
+        data-srcset="../../images/image-20200414104511399.png, ../../images/image-20200414104511399.png 1.5x, ../../images/image-20200414104511399.png 2x"
+        data-sizes="auto"
+        alt="../../images/image-20200414104511399.png"
+        title="image-20200414104511399" /></p>
+<h3 id="fluentd-收集上下文信息">fluentd 收集上下文信息</h3>
+<p>Docker <code>json-file</code> 日志驱动写文件，并不记录上下文信息。 <a href="https://docs.docker.com/config/containers/logging/json-file/" target="_blank" rel="noopener noreffer ">https://docs.docker.com/config/containers/logging/json-file/</a></p>
+<pre tabindex="0"><code>{&#34;log&#34;:&#34;Log line is here\n&#34;,&#34;stream&#34;:&#34;stdout&#34;,&#34;time&#34;:&#34;2019-01-01T11:11:11.111111111Z&#34;}
+</code></pre><p>上文中使用的日志收集镜像是 <code>fluent/fluentd-kubernetes-daemonset:v1.3-debian-elasticsearch</code>。</p>
+<p>具体代码路径在此 <a href="https://github.com/fluent/fluentd-kubernetes-daemonset/tree/master/docker-image/v1.3/debian-elasticsearch" target="_blank" rel="noopener noreffer ">https://github.com/fluent/fluentd-kubernetes-daemonset/tree/master/docker-image/v1.3/debian-elasticsearch</a></p>
+<p>收集容器目录下的日志。</p>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="../../images/image-20200414105706563.png"
+        data-srcset="../../images/image-20200414105706563.png, ../../images/image-20200414105706563.png 1.5x, ../../images/image-20200414105706563.png 2x"
+        data-sizes="auto"
+        alt="../../images/image-20200414105706563.png"
+        title="image-20200414105706563" /></p>
+<p>使用<code>kubernetes_metadata</code>这个第三方插件获取容器相关的上下文信息。这里是通过请求API server得到metadata的。</p></div><div class="post-footer">
+        <a href="/posts/20200414-k8s-logging/">Read More</a><div class="post-tags">
+                <i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/docker/">Docker</a>,&nbsp;<a href="/tags/logging/">Logging</a>,&nbsp;<a href="/tags/k8s/">K8s</a></div></div>
+</article><article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
         <a href="/posts/20200410-metabase-spark-sql/">Metabase + Spark SQL</a>
     </h1><div class="post-meta"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Happy Coding</a></span>&nbsp;<span class="post-publish">published on <time datetime="2020-04-10">2020-04-10</time></span>&nbsp;<span class="post-category">included in <a href="/categories/metabase/"><i class="far fa-folder fa-fw" aria-hidden="true"></i>Metabase</a></span></div><div class="content"><p>这是大数据 BI 平台的第二步，BI 工具的搭建。假设已经配置好 Spark SQL JDBC Server，并启用了Kerberos。参考  <a href="https://xujiahua.github.io/posts/20200410-spark-thrift-server-cdh/" target="_blank" rel="noopener noreffer ">https://xujiahua.github.io/posts/20200410-spark-thrift-server-cdh/</a></p>
 <p>这里，我们选择了开源产品 Metabase。</p>
@@ -236,35 +287,6 @@ td-agent 30602 30596  9 17:10 ?        00:00:00 /opt/td-agent/embedded/bin/ruby 
 </ol>
 <p>参考：https://cloud.google.com/vision/docs/reference/rpc/google.cloud.vision.v1?hl=zh-cn#google.cloud.vision.v1.SafeSearchAnnotation</p></div><div class="post-footer">
         <a href="/posts/20200401-google-vision-api/">Read More</a></div>
-</article><article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
-        <a href="/posts/20200331-use-docker-machine/">使用 Docker Machine</a>
-    </h1><div class="post-meta"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Happy Coding</a></span>&nbsp;<span class="post-publish">published on <time datetime="2020-03-31">2020-03-31</time></span></div><div class="content"><h2 id="简介">简介</h2>
-<p>Docker Machine lets you create Docker hosts on your computer, on cloud providers, and inside your own data center. It creates servers, installs Docker on them, then configures the Docker client to talk to them.</p>
-<p>参考：</p>
-<ol>
-<li><a href="https://github.com/docker/machine" target="_blank" rel="noopener noreffer ">https://github.com/docker/machine</a></li>
-<li><a href="https://docs.docker.com/machine/overview/" target="_blank" rel="noopener noreffer ">https://docs.docker.com/machine/overview/</a></li>
-</ol>
-<p><img
-        class="lazyload"
-        src="/svg/loading.min.svg"
-        data-src="../../images/machine.png"
-        data-srcset="../../images/machine.png, ../../images/machine.png 1.5x, ../../images/machine.png 2x"
-        data-sizes="auto"
-        alt="../../images/machine.png"
-        title="Docker Machine" /></p>
-<h2 id="vs-vagrant">vs. Vagrant</h2>
-<h3 id="与vagrant的交集">与Vagrant的交集</h3>
-<p>目前使用 Vagrant 搭 Docker 环境的步骤如下：</p>
-<ol>
-<li>vagrant init {box_name}，下载一个基础的虚拟机镜像，比如centos，并创建一个Vagrantfile。</li>
-<li>Vagrantfile中设置虚拟机hostname。</li>
-<li>Vagrantfile中设置Private network，使得几个VM可以互相通信。</li>
-<li>VM内安装docker软件。</li>
-</ol>
-<p>如果用上了docker-machine，只要一行命令。在这个场景上，docker-machine 比 Vagrant 方便了很多。</p></div><div class="post-footer">
-        <a href="/posts/20200331-use-docker-machine/">Read More</a><div class="post-tags">
-                <i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/docker/">Docker</a></div></div>
 </article><ul class="pagination"><li class="page-item ">
                     <span class="page-link">
                         <a href="/">1</a>

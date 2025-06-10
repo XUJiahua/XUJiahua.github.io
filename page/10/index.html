@@ -59,6 +59,52 @@
 </header><main class="main">
                 <div class="container"><div class="page home" data-home="posts"><div class="home-profile"><div class="links"></div></div>
 <article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
+        <a href="/posts/20191030-dcep-libra/">数字货币资料整理：FB Libra，央行 DCEP</a>
+    </h1><div class="post-meta"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Happy Coding</a></span>&nbsp;<span class="post-publish">published on <time datetime="2019-10-30">2019-10-30</time></span></div><div class="content"><p>（笔记迁移 @ 2020年）</p>
+<p>资料：</p>
+<ol>
+<li>「区块链到底能干嘛」，赏味不足，梁杰ggtalk博客</li>
+<li>「Libra与数字货币展望」，央行_穆长春，得到课程</li>
+<li>「有关DCEP/Libra/支付/金融科技企业」，Mikko，微博：现金（央行发行）- 存款（银行）- 余额（支付机构比如支付宝）- 货币基金之间的（层级）关系。第一次这么系统地去理解金融系统</li>
+<li>Libra白皮书，官网</li>
+<li>「参议院就Facebook的Libra听证会」 <a href="https://www.bilibili.com/video/av59535863/" target="_blank" rel="noopener noreffer ">https://www.bilibili.com/video/av59535863/</a></li>
+</ol>
+<p>Libra：</p>
+<ol>
+<li>Libra是分层架构（混合架构），节点与节点之间是用区块链，节点与用户之间是中心化服务</li>
+</ol>
+<p>央行数字货币DCEP优势：</p>
+<ol>
+<li>DCEP是法币，价值属性等同现金，央行发行，国家信用担保</li>
+<li><strong>离线支付，应该是NFC技术，具体实现细节没有披露</strong></li>
+<li>保护国家货币主权和法币地位</li>
+<li>便携性：现钞发行、运输、存储、防伪等环节成本高，使用DCEP可以规避这一点</li>
+<li>匿名性：（现金支持匿名性，而支付宝、银行都没有隐私可言），DCEP也支持匿名性（一定程度上），具体实现细节见下文</li>
+<li>防止犯罪：反洗钱、反逃税、反恐怖融资。这一点与匿名性有点相悖。文章提到使用大数据来挖掘特征，符合风险特征的会进行身份比对。（原文这么说：所以说，出于反洗钱的考虑，我们对数字钱包也是有分级和限额安排的。比如说你就用一个手机号码注册一个钱包，那你这个钱包当然可以用，但是级别一定是最低的，只能满足日常小额支付需求；但如果你要能上传一下身份证，或者再上传一个银行卡，就可以获得更高级别的数字钱包，如果你还能到柜台去面签一下，那可能就没有限额了。）也就是说小额支持匿名，而大额不行。</li>
+<li>与区块链没有必然联系：央行没有要求使用区块链，央行调研结论也是区块链没法满足高并发需求（Libra是一个双层架构，节点与节点之间是用区块链，节点与用户之间是中心化服务）</li>
+<li>采取的是<strong>双层运营体系</strong>，央行做上层，商业银行做第二层；商业机构向央行全额、100%缴纳准备金，央行的数字货币依然是中央银行负债，由中央银行信用担保，具有无限法偿性：这些是与人民币现金一个路子。</li>
+</ol>
+<p>参考：</p>
+<ol>
+<li>DCEP：中国自己的数字货币 <a href="https://mp.weixin.qq.com/s?__biz=MzA5MDAxMjcwOQ==&amp;mid=2447616917&amp;idx=1&amp;sn=73207944a32667c50ea12d65e209c4c8&amp;chksm=840526dfb372afc947bf188f9154a37b773320a1ab3a2bb8de87fbe5b7a89b8c05934a100b2d&amp;scene=0&amp;xtrack=1" target="_blank" rel="noopener noreffer ">https://mp.weixin.qq.com/s?__biz=MzA5MDAxMjcwOQ==&mid=2447616917&idx=1&sn=73207944a32667c50ea12d65e209c4c8&chksm=840526dfb372afc947bf188f9154a37b773320a1ab3a2bb8de87fbe5b7a89b8c05934a100b2d&scene=0&xtrack=1</a></li>
+</ol>
+<p>区块链的弱点（没法支持零售级别的交易）：</p>
+<ol>
+<li>并发性能低（可扩展性差），共识机制导致的天然劣势，所有节点一起竞争记账权，相当于堵死在一件事上了</li>
+<li>存储的可扩展性差，这个只能定期archive历史数据来解决了。</li>
+<li>安全性只保证了数据不会被篡改，至于匿名，通过大数据是可以破解的</li>
+<li>没有原生的加密机制：公有链匿名性，通过大数据可以挖掘出真实身份</li>
+<li>等待确认太慢，不适合日常使用</li>
+<li>51%算力攻击</li>
+</ol>
+<p>怎么思考区块链：</p>
+<ol>
+<li>去中心化？比中心化还要中心化。更集权。节点自己没法改。无法解决所有者作弊的问题，但对所有者（统治者）是利好的工具（赏味不足的说法，有道理）</li>
+<li>（IT上能）提升效率：一份数据在各个系统流转，那么这份数据就存在区块链数据库上就可以了。</li>
+</ol></div><div class="post-footer">
+        <a href="/posts/20191030-dcep-libra/">Read More</a><div class="post-tags">
+                <i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/read/">READ</a>,&nbsp;<a href="/tags/blockchain/">Blockchain</a></div></div>
+</article><article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
         <a href="/posts/20190429-docker-rmi/">rm docker image interactively</a>
     </h1><div class="post-meta"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Happy Coding</a></span>&nbsp;<span class="post-publish">published on <time datetime="2019-04-29">2019-04-29</time></span></div><div class="content"><p><a href="https://github.com/XUJiahua/dockerrmi" target="_blank" rel="noopener noreffer ">写了个工具</a>交互式删除 docker image。</p>
 <p><img
@@ -233,39 +279,6 @@ greeter, ok := symGreeter.(Greeter)
 <p>reference: <a href="https://en.wikipedia.org/wiki/ApacheBench" target="_blank" rel="noopener noreffer ">https://en.wikipedia.org/wiki/ApacheBench</a></p></div><div class="post-footer">
         <a href="/posts/20181017-perf-testing/">Read More</a><div class="post-tags">
                 <i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/%E6%80%A7%E8%83%BD%E6%B5%8B%E8%AF%95/">性能测试</a>,&nbsp;<a href="/tags/go/">Go</a></div></div>
-</article><article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
-        <a href="/posts/20170413-jenkins&#43;ansible/">利用Jenkins+Ansible做持续部署</a>
-    </h1><div class="post-meta"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Happy Coding</a></span>&nbsp;<span class="post-publish">published on <time datetime="2017-04-13">2017-04-13</time></span></div><div class="content"><h2 id="ansible">Ansible</h2>
-<p>工作需要，接盘又做后端开发，本着不做重复劳动的理念，加上前人留下来的脚本不够优秀，需要重搞一套一键部署的脚本。</p>
-<p>之前在Windows平台开发的时候，使用cmd、 powershell也写过一套部署脚本，还算凑合着用。</p>
-<p>这次是在Linux平台上，在重整之前，我也调研了下业界经验。最后选择了<a href="https://www.ansible.com/how-ansible-works" target="_blank" rel="noopener noreffer ">Ansible</a>。Ansible比起bash简单很多，而且不怕重复执行相同命令有副作用，Ansible内置操作都是幂等的。同样的功能，用bash都能写。但是站在巨人肩膀上，效率更高。</p>
-<p>选择Ansible的时候也考虑过Puppet、Chef。</p>
-<p>比较之下，Puppet等都需要在每台被部署机上安装agent程序。而Ansible，只要被部署机上有Python即可。</p>
-<p>考虑到公司服务器都是内置Python的Ubuntu系统，就放心使用Ansible了。</p>
-<p>我们也基于Ansible上编写了应用发布的滚动部署脚本、回退脚本。
-也编写了一套一键配置服务器的脚本，目前支持Nginx环境、APP服务器环境、Logstash安装等。</p>
-<p>主要用途，结合讯联场景，有这么几点：</p>
-<ul>
-<li>服务器的配置（包括软件安装）可以做到脚本化、版本控制 —— 服务器的配置应该像源代码一样控制起来，而不是一个黑盒、或是随意性太多，比如redis的安装路径都不一样、测试环境与生产环境的nginx配置不一样。服务器部署文档并没有脚本那么精确，只能算是一份人工操作指南，程序员重复劳动太多</li>
-<li>适合一套架构需要部署几个环境的场景 —— 比如支付宝国际项目需要一套独立后端系统的需求</li>
-<li>服务器需要水平扩展，无需人工一台台处理 —— 构建一些应用服务器，将应用服务器加入到nginx load balancer里，都是可以脚本化的（包含在滚动部署里了）</li>
-<li>应用部署、滚动部署 —— 云收银的部署，感觉有点奇怪，发布的时候需要重新编译一遍程序，两台生产服务器就需要编译两次。虽然部署有脚本，但还是有手工处理的场景。部署没问题的前提是程序员没有checkout错git分支。觉得这个没必要。测试通过，生产环境就直接用测试环境的包，除了配置。这个可以结合jenkins做到的，发布测试环境的同时构建一个生产的包。测试人员验收通过测试包，发布时就用对应的生产包</li>
-<li>快速构建一套测试环境 —— 如何构建一套mongo集群？测试有这样的需求，刚入职的同事都有这样的需求</li>
-<li>进程监控是否存在 —— 写好进程检查脚本，通过ansible脚本定时执行就能看到结果了</li>
-</ul>
-<h3 id="滚动部署就是个循环">滚动部署，就是个循环</h3>
-<pre tabindex="0"><code>for i in webservers:
-    for j in nginxservers:
-        remove i from load balancer
-    // wait for a while until webserver i finish processing requests
-    sleep(1 * minute) 
-    deploy(i)
-
-    for j in nginxservers:
-        add i from load balancer
-</code></pre><h2 id="jenkins">Jenkins</h2>
-<p>真正考虑要搭个Jenkins，是因为Android打包太慢了、测试催着开发要最新的测试包。</p></div><div class="post-footer">
-        <a href="/posts/20170413-jenkins&#43;ansible/">Read More</a></div>
 </article><ul class="pagination"><li class="page-item ">
                     <span class="page-link">
                         <a href="/">1</a>

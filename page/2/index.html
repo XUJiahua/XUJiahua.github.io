@@ -59,6 +59,34 @@
 </header><main class="main">
                 <div class="container"><div class="page home" data-home="posts"><div class="home-profile"><div class="links"></div></div>
 <article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
+        <a href="/posts/notion-markdown-hugo-78139407-85c5-4a75-b288-b54d5c3df34b/">从 Notion 导出 markdown 到 hugo 项目</a>
+    </h1><div class="post-meta"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Happy Coding</a></span>&nbsp;<span class="post-publish">published on <time datetime="2021-04-12">2021-04-12</time></span>&nbsp;<span class="post-category">included in <a href="/categories/%E5%8D%9A%E5%AE%A2/"><i class="far fa-folder fa-fw" aria-hidden="true"></i>博客</a></span></div><div class="content"><h2 id="目的">目的</h2>
+<p>好久没更新博客了，最近半年使用 Notion，体验很棒。</p>
+<p>之前写博客的过程：使用 Typora 编辑 markdown，使用 Hugo 生成静态页面，上传到 github 使用 github pages serving。参考：</p>
+<p><a href="https://xujiahua.github.io/posts/20200310-github-pages-restart/" target="_blank" rel="noopener noreffer ">Github pages重新开始：使用Hugo、Typora</a></p>
+<p>怎么把我 Notion 中的文章同步到我的博客呢。这是本文目的。</p>
+<p>主要是写了一个 notion-mk 的程序将 notion 文章导出到 hugo 工作目录。后面的工作与之前保持一致。</p>
+<pre tabindex="0"><code>notion -- notion-mk(todo) --&gt; hugo directory 
+																		-- hugo generate --&gt; static html/js/css
+</code></pre><h2 id="wip">WIP</h2>
+<p>代码如下：</p>
+<p><a href="https://github.com/XUJiahua/notion-md" target="_blank" rel="noopener noreffer ">XUJiahua/notion-md</a></p>
+<h3 id="功能">功能</h3>
+<ul>
+<li><i class="far fa-check-square fa-fw" aria-hidden="true"></i> Download images</li>
+<li><i class="far fa-check-square fa-fw" aria-hidden="true"></i> Notion extract to markdown</li>
+<li><i class="far fa-check-square fa-fw" aria-hidden="true"></i> markdown hugo compatiable</li>
+<li><i class="far fa-check-square fa-fw" aria-hidden="true"></i> image location?</li>
+<li><i class="far fa-check-square fa-fw" aria-hidden="true"></i> remove title from markdown, now #&hellip;</li>
+<li><i class="far fa-check-square fa-fw" aria-hidden="true"></i> support category</li>
+<li><i class="far fa-check-square fa-fw" aria-hidden="true"></i> support tag</li>
+<li><i class="far fa-square fa-fw" aria-hidden="true"></i> table of content at the beginning</li>
+</ul>
+<h3 id="使用">使用</h3>
+<p>将要发布的文档添加到这个 list 页面</p></div><div class="post-footer">
+        <a href="/posts/notion-markdown-hugo-78139407-85c5-4a75-b288-b54d5c3df34b/">Read More</a><div class="post-tags">
+                <i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/notion/">Notion</a>,&nbsp;<a href="/tags/markdown/">Markdown</a>,&nbsp;<a href="/tags/hugo/">Hugo</a></div></div>
+</article><article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
         <a href="/posts/kubectl-4f270b11-8ad4-47c5-b20c-6f340f5ccad1/">kubectl 怎么念</a>
     </h1><div class="post-meta"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Happy Coding</a></span>&nbsp;<span class="post-publish">published on <time datetime="2021-03-09">2021-03-09</time></span>&nbsp;<span class="post-category">included in <a href="/categories/k8s/"><i class="far fa-folder fa-fw" aria-hidden="true"></i>K8s</a></span></div><div class="content"><p>念法很多。就选这个吧。我也一直这么念的。</p>
 <p><img
@@ -166,15 +194,6 @@
 <p>所以 ICMP 协议是否能作为代理协议呢。从封包的角度，ICMP 与 TCP 一样，也是封在 IP 包中的。</p></div><div class="post-footer">
         <a href="/posts/20200903-fuck-thin-client/">Read More</a><div class="post-tags">
                 <i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/linux/">Linux</a>,&nbsp;<a href="/tags/tunnel/">Tunnel</a></div></div>
-</article><article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
-        <a href="/posts/20200901-linux-namespace/">Linux Namespace</a>
-    </h1><div class="post-meta"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Happy Coding</a></span>&nbsp;<span class="post-publish">published on <time datetime="2020-09-01">2020-09-01</time></span>&nbsp;<span class="post-category">included in <a href="/categories/docker/"><i class="far fa-folder fa-fw" aria-hidden="true"></i>Docker</a></span></div><div class="content"><h2 id="linux-namespace">Linux Namespace</h2>
-<p>namespace 在编程语言中是一种常见的概念，C++/Clojure 中就使用 namespace 关键字来模块化组织代码。模块与模块之间互不污染，模块A有个 helloworld 的方法，模块B也可以有一个 helloworld 的方法。Java/Go 中的 package 也是同样的意义。</p>
-<p>Linux namespaces 是 Linux 内核用于隔离内核资源的手段，进程使用隔离的内核资源保证了与其他进程之间的独立。也是 Docker 容器的底层技术（Docker 主要开发语言是 Go，container 的创建使用 C）。</p>
-<blockquote>
-<p><strong>Namespaces</strong> are a feature of the <a href="https://en.wikipedia.org/wiki/Linux_kernel" target="_blank" rel="noopener noreffer ">Linux kernel</a> that partitions kernel resources such that one set of <a href="https://en.wikipedia.org/wiki/Process_%28computing%29" target="_blank" rel="noopener noreffer ">processes</a> sees one set of resources while another set of processes sees a different set of resources. The feature works by having the same namespace for a set of resources and processes, but those namespaces refer to distinct resources. Resources may exist in multiple spaces. Examples of such resources are process IDs, hostnames, user IDs, file names, and some names associated with network access, and <a href="https://en.wikipedia.org/wiki/Interprocess_communication" target="_blank" rel="noopener noreffer ">interprocess communication</a>.</p></div><div class="post-footer">
-        <a href="/posts/20200901-linux-namespace/">Read More</a><div class="post-tags">
-                <i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/docker/">Docker</a></div></div>
 </article><ul class="pagination"><li class="page-item ">
                     <span class="page-link">
                         <a href="/">1</a>
