@@ -59,6 +59,27 @@
 </header><main class="main">
                 <div class="container"><div class="page home" data-home="posts"><div class="home-profile"><div class="links"></div></div>
 <article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
+        <a href="/posts/20200903-fuck-thin-client/">瘦终端指北 —— ICMP tunnel</a>
+    </h1><div class="post-meta"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Happy Coding</a></span>&nbsp;<span class="post-publish">published on <time datetime="2020-09-03">2020-09-03</time></span></div><div class="content"><p>因为公司有开发泄露源码在 Github，对公司声誉造成一定影响，公司层面推广起瘦终端，所有开发一起背锅 :( 。在瘦终端里，网络严格管控，vscode 下载插件都难，需要申请 IP 白名单。开发只允许在瘦终端里接触 git 仓库，只能向瘦终端拷贝文件，反之不能。这样就能防住代码泄露么？</p>
+<p>搞笑的办法，瘦终端生成二维码，主机扫描，数据传输问题搞定。</p>
+<p>从网络角度，怎么解决呢。我们来严肃看待这个技术问题。</p>
+<h2 id="icmp">ICMP</h2>
+<p>实践发现，瘦终端里不能访问百度，但是能 ping 通。从 TCP/IP 的角度，瘦终端在网络上只是 TCP 传输层被流量管控了，IP 层还是畅通无阻的。</p>
+<p>下图为 TCP/IP 的层次结构，TCP 包封装于 IP 包。</p>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="../../images/Packet-encapsulation-TCP-IP-architecture-encapsulates-the-data-from-the-upper-layer-by.png"
+        data-srcset="../../images/Packet-encapsulation-TCP-IP-architecture-encapsulates-the-data-from-the-upper-layer-by.png, ../../images/Packet-encapsulation-TCP-IP-architecture-encapsulates-the-data-from-the-upper-layer-by.png 1.5x, ../../images/Packet-encapsulation-TCP-IP-architecture-encapsulates-the-data-from-the-upper-layer-by.png 2x"
+        data-sizes="auto"
+        alt="../../images/Packet-encapsulation-TCP-IP-architecture-encapsulates-the-data-from-the-upper-layer-by.png"
+        title="3: Packet encapsulation. TCP/IP architecture encapsulates the data from the upper layer by attaching a &ldquo;header&rdquo; of the current-layer protocol into the data." /></p>
+<p><a href="https://www.researchgate.net/figure/Packet-encapsulation-TCP-IP-architecture-encapsulates-the-data-from-the-upper-layer-by_fig4_49288737" target="_blank" rel="noopener noreffer ">https://www.researchgate.net/figure/Packet-encapsulation-TCP-IP-architecture-encapsulates-the-data-from-the-upper-layer-by_fig4_49288737</a></p>
+<p>目前网站的基石是 HTTP/TCP 协议，代理也普遍是基于 HTTP/TCP 的，shadowsocks 翻墙的思路不通。</p>
+<p>所以 ICMP 协议是否能作为代理协议呢。从封包的角度，ICMP 与 TCP 一样，也是封在 IP 包中的。</p></div><div class="post-footer">
+        <a href="/posts/20200903-fuck-thin-client/">Read More</a><div class="post-tags">
+                <i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/linux/">Linux</a>,&nbsp;<a href="/tags/tunnel/">Tunnel</a></div></div>
+</article><article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
         <a href="/posts/20200901-linux-namespace/">Linux Namespace</a>
     </h1><div class="post-meta"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Happy Coding</a></span>&nbsp;<span class="post-publish">published on <time datetime="2020-09-01">2020-09-01</time></span>&nbsp;<span class="post-category">included in <a href="/categories/docker/"><i class="far fa-folder fa-fw" aria-hidden="true"></i>Docker</a></span></div><div class="content"><h2 id="linux-namespace">Linux Namespace</h2>
 <p>namespace 在编程语言中是一种常见的概念，C++/Clojure 中就使用 namespace 关键字来模块化组织代码。模块与模块之间互不污染，模块A有个 helloworld 的方法，模块B也可以有一个 helloworld 的方法。Java/Go 中的 package 也是同样的意义。</p>
@@ -215,39 +236,6 @@
 <p>未完待续。</p></div><div class="post-footer">
         <a href="/posts/20200724-bizapp-data/">Read More</a><div class="post-tags">
                 <i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/%E6%95%B0%E6%8D%AE/">数据</a></div></div>
-</article><article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
-        <a href="/posts/20200723-golang-http-reuse/">实验说明 Golang HTTP 连接池参数</a>
-    </h1><div class="post-meta"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Happy Coding</a></span>&nbsp;<span class="post-publish">published on <time datetime="2020-07-23">2020-07-23</time></span></div><div class="content"><p>连接相对于其他对象，创建成本较高，资源也有限。如果没有连接池，在高并发场景下，连接关闭又新建，很快就会因为过多的TIME_WAIT（连接主动关闭方）导致无法创建更多连接了，程序被压死。</p>
-<h2 id="nethttp-连接池参数">net/http 连接池参数</h2>
-<p>Go （测试版本 go 1.14）的net/http包是有连接池功能的，具体地，是 <a href="https://golang.org/pkg/net/http/#Transport" target="_blank" rel="noopener noreffer ">Transport</a> 用于连接池化。</p>
-<blockquote>
-<p>Transport is an implementation of RoundTripper that supports HTTP, HTTPS, and HTTP proxies (for either HTTP or HTTPS with CONNECT).</p>
-<p>By default, Transport caches connections for future re-use.</p></blockquote>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span>	<span style="color:#75715e">// MaxIdleConns controls the maximum number of idle (keep-alive)</span>
-</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// connections across all hosts. Zero means no limit.</span>
-</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">MaxIdleConns</span> <span style="color:#66d9ef">int</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// MaxIdleConnsPerHost, if non-zero, controls the maximum idle</span>
-</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// (keep-alive) connections to keep per-host. If zero,</span>
-</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// DefaultMaxIdleConnsPerHost is used.</span>
-</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">MaxIdleConnsPerHost</span> <span style="color:#66d9ef">int</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// MaxConnsPerHost optionally limits the total number of</span>
-</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// connections per host, including connections in the dialing,</span>
-</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// active, and idle states. On limit violation, dials will block.</span>
-</span></span><span style="display:flex;"><span>	<span style="color:#75715e">//</span>
-</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// Zero means no limit.</span>
-</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">MaxConnsPerHost</span> <span style="color:#66d9ef">int</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// IdleConnTimeout is the maximum amount of time an idle</span>
-</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// (keep-alive) connection will remain idle before closing</span>
-</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// itself.</span>
-</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// Zero means no limit.</span>
-</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">IdleConnTimeout</span> <span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Duration</span>
-</span></span></code></pre></div><h3 id="默认值">默认值</h3>
-<p>MaxIdleConns=100，MaxIdleConnsPerHost=2（=DefaultMaxIdleConnsPerHost），MaxConnsPerHost=0（不限制）。</p></div><div class="post-footer">
-        <a href="/posts/20200723-golang-http-reuse/">Read More</a><div class="post-tags">
-                <i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/wireshark/">WireShark</a>,&nbsp;<a href="/tags/go/">Go</a>,&nbsp;<a href="/tags/tcp/">TCP</a></div></div>
 </article><ul class="pagination"><li class="page-item ">
                     <span class="page-link">
                         <a href="/">1</a>

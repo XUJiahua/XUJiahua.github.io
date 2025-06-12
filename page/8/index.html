@@ -59,6 +59,68 @@
 </header><main class="main">
                 <div class="container"><div class="page home" data-home="posts"><div class="home-profile"><div class="links"></div></div>
 <article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
+        <a href="/posts/20200401-google-vision-api/">Google Vision API</a>
+    </h1><div class="post-meta"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Happy Coding</a></span>&nbsp;<span class="post-publish">published on <time datetime="2020-04-01">2020-04-01</time></span></div><div class="content"><h2 id="目标">目标</h2>
+<p>业务上需要识别出文本、图像敏感内容，降低业务风险。</p>
+<p>调用下云服务的产品。</p>
+<h2 id="google-cloud-platform">Google Cloud Platform</h2>
+<p>GCP上，图像识别有两个产品：</p>
+<ol>
+<li>Vision API 直接使用预先训练的模型</li>
+<li>AutoML 迁移学习，使用用户提交的新分类数据，训练模型。</li>
+</ol>
+<p>关于文本识别的产品是类似的，也分直接使用预训练模型和迁移学习重新训练。</p>
+<h2 id="vision-api图像内容识别">Vision API：图像内容识别</h2>
+<ol>
+<li>Google Vision API的模型已经有审核内容的能力：暴力、成人内容的识别。</li>
+<li>提供API，也提供了各个语言的SDK。</li>
+<li>不需要开发者训练模型。</li>
+</ol>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="../../images/image-20200401145549783.png"
+        data-srcset="../../images/image-20200401145549783.png, ../../images/image-20200401145549783.png 1.5x, ../../images/image-20200401145549783.png 2x"
+        data-sizes="auto"
+        alt="../../images/image-20200401145549783.png"
+        title="image-20200401145549783" /></p>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="../../images/image-20200401145658730.png"
+        data-srcset="../../images/image-20200401145658730.png, ../../images/image-20200401145658730.png 1.5x, ../../images/image-20200401145658730.png 2x"
+        data-sizes="auto"
+        alt="../../images/image-20200401145658730.png"
+        title="image-20200401145658730" /></p>
+<p>参考：https://cloud.google.com/vision?hl=zh-cn</p>
+<h3 id="试用">试用</h3>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="../../images/image-20200401142058025.png"
+        data-srcset="../../images/image-20200401142058025.png, ../../images/image-20200401142058025.png 1.5x, ../../images/image-20200401142058025.png 2x"
+        data-sizes="auto"
+        alt="../../images/image-20200401142058025.png"
+        title="image-20200401142058025" /></p>
+<h3 id="安全搜索的分类说明">安全搜索的分类说明</h3>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="../../images/image-20200401144423857.png"
+        data-srcset="../../images/image-20200401144423857.png, ../../images/image-20200401144423857.png 1.5x, ../../images/image-20200401144423857.png 2x"
+        data-sizes="auto"
+        alt="../../images/image-20200401144423857.png"
+        title="image-20200401144423857" /></p>
+<ol>
+<li>Adult 成人内容</li>
+<li>Spoof 恶搞，比如恶搞政治人物</li>
+<li>Medical 医疗影像</li>
+<li>Violence 暴力内容</li>
+<li>Racy 猥亵类，类似成人内容</li>
+</ol>
+<p>参考：https://cloud.google.com/vision/docs/reference/rpc/google.cloud.vision.v1?hl=zh-cn#google.cloud.vision.v1.SafeSearchAnnotation</p></div><div class="post-footer">
+        <a href="/posts/20200401-google-vision-api/">Read More</a></div>
+</article><article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
         <a href="/posts/20200331-use-docker-machine/">使用 Docker Machine</a>
     </h1><div class="post-meta"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Happy Coding</a></span>&nbsp;<span class="post-publish">published on <time datetime="2020-03-31">2020-03-31</time></span></div><div class="content"><h2 id="简介">简介</h2>
 <p>Docker Machine lets you create Docker hosts on your computer, on cloud providers, and inside your own data center. It creates servers, installs Docker on them, then configures the Docker client to talk to them.</p>
@@ -248,51 +310,6 @@ issue requests using &amp;url.URL{Opaque: rawURI}.
 <p>说明正式审查完了。这时候才算是真正拥有专利。</p></div><div class="post-footer">
         <a href="/posts/20200311-patent/">Read More</a><div class="post-tags">
                 <i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/%E4%B8%93%E5%88%A9/">专利</a></div></div>
-</article><article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
-        <a href="/posts/20200310-github-pages-restart/">Github pages重新开始：使用Hugo、Typora</a>
-    </h1><div class="post-meta"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Happy Coding</a></span>&nbsp;<span class="post-publish">published on <time datetime="2020-03-10">2020-03-10</time></span></div><div class="content"><h2 id="重新开始github-pages">重新开始GitHub pages</h2>
-<p>曾使用<code>GitHub pages</code> + <code> jekyll</code> 写过一段时间博客，没啥营养。</p>
-<p>打算重新开始：</p>
-<ol>
-<li>把我记录在Evernote和Typora中的资料迁移到<code>GitHub pages</code>上。</li>
-<li>另外做一些Web形式的小工具，挂载在一个子目录里，方便平时使用。</li>
-</ol>
-<h2 id="hugo--typora">Hugo + Typora</h2>
-<p>打算如下：</p>
-<ol>
-<li>Markdown文件还是使用Typora写。用过MWeb、Typora，Typora使用感受更好些（这么好用还不要钱）。</li>
-<li>Hugo作为静态网站生成，创建一个博客模板。</li>
-</ol>
-<h3 id="hugo-quickstart">Hugo quickstart</h3>
-<pre tabindex="0"><code># 安装hugo（其实是Go编译的二进制文件）
-brew install hugo
-
-# 创建site
-hugo new site quickstart
-
-# 通过git submodule的方式下载主题
-git init
-git submodule -b master add https://github.com/dillonzq/LoveIt themes/LoveIt
-
-# 更新config.toml，配置主题参数，见loveit配置
-
-# 创建博客，创建的posts在content目录下。文件格式为：content/&lt;CATEGORY&gt;/&lt;FILE&gt;.&lt;FORMAT&gt;
-# hugo new 会采用 archetypes/default.md作为模板，把一些共性配置放在这个模板里吧。
-hugo new posts/my-first-post.md
-
-# 本地看blog效果，-D表示草稿状态的博客也显示
-hugo server -D
-
-# 生成静态网站到./public/，也可以指定目录
-hugo -D
-</code></pre><p>挑选了一个比较实用的主题 <a href="https://hugoloveit.com/" target="_blank" rel="noopener noreffer ">https://hugoloveit.com/</a></p>
-<ol>
-<li>比较基本的posts, tags, categories</li>
-<li>文章页面右边可显示文章的目录表</li>
-</ol>
-<p>参考：</p></div><div class="post-footer">
-        <a href="/posts/20200310-github-pages-restart/">Read More</a><div class="post-tags">
-                <i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/github-pages/">GitHub Pages</a>,&nbsp;<a href="/tags/hugo/">Hugo</a>,&nbsp;<a href="/tags/typora/">Typora</a></div></div>
 </article><ul class="pagination"><li class="page-item ">
                     <span class="page-link">
                         <a href="/">1</a>

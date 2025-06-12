@@ -59,6 +59,39 @@
 </header><main class="main">
                 <div class="container"><div class="page home" data-home="posts"><div class="home-profile"><div class="links"></div></div>
 <article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
+        <a href="/posts/20200723-golang-http-reuse/">实验说明 Golang HTTP 连接池参数</a>
+    </h1><div class="post-meta"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Happy Coding</a></span>&nbsp;<span class="post-publish">published on <time datetime="2020-07-23">2020-07-23</time></span></div><div class="content"><p>连接相对于其他对象，创建成本较高，资源也有限。如果没有连接池，在高并发场景下，连接关闭又新建，很快就会因为过多的TIME_WAIT（连接主动关闭方）导致无法创建更多连接了，程序被压死。</p>
+<h2 id="nethttp-连接池参数">net/http 连接池参数</h2>
+<p>Go （测试版本 go 1.14）的net/http包是有连接池功能的，具体地，是 <a href="https://golang.org/pkg/net/http/#Transport" target="_blank" rel="noopener noreffer ">Transport</a> 用于连接池化。</p>
+<blockquote>
+<p>Transport is an implementation of RoundTripper that supports HTTP, HTTPS, and HTTP proxies (for either HTTP or HTTPS with CONNECT).</p>
+<p>By default, Transport caches connections for future re-use.</p></blockquote>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span>	<span style="color:#75715e">// MaxIdleConns controls the maximum number of idle (keep-alive)</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// connections across all hosts. Zero means no limit.</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">MaxIdleConns</span> <span style="color:#66d9ef">int</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// MaxIdleConnsPerHost, if non-zero, controls the maximum idle</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// (keep-alive) connections to keep per-host. If zero,</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// DefaultMaxIdleConnsPerHost is used.</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">MaxIdleConnsPerHost</span> <span style="color:#66d9ef">int</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// MaxConnsPerHost optionally limits the total number of</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// connections per host, including connections in the dialing,</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// active, and idle states. On limit violation, dials will block.</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">//</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// Zero means no limit.</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">MaxConnsPerHost</span> <span style="color:#66d9ef">int</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// IdleConnTimeout is the maximum amount of time an idle</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// (keep-alive) connection will remain idle before closing</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// itself.</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// Zero means no limit.</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">IdleConnTimeout</span> <span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Duration</span>
+</span></span></code></pre></div><h3 id="默认值">默认值</h3>
+<p>MaxIdleConns=100，MaxIdleConnsPerHost=2（=DefaultMaxIdleConnsPerHost），MaxConnsPerHost=0（不限制）。</p></div><div class="post-footer">
+        <a href="/posts/20200723-golang-http-reuse/">Read More</a><div class="post-tags">
+                <i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/wireshark/">WireShark</a>,&nbsp;<a href="/tags/go/">Go</a>,&nbsp;<a href="/tags/tcp/">TCP</a></div></div>
+</article><article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
         <a href="/posts/20200714-metabase-timezone/">Metabase Impala Driver 时区问题</a>
     </h1><div class="post-meta"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Happy Coding</a></span>&nbsp;<span class="post-publish">published on <time datetime="2020-07-14">2020-07-14</time></span>&nbsp;<span class="post-category">included in <a href="/categories/metabase/"><i class="far fa-folder fa-fw" aria-hidden="true"></i>Metabase</a></span></div><div class="content"><h2 id="问题">问题</h2>
 <p>实际日期是上午11点，而<code>Metabase</code>显示是下午7点。差8小时。</p>
@@ -225,21 +258,6 @@
 </span></span><span style="display:flex;"><span>1.0051170602511927
 </span></span></code></pre></div><p>每个头像链接，重复下载 10 次的情况下，平均有生成 2.18 个特征。</p></div><div class="post-footer">
         <a href="/posts/20200611-phash/">Read More</a></div>
-</article><article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
-        <a href="/posts/20200609-metabase-sso-login/">Metabase SSO 登录</a>
-    </h1><div class="post-meta"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Happy Coding</a></span>&nbsp;<span class="post-publish">published on <time datetime="2020-06-09">2020-06-09</time></span>&nbsp;<span class="post-category">included in <a href="/categories/metabase/"><i class="far fa-folder fa-fw" aria-hidden="true"></i>Metabase</a></span></div><div class="content"><p>探讨如何将 Metabase 融入业务系统（SaaS 服务）。</p>
-<p>为何需要集成 Metabase 到业务系统中呢？一般，通用的数据需求都做到SaaS服务中了。而现实情况是，客户是有很多定制化数据需求的。使用 Metabase 制作报表，直接跳过前后端开发，快速满足客户需求。</p>
-<p>（最终极地，进一步提高生产效率，把 Metabase 的组件化能力内化到 SaaS 服务中才是正道。）</p>
-<p>试分析下 Metabase 提供的方案，以及适配我们的场景，分析该怎么改。</p>
-<h2 id="分析现存方案">分析现存方案</h2>
-<p>开源版本的 Metabase 支持两种第三方登录：</p>
-<ol>
-<li>LDAP: Allows users within your LDAP directory to log in to Metabase with their LDAP credentials, and allows automatic mapping of LDAP groups to Metabase groups.</li>
-<li>Sign in with Google: Allows users with <strong>existing Metabase accounts</strong> to login with a Google account that <strong>matches their email address</strong> in addition to their Metabase username and password.</li>
-</ol>
-<p>企业版本：</p></div><div class="post-footer">
-        <a href="/posts/20200609-metabase-sso-login/">Read More</a><div class="post-tags">
-                <i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/metabase/">Metabase</a></div></div>
 </article><ul class="pagination"><li class="page-item ">
                     <span class="page-link">
                         <a href="/">1</a>

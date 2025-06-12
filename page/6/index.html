@@ -59,6 +59,62 @@
 </header><main class="main">
                 <div class="container"><div class="page home" data-home="posts"><div class="home-profile"><div class="links"></div></div>
 <article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
+        <a href="/posts/20200514-wx-avatar/">微信用户授权头像内容带随机干扰的问题</a>
+    </h1><div class="post-meta"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Happy Coding</a></span>&nbsp;<span class="post-publish">published on <time datetime="2020-05-14">2020-05-14</time></span></div><div class="content"><p>项目需要基于头像、昵称对不同实体账号下的微信用户进行匹配。基于这个思路，打算先下载微信头像的图像，后计算其MD5，“单元测试”了下这个简单方法，结果惊人。</p>
+<p>同一个人的同一个头像链接返回的图像内容都不一样。内容不一样，MD5值也就不一样。</p>
+<p>看来微信对我们这些拙劣的手段早有防备。</p>
+<h2 id="微信头像内容分析">微信头像内容分析</h2>
+<p>同一个头像链接下载两次。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ wget -O 1.png https://wx.qlogo.cn/mmopen/vi_32/DYAIOgq83eoc614h6RfCUnwQTblG9y2dq4g5PKVicVZd5CQO9JNdPCWCovl8cmsvxQcWDemcLYGW6pSt97uUW5A/132
+</span></span><span style="display:flex;"><span>$ wget -O 2.png https://wx.qlogo.cn/mmopen/vi_32/DYAIOgq83eoc614h6RfCUnwQTblG9y2dq4g5PKVicVZd5CQO9JNdPCWCovl8cmsvxQcWDemcLYGW6pSt97uUW5A/132
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>$ md5 1.png
+</span></span><span style="display:flex;"><span>MD5 <span style="color:#f92672">(</span>1.png<span style="color:#f92672">)</span> <span style="color:#f92672">=</span> dd6aa938cbec381a3e83702776be88a3
+</span></span><span style="display:flex;"><span>$ md5 2.png
+</span></span><span style="display:flex;"><span>MD5 <span style="color:#f92672">(</span>2.png<span style="color:#f92672">)</span> <span style="color:#f92672">=</span> 83668a6ad7eeee8fa8e5e0db339233d1
+</span></span></code></pre></div><h3 id="肉眼比较">肉眼比较</h3>
+<p>肉眼完全无法区分。</p>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="../../images/image-20200514134445598.png"
+        data-srcset="../../images/image-20200514134445598.png, ../../images/image-20200514134445598.png 1.5x, ../../images/image-20200514134445598.png 2x"
+        data-sizes="auto"
+        alt="../../images/image-20200514134445598.png"
+        title="image-20200514134445598" /></p>
+<h3 id="字节级比较">字节级比较</h3>
+<p>两张图，可以看出差异很大。</p>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="../../images/image-20200514134712953.png"
+        data-srcset="../../images/image-20200514134712953.png, ../../images/image-20200514134712953.png 1.5x, ../../images/image-20200514134712953.png 2x"
+        data-sizes="auto"
+        alt="../../images/image-20200514134712953.png"
+        title="image-20200514134712953" /></p>
+<h3 id="像素级比较">像素级比较</h3>
+<p>为了方便对比，图先灰度化（一个像素点的RGB三值改为1个值）。</p>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="../../images/image-20200514184021629.png"
+        data-srcset="../../images/image-20200514184021629.png, ../../images/image-20200514184021629.png 1.5x, ../../images/image-20200514184021629.png 2x"
+        data-sizes="auto"
+        alt="../../images/image-20200514184021629.png"
+        title="image-20200514184021629" /></p>
+<p>两张灰度图差值的数据分布。x轴为差值，y轴为出现次数。</p>
+<p>0代表相同位置的像素点相同，非0代表相同位置像素点有差异及其差异幅度。</p>
+<p>0出现次数最多，可见两张图的大部分像素点的值是相同的。差异主要分为两部分，1-10 闭区间。（试了几张图）</p>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="../../images/image-20200515094333720.png"
+        data-srcset="../../images/image-20200515094333720.png, ../../images/image-20200515094333720.png 1.5x, ../../images/image-20200515094333720.png 2x"
+        data-sizes="auto"
+        alt="../../images/image-20200515094333720.png"
+        title="image-20200515094333720" /></p></div><div class="post-footer">
+        <a href="/posts/20200514-wx-avatar/">Read More</a></div>
+</article><article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
         <a href="/posts/20200504-hackintosh/">NUC8i5BEH Hackintosh</a>
     </h1><div class="post-meta"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Happy Coding</a></span>&nbsp;<span class="post-publish">published on <time datetime="2020-05-04">2020-05-04</time></span></div><div class="content"><p>买了个 NUC8i5BEH 当玩具，不怎么折腾的方式体验下黑苹果。</p>
 <p><img
@@ -201,15 +257,6 @@
         title="image-20200417151856806" /></p></div><div class="post-footer">
         <a href="/posts/20200417-etcd_client/">Read More</a><div class="post-tags">
                 <i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/etcd/">Etcd</a></div></div>
-</article><article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
-        <a href="/posts/20200416-cortex/">机器学习在线推理部署方案：Cortex</a>
-    </h1><div class="post-meta"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Happy Coding</a></span>&nbsp;<span class="post-publish">published on <time datetime="2020-04-16">2020-04-16</time></span></div><div class="content"><h2 id="cortex-介绍">Cortex 介绍</h2>
-<p>官方网站：Deploy machine learning models in production <a href="https://www.cortex.dev/" target="_blank" rel="noopener noreffer ">https://www.cortex.dev/</a></p>
-<p>GitHub <a href="https://github.com/cortexlabs/cortex" target="_blank" rel="noopener noreffer ">https://github.com/cortexlabs/cortex</a></p>
-<blockquote>
-<p>The CLI sends configuration and code to the cluster every time you run <code>cortex deploy</code>. Each model is loaded into a Docker container, along with any Python packages and request handling code. The model is exposed as a web service using Elastic Load Balancing (ELB), TensorFlow Serving, and ONNX Runtime. The containers are orchestrated on Elastic Kubernetes Service (EKS) while logs and metrics are streamed to CloudWatch.</p></div><div class="post-footer">
-        <a href="/posts/20200416-cortex/">Read More</a><div class="post-tags">
-                <i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/">机器学习</a>,&nbsp;<a href="/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E5%B7%A5%E7%A8%8B/">机器学习工程</a></div></div>
 </article><ul class="pagination"><li class="page-item ">
                     <span class="page-link">
                         <a href="/">1</a>

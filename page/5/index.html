@@ -59,6 +59,21 @@
 </header><main class="main">
                 <div class="container"><div class="page home" data-home="posts"><div class="home-profile"><div class="links"></div></div>
 <article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
+        <a href="/posts/20200609-metabase-sso-login/">Metabase SSO 登录</a>
+    </h1><div class="post-meta"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Happy Coding</a></span>&nbsp;<span class="post-publish">published on <time datetime="2020-06-09">2020-06-09</time></span>&nbsp;<span class="post-category">included in <a href="/categories/metabase/"><i class="far fa-folder fa-fw" aria-hidden="true"></i>Metabase</a></span></div><div class="content"><p>探讨如何将 Metabase 融入业务系统（SaaS 服务）。</p>
+<p>为何需要集成 Metabase 到业务系统中呢？一般，通用的数据需求都做到SaaS服务中了。而现实情况是，客户是有很多定制化数据需求的。使用 Metabase 制作报表，直接跳过前后端开发，快速满足客户需求。</p>
+<p>（最终极地，进一步提高生产效率，把 Metabase 的组件化能力内化到 SaaS 服务中才是正道。）</p>
+<p>试分析下 Metabase 提供的方案，以及适配我们的场景，分析该怎么改。</p>
+<h2 id="分析现存方案">分析现存方案</h2>
+<p>开源版本的 Metabase 支持两种第三方登录：</p>
+<ol>
+<li>LDAP: Allows users within your LDAP directory to log in to Metabase with their LDAP credentials, and allows automatic mapping of LDAP groups to Metabase groups.</li>
+<li>Sign in with Google: Allows users with <strong>existing Metabase accounts</strong> to login with a Google account that <strong>matches their email address</strong> in addition to their Metabase username and password.</li>
+</ol>
+<p>企业版本：</p></div><div class="post-footer">
+        <a href="/posts/20200609-metabase-sso-login/">Read More</a><div class="post-tags">
+                <i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/metabase/">Metabase</a></div></div>
+</article><article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
         <a href="/posts/20200605-metabase-field-filter/">Metabase 日期筛选控件实践</a>
     </h1><div class="post-meta"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Happy Coding</a></span>&nbsp;<span class="post-publish">published on <time datetime="2020-06-05">2020-06-05</time></span>&nbsp;<span class="post-category">included in <a href="/categories/metabase/"><i class="far fa-folder fa-fw" aria-hidden="true"></i>Metabase</a></span></div><div class="content"><p>Metabase Dashboard 可以是动态的，常用的是指定时间范围筛选，查看这个时间段的指标。</p>
 <h2 id="简单示范">简单示范</h2>
@@ -386,62 +401,6 @@
 <p>使用 Cloudera Quickstart Docker 镜像（官方已经下架 quickstart vm ）。其中，Impala版本 2.5.0。（我们的生产环境：CDH 6.3.2 Impala 3.2.0 Hive 2.1.1）</p></div><div class="post-footer">
         <a href="/posts/20200527-metabase-impala-driver/">Read More</a><div class="post-tags">
                 <i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/metabase/">Metabase</a>,&nbsp;<a href="/tags/impala/">Impala</a></div></div>
-</article><article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
-        <a href="/posts/20200514-wx-avatar/">微信用户授权头像内容带随机干扰的问题</a>
-    </h1><div class="post-meta"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Happy Coding</a></span>&nbsp;<span class="post-publish">published on <time datetime="2020-05-14">2020-05-14</time></span></div><div class="content"><p>项目需要基于头像、昵称对不同实体账号下的微信用户进行匹配。基于这个思路，打算先下载微信头像的图像，后计算其MD5，“单元测试”了下这个简单方法，结果惊人。</p>
-<p>同一个人的同一个头像链接返回的图像内容都不一样。内容不一样，MD5值也就不一样。</p>
-<p>看来微信对我们这些拙劣的手段早有防备。</p>
-<h2 id="微信头像内容分析">微信头像内容分析</h2>
-<p>同一个头像链接下载两次。</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ wget -O 1.png https://wx.qlogo.cn/mmopen/vi_32/DYAIOgq83eoc614h6RfCUnwQTblG9y2dq4g5PKVicVZd5CQO9JNdPCWCovl8cmsvxQcWDemcLYGW6pSt97uUW5A/132
-</span></span><span style="display:flex;"><span>$ wget -O 2.png https://wx.qlogo.cn/mmopen/vi_32/DYAIOgq83eoc614h6RfCUnwQTblG9y2dq4g5PKVicVZd5CQO9JNdPCWCovl8cmsvxQcWDemcLYGW6pSt97uUW5A/132
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>$ md5 1.png
-</span></span><span style="display:flex;"><span>MD5 <span style="color:#f92672">(</span>1.png<span style="color:#f92672">)</span> <span style="color:#f92672">=</span> dd6aa938cbec381a3e83702776be88a3
-</span></span><span style="display:flex;"><span>$ md5 2.png
-</span></span><span style="display:flex;"><span>MD5 <span style="color:#f92672">(</span>2.png<span style="color:#f92672">)</span> <span style="color:#f92672">=</span> 83668a6ad7eeee8fa8e5e0db339233d1
-</span></span></code></pre></div><h3 id="肉眼比较">肉眼比较</h3>
-<p>肉眼完全无法区分。</p>
-<p><img
-        class="lazyload"
-        src="/svg/loading.min.svg"
-        data-src="../../images/image-20200514134445598.png"
-        data-srcset="../../images/image-20200514134445598.png, ../../images/image-20200514134445598.png 1.5x, ../../images/image-20200514134445598.png 2x"
-        data-sizes="auto"
-        alt="../../images/image-20200514134445598.png"
-        title="image-20200514134445598" /></p>
-<h3 id="字节级比较">字节级比较</h3>
-<p>两张图，可以看出差异很大。</p>
-<p><img
-        class="lazyload"
-        src="/svg/loading.min.svg"
-        data-src="../../images/image-20200514134712953.png"
-        data-srcset="../../images/image-20200514134712953.png, ../../images/image-20200514134712953.png 1.5x, ../../images/image-20200514134712953.png 2x"
-        data-sizes="auto"
-        alt="../../images/image-20200514134712953.png"
-        title="image-20200514134712953" /></p>
-<h3 id="像素级比较">像素级比较</h3>
-<p>为了方便对比，图先灰度化（一个像素点的RGB三值改为1个值）。</p>
-<p><img
-        class="lazyload"
-        src="/svg/loading.min.svg"
-        data-src="../../images/image-20200514184021629.png"
-        data-srcset="../../images/image-20200514184021629.png, ../../images/image-20200514184021629.png 1.5x, ../../images/image-20200514184021629.png 2x"
-        data-sizes="auto"
-        alt="../../images/image-20200514184021629.png"
-        title="image-20200514184021629" /></p>
-<p>两张灰度图差值的数据分布。x轴为差值，y轴为出现次数。</p>
-<p>0代表相同位置的像素点相同，非0代表相同位置像素点有差异及其差异幅度。</p>
-<p>0出现次数最多，可见两张图的大部分像素点的值是相同的。差异主要分为两部分，1-10 闭区间。（试了几张图）</p>
-<p><img
-        class="lazyload"
-        src="/svg/loading.min.svg"
-        data-src="../../images/image-20200515094333720.png"
-        data-srcset="../../images/image-20200515094333720.png, ../../images/image-20200515094333720.png 1.5x, ../../images/image-20200515094333720.png 2x"
-        data-sizes="auto"
-        alt="../../images/image-20200515094333720.png"
-        title="image-20200515094333720" /></p></div><div class="post-footer">
-        <a href="/posts/20200514-wx-avatar/">Read More</a></div>
 </article><ul class="pagination"><li class="page-item ">
                     <span class="page-link">
                         <a href="/">1</a>

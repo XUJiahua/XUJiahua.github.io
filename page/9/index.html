@@ -59,6 +59,51 @@
 </header><main class="main">
                 <div class="container"><div class="page home" data-home="posts"><div class="home-profile"><div class="links"></div></div>
 <article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
+        <a href="/posts/20200310-github-pages-restart/">Github pages重新开始：使用Hugo、Typora</a>
+    </h1><div class="post-meta"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Happy Coding</a></span>&nbsp;<span class="post-publish">published on <time datetime="2020-03-10">2020-03-10</time></span></div><div class="content"><h2 id="重新开始github-pages">重新开始GitHub pages</h2>
+<p>曾使用<code>GitHub pages</code> + <code> jekyll</code> 写过一段时间博客，没啥营养。</p>
+<p>打算重新开始：</p>
+<ol>
+<li>把我记录在Evernote和Typora中的资料迁移到<code>GitHub pages</code>上。</li>
+<li>另外做一些Web形式的小工具，挂载在一个子目录里，方便平时使用。</li>
+</ol>
+<h2 id="hugo--typora">Hugo + Typora</h2>
+<p>打算如下：</p>
+<ol>
+<li>Markdown文件还是使用Typora写。用过MWeb、Typora，Typora使用感受更好些（这么好用还不要钱）。</li>
+<li>Hugo作为静态网站生成，创建一个博客模板。</li>
+</ol>
+<h3 id="hugo-quickstart">Hugo quickstart</h3>
+<pre tabindex="0"><code># 安装hugo（其实是Go编译的二进制文件）
+brew install hugo
+
+# 创建site
+hugo new site quickstart
+
+# 通过git submodule的方式下载主题
+git init
+git submodule -b master add https://github.com/dillonzq/LoveIt themes/LoveIt
+
+# 更新config.toml，配置主题参数，见loveit配置
+
+# 创建博客，创建的posts在content目录下。文件格式为：content/&lt;CATEGORY&gt;/&lt;FILE&gt;.&lt;FORMAT&gt;
+# hugo new 会采用 archetypes/default.md作为模板，把一些共性配置放在这个模板里吧。
+hugo new posts/my-first-post.md
+
+# 本地看blog效果，-D表示草稿状态的博客也显示
+hugo server -D
+
+# 生成静态网站到./public/，也可以指定目录
+hugo -D
+</code></pre><p>挑选了一个比较实用的主题 <a href="https://hugoloveit.com/" target="_blank" rel="noopener noreffer ">https://hugoloveit.com/</a></p>
+<ol>
+<li>比较基本的posts, tags, categories</li>
+<li>文章页面右边可显示文章的目录表</li>
+</ol>
+<p>参考：</p></div><div class="post-footer">
+        <a href="/posts/20200310-github-pages-restart/">Read More</a><div class="post-tags">
+                <i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/github-pages/">GitHub Pages</a>,&nbsp;<a href="/tags/hugo/">Hugo</a>,&nbsp;<a href="/tags/typora/">Typora</a></div></div>
+</article><article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
         <a href="/posts/20200323-use-hyper-v/">Hyper-V使用体验</a>
     </h1><div class="post-meta"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Happy Coding</a></span>&nbsp;<span class="post-publish">published on <time datetime="2020-03-03">2020-03-03</time></span></div><div class="content"><h2 id="hyper-v-使用体验">Hyper-V 使用体验</h2>
 <p>Hyper-V是 Windows10 内置的虚拟机软件，没想到我会用到它。</p>
@@ -323,33 +368,6 @@
 </ol></div><div class="post-footer">
         <a href="/posts/20191123-ebay-bigdata-techday/">Read More</a><div class="post-tags">
                 <i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/bigdata/">Bigdata</a></div></div>
-</article><article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
-        <a href="/posts/20191031-quantum-computer/">量子计算——读「古今密码学趣谈」展望未来的密码学</a>
-    </h1><div class="post-meta"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Happy Coding</a></span>&nbsp;<span class="post-publish">published on <time datetime="2019-10-31">2019-10-31</time></span></div><div class="content"><p>（笔记迁移 @ 2020年）</p>
-<p>主要讲了密码学怎么来应对量子计算。量子计算的并行性（N个量子位，能<strong>同时</strong>表示2^N个数字，而同样的比特位，同时只能表示一个2^N以内的数字。太神奇了），将以前指数级别的破解难度降低为了线性级别。RSA、ECC等现代密码学技术都会被轻易攻破。</p>
-<p>量子计算机的历史：</p>
-<ol>
-<li>在美国电话电报公司贝尔实验室工作的数学家肖尔（Peter W.Shor，1959）于1994年发现了快速分解大整数的量子算法！他因此于1998年获得了由国际数学联盟颁发的奈望林纳应用数学奖。</li>
-<li>2001年，美国IBM公司率先研制成功7个量子位的示例型量子计算机。</li>
-<li>2007年2月，加拿大D-Wave System公司宣布研制成功世界上第一台商用16量子位的量子计算机。</li>
-<li>2011年5月30日，D-Wave System公司宣布研制成功128量子位的量子计算机，并且出人意料地以每台 1000万美元的价格公开出售，还提供与传统计算机软件接口的软件工具包。</li>
-<li>2011年9月2日，美国加州大学圣芭芭拉分校的科学家宣布，已通过量子电路成功实现了冯·诺依曼计算机结构，证实了未来量子大规模集成电路指日可待。</li>
-<li>2012 年3月1日，美国IBM公司宣布，找到一种可以提升量子计算机规模的关键技术，从而使大规模量子计算机的实现成为可能</li>
-<li>In 2015, D-Wave&rsquo;s 2X Quantum Computer with more than <strong>1000 qubits</strong> was installed at the Quantum Artificial Intelligence Lab at NASA Ames Research Center.</li>
-<li>January 2017 <strong>2048 qubits</strong></li>
-<li>In 2019, D-Wave announced a <strong>5000 qubit</strong> system available <strong>mid-2020</strong>, using their new Pegasus chip with 15 connections per qubit.</li>
-</ol>
-<p>关于Dwave，客观看待，以下是引用：</p>
-<p><img
-        class="lazyload"
-        src="/svg/loading.min.svg"
-        data-src="../../images/image-20191031151535708.png"
-        data-srcset="../../images/image-20191031151535708.png, ../../images/image-20191031151535708.png 1.5x, ../../images/image-20191031151535708.png 2x"
-        data-sizes="auto"
-        alt="../../images/image-20191031151535708.png"
-        title="image-20191031151535708" /></p></div><div class="post-footer">
-        <a href="/posts/20191031-quantum-computer/">Read More</a><div class="post-tags">
-                <i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/read/">READ</a></div></div>
 </article><ul class="pagination"><li class="page-item ">
                     <span class="page-link">
                         <a href="/">1</a>

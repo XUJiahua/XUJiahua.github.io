@@ -59,6 +59,49 @@
 </header><main class="main">
                 <div class="container"><div class="page home" data-home="posts"><div class="home-profile"><div class="links"></div></div>
 <article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
+        <a href="/posts/20250612-rdb/">rdb command</a>
+    </h1><div class="post-meta"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Happy Coding</a></span>&nbsp;<span class="post-publish">published on <time datetime="2025-06-12">2025-06-12</time></span></div><div class="content"><h2 id="一些-redis-内存分析清理脚本">一些 Redis 内存分析、清理脚本</h2>
+<p>Redis 内存了近 32GB 的计数。</p>
+<p>使用 redis-cli 删除符合前缀匹配的所有 key。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>export REDISCLI_AUTH<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>export REDIS_HOST<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;localhost&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># SCAN 是一个非阻塞的迭代命令，可以逐步获取匹配的键，适用于大型数据库。它使用游标来分批返回结果，不要使用 KEYS</span>
+</span></span><span style="display:flex;"><span>redis-cli -h $REDIS_HOST --scan --pattern <span style="color:#e6db74">&#34;f1:i00004*&#34;</span> | xargs -I <span style="color:#f92672">{}</span> -t redis-cli -h $REDIS_HOST del <span style="color:#f92672">{}</span>
+</span></span></code></pre></div><p>二次开发了 <a href="https://github.com/HDT3213/rdb" target="_blank" rel="noopener noreffer ">rdb</a>。可以基于 rdb 进行分析和操作。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e"># 下载、解压到本地 https://github.com/XUJiahua/rdb/releases</span>
+</span></span><span style="display:flex;"><span>wget https://github.com/XUJiahua/rdb/releases/download/v0.2.1/rdb_0.2.1_linux_amd64.tar.gz
+</span></span><span style="display:flex;"><span>tar -xzvf rdb_0.2.1_linux_amd64.tar.gz
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 下载 redis 备份 dump.rdb</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 阿里云控制台提供了内网下载地址</span>
+</span></span><span style="display:flex;"><span>wget -O dump.rdb <span style="color:#e6db74">&#34;http://rdsbak-hk-v3-3az.oss-cn-hongkong-internal.aliyuncs.com/custins62059427/hins33306587_data_20250611150501.rdb&#34;</span> 
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 分析内存占用</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># prefixv2 原版 prefix 命令会爆内存</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># -max-depth 10 按前10个字符分组统计内存占用</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># -n 200 top 200</span>
+</span></span><span style="display:flex;"><span>./rdb -c prefixv2 -n <span style="color:#ae81ff">200</span> -max-depth <span style="color:#ae81ff">10</span> dump.rdb
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 因为设计失误，时间字段在整个 key 的最后</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 从 dump.rdb 中使用正则过滤，然后根据日期进一步过滤，默认是打印每个 key，打印到标准输出，可以通过管道与其他命令组合使用</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 20250401 之前的数据，比较的是 key 的最后一个字段</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 正则先使用工具测试 https://regex101.com/</span>
+</span></span><span style="display:flex;"><span>./rdb -c filter -filter-date <span style="color:#e6db74">&#39;20250401&#39;</span> -regex <span style="color:#e6db74">&#39;f1:i00066:.*&#39;</span> dump.rdb
+</span></span><span style="display:flex;"><span>f1:100066:xxxxxx:2025030505
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 对过滤内容进行聚合，key 数量，key 占用空间，对要清理多少空间有数</span>
+</span></span><span style="display:flex;"><span>./rdb -c filter -filter-date <span style="color:#e6db74">&#39;20250401&#39;</span> -regex <span style="color:#e6db74">&#39;f1:i00066:.*&#39;</span> -action sum dump.rdb
+</span></span><span style="display:flex;"><span>key count: 4802086,* 4802086, total size: 940581576<span style="color:#f92672">(</span>897M<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 对过滤内容进行删除，使用内置 redis client 删除</span>
+</span></span><span style="display:flex;"><span>export REDIS_ADDR<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;localhost:6379&#34;</span>
+</span></span><span style="display:flex;"><span>export REDIS_PASSWORD<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>export REDIS_DB<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;0&#34;</span>
+</span></span><span style="display:flex;"><span>./rdb -c filter -filter-date <span style="color:#e6db74">&#39;20250401&#39;</span> -regex <span style="color:#e6db74">&#39;f1:i00136:.*&#39;</span> -action del dump.rdb
+</span></span></code></pre></div><p>k8s 内操作</p></div><div class="post-footer">
+        <a href="/posts/20250612-rdb/">Read More</a><div class="post-tags">
+                <i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/redis/">Redis</a>,&nbsp;<a href="/tags/cmd/">Cmd</a>,&nbsp;<a href="/tags/rdb/">Rdb</a></div></div>
+</article><article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
         <a href="/posts/20250610-alipay_enterprise/">企业支付宝申请小结</a>
     </h1><div class="post-meta"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Happy Coding</a></span>&nbsp;<span class="post-publish">published on <time datetime="2025-06-10">2025-06-10</time></span></div><div class="content"><ol>
 <li>
@@ -186,36 +229,6 @@ incoming query: select * from iris
         title="../../images/Untitled-7e93bf42-098c-414a-bf8f-18fc6c03da11.png" /></p></div><div class="post-footer">
         <a href="/posts/metabase-quick-71d491f9-972e-4305-9f93-1af388b5ca9b/">Read More</a><div class="post-tags">
                 <i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/metabase/">Metabase</a>,&nbsp;<a href="/tags/go/">Go</a></div></div>
-</article><article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
-        <a href="/posts/redis-benchmark-kv-a3e78900-612a-4d04-b2aa-fc6f0908b431/">使用 redis-benchmark 压测自建的 kv 存储引擎</a>
-    </h1><div class="post-meta"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Happy Coding</a></span>&nbsp;<span class="post-publish">published on <time datetime="2021-04-19">2021-04-19</time></span>&nbsp;<span class="post-category">included in <a href="/categories/%E5%AD%98%E5%82%A8/"><i class="far fa-folder fa-fw" aria-hidden="true"></i>存储</a></span></div><div class="content"><p>给自建 kv 存储引擎做性能测试不难，使用 redis-benchmark 压测的目的是，测试结果能与 redis-server 的结果做横向对比。</p>
-<h2 id="redis-benchmark">redis-benchmark</h2>
-<p>redis-benchmark 支持如下指令的 benchmark。其中 GET/SET 指令可用于 kv 存储引擎的压测。</p>
-<pre tabindex="0"><code>redis-benchmark -q
-PING_INLINE: 102669.41 requests per second, p50=0.247 msec
-PING_MBULK: 102880.66 requests per second, p50=0.231 msec
-SET: 101936.80 requests per second, p50=0.239 msec
-GET: 101626.02 requests per second, p50=0.239 msec
-INCR: 102249.49 requests per second, p50=0.239 msec
-LPUSH: 100603.62 requests per second, p50=0.255 msec
-RPUSH: 101626.02 requests per second, p50=0.255 msec
-LPOP: 102354.15 requests per second, p50=0.255 msec
-RPOP: 102249.49 requests per second, p50=0.255 msec
-SADD: 101522.84 requests per second, p50=0.247 msec
-HSET: 100603.62 requests per second, p50=0.255 msec
-SPOP: 102249.49 requests per second, p50=0.247 msec
-ZADD: 102564.10 requests per second, p50=0.255 msec
-ZPOPMIN: 103412.62 requests per second, p50=0.247 msec
-LPUSH (needed to benchmark LRANGE): 94607.38 requests per second, p50=0.263 msec
-LRANGE_100 (first 100 elements): 27964.21 requests per second, p50=0.855 msec
-LRANGE_300 (first 300 elements): 11193.19 requests per second, p50=2.135 msec
-LRANGE_500 (first 450 elements): 7649.94 requests per second, p50=3.159 msec
-LRANGE_600 (first 600 elements): 5884.78 requests per second, p50=4.103 msec
-MSET (10 keys): 93283.58 requests per second, p50=0.423 msec
-</code></pre><h2 id="redcon">redcon</h2>
-<p>Redis compatible server framework for <strong>Go</strong>.</p></div><div class="post-footer">
-        <a href="/posts/redis-benchmark-kv-a3e78900-612a-4d04-b2aa-fc6f0908b431/">Read More</a><div class="post-tags">
-                <i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/redis/">Redis</a>,&nbsp;<a href="/tags/kv/">Kv</a></div></div>
 </article><ul class="pagination"><li class="page-item active">
                     <span class="page-link">
                         <a href="/">1</a>
