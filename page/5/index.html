@@ -59,6 +59,40 @@
 </header><main class="main">
                 <div class="container"><div class="page home" data-home="posts"><div class="home-profile"><div class="links"></div></div>
 <article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
+        <a href="/posts/20200611-phash/">使用 Perceptual hashing 去除微信头像内容干扰</a>
+    </h1><div class="post-meta"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Happy Coding</a></span>&nbsp;<span class="post-publish">published on <time datetime="2020-06-11">2020-06-11</time></span></div><div class="content"><p>本文是<a href="https://xujiahua.github.io/posts/20200514-wx-avatar/" target="_blank" rel="noopener noreffer ">「微信用户授权头像内容带随机干扰的问题」</a>的延续。本文对效果进行量化，并找到一个phash库，达到了更好的效果。</p>
+<h2 id="实验框架">实验框架</h2>
+<p>相关脚本<a href="https://github.com/XUJiahua/phash_test" target="_blank" rel="noopener noreffer ">点此</a>。</p>
+<h3 id="实验数据">实验数据</h3>
+<p>10 组微信头像，每组 10万个头像。</p>
+<p>准备 10万 微信头像链接，重复下载10次：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>./download.sh
+</span></span></code></pre></div><h3 id="实验期望">实验期望</h3>
+<p>期望目标：</p>
+<ol>
+<li>1 个头像链接对应 1 个特征：期望特征抽取算法能够剥离微信对头像内容加入的干扰。不然使用密码学哈希算法，1 个头像链接下载 10 次可能就对应 10 个特征了。</li>
+<li>1 个特征对应 1 个头像链接。跟哈希算法一样，希望哈希冲突尽可能小。</li>
+</ol>
+<h2 id="实验">实验</h2>
+<h3 id="图像降维方法">图像降维方法</h3>
+<p>延续上文中在有限数据下得出的规则，图像降维到：32级灰度，10x10 尺寸。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>python extract_feature_p2.py
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>echo <span style="color:#e6db74">&#34;file,feature&#34;</span> &gt; header.csv
+</span></span><span style="display:flex;"><span>cat header.csv download_1.csv download_2.csv download_3.csv download_4.csv download_5.csv download_6.csv download_7.csv download_8.csv download_9.csv download_10.csv &gt; data.csv
+</span></span></code></pre></div><p>两个指标分析如下：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>csvsql --query <span style="color:#e6db74">&#34;select avg(cnt) as expect1 from (select file, count(distinct feature) as cnt from &#39;data&#39; group by file)&#34;</span> data.csv
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>expect1
+</span></span><span style="display:flex;"><span>2.186088754189832
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>csvsql --query <span style="color:#e6db74">&#34;select avg(cnt) as expect1 from (select feature, count(distinct file) as cnt from &#39;data&#39; group by feature)&#34;</span> data.csv
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>expect1
+</span></span><span style="display:flex;"><span>1.0051170602511927
+</span></span></code></pre></div><p>每个头像链接，重复下载 10 次的情况下，平均有生成 2.18 个特征。</p></div><div class="post-footer">
+        <a href="/posts/20200611-phash/">Read More</a></div>
+</article><article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
         <a href="/posts/20200609-metabase-sso-login/">Metabase SSO 登录</a>
     </h1><div class="post-meta"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Happy Coding</a></span>&nbsp;<span class="post-publish">published on <time datetime="2020-06-09">2020-06-09</time></span>&nbsp;<span class="post-category">included in <a href="/categories/metabase/"><i class="far fa-folder fa-fw" aria-hidden="true"></i>Metabase</a></span></div><div class="content"><p>探讨如何将 Metabase 融入业务系统（SaaS 服务）。</p>
 <p>为何需要集成 Metabase 到业务系统中呢？一般，通用的数据需求都做到SaaS服务中了。而现实情况是，客户是有很多定制化数据需求的。使用 Metabase 制作报表，直接跳过前后端开发，快速满足客户需求。</p>
@@ -377,30 +411,6 @@
 <p>参考：</p></div><div class="post-footer">
         <a href="/posts/20200528-metabase-impala-type/">Read More</a><div class="post-tags">
                 <i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/impala/">Impala</a>,&nbsp;<a href="/tags/metabase/">Metabase</a></div></div>
-</article><article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
-        <a href="/posts/20200527-metabase-impala-driver/">Metabase Impala Driver</a>
-    </h1><div class="post-meta"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Happy Coding</a></span>&nbsp;<span class="post-publish">published on <time datetime="2020-05-27">2020-05-27</time></span>&nbsp;<span class="post-category">included in <a href="/categories/metabase/"><i class="far fa-folder fa-fw" aria-hidden="true"></i>Metabase</a></span></div><div class="content"><p>更新日志</p>
-<ol>
-<li><a href="https://xujiahua.github.io/posts/20200528-metabase-impala-type/" target="_blank" rel="noopener noreffer ">Metabase Impala Driver 0528更新日志</a></li>
-<li><a href="https://xujiahua.github.io/posts/20200710-metabase-impala-driver/" target="_blank" rel="noopener noreffer ">Metabase Impala Driver 0710更新日志</a></li>
-</ol>
-<h2 id="背景">背景</h2>
-<p>我们的数据仓库是 Hadoop/Hive 体系的。Hadoop 版本采用的是 CDH 发行版。在这个背景下 SQL on Hadoop 的方案有 Hive/Impala/(SparkSQL)。作为 BI 数据库，Impala 在我们的场景下比较合适。</p>
-<ol>
-<li>Hive：太慢了。做 ETL 可以，BI 非常不适。</li>
-<li>SparkSQL：CDH 官方 Spark 不含 Thrift Server。为了能够使用 Metabase ，独立于 CDH 启了个 Thrift Server，用着还不错。问题就在于缺乏统一管理，比如 Kerberos 的管理就得自己写脚本处理、进程 OOM 挂掉了 CDH Manager 也监测不到。</li>
-<li>Impala：CDH 官方出品，为 BI 而设计，由 CDH Manager 管理。根据这份报告，见下参考链接，Impala 好于 SparkSQL。</li>
-</ol>
-<p>出于尽可能复用已有基础设施的目的，选择 Impala。而 Metabase 官方、社区并不提供 Impala 驱动。本文就是为了探索并解决这个问题。</p>
-<p>参考：</p>
-<ol>
-<li>开源OLAP引擎测评报告(SparkSql、Presto、Impala、HAWQ、ClickHouse、GreenPlum) <a href="http://www.clickhouse.com.cn/topic/5c453371389ad55f127768ea" target="_blank" rel="noopener noreffer ">http://www.clickhouse.com.cn/topic/5c453371389ad55f127768ea</a></li>
-</ol>
-<h2 id="现有驱动探索">现有驱动探索</h2>
-<h3 id="搭建-impala-开发环境">搭建 Impala 开发环境</h3>
-<p>使用 Cloudera Quickstart Docker 镜像（官方已经下架 quickstart vm ）。其中，Impala版本 2.5.0。（我们的生产环境：CDH 6.3.2 Impala 3.2.0 Hive 2.1.1）</p></div><div class="post-footer">
-        <a href="/posts/20200527-metabase-impala-driver/">Read More</a><div class="post-tags">
-                <i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/metabase/">Metabase</a>,&nbsp;<a href="/tags/impala/">Impala</a></div></div>
 </article><ul class="pagination"><li class="page-item ">
                     <span class="page-link">
                         <a href="/">1</a>

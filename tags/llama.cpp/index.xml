@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Llama.cpp on Happy Coding</title>
+    <link>https://xujiahua.github.io/tags/llama.cpp/</link>
+    <description>Recent content in Llama.cpp on Happy Coding</description>
+    <generator>Hugo</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Fri, 13 Jun 2025 14:44:49 +0800</lastBuildDate>
+    <atom:link href="https://xujiahua.github.io/tags/llama.cpp/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Convert GGUF</title>
+      <link>https://xujiahua.github.io/posts/20250613-convert-gguf/</link>
+      <pubDate>Fri, 13 Jun 2025 14:44:49 +0800</pubDate>
+      <guid>https://xujiahua.github.io/posts/20250613-convert-gguf/</guid>
+      <description>&lt;h3 id=&#34;下载-llamacpp-项目需要用到其-python-部分&#34;&gt;下载 llama.cpp 项目，需要用到其 Python 部分&lt;/h3&gt;&#xA;&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;&#xA;git clone https://github.com/ggerganov/llama.cpp.git&#xA;cd llama.cpp&#xA;&lt;/code&gt;&lt;/pre&gt;&lt;h3 id=&#34;llamacpp-下创建虚拟环境及安装依赖&#34;&gt;llama.cpp 下创建虚拟环境及安装依赖&lt;/h3&gt;&#xA;&lt;p&gt;本来想用 &lt;code&gt;uv init&lt;/code&gt; 创建虚拟环境，但是本地已经有 pyproject.toml 文件了。&lt;code&gt;venv&lt;/code&gt; python 自带的。&lt;/p&gt;&#xA;&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;python -m venv .venv&#xA;source .venv/bin/activate&#xA;pip install -r requirements.txt&#xA;&#xA;# 查看是否使用的 .venv 目录下的 python, pip&#xA;which python&#xA;which pip&#xA;&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;确保安装无报错。我因为安装不完整，执行 convert 脚本报错了，一度以为 llama.cpp 还不支持 Qwen，很惊讶。&lt;/p&gt;&#xA;&lt;blockquote&gt;&#xA;&lt;p&gt;FileNotFoundError: File not found: Qwen3-0.6B/tokenizer.model&lt;/p&gt;&lt;/blockquote&gt;&#xA;&lt;h3 id=&#34;下载模型到本地&#34;&gt;下载模型到本地&lt;/h3&gt;&#xA;&lt;p&gt;前序工作，lfs 需要额外安装。以下是 ubuntu 下的指令。一次性工作。&lt;/p&gt;&#xA;&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | sudo bash&#xA;sudo apt-get install git-lfs&#xA;git lfs install&#xA;&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;huggingface 上下载模型。&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

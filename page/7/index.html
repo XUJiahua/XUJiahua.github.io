@@ -59,6 +59,26 @@
 </header><main class="main">
                 <div class="container"><div class="page home" data-home="posts"><div class="home-profile"><div class="links"></div></div>
 <article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
+        <a href="/posts/20200417-etcd_client/">etcd api client 请求重试逻辑</a>
+    </h1><div class="post-meta"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Happy Coding</a></span>&nbsp;<span class="post-publish">published on <time datetime="2020-04-17">2020-04-17</time></span></div><div class="content"><p>使用 Consul 作为配置中心，按照官方的说法，没必要创建 <code>consul client</code> 节点。那么直接连 <code>consul server</code> 就好了。</p>
+<blockquote>
+<p>Running an agent is not required for discovering other services or getting/setting key/value data. The agent is responsible for health checking the services on the node as well as the node itself.</p>
+<p><a href="https://www.consul.io/intro/index.html#basic-architecture-of-consul" target="_blank" rel="noopener noreffer ">https://www.consul.io/intro/index.html#basic-architecture-of-consul</a></p></blockquote>
+<p>Consul api client (<a href="https://github.com/hashicorp/consul/tree/master/api" target="_blank" rel="noopener noreffer ">https://github.com/hashicorp/consul/tree/master/api</a>) 目前只能接收一个server地址。那么这个server地址得保证高可用才行啊。</p>
+<p>etcd api client (<a href="https://github.com/etcd-io/etcd/tree/master/client" target="_blank" rel="noopener noreffer ">https://github.com/etcd-io/etcd/tree/master/client</a>) 倒是能接收多个server地址，看看 etcd 是怎么做的。</p>
+<h3 id="etcd-api-client">etcd api client</h3>
+<p>创建了 httpClusterClient。</p>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="../../images/image-20200417151856806.png"
+        data-srcset="../../images/image-20200417151856806.png, ../../images/image-20200417151856806.png 1.5x, ../../images/image-20200417151856806.png 2x"
+        data-sizes="auto"
+        alt="../../images/image-20200417151856806.png"
+        title="image-20200417151856806" /></p></div><div class="post-footer">
+        <a href="/posts/20200417-etcd_client/">Read More</a><div class="post-tags">
+                <i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/etcd/">Etcd</a></div></div>
+</article><article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
         <a href="/posts/20200416-cortex/">机器学习在线推理部署方案：Cortex</a>
     </h1><div class="post-meta"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Happy Coding</a></span>&nbsp;<span class="post-publish">published on <time datetime="2020-04-16">2020-04-16</time></span></div><div class="content"><h2 id="cortex-介绍">Cortex 介绍</h2>
 <p>官方网站：Deploy machine learning models in production <a href="https://www.cortex.dev/" target="_blank" rel="noopener noreffer ">https://www.cortex.dev/</a></p>
@@ -206,34 +226,6 @@ total 84
 </span></span></code></pre></div><p><a href="https://docs.docker.com/config/containers/logging/json-file/" target="_blank" rel="noopener noreffer ">https://docs.docker.com/config/containers/logging/json-file/</a></p></div><div class="post-footer">
         <a href="/posts/20200403-docker-logging/">Read More</a><div class="post-tags">
                 <i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/docker/">Docker</a></div></div>
-</article><article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
-        <a href="/posts/20200402-use-fluentd/">Fluentd 实战——收集 Docker 容器日志</a>
-    </h1><div class="post-meta"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Happy Coding</a></span>&nbsp;<span class="post-publish">published on <time datetime="2020-04-02">2020-04-02</time></span></div><div class="content"><p>以收集Docker容器日志的例子，介绍下Fluentd的用法。不考虑logstash，太占服务器资源了。</p>
-<h2 id="安装-fluentd">安装 Fluentd</h2>
-<p>Ubuntu 18.04上的安装命令（https://docs.fluentd.org/installation/install-by-deb）：</p>
-<pre tabindex="0"><code>root@ubuntu-parallel:~# curl -L https://toolbelt.treasuredata.com/sh/install-ubuntu-bionic-td-agent3.sh | sh
-</code></pre><p>以Daemon方式启动：</p>
-<pre tabindex="0"><code>root@ubuntu-parallel:~# systemctl start td-agent.service
-root@ubuntu-parallel:~# systemctl status td-agent.service
-</code></pre><p>fluentd的安装目录是在/opt/td-agent/下的。为演示方便，我们可以直接使用 <code>/opt/td-agent/embedded/bin/fluentd</code>这个程序。</p>
-<pre tabindex="0"><code>root@ubuntu-parallel:~# ps -ef | grep fluentd
-td-agent 30596     1  0 17:10 ?        00:00:00 /opt/td-agent/embedded/bin/ruby /opt/td-agent/embedded/bin/fluentd --log /var/log/td-agent/td-agent.log --daemon /var/run/td-agent/td-agent.pid
-td-agent 30602 30596  9 17:10 ?        00:00:00 /opt/td-agent/embedded/bin/ruby -Eascii-8bit:ascii-8bit /opt/td-agent/embedded/bin/fluentd --log /var/log/td-agent/td-agent.log --daemon /var/run/td-agent/td-agent.pid --under-supervisor
-</code></pre><p>其他系统的安装参考：https://docs.fluentd.org/installation</p>
-<h3 id="小试牛刀">小试牛刀</h3>
-<p>配置文件 test.conf，启动一个HTTP服务，并把接收到的日志，打印到标准输出。</p>
-<pre tabindex="0"><code>&lt;source&gt;
-  @type http
-  port 9880
-&lt;/source&gt;
-
-&lt;match *.*&gt;
-  @type stdout
-&lt;/match&gt;
-</code></pre><p>启动fluentd进程。</p>
-<pre tabindex="0"><code>root@ubuntu-parallel:~# /opt/td-agent/embedded/bin/fluentd -c test.conf
-</code></pre><p>通过HTTP服务提交日志。可以看到fluentd终端打印出了输入的日志。</p></div><div class="post-footer">
-        <a href="/posts/20200402-use-fluentd/">Read More</a></div>
 </article><ul class="pagination"><li class="page-item ">
                     <span class="page-link">
                         <a href="/">1</a>

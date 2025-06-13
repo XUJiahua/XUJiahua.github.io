@@ -59,6 +59,32 @@
 </header><main class="main">
                 <div class="container"><div class="page home" data-home="posts"><div class="home-profile"><div class="links"></div></div>
 <article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
+        <a href="/posts/20250613-convert-gguf/">Convert GGUF</a>
+    </h1><div class="post-meta"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Happy Coding</a></span>&nbsp;<span class="post-publish">published on <time datetime="2025-06-13">2025-06-13</time></span></div><div class="content"><h3 id="下载-llamacpp-项目需要用到其-python-部分">下载 llama.cpp 项目，需要用到其 Python 部分</h3>
+<pre tabindex="0"><code>
+git clone https://github.com/ggerganov/llama.cpp.git
+cd llama.cpp
+</code></pre><h3 id="llamacpp-下创建虚拟环境及安装依赖">llama.cpp 下创建虚拟环境及安装依赖</h3>
+<p>本来想用 <code>uv init</code> 创建虚拟环境，但是本地已经有 pyproject.toml 文件了。<code>venv</code> python 自带的。</p>
+<pre tabindex="0"><code>python -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+
+# 查看是否使用的 .venv 目录下的 python, pip
+which python
+which pip
+</code></pre><p>确保安装无报错。我因为安装不完整，执行 convert 脚本报错了，一度以为 llama.cpp 还不支持 Qwen，很惊讶。</p>
+<blockquote>
+<p>FileNotFoundError: File not found: Qwen3-0.6B/tokenizer.model</p></blockquote>
+<h3 id="下载模型到本地">下载模型到本地</h3>
+<p>前序工作，lfs 需要额外安装。以下是 ubuntu 下的指令。一次性工作。</p>
+<pre tabindex="0"><code>curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | sudo bash
+sudo apt-get install git-lfs
+git lfs install
+</code></pre><p>huggingface 上下载模型。</p></div><div class="post-footer">
+        <a href="/posts/20250613-convert-gguf/">Read More</a><div class="post-tags">
+                <i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/gguf/">Gguf</a>,&nbsp;<a href="/tags/llm/">Llm</a>,&nbsp;<a href="/tags/llama.cpp/">Llama.cpp</a></div></div>
+</article><article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
         <a href="/posts/20250612-rdb/">rdb command</a>
     </h1><div class="post-meta"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Happy Coding</a></span>&nbsp;<span class="post-publish">published on <time datetime="2025-06-12">2025-06-12</time></span></div><div class="content"><h2 id="一些-redis-内存分析清理脚本">一些 Redis 内存分析、清理脚本</h2>
 <p>Redis 内存了近 32GB 的计数。</p>
@@ -200,35 +226,6 @@
 <p>在 CloudFormation 控制台查看详细日志。无法加入到 K8s 集群。然后没有进一步的信息了。</p></div><div class="post-footer">
         <a href="/posts/eksctl-nodecreationfailure-instances-failed-to-join-the-kubernetes-cluster-0393476e-6e53-42f7-8222-842ffd0e8358/">Read More</a><div class="post-tags">
                 <i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/eks/">Eks</a>,&nbsp;<a href="/tags/eksctl/">Eksctl</a></div></div>
-</article><article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
-        <a href="/posts/metabase-quick-71d491f9-972e-4305-9f93-1af388b5ca9b/">metabase-quick 小结</a>
-    </h1><div class="post-meta"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Happy Coding</a></span>&nbsp;<span class="post-publish">published on <time datetime="2021-04-21">2021-04-21</time></span>&nbsp;<span class="post-category">included in <a href="/categories/%E5%B0%8F%E5%B7%A5%E5%85%B7/"><i class="far fa-folder fa-fw" aria-hidden="true"></i>小工具</a>&nbsp;<a href="/categories/sideproject/"><i class="far fa-folder fa-fw" aria-hidden="true"></i>Sideproject</a></span></div><div class="content"><p>对 metabase-quick 这个工具进行简单小结。</p>
-<p>简单来说，metabase-quick 是个命令行工具，使用 Metabase 的 UI，写 SQL分析本地的 csv 文件，并进行可视化。功能与 Metabase 一样，设置上简化了。</p>
-<p>肝了几天，熬了几个晚上，终于有了 v0.1 MVP 版本。</p>
-<p><a href="https://github.com/XUJiahua/metabase-quick" target="_blank" rel="noopener noreffer ">XUJiahua/metabase-quick</a></p>
-<h2 id="使用">使用</h2>
-<p>Releases 页面下载自己平台的二进制文件。</p>
-<p><a href="https://github.com/XUJiahua/metabase-quick/releases" target="_blank" rel="noopener noreffer ">Releases · XUJiahua/metabase-quick</a></p>
-<pre tabindex="0"><code>$ ./metabase-quick-darwin dataset/iris.csv
-INFO: load file dataset/iris.csv in 0.00393911 seconds
-You can visit database engine via below command:
-mysql --host=127.0.0.1 --port=53045 default -u root
-
-INFO: NewConnection: client 1
-open http://localhost:53046
-
-incoming query: select * from iris
-</code></pre><p>会自动打开网页，点击 Native query。</p>
-<p><img
-        class="lazyload"
-        src="/svg/loading.min.svg"
-        data-src="../../images/Untitled-7e93bf42-098c-414a-bf8f-18fc6c03da11.png"
-        data-srcset="../../images/Untitled-7e93bf42-098c-414a-bf8f-18fc6c03da11.png, ../../images/Untitled-7e93bf42-098c-414a-bf8f-18fc6c03da11.png 1.5x, ../../images/Untitled-7e93bf42-098c-414a-bf8f-18fc6c03da11.png 2x"
-        data-sizes="auto"
-        alt="../../images/Untitled-7e93bf42-098c-414a-bf8f-18fc6c03da11.png"
-        title="../../images/Untitled-7e93bf42-098c-414a-bf8f-18fc6c03da11.png" /></p></div><div class="post-footer">
-        <a href="/posts/metabase-quick-71d491f9-972e-4305-9f93-1af388b5ca9b/">Read More</a><div class="post-tags">
-                <i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/metabase/">Metabase</a>,&nbsp;<a href="/tags/go/">Go</a></div></div>
 </article><ul class="pagination"><li class="page-item active">
                     <span class="page-link">
                         <a href="/">1</a>

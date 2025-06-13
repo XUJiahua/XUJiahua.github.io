@@ -59,6 +59,19 @@
 </header><main class="main">
                 <div class="container"><div class="page home" data-home="posts"><div class="home-profile"><div class="links"></div></div>
 <article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
+        <a href="/posts/20200907-docker-bridge-net-sim/">使用 ip/iptables 命令模拟 Docker bridge 网络</a>
+    </h1><div class="post-meta"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Happy Coding</a></span>&nbsp;<span class="post-publish">published on <time datetime="2020-09-07">2020-09-07</time></span>&nbsp;<span class="post-category">included in <a href="/categories/docker/"><i class="far fa-folder fa-fw" aria-hidden="true"></i>Docker</a></span></div><div class="content"><p>如<a href="https://xujiahua.github.io/posts/20200901-linux-namespace/" target="_blank" rel="noopener noreffer ">前文</a>介绍，Linux Network namespace 用于给进程创建一个新的网络栈，路由、防火墙规则、网络设备。<code>man ip-netns</code>：</p>
+<blockquote>
+<p>A network namespace is logically another copy of the network stack, with its own routes, firewall rules, and network devices.</p></blockquote>
+<p>作为对 Network namespace 的实践，本文使用 ip/iptables 等命令模拟下 Docker bridge 网络，并会接触到 Network namespace，veth pair，Linux bridge，NAT 等概念。</p>
+<h2 id="实验">实验</h2>
+<h3 id="使用-ip命令操作-network-namespace">使用 <code>ip</code>命令操作 Network namespace</h3>
+<p>ip netns 子命令用于操作 Network namespace。使用 add 子命令，创建一个 Network namespace。</p>
+<pre tabindex="0"><code># ip netns add netns1
+</code></pre><p>查看 netns1 的网络设备（network device）。使用 exec 子命令，后接 netns1 和要执行的命令。默认有一个 DOWN 状态的 lo 设备。</p></div><div class="post-footer">
+        <a href="/posts/20200907-docker-bridge-net-sim/">Read More</a><div class="post-tags">
+                <i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/docker/">Docker</a>,&nbsp;<a href="/tags/linux/">Linux</a>,&nbsp;<a href="/tags/network/">Network</a></div></div>
+</article><article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
         <a href="/posts/20200903-fuck-thin-client/">瘦终端指北 —— ICMP tunnel</a>
     </h1><div class="post-meta"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Happy Coding</a></span>&nbsp;<span class="post-publish">published on <time datetime="2020-09-03">2020-09-03</time></span></div><div class="content"><p>因为公司有开发泄露源码在 Github，对公司声誉造成一定影响，公司层面推广起瘦终端，所有开发一起背锅 :( 。在瘦终端里，网络严格管控，vscode 下载插件都难，需要申请 IP 白名单。开发只允许在瘦终端里接触 git 仓库，只能向瘦终端拷贝文件，反之不能。这样就能防住代码泄露么？</p>
 <p>搞笑的办法，瘦终端生成二维码，主机扫描，数据传输问题搞定。</p>
@@ -174,68 +187,6 @@
         title="Image for post" /></p></div><div class="post-footer">
         <a href="/posts/20200806-machine-learning-serving-broken/">Read More</a><div class="post-tags">
                 <i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/ray/">Ray</a></div></div>
-</article><article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
-        <a href="/posts/20200724-bizapp-data/">关于业务系统数据化的思考</a>
-    </h1><div class="post-meta"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Happy Coding</a></span>&nbsp;<span class="post-publish">published on <time datetime="2020-07-24">2020-07-24</time></span></div><div class="content"><p>一个发券系统为例，该怎么发券。用 <a href="https://zh.wikipedia.org/wiki/%E5%85%AD%E4%BD%95%E6%B3%95" target="_blank" rel="noopener noreffer ">5W1H</a> 分析法尝试提问：</p>
-<ol>
-<li>Why 理由：为什么发券，为了获益。比如激活沉睡用户来消费，比如无脑群发拉一波流量，用户来了就是赚了。为什么用这个系统发券，因为这个系统能问答如下的问题。</li>
-<li>What 物品：优惠券，应该发放什么类型的优惠券。</li>
-<li>When 时间：应该在什么时间点发放优惠券。</li>
-<li>Where 地点：应该往哪个渠道发放优惠券。</li>
-<li>Who 人物：应该向什么样的人群发放优惠券。</li>
-</ol>
-<p>这些问题，需要软件用数据（统计数据）来回答，而不是靠参差不齐的运营人员主观臆断。</p>
-<p>数据模型该怎么设计，先分析出这些问题中的实体是什么。</p>
-<h2 id="实体与实体画像">实体与实体画像</h2>
-<p>以实体为中心，及与其他实体的交互，构建实体的画像。实体之间互相接触，实体A产生关于实体B的画像（标签），比如用户画像有时间相关的标签。</p>
-<h3 id="优惠券物品">优惠券、物品</h3>
-<p>构建物品画像。</p>
-<p>一张优惠券的画像，相当于评定优惠券发放效果好坏的结论报告。</p>
-<h3 id="时间点">时间点</h3>
-<p>构建时间画像。</p>
-<h3 id="渠道">渠道</h3>
-<p>构建渠道画像。相当于评定发放渠道的效果好坏的结论报告。</p>
-<h4 id="用户属性">用户属性</h4>
-<p>性别比例、城市分布。</p>
-<h3 id="用户">用户</h3>
-<p>构建用户画像。</p>
-<h4 id="基础属性">基础属性</h4>
-<p>比如微信授权给到的信息，性别、城市等。</p>
-<h4 id="物品属性">物品属性</h4>
-<p>比如优惠券领取率，优惠券的核销率、优惠券类型偏好。</p>
-<h4 id="渠道属性">渠道属性</h4>
-<p>渠道偏好。</p>
-<h4 id="时间属性">时间属性</h4>
-<p>各领取时间段统计、领取时间段偏好、核销时间段偏好。</p>
-<h2 id="开发画像">开发画像</h2>
-<p>T + 1 统计即可，统计数据对差一天的数据并不敏感。</p>
-<p>按照用户画像的常用套路：</p>
-<ol>
-<li>定义标签元数据。</li>
-<li>竖表的方式开发新标签，新标签的开发通过增加开发者水平扩展。</li>
-<li>根据标签元数据，将竖表转为横表。</li>
-<li>加快多维度查询速度，可以使用ElasticSearch加速。</li>
-</ol>
-<h2 id="使用画像">使用画像</h2>
-<p>基于标签元数据和每日生成的画像数据，可以，</p>
-<h3 id="精准投放">精准投放</h3>
-<p>使用用户画像圈定人群。人群画像有时间偏好，选择发放时间，有渠道偏好，选择发放渠道，有优惠券偏好，选择优惠券类型。</p>
-<p>或者换个方式，先选发放时间，根据时间画像，得知性别分布等，再筛选人群。</p>
-<h3 id="bi-可视化">BI 可视化</h3>
-<p>各实体的可视化，各维度可筛选条件。</p>
-<p>实体画像是用户画像的抽象，前端开发基于这种抽象开发，可适配不断新增的实体，减少重复劳动，免开发。</p>
-<p>这就像一份知识库，作为运营人员的学习材料。比如时间的 BI 可视化，运营人员可学习到 xxx 时间段，是领取率最高的。</p>
-<h2 id="小结">小结</h2>
-<p>一个发券系统，如何有别于其他产品。</p>
-<ol>
-<li>充分收集和保留数据。</li>
-<li>利用数据。使用统计数据，就能让产品很不同。</li>
-<li>去发掘新的实体，丰富画像。</li>
-<li>如果可以，在数据基础上加入机器学习模型。</li>
-</ol>
-<p>未完待续。</p></div><div class="post-footer">
-        <a href="/posts/20200724-bizapp-data/">Read More</a><div class="post-tags">
-                <i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/%E6%95%B0%E6%8D%AE/">数据</a></div></div>
 </article><ul class="pagination"><li class="page-item ">
                     <span class="page-link">
                         <a href="/">1</a>

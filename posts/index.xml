@@ -3,7 +3,36 @@
         <title>All Posts - Happy Coding</title>
         <link>https://xujiahua.github.io/posts/</link>
         <description>All Posts | Happy Coding</description>
-        <generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Thu, 12 Jun 2025 14:42:02 &#43;0800</lastBuildDate><atom:link href="https://xujiahua.github.io/posts/" rel="self" type="application/rss+xml" /><item>
+        <generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Fri, 13 Jun 2025 14:44:49 &#43;0800</lastBuildDate><atom:link href="https://xujiahua.github.io/posts/" rel="self" type="application/rss+xml" /><item>
+    <title>Convert GGUF</title>
+    <link>https://xujiahua.github.io/posts/20250613-convert-gguf/</link>
+    <pubDate>Fri, 13 Jun 2025 14:44:49 &#43;0800</pubDate>
+    <author>Happy Coding</author>
+    <guid>https://xujiahua.github.io/posts/20250613-convert-gguf/</guid>
+    <description><![CDATA[<h3 id="下载-llamacpp-项目需要用到其-python-部分">下载 llama.cpp 项目，需要用到其 Python 部分</h3>
+<pre tabindex="0"><code>
+git clone https://github.com/ggerganov/llama.cpp.git
+cd llama.cpp
+</code></pre><h3 id="llamacpp-下创建虚拟环境及安装依赖">llama.cpp 下创建虚拟环境及安装依赖</h3>
+<p>本来想用 <code>uv init</code> 创建虚拟环境，但是本地已经有 pyproject.toml 文件了。<code>venv</code> python 自带的。</p>
+<pre tabindex="0"><code>python -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+
+# 查看是否使用的 .venv 目录下的 python, pip
+which python
+which pip
+</code></pre><p>确保安装无报错。我因为安装不完整，执行 convert 脚本报错了，一度以为 llama.cpp 还不支持 Qwen，很惊讶。</p>
+<blockquote>
+<p>FileNotFoundError: File not found: Qwen3-0.6B/tokenizer.model</p></blockquote>
+<h3 id="下载模型到本地">下载模型到本地</h3>
+<p>前序工作，lfs 需要额外安装。以下是 ubuntu 下的指令。一次性工作。</p>
+<pre tabindex="0"><code>curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | sudo bash
+sudo apt-get install git-lfs
+git lfs install
+</code></pre><p>huggingface 上下载模型。</p>]]></description>
+</item>
+<item>
     <title>rdb command</title>
     <link>https://xujiahua.github.io/posts/20250612-rdb/</link>
     <pubDate>Thu, 12 Jun 2025 14:42:02 &#43;0800</pubDate>
@@ -244,26 +273,6 @@ MSET (10 keys): 93283.58 requests per second, p50=0.423 msec
     <guid>https://xujiahua.github.io/posts/kubectl-4f270b11-8ad4-47c5-b20c-6f340f5ccad1/</guid>
     <description><![CDATA[<p>念法很多。就选这个吧。我也一直这么念的。</p>
 <p></p>]]></description>
-</item>
-<item>
-    <title>pandasql库解析</title>
-    <link>https://xujiahua.github.io/posts/20200916-pandas-sql/</link>
-    <pubDate>Wed, 16 Sep 2020 10:48:11 &#43;0800</pubDate>
-    <author>Happy Coding</author>
-    <guid>https://xujiahua.github.io/posts/20200916-pandas-sql/</guid>
-    <description><![CDATA[<p>对 Pandas 库没有原生 SQL 支持表示遗憾，今天看到这么一个库 <a href="https://github.com/yhat/pandasql" target="_blank" rel="noopener noreffer ">https://github.com/yhat/pandasql</a> 。</p>
-<p>它的思路比较简单粗暴，先把 pandas Dataframe 存储到一个关系型数据库（sqlite/postgresql），最后 SQL query 的结果其实是查询关系型数据库返回的结果，封装成 Dataframe 来呈现。其中数据库操作使用 sqlalchemy 这个库。</p>
-<p>学到的知识点：locals()，globals() 这两个方法。</p>
-<blockquote>
-<p>The globals() method returns the dictionary of the current global symbol table. <a href="https://www.programiz.com/python-programming/methods/built-in/globals" target="_blank" rel="noopener noreffer ">https://www.programiz.com/python-programming/methods/built-in/globals</a></p>
-<p>The locals() method updates and returns a dictionary of the current local symbol table. <a href="https://www.programiz.com/python-programming/methods/built-in/locals" target="_blank" rel="noopener noreffer ">https://www.programiz.com/python-programming/methods/built-in/locals</a></p></blockquote>
-<p>如下代码，meat 是一个 Dataframe 变量，为何 SQL query 里能直接引用这个变量。</p>
-<pre tabindex="0"><code>$ python
-&gt;&gt;&gt; from pandasql import sqldf, load_meat, load_births
-&gt;&gt;&gt; pysqldf = lambda q: sqldf(q, globals())
-&gt;&gt;&gt; meat = load_meat()
-&gt;&gt;&gt; print pysqldf(&#34;SELECT * FROM meat LIMIT 10;&#34;).head()
-</code></pre><p>因为可以从 globals() 里通过符号 meat 拿到这个变量。</p>]]></description>
 </item>
 </channel>
 </rss>

@@ -59,6 +59,62 @@
 </header><main class="main">
                 <div class="container"><div class="page home" data-home="posts"><div class="home-profile"><div class="links"></div></div>
 <article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
+        <a href="/posts/20191123-ebay-bigdata-techday/">2019 eBay Big Data TechDay</a>
+    </h1><div class="post-meta"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Happy Coding</a></span>&nbsp;<span class="post-publish">published on <time datetime="2019-11-23">2019-11-23</time></span></div><div class="content"><p>（笔记迁移 @ 2020年）</p>
+<p>现场听了下eBay大数据的分享。视频/PPT <a href="https://www.slidestalk.com/ebay" target="_blank" rel="noopener noreffer ">https://www.slidestalk.com/ebay</a></p>
+<p>总体感觉，很棒。</p>
+<ol>
+<li>环境很好。德国中心，提供了星巴克、点心。</li>
+<li>技术氛围好。几百人做大数据呢！而且做得都比较深。</li>
+<li>拥抱开源：基于开源的二次开发，外围开发，平台化（易用性）等工作。</li>
+<li>风控经理演讲水平好棒。</li>
+<li>Spark SQL / Flink Streaming / Spark Streaming / ElasticSearch 这些是目前大数据的主流</li>
+<li>真正投身大数据，最优选择是学习Spark。</li>
+<li>没有中奖，不过拿了小礼物，心里美滋滋。</li>
+</ol>
+<h4 id="应用角度data-driven-payment-risk">【应用角度】Data Driven Payment Risk</h4>
+<ol>
+<li>演讲、台风挺好的。</li>
+<li>内容方面没有很新颖但是很扎实（基于图算法的挖掘其实挺少听见的，是让人眼前一亮的东西，但是我之前正好看过这块了。）。</li>
+<li>基本上是在支付风控这个应用角度。</li>
+<li>如果去PayPal，这块支付风控是可以好好学习的。</li>
+</ol>
+<h4 id="flink-streamingrheos-sql-a-real-time-processing-language">【Flink Streaming】Rheos-SQL: A Real-Time Processing Language</h4>
+<ol>
+<li>两个年轻人联合做的分享。</li>
+<li>基于Flink的，Flink还有SQL功能。Flink这块我没接触。</li>
+<li>扩展SQL语法的思路，加入了一些新功能，比如sqlflow也是这么做的（阿里巴巴）。写SQL就能连Kafka、ES。这点很不错的扩展。</li>
+<li>还做了一个平台。</li>
+</ol>
+<h4 id="spark-streamingdesigning-etl-pipelines-with-structured-streaming-and-delta-lake">【Spark Streaming】Designing ETL pipelines with Structured Streaming and Delta lake</h4>
+<ol>
+<li>干货不多，一些最佳实践（因为没怎么做过streaming，印象不深）。感觉是Delta Lake的推广。</li>
+<li>Delta Lake能替换hive么？</li>
+</ol>
+<h4 id="elasticsearchpronto---elasticsearch-as-a-service-at-ebay">【ElasticSearch】Pronto - ElasticSearch as a service at ebay</h4>
+<ol>
+<li>Kibaba插件开发扩展ELK</li>
+<li>做了一个平台管理ES。</li>
+</ol>
+<h4 id="aibigdatanous---empower-data-analysis-through-augmented-analytics">【AI+BigData】Nous - Empower Data Analysis through Augmented Analytics</h4>
+<ol>
+<li>增强分析。大数据分析+知识图谱，自然语言处理（英文）。这个topic太时髦了。</li>
+<li>演示效果，界面真很好看了。</li>
+<li>风趣的开场白。技术又好。</li>
+<li>英语对话，这么流利。有被刺激到。</li>
+<li>从规则引擎开始</li>
+<li>积累数据，机器学习生成规则</li>
+</ol>
+<h4 id="spark-sqlcarmel---optimizing-sparksql-for-interative-analysis">【Spark SQL】Carmel - Optimizing SparkSQL for Interative Analysis</h4>
+<ol>
+<li>eBay优化Spark sql（改写内部代码）替换TeraData，作为MPP方案。Impala不好吗。。。</li>
+<li>观众提问，SQL on spark没有索引，是不是历史的倒退。有个问题挺好。回答是下推到parquet，列式存储会过滤。</li>
+<li>是大牛，技术做的很深。Druid/Kylin/Spark/Spark SQL。一句话很经典，批处理也可以很快。</li>
+<li>演讲基本上是站着不动，看着PPT疯狂输出信息。</li>
+</ol></div><div class="post-footer">
+        <a href="/posts/20191123-ebay-bigdata-techday/">Read More</a><div class="post-tags">
+                <i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/bigdata/">Bigdata</a></div></div>
+</article><article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
         <a href="/posts/20191031-quantum-computer/">量子计算——读「古今密码学趣谈」展望未来的密码学</a>
     </h1><div class="post-meta"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Happy Coding</a></span>&nbsp;<span class="post-publish">published on <time datetime="2019-10-31">2019-10-31</time></span></div><div class="content"><p>（笔记迁移 @ 2020年）</p>
 <p>主要讲了密码学怎么来应对量子计算。量子计算的并行性（N个量子位，能<strong>同时</strong>表示2^N个数字，而同样的比特位，同时只能表示一个2^N以内的数字。太神奇了），将以前指数级别的破解难度降低为了线性级别。RSA、ECC等现代密码学技术都会被轻易攻破。</p>
@@ -254,16 +310,6 @@ greeter, ok := symGreeter.(Greeter)
 <p>使用gvm安装了其他Go版本尝试，no luck。</p></div><div class="post-footer">
         <a href="/posts/20190304-go-plugin/">Read More</a><div class="post-tags">
                 <i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/go/">Go</a></div></div>
-</article><article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
-        <a href="/posts/20181029-mastering-ethereum/">读 Mastering Ethereum</a>
-    </h1><div class="post-meta"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Happy Coding</a></span>&nbsp;<span class="post-publish">published on <time datetime="2018-10-29">2018-10-29</time></span></div><div class="content"><p>（笔记迁移 @ 2020年）</p>
-<p>区块链上不应该只有数字货币。</p>
-<blockquote>
-<p>Ethereum was conceived at a time when people recognized the power of the Bitcoin model, and were trying to move beyond cryptocurrency applications.</p>
-<p>Ethereum’s founders were thinking about a blockchain without a specific purpose, that could support a broad variety of applications by being programmed.</p>
-<p>Ethereum has memory that stores both code and data, and it uses the Ethereum blockchain to track how this memory changes over time.</p></div><div class="post-footer">
-        <a href="/posts/20181029-mastering-ethereum/">Read More</a><div class="post-tags">
-                <i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/read/">READ</a>,&nbsp;<a href="/tags/blockchain/">Blockchain</a></div></div>
 </article><ul class="pagination"><li class="page-item ">
                     <span class="page-link">
                         <a href="/">1</a>

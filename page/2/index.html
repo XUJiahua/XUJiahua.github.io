@@ -59,6 +59,35 @@
 </header><main class="main">
                 <div class="container"><div class="page home" data-home="posts"><div class="home-profile"><div class="links"></div></div>
 <article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
+        <a href="/posts/metabase-quick-71d491f9-972e-4305-9f93-1af388b5ca9b/">metabase-quick 小结</a>
+    </h1><div class="post-meta"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Happy Coding</a></span>&nbsp;<span class="post-publish">published on <time datetime="2021-04-21">2021-04-21</time></span>&nbsp;<span class="post-category">included in <a href="/categories/%E5%B0%8F%E5%B7%A5%E5%85%B7/"><i class="far fa-folder fa-fw" aria-hidden="true"></i>小工具</a>&nbsp;<a href="/categories/sideproject/"><i class="far fa-folder fa-fw" aria-hidden="true"></i>Sideproject</a></span></div><div class="content"><p>对 metabase-quick 这个工具进行简单小结。</p>
+<p>简单来说，metabase-quick 是个命令行工具，使用 Metabase 的 UI，写 SQL分析本地的 csv 文件，并进行可视化。功能与 Metabase 一样，设置上简化了。</p>
+<p>肝了几天，熬了几个晚上，终于有了 v0.1 MVP 版本。</p>
+<p><a href="https://github.com/XUJiahua/metabase-quick" target="_blank" rel="noopener noreffer ">XUJiahua/metabase-quick</a></p>
+<h2 id="使用">使用</h2>
+<p>Releases 页面下载自己平台的二进制文件。</p>
+<p><a href="https://github.com/XUJiahua/metabase-quick/releases" target="_blank" rel="noopener noreffer ">Releases · XUJiahua/metabase-quick</a></p>
+<pre tabindex="0"><code>$ ./metabase-quick-darwin dataset/iris.csv
+INFO: load file dataset/iris.csv in 0.00393911 seconds
+You can visit database engine via below command:
+mysql --host=127.0.0.1 --port=53045 default -u root
+
+INFO: NewConnection: client 1
+open http://localhost:53046
+
+incoming query: select * from iris
+</code></pre><p>会自动打开网页，点击 Native query。</p>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="../../images/Untitled-7e93bf42-098c-414a-bf8f-18fc6c03da11.png"
+        data-srcset="../../images/Untitled-7e93bf42-098c-414a-bf8f-18fc6c03da11.png, ../../images/Untitled-7e93bf42-098c-414a-bf8f-18fc6c03da11.png 1.5x, ../../images/Untitled-7e93bf42-098c-414a-bf8f-18fc6c03da11.png 2x"
+        data-sizes="auto"
+        alt="../../images/Untitled-7e93bf42-098c-414a-bf8f-18fc6c03da11.png"
+        title="../../images/Untitled-7e93bf42-098c-414a-bf8f-18fc6c03da11.png" /></p></div><div class="post-footer">
+        <a href="/posts/metabase-quick-71d491f9-972e-4305-9f93-1af388b5ca9b/">Read More</a><div class="post-tags">
+                <i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/metabase/">Metabase</a>,&nbsp;<a href="/tags/go/">Go</a></div></div>
+</article><article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
         <a href="/posts/redis-benchmark-kv-a3e78900-612a-4d04-b2aa-fc6f0908b431/">使用 redis-benchmark 压测自建的 kv 存储引擎</a>
     </h1><div class="post-meta"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Happy Coding</a></span>&nbsp;<span class="post-publish">published on <time datetime="2021-04-19">2021-04-19</time></span>&nbsp;<span class="post-category">included in <a href="/categories/%E5%AD%98%E5%82%A8/"><i class="far fa-folder fa-fw" aria-hidden="true"></i>存储</a></span></div><div class="content"><p>给自建 kv 存储引擎做性能测试不难，使用 redis-benchmark 压测的目的是，测试结果能与 redis-server 的结果做横向对比。</p>
 <h2 id="redis-benchmark">redis-benchmark</h2>
@@ -190,19 +219,6 @@ MSET (10 keys): 93283.58 requests per second, p50=0.423 msec
 <li>Kubernetes网络权威指南：基础、原理与实践 （2019）</li>
 </ol></div><div class="post-footer">
         <a href="/posts/20200909-docker-series/">Read More</a></div>
-</article><article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
-        <a href="/posts/20200907-docker-bridge-net-sim/">使用 ip/iptables 命令模拟 Docker bridge 网络</a>
-    </h1><div class="post-meta"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Happy Coding</a></span>&nbsp;<span class="post-publish">published on <time datetime="2020-09-07">2020-09-07</time></span>&nbsp;<span class="post-category">included in <a href="/categories/docker/"><i class="far fa-folder fa-fw" aria-hidden="true"></i>Docker</a></span></div><div class="content"><p>如<a href="https://xujiahua.github.io/posts/20200901-linux-namespace/" target="_blank" rel="noopener noreffer ">前文</a>介绍，Linux Network namespace 用于给进程创建一个新的网络栈，路由、防火墙规则、网络设备。<code>man ip-netns</code>：</p>
-<blockquote>
-<p>A network namespace is logically another copy of the network stack, with its own routes, firewall rules, and network devices.</p></blockquote>
-<p>作为对 Network namespace 的实践，本文使用 ip/iptables 等命令模拟下 Docker bridge 网络，并会接触到 Network namespace，veth pair，Linux bridge，NAT 等概念。</p>
-<h2 id="实验">实验</h2>
-<h3 id="使用-ip命令操作-network-namespace">使用 <code>ip</code>命令操作 Network namespace</h3>
-<p>ip netns 子命令用于操作 Network namespace。使用 add 子命令，创建一个 Network namespace。</p>
-<pre tabindex="0"><code># ip netns add netns1
-</code></pre><p>查看 netns1 的网络设备（network device）。使用 exec 子命令，后接 netns1 和要执行的命令。默认有一个 DOWN 状态的 lo 设备。</p></div><div class="post-footer">
-        <a href="/posts/20200907-docker-bridge-net-sim/">Read More</a><div class="post-tags">
-                <i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/docker/">Docker</a>,&nbsp;<a href="/tags/linux/">Linux</a>,&nbsp;<a href="/tags/network/">Network</a></div></div>
 </article><ul class="pagination"><li class="page-item ">
                     <span class="page-link">
                         <a href="/">1</a>

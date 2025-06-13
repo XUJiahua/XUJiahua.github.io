@@ -59,6 +59,30 @@
 </header><main class="main">
                 <div class="container"><div class="page home" data-home="posts"><div class="home-profile"><div class="links"></div></div>
 <article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
+        <a href="/posts/20200527-metabase-impala-driver/">Metabase Impala Driver</a>
+    </h1><div class="post-meta"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Happy Coding</a></span>&nbsp;<span class="post-publish">published on <time datetime="2020-05-27">2020-05-27</time></span>&nbsp;<span class="post-category">included in <a href="/categories/metabase/"><i class="far fa-folder fa-fw" aria-hidden="true"></i>Metabase</a></span></div><div class="content"><p>更新日志</p>
+<ol>
+<li><a href="https://xujiahua.github.io/posts/20200528-metabase-impala-type/" target="_blank" rel="noopener noreffer ">Metabase Impala Driver 0528更新日志</a></li>
+<li><a href="https://xujiahua.github.io/posts/20200710-metabase-impala-driver/" target="_blank" rel="noopener noreffer ">Metabase Impala Driver 0710更新日志</a></li>
+</ol>
+<h2 id="背景">背景</h2>
+<p>我们的数据仓库是 Hadoop/Hive 体系的。Hadoop 版本采用的是 CDH 发行版。在这个背景下 SQL on Hadoop 的方案有 Hive/Impala/(SparkSQL)。作为 BI 数据库，Impala 在我们的场景下比较合适。</p>
+<ol>
+<li>Hive：太慢了。做 ETL 可以，BI 非常不适。</li>
+<li>SparkSQL：CDH 官方 Spark 不含 Thrift Server。为了能够使用 Metabase ，独立于 CDH 启了个 Thrift Server，用着还不错。问题就在于缺乏统一管理，比如 Kerberos 的管理就得自己写脚本处理、进程 OOM 挂掉了 CDH Manager 也监测不到。</li>
+<li>Impala：CDH 官方出品，为 BI 而设计，由 CDH Manager 管理。根据这份报告，见下参考链接，Impala 好于 SparkSQL。</li>
+</ol>
+<p>出于尽可能复用已有基础设施的目的，选择 Impala。而 Metabase 官方、社区并不提供 Impala 驱动。本文就是为了探索并解决这个问题。</p>
+<p>参考：</p>
+<ol>
+<li>开源OLAP引擎测评报告(SparkSql、Presto、Impala、HAWQ、ClickHouse、GreenPlum) <a href="http://www.clickhouse.com.cn/topic/5c453371389ad55f127768ea" target="_blank" rel="noopener noreffer ">http://www.clickhouse.com.cn/topic/5c453371389ad55f127768ea</a></li>
+</ol>
+<h2 id="现有驱动探索">现有驱动探索</h2>
+<h3 id="搭建-impala-开发环境">搭建 Impala 开发环境</h3>
+<p>使用 Cloudera Quickstart Docker 镜像（官方已经下架 quickstart vm ）。其中，Impala版本 2.5.0。（我们的生产环境：CDH 6.3.2 Impala 3.2.0 Hive 2.1.1）</p></div><div class="post-footer">
+        <a href="/posts/20200527-metabase-impala-driver/">Read More</a><div class="post-tags">
+                <i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/metabase/">Metabase</a>,&nbsp;<a href="/tags/impala/">Impala</a></div></div>
+</article><article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
         <a href="/posts/20200514-wx-avatar/">微信用户授权头像内容带随机干扰的问题</a>
     </h1><div class="post-meta"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Happy Coding</a></span>&nbsp;<span class="post-publish">published on <time datetime="2020-05-14">2020-05-14</time></span></div><div class="content"><p>项目需要基于头像、昵称对不同实体账号下的微信用户进行匹配。基于这个思路，打算先下载微信头像的图像，后计算其MD5，“单元测试”了下这个简单方法，结果惊人。</p>
 <p>同一个人的同一个头像链接返回的图像内容都不一样。内容不一样，MD5值也就不一样。</p>
@@ -237,26 +261,6 @@
 <p>配置热更新应用，就选择 etcd, consul 吧，有 watch 功能。</p></div><div class="post-footer">
         <a href="/posts/20200417-kubernetes-configmap/">Read More</a><div class="post-tags">
                 <i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/etcd/">Etcd</a>,&nbsp;<a href="/tags/k8s/">K8s</a>,&nbsp;<a href="/tags/consul/">Consul</a></div></div>
-</article><article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
-        <a href="/posts/20200417-etcd_client/">etcd api client 请求重试逻辑</a>
-    </h1><div class="post-meta"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Happy Coding</a></span>&nbsp;<span class="post-publish">published on <time datetime="2020-04-17">2020-04-17</time></span></div><div class="content"><p>使用 Consul 作为配置中心，按照官方的说法，没必要创建 <code>consul client</code> 节点。那么直接连 <code>consul server</code> 就好了。</p>
-<blockquote>
-<p>Running an agent is not required for discovering other services or getting/setting key/value data. The agent is responsible for health checking the services on the node as well as the node itself.</p>
-<p><a href="https://www.consul.io/intro/index.html#basic-architecture-of-consul" target="_blank" rel="noopener noreffer ">https://www.consul.io/intro/index.html#basic-architecture-of-consul</a></p></blockquote>
-<p>Consul api client (<a href="https://github.com/hashicorp/consul/tree/master/api" target="_blank" rel="noopener noreffer ">https://github.com/hashicorp/consul/tree/master/api</a>) 目前只能接收一个server地址。那么这个server地址得保证高可用才行啊。</p>
-<p>etcd api client (<a href="https://github.com/etcd-io/etcd/tree/master/client" target="_blank" rel="noopener noreffer ">https://github.com/etcd-io/etcd/tree/master/client</a>) 倒是能接收多个server地址，看看 etcd 是怎么做的。</p>
-<h3 id="etcd-api-client">etcd api client</h3>
-<p>创建了 httpClusterClient。</p>
-<p><img
-        class="lazyload"
-        src="/svg/loading.min.svg"
-        data-src="../../images/image-20200417151856806.png"
-        data-srcset="../../images/image-20200417151856806.png, ../../images/image-20200417151856806.png 1.5x, ../../images/image-20200417151856806.png 2x"
-        data-sizes="auto"
-        alt="../../images/image-20200417151856806.png"
-        title="image-20200417151856806" /></p></div><div class="post-footer">
-        <a href="/posts/20200417-etcd_client/">Read More</a><div class="post-tags">
-                <i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/etcd/">Etcd</a></div></div>
 </article><ul class="pagination"><li class="page-item ">
                     <span class="page-link">
                         <a href="/">1</a>
